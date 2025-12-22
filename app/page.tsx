@@ -52,12 +52,6 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-
-          <div className="mt-16">
-            <p className="text-sm text-gray-500">
-              Phase 0 Complete ✅ - Ready for Phase 1: Authentication
-            </p>
-          </div>
         </div>
       </div>
     </main>
