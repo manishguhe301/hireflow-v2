@@ -23,10 +23,237 @@ model User {
   emailVerified Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // Relations
+  profile       Profile?
+  company       Company?
+  applications  Application[]
+  savedJobs     SavedJob[]
+  notifications Notification[]
 }
 
 enum Role {
   JOB_SEEKER
   COMPANY_ADMIN
   PLATFORM_ADMIN
+}
+
+// ==================== PROFILE MODEL (Job Seeker) ====================
+model Profile {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId               String   @unique @db.ObjectId
+  photo                String?
+  phone                String?
+  location             String?
+  preferredWorkMode    String[]
+  willingToRelocate    Boolean  @default(false)
+  professionalTitle    String?
+  bio                  String?
+  yearsOfExperience    Int?
+  currentEmployment    String?
+  
+  // Resume
+  resumeUrl            String?
+  resumeName           String?
+  
+  // Skills
+  skills               String[]
+  
+  // Work Experience (JSON array)
+  // [{company, title, startDate, endDate, description, current}]
+  workExperience       Json?
+  
+  // Education (JSON array)
+  // [{institution, degree, field, startYear, endYear, grade, current}]
+  education            Json?
+  
+  // Certifications (JSON array)
+  // [{name, organization, issueDate, expiryDate, credentialId, credentialUrl}]
+  certifications       Json?
+  
+  // Links
+  portfolioWebsite     String?
+  githubUrl            String?
+  linkedinUrl          String?
+  twitterUrl           String?
+  otherLinks           String[]
+  
+  // Preferences
+  jobCategories        String[]
+  preferredLocations   String[]
+  expectedSalaryMin    Int?
+  expectedSalaryMax    Int?
+  noticePeriod         String?
+  
+  profileCompleted     Int       @default(0)
+  isPublic             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==================== COMPANY MODEL ====================
+model Company {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String         @unique @db.ObjectId
+  name              String
+  logo              String?
+  description       String
+  industry          String
+  companySize       String
+  foundedYear       Int?
+  website           String?
+  linkedinProfile   String?
+  location          String
+  
+  // Contact
+  contactEmail      String
+  contactPhone      String?
+  address           String?
+  
+  // Documents
+  businessDocument  String?
+  taxDocument       String?
+  
+  // Status
+  status            CompanyStatus  @default(PENDING)
+  rejectionReason   String?
+  
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs Job[]
+}
+
+enum CompanyStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ==================== JOB MODEL ====================
+model Job {
+  id                  String           @id @default(auto()) @map("_id") @db.ObjectId
+  companyId           String           @db.ObjectId
+  title               String
+  description         String
+  requirements        String
+  responsibilities    String?
+  skills              String[]
+  experienceLevel     ExperienceLevel
+  employmentType      EmploymentType
+  workMode            WorkMode
+  location            String
+  salaryMin           Int?
+  salaryMax           Int?
+  hideSalary          Boolean          @default(false)
+  numberOfOpenings    Int              @default(1)
+  applicationDeadline DateTime?
+  category            String
+  
+  status              JobStatus        @default(ACTIVE)
+  views               Int              @default(0)
+  
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications Application[]
+  savedJobs    SavedJob[]
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ON_SITE
+}
+
+enum JobStatus {
+  ACTIVE
+  CLOSED
+  DRAFT
+}
+
+// ==================== APPLICATION MODEL ====================
+model Application {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String            @db.ObjectId
+  jobId           String            @db.ObjectId
+  resumeUrl       String
+  coverLetter     String?
+  status          ApplicationStatus @default(APPLIED)
+  internalNotes   String?
+  
+  // Status timeline (JSON array of { status, date })
+  statusHistory   Json?
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+}
+
+enum ApplicationStatus {
+  APPLIED
+  REVIEWING
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  REJECTED
+  OFFERED
+  HIRED
+}
+
+// ==================== SAVED JOB MODEL ====================
+model SavedJob {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  jobId     String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+}
+
+// ==================== NOTIFICATION MODEL ====================
+model Notification {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String           @db.ObjectId
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationType {
+  APPLICATION_RECEIVED
+  APPLICATION_STATUS_CHANGED
+  COMPANY_APPROVED
+  COMPANY_REJECTED
+  NEW_JOB_POSTED
+  JOB_CLOSED
 }
