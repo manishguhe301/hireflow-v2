@@ -1,12 +1,5 @@
-import {
-  ApplicationStatus,
-  CompanyStatus,
-  EmploymentType,
-  ExperienceLevel,
-  JobStatus,
-  Role,
-  WorkMode,
-} from '@/app/generated/prisma';
+import { ApplicationStatus, CompanyStatus, EmploymentType, ExperienceLevel, JobStatus, Role, WorkMode } from "@prisma/client";
+
 
 export interface User {
   id: string;
