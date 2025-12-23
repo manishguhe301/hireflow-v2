@@ -1,4 +1,4 @@
-import { Role } from '@/app/generated/prisma/enums';
+import { Role } from '@prisma/client';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface User {
