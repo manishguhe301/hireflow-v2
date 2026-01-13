@@ -1,166 +1,131 @@
-import Link from "next/link";
+import Link from 'next/link';
+import {
+  Briefcase,
+  Search,
+  ShieldCheck,
+  Workflow,
+  UserCircle,
+  MapPin,
+  ArrowRight,
+  Circle
+} from 'lucide-react';
 
 const featuredJobs = [
-  {
-    id: 1,
-    title: "Frontend Engineer",
-    company: "TechNova",
-    location: "Remote",
-    type: "Full-time",
-    experience: "Mid Level",
-  },
-  {
-    id: 2,
-    title: "Backend Developer (Node.js)",
-    company: "CloudCore",
-    location: "Bangalore, India",
-    type: "Full-time",
-    experience: "Senior",
-  },
-  {
-    id: 3,
-    title: "UI/UX Designer",
-    company: "Designify",
-    location: "Hybrid · Mumbai",
-    type: "Contract",
-    experience: "Mid Level",
-  },
-  {
-    id: 4,
-    title: "Product Manager",
-    company: "ScaleOps",
-    location: "Remote",
-    type: "Full-time",
-    experience: "Lead",
-  },
+  { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
+  { id: 2, title: 'Backend Developer', company: 'CloudCore', location: 'Bangalore', type: 'Full-time', tag: 'Urgent' },
+  { id: 3, title: 'UI/UX Designer', company: 'Designify', location: 'Mumbai', type: 'Hybrid', tag: 'New' },
+  { id: 4, title: 'Product Lead', company: 'Aura', location: 'Remote', type: 'Full-time', tag: 'Remote' },
 ];
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-black text-white">
-      <header className="border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold tracking-tight">
-            HireFlow
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border/40 bg-background/50 backdrop-blur-xl sticky top-0 z-50">
+        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="text-lg font-semibold tracking-tight hover:opacity-80 transition">
+            HireFlow<span className="text-primary">.</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm text-gray-300">
-            <Link href="/jobs" className="hover:text-white transition">
-              Jobs
-            </Link>
-            <Link href="/company/signup" className="hover:text-white transition">
-              For Companies
-            </Link>
-            <Link href="/login" className="hover:text-white transition">
-              Login
-            </Link>
+          <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium text-muted-foreground/80">
+            <Link href="/jobs" className="hover:text-primary transition-colors">Browse Jobs</Link>
+            <Link href="/companies" className="hover:text-primary transition-colors">Companies</Link>
+            <Link href="/login" className="hover:text-foreground transition-colors">Sign In</Link>
             <Link
               href="/signup"
-              className="rounded-md bg-white px-4 py-2 text-black font-medium hover:bg-gray-200 transition"
+              className="bg-primary/10 text-primary px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-all duration-300"
             >
-              Sign Up
+              Post a Job
             </Link>
           </nav>
         </div>
       </header>
 
-      <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 py-24 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            Hire Smarter. <span className="text-gray-400">Get Hired Faster.</span>
+      <section className="relative px-6 pt-24 pb-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto mb-8 flex w-fit items-center gap-2 rounded-full bg-muted/50 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground border border-muted/30">
+            <Circle className="fill-success text-success w-2 h-2" />
+            Empowering 5,000+ Careers
+          </div>
+
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground/90">
+            Find your next <br />
+            <span className="text-muted-foreground/40 italic font-serif">meaningful</span> role.
           </h1>
 
-          <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-400">
-            HireFlow connects verified companies with qualified talent through a
-            powerful, approval-based hiring platform built for scale.
+          <p className="mt-8 text-lg text-muted-foreground/70 leading-relaxed font-light">
+            A curated job board for the next generation of engineers. <br className="hidden md:block" />
+            No spam, no ghosting, just direct connections.
           </p>
 
-          <div className="mt-10 flex justify-center gap-4">
-            <Link
-              href="/jobs"
-              className="rounded-md bg-white px-6 py-3 text-black font-semibold hover:bg-gray-200 transition"
-            >
-              Explore Jobs
-            </Link>
-            <Link
-              href="/company/signup"
-              className="rounded-md border border-white/20 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
-            >
-              Post a Job
-            </Link>
-          </div>
-
-          <div className="mt-14 flex flex-wrap justify-center gap-8 text-sm text-gray-400">
-            <span>✔ Verified Companies</span>
-            <span>✔ Role-Based Hiring</span>
-            <span>✔ End-to-End Application Tracking</span>
+          <div className="mt-12 flex max-w-xl mx-auto items-center gap-2 rounded-2xl bg-card p-2 shadow-sm border border-border/30">
+            <div className="flex flex-1 items-center gap-2 px-4">
+              <Search className="w-4 h-4 text-muted-foreground/50" />
+              <input
+                placeholder="Job title or keyword..."
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/40"
+              />
+            </div>
+            <button className="rounded-xl bg-foreground px-6 py-2.5 text-sm font-medium text-background hover:opacity-90 transition">
+              Search
+            </button>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-white/10">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <h2 className="text-3xl font-bold text-center">
-            Built for Real-World Hiring
-          </h2>
-
-          <div className="mt-16 grid gap-10 md:grid-cols-3">
-            <FeatureCard
-              title="Verified Companies Only"
-              description="Every company goes through an admin approval process, ensuring genuine opportunities."
-            />
-            <FeatureCard
-              title="Advanced Application Tracking"
-              description="Track applications through every stage — from applied to hired."
-            />
-            <FeatureCard
-              title="Powerful Profiles"
-              description="Rich candidate profiles with resumes, skills, experience, and preferences."
-            />
-          </div>
+      <section className="mx-auto max-w-6xl px-6 py-20 border-t border-border/30">
+        <div className="grid gap-16 md:grid-cols-3">
+          <FeatureIcon
+            icon={<ShieldCheck className="w-5 h-5" />}
+            title="Verified"
+            desc="Only vetted companies can post."
+          />
+          <FeatureIcon
+            icon={<Workflow className="w-5 h-5" />}
+            title="Direct"
+            desc="Speak directly with hiring managers."
+          />
+          <FeatureIcon
+            icon={<UserCircle className="w-5 h-5" />}
+            title="Private"
+            desc="Your data is never sold to recruiters."
+          />
         </div>
       </section>
 
-      <section className="border-t border-white/10 bg-white/5">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold">Featured Jobs</h2>
-            <Link
-              href="/jobs"
-              className="text-sm text-gray-300 hover:text-white transition"
-            >
-              View all jobs →
+      <section className="bg-muted/30 py-24 border-t border-border/30">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-2xl font-semibold tracking-tight">Recent Openings</h2>
+            <Link href="/jobs" className="text-sm font-medium text-primary hover:opacity-70 transition">
+              View All Roles
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <div className="space-y-3">
             {featuredJobs.map((job) => (
               <div
                 key={job.id}
-                className="rounded-lg border border-white/10 bg-black p-6 hover:border-white/20 transition"
+                className="group flex items-center justify-between rounded-2xl border border-border/20 bg-card p-5 hover:border-primary/20 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300"
               >
-                <h3 className="text-xl font-semibold">{job.title}</h3>
-                <p className="mt-1 text-gray-400">{job.company}</p>
-
-                <div className="mt-4 flex flex-wrap gap-3 text-xs text-gray-300">
-                  <span className="rounded-full bg-white/10 px-3 py-1">
-                    {job.location}
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-1">
-                    {job.type}
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-1">
-                    {job.experience}
-                  </span>
+                <div className="flex items-center gap-5">
+                  <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground font-bold group-hover:bg-primary/5 group-hover:text-primary transition-colors">
+                    {job.company[0]}
+                  </div>
+                  <div>
+                    <h3 className="text-[15px] font-semibold text-foreground/90">{job.title}</h3>
+                    <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground/60">
+                      <span className="font-medium text-muted-foreground/80">{job.company}</span>
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
+                      <span className="bg-muted px-2 py-0.5 rounded text-[10px] uppercase tracking-wide">{job.type}</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-6">
-                  <Link
-                    href={`/jobs/${job.id}`}
-                    className="text-sm font-medium text-white hover:underline"
-                  >
-                    View details →
-                  </Link>
+                <div className="flex items-center gap-4">
+                  <span className="hidden md:block text-[11px] font-bold text-primary/60 uppercase tracking-widest">{job.tag}</span>
+                  <div className="rounded-full p-2 bg-muted/50 group-hover:bg-primary group-hover:text-white transition-all">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -168,65 +133,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-white/10">
-        <div className="mx-auto max-w-7xl px-6 py-24 text-center">
-          <h2 className="text-4xl font-bold">
-            Ready to Transform Your Hiring?
-          </h2>
-          <p className="mt-4 text-gray-400 max-w-xl mx-auto">
-            Whether you are looking for your next opportunity or building a
-            world-class team, HireFlow is built for you.
-          </p>
-
-          <div className="mt-10 flex justify-center gap-4">
-            <Link
-              href="/signup"
-              className="rounded-md bg-white px-6 py-3 text-black font-semibold hover:bg-gray-200 transition"
-            >
-              Get Started
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-md border border-white/20 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
-            >
-              Login
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-t border-white/10">
-        <div className="mx-auto max-w-7xl px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-          <span>© {new Date().getFullYear()} HireFlow. All rights reserved.</span>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-white transition">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:text-white transition">
-              Terms
-            </Link>
-            <Link href="/contact" className="hover:text-white transition">
-              Contact
-            </Link>
-          </div>
-        </div>
+      <footer className="py-12 px-6 border-t border-border/20 text-center">
+        <p className="text-[13px] text-muted-foreground/50">
+          © {new Date().getFullYear()} HireFlow. Minimalist Hiring.
+        </p>
       </footer>
     </main>
   );
 }
 
-
-function FeatureCard({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+function FeatureIcon({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-black p-6">
-      <h3 className="text-xl font-semibold">{title}</h3>
-      <p className="mt-3 text-gray-400">{description}</p>
+    <div className="flex flex-col items-center text-center md:items-start md:text-left gap-4">
+      <div className="text-primary/70 bg-primary/5 p-3 rounded-2xl">
+        {icon}
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold tracking-tight">{title}</h4>
+        <p className="mt-2 text-sm text-muted-foreground/60 leading-relaxed">{desc}</p>
+      </div>
     </div>
   );
 }
