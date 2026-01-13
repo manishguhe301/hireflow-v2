@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const featuredJobs = [
@@ -40,7 +41,13 @@ const LandingPage = () => {
     <main className="min-h-screen bg-black text-white">
       <header className="border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold tracking-tight">
+          <Link href="/" className="text-2xl font-bold tracking-tight flex items-center gap-2">
+            <Image
+              src='/assets/jobflow.png'
+              alt="JobFlow"
+              width={36}
+              height={36}
+            />
             JobFlow
           </Link>
 
