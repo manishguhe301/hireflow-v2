@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from '@/src/components/auth/SessionProvider';
 import { ReduxProvider } from '@/src/store/provider';
+import { ThemeProvider } from '@/src/components/theme/theme-provider';
+import { ThemeToggle } from '@/src/components/theme/theme-toggle';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,11 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={`${inter.className} bg-background text-foreground transition-colors`} suppressHydrationWarning>
         <SessionProvider>
-          <ReduxProvider>
-            {children}
-          </ReduxProvider>
+          <ThemeProvider>
+            <ReduxProvider>
+              {children}
+              <ThemeToggle />
+            </ReduxProvider>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>
