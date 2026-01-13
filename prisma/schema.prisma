@@ -21,6 +21,7 @@ model User {
   name          String
   role          Role      @default(JOB_SEEKER)
   emailVerified Boolean   @default(false)
+  isActive Boolean        @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -119,7 +120,11 @@ model Company {
   // Status
   status            CompanyStatus  @default(PENDING)
   rejectionReason   String?
-  
+
+  // Approval
+  approvedAt DateTime?
+  approvedBy String? 
+
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
@@ -152,6 +157,7 @@ model Job {
   numberOfOpenings    Int              @default(1)
   applicationDeadline DateTime?
   category            String
+  slug                String           @unique
   
   status              JobStatus        @default(ACTIVE)
   views               Int              @default(0)
