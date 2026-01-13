@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from '@/src/components/auth/SessionProvider';
 import { ReduxProvider } from '@/src/store/provider';
+import ThemeToggle from '@/src/components/theme/ThemeToggle';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <SessionProvider>
           <ReduxProvider>
             {children}
+            <ThemeToggle />
           </ReduxProvider>
         </SessionProvider>
       </body>
