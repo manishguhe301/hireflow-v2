@@ -91,3 +91,13 @@ export function debounce<T extends (...args: any[]) => any>(
     timeout = setTimeout(() => func(...args), wait);
   };
 }
+
+export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function isValidEmail(email: string): boolean {
+  return emailRegex.test(email);
+}
+
+export function isPasswordValid(password: string): boolean {
+  return password.length >= 8;
+}

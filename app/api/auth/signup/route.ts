@@ -1,4 +1,6 @@
 import prisma from '@/src/lib/prisma';
+import { isPasswordValid, isValidEmail } from '@/src/utils/helper';
+import { Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -8,10 +10,25 @@ export async function POST(req: NextRequest) {
     const { name, email, password, role } = body;
 
     if (!name || !email || !password || !role) {
+      return NextResponse.json({ error: `Missing fields` }, { status: 400 });
+    }
+
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Invalid email format' },
         { status: 400 }
       );
+    }
+
+    if (!isPasswordValid(password)) {
+      return NextResponse.json(
+        { error: 'Password must be at least 8 characters' },
+        { status: 400 }
+      );
+    }
+
+    if (!Object.values(Role).includes(role)) {
+      return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
     const isAlreadyEmailRegistered = await prisma.user.findUnique({
@@ -23,7 +40,7 @@ export async function POST(req: NextRequest) {
     if (isAlreadyEmailRegistered) {
       return NextResponse.json(
         {
-          message: 'Email already registered',
+          error: 'Email already registered',
         },
         {
           status: 400,
