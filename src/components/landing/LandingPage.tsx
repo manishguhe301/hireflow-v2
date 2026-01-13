@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 const featuredJobs = [
@@ -36,27 +35,20 @@ const featuredJobs = [
   },
 ];
 
-const LandingPage = () => {
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <header className="border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-          <Link href="/"
-            className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Image
-              src='/assets/logoHD.png'
-              alt="JobFlow"
-              width={36}
-              height={36}
-            />
-            JobFlow
+          <Link href="/" className="text-2xl font-bold tracking-tight">
+            HireFlow
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-sm text-gray-300">
             <Link href="/jobs" className="hover:text-white transition">
               Jobs
             </Link>
-            <Link href="/login" className="hover:text-white transition">
+            <Link href="/company/signup" className="hover:text-white transition">
               For Companies
             </Link>
             <Link href="/login" className="hover:text-white transition">
@@ -79,7 +71,7 @@ const LandingPage = () => {
           </h1>
 
           <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-400">
-            JobFlow connects verified companies with qualified talent through a
+            HireFlow connects verified companies with qualified talent through a
             powerful, approval-based hiring platform built for scale.
           </p>
 
@@ -91,7 +83,7 @@ const LandingPage = () => {
               Explore Jobs
             </Link>
             <Link
-              href="/signup"
+              href="/company/signup"
               className="rounded-md border border-white/20 px-6 py-3 font-semibold text-white hover:bg-white/10 transition"
             >
               Post a Job
@@ -106,7 +98,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* ================= FEATURES ================= */}
       <section className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <h2 className="text-3xl font-bold text-center">
@@ -135,7 +126,7 @@ const LandingPage = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-bold">Featured Jobs</h2>
             <Link
-              href="/login"
+              href="/jobs"
               className="text-sm text-gray-300 hover:text-white transition"
             >
               View all jobs →
@@ -184,7 +175,7 @@ const LandingPage = () => {
           </h2>
           <p className="mt-4 text-gray-400 max-w-xl mx-auto">
             Whether you are looking for your next opportunity or building a
-            world-class team, JobFlow is built for you.
+            world-class team, HireFlow is built for you.
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
@@ -206,7 +197,7 @@ const LandingPage = () => {
 
       <footer className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-          <span>© {new Date().getFullYear()} JobFlow. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} HireFlow. All rights reserved.</span>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-white transition">
               Privacy
@@ -221,10 +212,9 @@ const LandingPage = () => {
         </div>
       </footer>
     </main>
-  )
+  );
 }
 
-export default LandingPage
 
 function FeatureCard({
   title,
