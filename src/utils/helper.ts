@@ -101,3 +101,11 @@ export function isValidEmail(email: string): boolean {
 export function isPasswordValid(password: string): boolean {
   return password.length >= 8;
 }
+
+export const showError = (
+  message: string,
+  setError: React.Dispatch<React.SetStateAction<string>>
+) => {
+  setError(message);
+  setTimeout(() => setError(''), 3000);
+};
