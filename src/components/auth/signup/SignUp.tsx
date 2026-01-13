@@ -48,9 +48,24 @@ const SignUp = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 relative">
+      <Link
+        href="/"
+        className="absolute top-6 left-6 text-sm text-gray-400 hover:text-white transition"
+      >
+        ← Back to Home
+      </Link>
+
       <div className="w-full max-w-md rounded-xl border border-white/10 bg-black p-8">
-        <h1 className="text-2xl font-bold text-white">Create your account</h1>
+        <Link href="/" className="block text-center mb-6">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            JobFlow
+          </h1>
+        </Link>
+
+        <h2 className="text-xl font-semibold text-white">
+          Create your account
+        </h2>
         <p className="mt-1 text-sm text-gray-400">
           Join JobFlow and start your journey
         </p>
@@ -77,6 +92,7 @@ const SignUp = () => {
               placeholder="johndoe@gmail.com"
               {...register('email', { required: true })}
               className="rounded-md border border-white/10 bg-black px-3 py-2 text-white outline-none focus:border-white/30"
+              type="email"
             />
             {errors.email && (
               <span className="text-xs text-red-400">Email is required</span>
@@ -89,7 +105,9 @@ const SignUp = () => {
             <div className="relative">
               <input
                 type={passType}
-                placeholder={passType === 'password' ? '••••••••' : "J0hn@Doe#:123"}
+                placeholder={
+                  passType === 'password' ? '••••••••' : 'J0hn@Doe#:123'
+                }
                 {...register('password', { required: true })}
                 className="w-full rounded-md border border-white/10 bg-black px-3 py-2 pr-10 text-white outline-none focus:border-white/30"
               />
@@ -101,11 +119,7 @@ const SignUp = () => {
                 }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
               >
-                {passType === 'password' ? (
-                  <Eye size={18} />
-                ) : (
-                  <EyeOff size={18} />
-                )}
+                {passType === 'password' ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
 
@@ -119,7 +133,7 @@ const SignUp = () => {
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-300">Role</label>
 
-            <label className="flex items-center gap-3 rounded-md border border-white/10 px-3 py-2 text-sm text-gray-300 cursor-pointer has-checked:border-white has-checked:bg-white/10">
+            <label className="flex items-center gap-3 rounded-md border border-white/10 px-3 py-2 text-sm text-gray-300 cursor-pointer has-[:checked]:border-white has-[:checked]:bg-white/10">
               <input
                 type="radio"
                 value={Role.JOB_SEEKER}
@@ -138,7 +152,6 @@ const SignUp = () => {
               />
               Company Admin
             </label>
-
           </div>
 
           {error && (
@@ -149,14 +162,15 @@ const SignUp = () => {
 
           <button
             type="submit"
-            className="mt-4 rounded-md bg-white px-4 py-2 font-semibold text-black hover:bg-gray-200 transition"
+            className="mt-4 rounded-md bg-white px-4 py-2 font-semibold text-black hover:bg-gray-200 transition disabled:opacity-70"
             disabled={isLoading}
           >
-            {isLoading ? <Spinner className='h-5 w-5' /> : ' Create Account'}
+            {isLoading ? <Spinner className="h-5 w-5" /> : 'Create Account'}
           </button>
         </form>
-        <p className="text-center text-sm text-gray-400 py-2">
-          Already have an account?{" "}
+
+        <p className="text-center text-sm text-gray-400 py-3">
+          Already have an account?{' '}
           <Link href="/login" className="text-white hover:underline">
             Login instead
           </Link>
