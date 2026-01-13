@@ -27,15 +27,14 @@ export default function HomePage() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium text-muted-foreground/80">
-            <Link href="/jobs" className="hover:text-primary transition-colors">Browse Jobs</Link>
-            <Link href="/companies" className="hover:text-primary transition-colors">Companies</Link>
-            <Link href="/login" className="hover:text-foreground transition-colors">Sign In</Link>
-            <Link
-              href="/signup"
-              className="bg-primary/10 text-primary px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-all duration-300"
-            >
-              Post a Job
+            <Link href="#recent-jobs" className="hover:text-primary transition-colors">Browse Jobs</Link>
+            <Link href="/signup" className="hover:text-primary transition-colors">For Companies
             </Link>
+            <Link
+              href="/login"
+              className="bg-primary/10 text-primary px-4 py-1 rounded-full hover:bg-primary/30 hover:scale-105 hover:border-primary transition-all duration-300 border border-primary/30"
+            >Sign In</Link>
+
           </nav>
         </div>
       </header>
@@ -92,7 +91,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-muted/30 py-24 border-t border-border/30">
+      <section className="bg-muted/30 py-24 border-t border-border/30 " id='recent-jobs'>
         <div className="mx-auto max-w-5xl px-6">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-2xl font-semibold tracking-tight">Recent Openings</h2>
@@ -101,10 +100,11 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 " >
             {featuredJobs.map((job) => (
-              <div
+              <Link
                 key={job.id}
+                href='/login'
                 className="group flex items-center justify-between rounded-2xl border border-border/20 bg-card p-5 hover:border-primary/20 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300"
               >
                 <div className="flex items-center gap-5">
@@ -123,11 +123,11 @@ export default function HomePage() {
 
                 <div className="flex items-center gap-4">
                   <span className="hidden md:block text-[11px] font-bold text-primary/60 uppercase tracking-widest">{job.tag}</span>
-                  <div className="rounded-full p-2 bg-muted/50 group-hover:bg-primary group-hover:text-white transition-all">
+                  <div className="rounded-full p-2 bg-muted/50 group-hover:bg-primary group-hover:text-black/50 group-hover:scale-125 transition-all">
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function HomePage() {
           © {new Date().getFullYear()} HireFlow. Minimalist Hiring.
         </p>
       </footer>
-    </main>
+    </main >
   );
 }
 

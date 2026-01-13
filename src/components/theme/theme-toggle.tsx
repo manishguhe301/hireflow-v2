@@ -35,6 +35,7 @@ export function ThemeToggle() {
         hover:scale-105
         hover:bg-muted
         active:scale-95
+        cursor-pointer
       "
     >
       {isDark ? (
