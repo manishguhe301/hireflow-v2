@@ -149,6 +149,104 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section id="how-it-works" className="border-t border-border/30">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-semibold tracking-tight">
+              How it works
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
+              A streamlined hiring process designed for modern teams and talent
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="rounded-2xl border border-border/30 bg-card p-8 hover:border-primary/30 transition group">
+              <div className="mb-6">
+                <div className="relative inline-flex">
+                  <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl" />
+                  <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                    <UserCircle className="w-7 h-7 text-primary" />
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold mb-3">Build your profile</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                Create a comprehensive profile with your resume, skills, work experience, and preferences. Our system helps you showcase your expertise to the right employers.
+              </p>
+
+              <div className="pt-4 border-t border-border/20">
+                <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
+                  For Job Seekers
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border/30 bg-card p-8 hover:border-primary/30 transition group">
+              <div className="mb-6">
+                <div className="relative inline-flex">
+                  <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl" />
+                  <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                    <ShieldCheck className="w-7 h-7 text-primary" />
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold mb-3">Get verified & post</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                Companies submit their profile for platform admin approval. Once verified, you can post unlimited jobs and connect with pre-screened, quality candidates.
+              </p>
+
+              <div className="pt-4 border-t border-border/20">
+                <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
+                  For Employers
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border/30 bg-card p-8 hover:border-primary/30 transition group">
+              <div className="mb-6">
+                <div className="relative inline-flex">
+                  <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl" />
+                  <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                    <Workflow className="w-7 h-7 text-primary" />
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold mb-3">Apply & track seamlessly</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                Apply with one click using your saved profile. Track every application status in real-time from &quot;Applied&quot; to &quot;Hired&quot; with complete transparency.
+              </p>
+
+              <div className="pt-4 border-t border-border/20">
+                <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
+                  End-to-End
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 rounded-2xl border border-border/30 bg-muted/30 p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h4 className="font-semibold mb-1">Ready to transform your hiring?</h4>
+                <p className="text-sm text-muted-foreground">
+                  Join thousands of professionals and companies already using HireFlow
+                </p>
+              </div>
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition whitespace-nowrap"
+              >
+                Get Started <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <section id="jobs" className="border-t border-border/30 bg-muted/30">
         <div className="mx-auto max-w-7xl px-6 py-24">
