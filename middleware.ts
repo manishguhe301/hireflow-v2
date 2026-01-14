@@ -18,6 +18,18 @@ export async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  const userRole = token?.role as Role | undefined;
+
+  if (['/login', '/signup'].includes(pathname) && token) {
+    const redirectUrl =
+      userRole === Role.PLATFORM_ADMIN
+        ? '/admin'
+        : userRole === Role.COMPANY_ADMIN
+        ? '/company'
+        : '/jobs';
+    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  }
+
   const matchedRoute = Object.keys(roleBasedRoutes).find((route) =>
     pathname.startsWith(route)
   );
@@ -28,14 +40,13 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL('/login', req.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  const userRole = token.role as Role;
-
   const allowedRoles = roleBasedRoutes[matchedRoute];
 
-  if (!allowedRoles.includes(userRole)) {
+  if (!allowedRoles.includes(userRole!)) {
     const redirectUrl =
       userRole === Role.PLATFORM_ADMIN
         ? '/admin'
@@ -46,7 +57,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
-  // 4. All good → allow request
   return NextResponse.next();
 }
 
@@ -56,5 +66,7 @@ export const config = {
     '/company/:path*',
     '/dashboard/:path*',
     '/jobs/:path*',
+    '/login',
+    '/signup',
   ],
 };

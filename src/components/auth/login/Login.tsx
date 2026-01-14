@@ -28,13 +28,12 @@ const Login = () => {
     },
   })
   const router = useRouter()
-  const [error, setError] = useState('')
   const [passType, setPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!isValidEmail(data.email)) {
-      showError('Invalid email format', setError)
+      toast.error('Invalid email format')
       return
     }
     setIsLoading(true)
@@ -46,24 +45,24 @@ const Login = () => {
       })
 
       if (!res || res.error) {
-        setError('Invalid email or password');
+        toast.error('Invalid email or password');
         return;
       }
 
       const sessionRes = await fetch('/api/auth/session');
       const session = await sessionRes.json();
 
-      const role = session?.user?.role;
+      const role = res.ok ? session?.user?.role : null;
+
       if (role === 'PLATFORM_ADMIN') {
         router.push('/admin');
       } else if (role === 'COMPANY_ADMIN') {
         router.push('/company');
       } else {
-        router.push('/dashboard');
+        router.push('/jobs');
       }
       toast.success('Login successful')
       reset()
-      setError('')
     }
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     catch (error: any) {
@@ -196,11 +195,6 @@ const Login = () => {
                 <span className="text-xs text-destructive">Required</span>
               )}
             </div>
-            {error && (
-              <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
             <button
               type="submit"
               disabled={isLoading}
