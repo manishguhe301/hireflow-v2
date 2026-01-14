@@ -56,13 +56,13 @@ export default function HomePage() {
             </span>
 
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
-              Build your career with
-              <span className="block text-primary">better opportunities</span>
+              Connect with verified companies.
+              <span className="block text-primary">Build your career.</span>
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground/80 max-w-xl">
-              HireFlow connects skilled professionals with verified companies.
-              No noise. No spam. Only roles that matter.
+              HireFlow is a three-tier platform connecting job seekers with manually verified companies.
+              Experience transparent hiring with real-time application tracking.
             </p>
 
             <div className="mt-10 flex gap-4">
@@ -85,30 +85,30 @@ export default function HomePage() {
             <div className="grid grid-cols-2 gap-6">
               <div className="rounded-2xl border border-border/30 bg-card p-6">
                 <Briefcase className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">12k+ Jobs</h3>
+                <h3 className="font-semibold">Quality Jobs</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Actively hiring across tech, design & product.
+                  Curated opportunities from verified companies only.
                 </p>
               </div>
               <div className="rounded-2xl border border-border/30 bg-card p-6">
                 <ShieldCheck className="w-6 h-6 text-primary mb-4" />
                 <h3 className="font-semibold">Verified Companies</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Every employer is manually reviewed.
+                  Platform admin approval ensures every employer is legitimate.
                 </p>
               </div>
               <div className="rounded-2xl border border-border/30 bg-card p-6">
                 <Workflow className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">Direct Hiring</h3>
+                <h3 className="font-semibold">Application Tracking</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Connect straight with decision makers.
+                  Track your applications from &quot;Applied&quot; to &quot;Hired&quot; in real-time.
                 </p>
               </div>
               <div className="rounded-2xl border border-border/30 bg-card p-6">
                 <UserCircle className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">Privacy First</h3>
+                <h3 className="font-semibold">Complete Profiles</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Your profile stays fully in your control.
+                  Build detailed profiles with resume, skills, and experience.
                 </p>
               </div>
             </div>
@@ -120,10 +120,10 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-semibold tracking-tight">
-              Companies hiring on HireFlow
+              Verified companies on HireFlow
             </h2>
             <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
-              Trusted startups and growing teams actively hiring through our platform
+              Every company is manually reviewed and approved by our platform admins before they can post jobs
             </p>
           </div>
 
@@ -156,7 +156,7 @@ export default function HomePage() {
               How it works
             </h2>
             <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
-              A streamlined hiring process designed for modern teams and talent
+              A three-tier system designed for quality hiring and meaningful careers
             </p>
           </div>
 
@@ -171,14 +171,14 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold mb-3">Build your profile</h3>
+              <h3 className="text-xl font-semibold mb-3">Job Seekers</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                Create a comprehensive profile with your resume, skills, work experience, and preferences. Our system helps you showcase your expertise to the right employers.
+                Sign up and create your comprehensive profile with resume, work experience, skills, and certifications. Browse verified jobs, apply with one click, and track every application status in real-time.
               </p>
 
               <div className="pt-4 border-t border-border/20">
                 <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
-                  For Job Seekers
+                  For Candidates
                 </span>
               </div>
             </div>
@@ -193,9 +193,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold mb-3">Get verified & post</h3>
+              <h3 className="text-xl font-semibold mb-3">Company Admins</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                Companies submit their profile for platform admin approval. Once verified, you can post unlimited jobs and connect with pre-screened, quality candidates.
+                Submit your company profile with business documents for platform admin approval. Once verified, post unlimited jobs, review applications, and manage the entire hiring workflow.
               </p>
 
               <div className="pt-4 border-t border-border/20">
@@ -215,14 +215,14 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold mb-3">Apply & track seamlessly</h3>
+              <h3 className="text-xl font-semibold mb-3">Platform Admins</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                Apply with one click using your saved profile. Track every application status in real-time from &quot;Applied&quot; to &quot;Hired&quot; with complete transparency.
+                Review and approve company registrations with business verification. Monitor platform activity, manage users, and ensure quality standards across all job postings and applications.
               </p>
 
               <div className="pt-4 border-t border-border/20">
                 <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
-                  End-to-End
+                  Quality Control
                 </span>
               </div>
             </div>
@@ -231,16 +231,16 @@ export default function HomePage() {
           <div className="mt-12 rounded-2xl border border-border/30 bg-muted/30 p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
-                <h4 className="font-semibold mb-1">Ready to transform your hiring?</h4>
+                <h4 className="font-semibold mb-1">Ready to get started?</h4>
                 <p className="text-sm text-muted-foreground">
-                  Join thousands of professionals and companies already using HireFlow
+                  Join as a job seeker or register your company today
                 </p>
               </div>
               <Link
                 href="/signup"
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition whitespace-nowrap"
               >
-                Get Started <ArrowRight className="w-4 h-4" />
+                Sign Up Now <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-3xl font-semibold tracking-tight">Latest Jobs</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Handpicked roles from fast-growing companies
+                Browse active opportunities from verified companies
               </p>
             </div>
             <Link href="/jobs" className="text-sm text-primary hover:opacity-70">
@@ -309,15 +309,15 @@ export default function HomePage() {
           <div>
             <h4 className="font-semibold">HireFlow</h4>
             <p className="mt-3 text-sm text-muted-foreground max-w-xs">
-              A modern job platform focused on quality hiring and meaningful careers.
+              A verified job platform with three-tier system ensuring quality hiring for both companies and job seekers.
             </p>
           </div>
 
           <div>
             <h5 className="text-sm font-semibold mb-3">Platform</h5>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/login" className="hover:text-primary">Browse Jobs</Link></li>
-              <li><Link href="/signup" className="hover:text-primary">Post a Job</Link></li>
+              <li><Link href="/jobs" className="hover:text-primary">Browse Jobs</Link></li>
+              <li><Link href="/signup" className="hover:text-primary">Sign Up</Link></li>
               <li><Link href="/login" className="hover:text-primary">Login</Link></li>
             </ul>
           </div>
@@ -333,7 +333,7 @@ export default function HomePage() {
         </div>
 
         <div className="border-t border-border/20 py-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} HireFlow. Built for modern hiring.
+          © {new Date().getFullYear()} HireFlow. Verified hiring for modern teams.
         </div>
       </footer>
     </main>

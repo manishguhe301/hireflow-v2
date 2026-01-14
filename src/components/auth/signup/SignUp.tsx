@@ -59,13 +59,12 @@ const SignUp = () => {
 
         <div>
           <h1 className="text-4xl font-bold tracking-tight leading-tight">
-            Hiring, done
-            <span className="block text-primary mt-2">the right way.</span>
+            Join HireFlow
+            <span className="block text-primary mt-2">today.</span>
           </h1>
 
           <p className="mt-6 text-muted-foreground max-w-md">
-            HireFlow is a focused job platform where quality candidates meet
-            serious companies. No noise. No shortcuts.
+            A verified job platform with three-tier system ensuring quality hiring for both companies and job seekers.
           </p>
 
           <div className="mt-12 space-y-8">
@@ -74,9 +73,9 @@ const SignUp = () => {
                 01
               </div>
               <div>
-                <h4 className="font-semibold">Curated opportunities</h4>
+                <h4 className="font-semibold">Verified companies only</h4>
                 <p className="text-sm text-muted-foreground">
-                  Roles reviewed for clarity, pay range, and intent.
+                  Every company is manually approved by platform admins.
                 </p>
               </div>
             </div>
@@ -86,9 +85,9 @@ const SignUp = () => {
                 02
               </div>
               <div>
-                <h4 className="font-semibold">Direct access</h4>
+                <h4 className="font-semibold">Real-time tracking</h4>
                 <p className="text-sm text-muted-foreground">
-                  Apply directly to teams that are actively hiring.
+                  Track your applications from &quot;Applied&quot; to &quot;Hired&quot; with complete transparency.
                 </p>
               </div>
             </div>
@@ -98,9 +97,9 @@ const SignUp = () => {
                 03
               </div>
               <div>
-                <h4 className="font-semibold">Privacy-first</h4>
+                <h4 className="font-semibold">Complete profiles</h4>
                 <p className="text-sm text-muted-foreground">
-                  Your profile stays private until you apply.
+                  Build detailed profiles with resume, skills, experience, and certifications.
                 </p>
               </div>
             </div>
@@ -112,7 +111,8 @@ const SignUp = () => {
         </p>
       </aside>
 
-      <section className="lg:col-span-3 flex items-center justify-center px-6 py-16">        <div className="w-full max-w-lg">
+      <section className="lg:col-span-3 flex items-center justify-center px-6 py-16">
+        <div className="w-full max-w-lg">
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-semibold tracking-tight">
               Create your account
@@ -182,13 +182,14 @@ const SignUp = () => {
                 What best describes you?
               </label>
 
-              <label className="flex items-start gap-4 rounded-2xl border border-border/40 px-4 py-4 cursor-pointer has-[:checked]:border-primary/40 has-[:checked]:bg-primary/5">
+              <label className="flex items-start gap-4 rounded-2xl border border-border/40 px-4 py-4 cursor-pointer has-[:checked]:border-primary/40 has-[:checked]:bg-primary/5 transition">
                 <input
                   type="radio"
                   value={Role.JOB_SEEKER}
                   {...register('role')}
-                  className="mt-1 h-4 w-4 accent-primary"
+                  className="sr-only peer"
                 />
+                <div className="mt-1 h-4 w-4 rounded-full border-2 border-muted-foreground peer-checked:border-primary peer-checked:border-[5px] transition" />
                 <div>
                   <p className="font-medium">Job Seeker</p>
                   <p className="text-sm text-muted-foreground">
@@ -197,13 +198,14 @@ const SignUp = () => {
                 </div>
               </label>
 
-              <label className="flex items-start gap-4 rounded-2xl border border-border/40 px-4 py-4 cursor-pointer has-[:checked]:border-primary/40 has-[:checked]:bg-primary/5">
+              <label className="flex items-start gap-4 rounded-2xl border border-border/40 px-4 py-4 cursor-pointer has-[:checked]:border-primary/40 has-[:checked]:bg-primary/5 transition">
                 <input
                   type="radio"
                   value={Role.COMPANY_ADMIN}
                   {...register('role')}
-                  className="mt-1 h-4 w-4 accent-primary"
+                  className="sr-only peer"
                 />
+                <div className="mt-1 h-4 w-4 rounded-full border-2 border-muted-foreground peer-checked:border-primary peer-checked:border-[5px] transition" />
                 <div>
                   <p className="font-medium">Company Admin</p>
                   <p className="text-sm text-muted-foreground">
