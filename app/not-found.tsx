@@ -32,7 +32,7 @@ export default function NotFound() {
           </Link>
         </div>
         <p className="mt-10 text-sm text-gray-500">
-          JobFlow — Verified hiring, simplified.
+          HireFlow — Verified hiring, simplified.
         </p>
       </div>
     </main>
