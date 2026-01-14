@@ -82,7 +82,7 @@ export default function HomePage() {
           </div>
 
           <div className="relative">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1">
               <div className="rounded-2xl border border-border/30 bg-card p-6">
                 <Briefcase className="w-6 h-6 text-primary mb-4" />
                 <h3 className="font-semibold">Quality Jobs</h3>
@@ -253,11 +253,11 @@ export default function HomePage() {
           <div className="flex items-end justify-between mb-14">
             <div>
               <h2 className="text-3xl font-semibold tracking-tight">Latest Jobs</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-2 text-sm text-muted-foreground ">
                 Browse active opportunities from verified companies
               </p>
             </div>
-            <Link href="/jobs" className="text-sm text-primary hover:opacity-70">
+            <Link href="/jobs" className="text-sm text-primary hover:opacity-70 max-sm:hidden">
               View all jobs
             </Link>
           </div>
@@ -284,7 +284,7 @@ export default function HomePage() {
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3" /> {job.location}
                         </span>
-                        <span className="rounded bg-muted px-2 py-0.5 uppercase tracking-wide">
+                        <span className="rounded bg-muted px-2 py-0.5 uppercase tracking-wide max-sm:hidden">
                           {job.type}
                         </span>
                       </div>
@@ -307,7 +307,7 @@ export default function HomePage() {
       <footer className="mt-auto border-t border-border/30">
         <div className="mx-auto max-w-7xl px-6 py-14 grid gap-10 md:grid-cols-3">
           <div>
-            <h4 className="font-semibold">HireFlow</h4>
+            <h4 className="font-semibold">HireFlow.</h4>
             <p className="mt-3 text-sm text-muted-foreground max-w-xs">
               A verified job platform with three-tier system ensuring quality hiring for both companies and job seekers.
             </p>
