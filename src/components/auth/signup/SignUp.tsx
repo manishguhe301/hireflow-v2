@@ -7,6 +7,9 @@ import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { AppSdk } from '@/src/utils/AppSdk'
+import { email } from 'zod'
 
 type Inputs = {
   name: string
@@ -22,7 +25,8 @@ const SignUp = () => {
     register,
     formState: { errors },
     handleSubmit,
-    watch
+    watch,
+    reset
   } = useForm<Inputs>({
     defaultValues: {
       name: '',
@@ -39,7 +43,7 @@ const SignUp = () => {
   const [confirmPassType, setConfirmPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleFormSubmit: SubmitHandler<Inputs> = (data) => {
+  const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!isValidEmail(data.email)) {
       showError('Invalid email format', setError)
       return
@@ -52,7 +56,33 @@ const SignUp = () => {
 
     setIsLoading(true)
 
-    console.log('Signup data:', data)
+    const user = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role
+    }
+
+    try {
+      const res = await AppSdk.postData('/api/auth/signup', user)
+
+      console.log(res);
+
+      if (res.error) {
+        toast.error(res.error || 'Something went wrong. Please try again.')
+      }
+
+      toast.success('Account created successfully. Please login to continue.')
+      reset()
+      setError('')
+    }
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (error: any) {
+      console.log(error);
+      toast.error(error?.error || 'Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
 
@@ -151,7 +181,7 @@ const SignUp = () => {
               <div className="space-y-1">
                 <label className="text-sm text-muted-foreground">Email</label>
                 <input
-                  type="email"
+                  // type="email"
                   placeholder="john@email.com"
                   {...register('email', { required: true })}
                   className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
