@@ -7,8 +7,8 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { AppSdk } from '@/src/utils/AppSdk'
 import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 type Inputs = {
   email: string
@@ -38,17 +38,30 @@ const Login = () => {
       return
     }
     setIsLoading(true)
-    console.log(data);
     try {
-      // const res = await AppSdk.postData('/api/auth/signup', data)
+      const res = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false
+      })
 
-      // if (res.error) {
-      //   toast.error(res.error || 'Something went wrong. Please try again.')
-      //   return;
-      // }
+      if (!res || res.error) {
+        setError('Invalid email or password');
+        return;
+      }
 
+      const sessionRes = await fetch('/api/auth/session');
+      const session = await sessionRes.json();
+
+      const role = session?.user?.role;
+      if (role === 'PLATFORM_ADMIN') {
+        router.push('/admin');
+      } else if (role === 'COMPANY_ADMIN') {
+        router.push('/company');
+      } else {
+        router.push('/dashboard');
+      }
       toast.success('Login successful')
-      router.push('/')
       reset()
       setError('')
     }
