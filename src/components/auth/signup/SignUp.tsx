@@ -9,7 +9,7 @@ import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { email } from 'zod'
+import { useRouter } from 'next/navigation'
 
 type Inputs = {
   name: string
@@ -37,6 +37,7 @@ const SignUp = () => {
     },
   })
   const password = watch('password')
+  const router = useRouter()
 
   const [error, setError] = useState('')
   const [passType, setPassType] = useState<'password' | 'text'>('password')
@@ -66,19 +67,37 @@ const SignUp = () => {
     try {
       const res = await AppSdk.postData('/api/auth/signup', user)
 
-      console.log(res);
-
       if (res.error) {
         toast.error(res.error || 'Something went wrong. Please try again.')
+        return;
       }
 
-      toast.success('Account created successfully. Please login to continue.')
+      let countdown = 3
+
+      const toastId = toast.success(`Redirecting to login in ${countdown}s...`)
+
+      const interval = setInterval(() => {
+        countdown -= 1
+
+        if (countdown > 0) {
+          toast.success(`Redirecting to login in ${countdown}s...`, {
+            id: toastId,
+          })
+        } else {
+          clearInterval(interval)
+          toast.dismiss(toastId)
+          router.push('/login')
+        }
+      }, 1000)
+
+      reset()
+      setError('')
       reset()
       setError('')
     }
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     catch (error: any) {
-      console.log(error);
+      console.error(error);
       toast.error(error?.error || 'Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
