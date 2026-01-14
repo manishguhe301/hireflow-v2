@@ -7,33 +7,44 @@ import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { AppSdk } from '@/src/utils/AppSdk'
+import { useRouter } from 'next/navigation'
 
 type Inputs = {
   name: string
   email: string
   password: string
+  confirmPassword: string
   role: Role
 }
+
 
 const SignUp = () => {
   const {
     register,
     formState: { errors },
     handleSubmit,
+    watch,
+    reset
   } = useForm<Inputs>({
     defaultValues: {
       name: '',
       email: '',
       password: '',
+      confirmPassword: '',
       role: Role.JOB_SEEKER,
     },
   })
+  const password = watch('password')
+  const router = useRouter()
 
   const [error, setError] = useState('')
   const [passType, setPassType] = useState<'password' | 'text'>('password')
+  const [confirmPassType, setConfirmPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleFormSubmit: SubmitHandler<Inputs> = (data) => {
+  const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!isValidEmail(data.email)) {
       showError('Invalid email format', setError)
       return
@@ -44,8 +55,53 @@ const SignUp = () => {
       return
     }
 
-    console.log('Signup data:', data)
+    setIsLoading(true)
+
+    const user = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role
+    }
+
+    try {
+      const res = await AppSdk.postData('/api/auth/signup', user)
+
+      if (res.error) {
+        toast.error(res.error || 'Something went wrong. Please try again.')
+        return;
+      }
+
+      let countdown = 3
+
+      const toastId = toast.success(`Redirecting to login in ${countdown}s...`)
+
+      const interval = setInterval(() => {
+        countdown -= 1
+
+        if (countdown > 0) {
+          toast.success(`Redirecting to login in ${countdown}s...`, {
+            id: toastId,
+          })
+        } else {
+          clearInterval(interval)
+          toast.dismiss(toastId)
+          router.push('/login')
+        }
+      }, 1000)
+
+      reset()
+      setError('')
+    }
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (error: any) {
+      console.error(error);
+      toast.error(error?.error || 'Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
+
 
   return (
     <main className="min-h-screen bg-background text-foreground grid lg:grid-cols-5">
@@ -142,7 +198,7 @@ const SignUp = () => {
               <div className="space-y-1">
                 <label className="text-sm text-muted-foreground">Email</label>
                 <input
-                  type="email"
+                  // type="email"
                   placeholder="john@email.com"
                   {...register('email', { required: true })}
                   className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
@@ -176,6 +232,37 @@ const SignUp = () => {
                 <span className="text-xs text-destructive">Required</span>
               )}
             </div>
+
+            <div className="space-y-1">
+              <label className="text-sm text-muted-foreground">Confirm password</label>
+              <div className="relative">
+                <input
+                  type={confirmPassType}
+                  placeholder="••••••••"
+                  {...register('confirmPassword', {
+                    required: true,
+                    validate: (value) =>
+                      value === password || 'Passwords do not match',
+                  })}
+                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setConfirmPassType(confirmPassType === 'password' ? 'text' : 'password')
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {confirmPassType === 'password' ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <span className="text-xs text-destructive">
+                  {errors.confirmPassword.message || 'Required'}
+                </span>
+              )}
+            </div>
+
 
             <div className="space-y-3">
               <label className="text-sm text-muted-foreground">
@@ -224,10 +311,24 @@ const SignUp = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-2xl bg-foreground px-4 py-3 text-sm font-semibold text-background hover:opacity-90 transition disabled:opacity-70"
+              className="
+    w-full rounded-2xl
+    border border-border/40
+    bg-foreground
+    px-4 py-3
+    text-sm font-semibold
+    text-background
+    transition
+    hover:opacity-90
+    focus-visible:outline-none
+    focus-visible:ring-2
+    focus-visible:ring-primary/40
+    disabled:opacity-70
+  "
             >
               {isLoading ? <Spinner className="h-5 w-5 mx-auto" /> : 'Create account'}
             </button>
+
           </form>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">

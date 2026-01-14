@@ -59,13 +59,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const { password: _, ...safeUser } = user;
+    // const { password: _, ...safeUser } = user;
 
     return NextResponse.json(
       {
         success: true,
         message: 'User created successfully',
-        user: safeUser,
+        // user: safeUser,
       },
       { status: 201 }
     );
