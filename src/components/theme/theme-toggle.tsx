@@ -36,26 +36,11 @@ export function ThemeToggle() {
     const y = window.innerHeight;
 
     // Radial Circle Effect
-    document.documentElement.animate(
-      {
-        clipPath: [
-          `circle(0px at ${x}px ${y}px)`,
-          `circle(150% at ${x}px ${y}px)`,
-        ],
-      },
-      {
-        duration: 600,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-        pseudoElement: '::view-transition-new(root)',
-      }
-    );
-
-    // Diagonal Slice Effect
     // document.documentElement.animate(
     //   {
     //     clipPath: [
-    //       'polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%)',
-    //       'polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)',
+    //       `circle(0px at ${x}px ${y}px)`,
+    //       `circle(150% at ${x}px ${y}px)`,
     //     ],
     //   },
     //   {
@@ -64,6 +49,21 @@ export function ThemeToggle() {
     //     pseudoElement: '::view-transition-new(root)',
     //   }
     // );
+
+    // Diagonal Slice Effect
+    document.documentElement.animate(
+      {
+        clipPath: [
+          'polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%)',
+          'polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)',
+        ],
+      },
+      {
+        duration: 600,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        pseudoElement: '::view-transition-new(root)',
+      }
+    );
   };
 
   return (
