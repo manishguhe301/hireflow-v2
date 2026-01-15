@@ -1,5 +1,6 @@
 'use client'
 import { Role } from "@prisma/client"
+import { Menu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -56,27 +57,72 @@ const Navbar = () => {
           ))}
         </div>
 
-        {user?.role &&
+        {user?.role && (
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col text-right leading-tight">
+            <div className="hidden md:flex flex-col text-right leading-tight">
               <span className="text-sm font-medium text-foreground">
-                {user?.name}
+                {user.name}
               </span>
               <span className="text-xs text-muted-foreground">
-                {user?.role === Role.JOB_SEEKER ? 'Job Seeker' : user?.role === Role.COMPANY_ADMIN ? 'Company Admin' : 'Platform Admin'}
+                {user.role === Role.JOB_SEEKER
+                  ? 'Job Seeker'
+                  : user.role === Role.COMPANY_ADMIN
+                    ? 'Company Admin'
+                    : 'Platform Admin'}
               </span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="rounded-full border border-destructive/30 bg-destructive/10 px-4 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/20 transition"
+              className="hidden xs:inline-flex md:inline-flex rounded-full border border-destructive/30 bg-destructive/10 px-4 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/20 transition"
             >
               Logout
             </button>
+
+            {/* Mobile menu */}
+            <div className="relative md:hidden">
+              <details className="group">
+                <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/40 transition ">
+                  <Menu className="h-5 w-5" />
+                </summary>
+
+                <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 bg-slate-100 shadow-xl p-4 space-y-3 backdrop-blur-lg dark:bg-slate-800">
+                  <div className="pb-3 border-b border-border/30">
+                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user.role === Role.JOB_SEEKER
+                        ? 'Job Seeker'
+                        : user.role === Role.COMPANY_ADMIN
+                          ? 'Company Admin'
+                          : 'Platform Admin'}
+                    </p>
+                  </div>
+
+                  {links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="block text-sm text-muted-foreground hover:text-primary transition"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+
+                  {/* Logout inside menu (<480px) */}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </details>
+            </div>
           </div>
-        }
+        )}
       </div>
     </nav>
+
   )
 }
 
