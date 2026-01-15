@@ -86,7 +86,7 @@ const Navbar = () => {
                   <Menu className="h-5 w-5" />
                 </summary>
 
-                <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 bg-slate-100 shadow-xl p-4 space-y-3 backdrop-blur-lg dark:bg-slate-800">
+                <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 bg-background shadow-xl p-4 space-y-3 backdrop-blur-3xl">
                   <div className="pb-3 border-b border-border/30">
                     <p className="text-sm font-medium">{user.name}</p>
                     <p className="text-xs text-muted-foreground">
