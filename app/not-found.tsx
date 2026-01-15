@@ -24,7 +24,7 @@ export default function NotFound() {
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/"
+            href="/redirect"
             className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-black font-semibold hover:bg-gray-200 transition"
           >
             <ArrowLeft className="h-4 w-4" />
