@@ -20,6 +20,17 @@ export async function middleware(req: NextRequest) {
 
   const userRole = token?.role as Role | undefined;
 
+  if (pathname === '/redirect') {
+    const redirectUrl =
+      userRole === Role.PLATFORM_ADMIN
+        ? '/admin'
+        : userRole === Role.COMPANY_ADMIN
+        ? '/company'
+        : '/jobs';
+
+    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  }
+
   if (['/login', '/signup'].includes(pathname) && token) {
     const redirectUrl =
       userRole === Role.PLATFORM_ADMIN
@@ -68,5 +79,6 @@ export const config = {
     '/jobs/:path*',
     '/login',
     '/signup',
+    '/redirect',
   ],
 };
