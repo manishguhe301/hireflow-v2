@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 
-
 :root {
   /* Base */
   --background: 248 250 252; /* slate-50 */
@@ -52,4 +51,10 @@
 body {
   background-color: rgb(var(--background));
   color: rgb(var(--foreground));
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
