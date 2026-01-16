@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 
 type Inputs = {
@@ -27,7 +27,7 @@ const Login = () => {
       password: '',
     },
   })
-  const router = useRouter()
+  // const router = useRouter()
   const [passType, setPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -41,7 +41,7 @@ const Login = () => {
       const res = await signIn('credentials', {
         email: data.email,
         password: data.password,
-        redirect: false
+        callbackUrl: '/redirect'
       })
 
       if (!res || res.error) {
@@ -52,20 +52,20 @@ const Login = () => {
       // const sessionRes = await fetch('/api/auth/session');
       // const session = await sessionRes.json();
 
-      const { data: session } = await fetch('/api/auth/session').then(r => r.json());
+      // const { data: session } = await fetch('/api/auth/session').then(r => r.json());
       toast.success('Login successful')
       reset()
 
       //  const role = res.ok ? session?.user?.role : null;
-      const role = session?.user?.role
+      // const role = session?.user?.role
 
-      if (role === 'PLATFORM_ADMIN') {
-        router.push('/admin');
-      } else if (role === 'COMPANY_ADMIN') {
-        router.push('/company');
-      } else {
-        router.push('/jobs');
-      }
+      // if (role === 'PLATFORM_ADMIN') {
+      //   router.push('/admin');
+      // } else if (role === 'COMPANY_ADMIN') {
+      //   router.push('/company');
+      // } else {
+      //   router.push('/jobs');
+      // }
       // toast.success('Login successful')
       // reset()
     }

@@ -10,6 +10,7 @@ import {
   Menu,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 const featuredJobs = [
   { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
@@ -44,7 +45,16 @@ const links = [
 
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
   const { theme } = useTheme()
+
+  useEffect(() => {
+    //eslint-disable-next-line
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   const isDark = theme === 'dark'
 
   const handleMenuClose = (e: React.MouseEvent) => {
