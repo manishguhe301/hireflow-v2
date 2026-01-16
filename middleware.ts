@@ -51,10 +51,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
-  if (pathname === '/login' && token) {
-    return NextResponse.redirect(new URL('/redirect', req.url));
-  }
-
   const matchedRoute = Object.keys(roleBasedRoutes).find((route) =>
     pathname.startsWith(route)
   );
