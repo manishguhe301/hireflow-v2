@@ -1,9 +1,10 @@
-import React from 'react'
-
-const CompanyPage = () => {
+export default function CompanyDashboard() {
   return (
-    <div>CompanyPage</div>
+    <div className="p-8">
+      <h1 className="text-3xl font-bold">Company Dashboard</h1>
+      <p className="mt-4 text-muted-foreground">
+        Manage your jobs, applications, and company profile
+      </p>
+    </div>
   )
 }
-
-export default CompanyPage
