@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link';
 import {
   Briefcase,
@@ -6,7 +7,9 @@ import {
   UserCircle,
   MapPin,
   ArrowRight,
+  Menu,
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const featuredJobs = [
   { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
@@ -24,12 +27,34 @@ const companies = [
   { id: 6, name: "NextZen" },
 ];
 
+const links = [
+  {
+    label: 'Jobs',
+    href: '#jobs'
+  },
+  {
+    label: 'Companies',
+    href: '#companies'
+  },
+  {
+    label: 'How it works',
+    href: '#how-it-works'
+  },
+]
+
 
 export default function HomePage() {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const handleMenuClose = (e: React.MouseEvent) => {
+    e.currentTarget.closest('details')?.removeAttribute('open')
+  }
+
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
+        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between max-md:mx-0">
           <Link href="/" className="text-xl font-semibold tracking-tight">
             HireFlow<span className="text-primary">.</span>
           </Link>
@@ -45,6 +70,37 @@ export default function HomePage() {
               Login
             </Link>
           </nav>
+        </div>
+        <div className="relative md:hidden px-6">
+          <details className="group">
+            <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/40 transition ">
+              <Menu className="h-5 w-5" />
+            </summary>
+            <div className={`absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 ${isDark ? 'bg-slate-950' : 'bg-slate-50'} shadow-xl p-4 space-y-3 backdrop-blur-xl`}>
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={handleMenuClose}
+                  className="w-full block text-sm text-muted-foreground hover:text-primary transition"
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              <div className='pb-3 border-b border-border/30'></div>
+              <button
+                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition "
+              >
+                <Link
+                  className="w-full block text-sm text-muted-foreground hover:text-primary transition"
+                  href='/login'
+                >
+                  Login
+                </Link>
+              </button>
+            </div>
+          </details>
         </div>
       </header>
 

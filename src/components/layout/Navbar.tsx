@@ -2,6 +2,7 @@
 import { Role } from "@prisma/client"
 import { Menu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
+import { useTheme } from "next-themes"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -27,6 +28,8 @@ const navLinks: Record<Role, { href: string; label: string }[]> = {
 
 const Navbar = () => {
   const { data: session } = useSession()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const user = session?.user
   const links = user?.role as Role ? navLinks[user?.role as Role] : []
 
@@ -86,7 +89,7 @@ const Navbar = () => {
                   <Menu className="h-5 w-5" />
                 </summary>
 
-                <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 bg-background shadow-xl p-4 space-y-3 backdrop-blur-3xl">
+                <div className={`absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 ${isDark ? 'bg-slate-950' : 'bg-slate-50'} shadow-xl p-4 space-y-3 backdrop-blur-3xl`}>
                   <div className="pb-3 border-b border-border/30">
                     <p className="text-sm font-medium">{user.name}</p>
                     <p className="text-xs text-muted-foreground">
@@ -102,6 +105,9 @@ const Navbar = () => {
                     <Link
                       key={link.href}
                       href={link.href}
+                      onClick={(e) => {
+                        e.currentTarget.closest('details')?.removeAttribute('open')
+                      }}
                       className="block text-sm text-muted-foreground hover:text-primary transition"
                     >
                       {link.label}
@@ -110,7 +116,10 @@ const Navbar = () => {
 
                   {/* Logout inside menu (<480px) */}
                   <button
-                    onClick={handleLogout}
+                    onClick={(e) => {
+                      e.currentTarget.closest('details')?.removeAttribute('open')
+                      handleLogout()
+                    }}
                     className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition"
                   >
                     Logout
