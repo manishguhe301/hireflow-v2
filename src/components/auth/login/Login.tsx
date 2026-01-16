@@ -36,45 +36,29 @@ const Login = () => {
       toast.error('Invalid email format')
       return
     }
+
     setIsLoading(true)
+
     try {
       const res = await signIn('credentials', {
         email: data.email,
         password: data.password,
-        redirect: false
+        redirect: false,
       })
 
       if (!res || res.error) {
-        toast.error('Invalid email or password');
-        return;
+        toast.error('Invalid email or password')
+        return
       }
 
-      // const sessionRes = await fetch('/api/auth/session');
-      // const session = await sessionRes.json();
-
-      const { data: session } = await fetch('/api/auth/session').then(r => r.json());
       toast.success('Login successful')
       reset()
 
-      //  const role = res.ok ? session?.user?.role : null;
-      const role = session?.user?.role
-
-      if (role === 'PLATFORM_ADMIN') {
-        router.push('/admin');
-      } else if (role === 'COMPANY_ADMIN') {
-        router.push('/company');
-      } else {
-        router.push('/jobs');
-      }
-      // toast.success('Login successful')
-      // reset()
-    }
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    catch (error: any) {
-      console.error(error);
-      toast.error(error?.error || 'Something went wrong. Please try again.')
-    }
-    finally {
+      router.replace('/redirect')
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
       setIsLoading(false)
     }
   }
@@ -149,6 +133,12 @@ const Login = () => {
 
       <section className="lg:col-span-3 flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-lg">
+          <Link
+            href="/"
+            className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition lg:hidden"
+          >
+            ← Back to Home
+          </Link>
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-semibold tracking-tight">
               Login

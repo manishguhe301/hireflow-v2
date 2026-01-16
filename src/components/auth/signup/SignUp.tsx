@@ -169,6 +169,12 @@ const SignUp = () => {
 
       <section className="lg:col-span-3 flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-lg">
+          <Link
+            href="/"
+            className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition lg:hidden"
+          >
+            ← Back to Home
+          </Link>
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-semibold tracking-tight">
               Create your account
