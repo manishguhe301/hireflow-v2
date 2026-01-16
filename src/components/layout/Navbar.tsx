@@ -116,7 +116,10 @@ const Navbar = () => {
 
                   {/* Logout inside menu (<480px) */}
                   <button
-                    onClick={handleLogout}
+                    onClick={(e) => {
+                      e.currentTarget.closest('details')?.removeAttribute('open')
+                      handleLogout()
+                    }}
                     className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition"
                   >
                     Logout
