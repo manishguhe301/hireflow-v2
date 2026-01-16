@@ -6,6 +6,7 @@ import {
   UserCircle,
   MapPin,
   ArrowRight,
+  Menu,
 } from 'lucide-react';
 
 const featuredJobs = [
@@ -28,8 +29,8 @@ const companies = [
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
+        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between max-md:mx-0">
           <Link href="/" className="text-xl font-semibold tracking-tight">
             HireFlow<span className="text-primary">.</span>
           </Link>
@@ -45,6 +46,45 @@ export default function HomePage() {
               Login
             </Link>
           </nav>
+        </div>
+        <div className="relative md:hidden px-6">
+          <details className="group">
+            <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/40 transition ">
+              <Menu className="h-5 w-5" />
+            </summary>
+            <div className="absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 bg-background shadow-xl p-4 space-y-3 backdrop-blur-3xl">
+              <Link
+                href='#jobs'
+                className="w-full block text-sm text-muted-foreground hover:text-primary transition"
+              >
+                Jobs
+              </Link>
+
+              <Link
+                href='#companies'
+                className="w-full block text-sm text-muted-foreground hover:text-primary transition"
+              >
+                Companies
+              </Link>
+              <Link
+                href='#how-it-works'
+                className=" w-full block text-sm text-muted-foreground hover:text-primary transition"
+              >
+                How it works
+              </Link>
+              <div className='pb-3 border-b border-border/30'></div>
+              <button
+                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition "
+              >
+                <Link
+                  className=""
+                  href='/login'
+                >
+                  Login
+                </Link>
+              </button>
+            </div>
+          </details>
         </div>
       </header>
 
