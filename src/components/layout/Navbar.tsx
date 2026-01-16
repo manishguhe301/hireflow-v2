@@ -2,6 +2,7 @@
 import { Role } from "@prisma/client"
 import { Menu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
+import { useTheme } from "next-themes"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -27,6 +28,8 @@ const navLinks: Record<Role, { href: string; label: string }[]> = {
 
 const Navbar = () => {
   const { data: session } = useSession()
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const user = session?.user
   const links = user?.role as Role ? navLinks[user?.role as Role] : []
 
@@ -86,7 +89,7 @@ const Navbar = () => {
                   <Menu className="h-5 w-5" />
                 </summary>
 
-                <div className="absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 bg-background shadow-xl p-4 space-y-3 backdrop-blur-3xl">
+                <div className={`absolute right-0 mt-3 w-56 rounded-2xl border border-border/40 ${isDark ? 'bg-slate-950' : 'bg-slate-50'} shadow-xl p-4 space-y-3 backdrop-blur-3xl`}>
                   <div className="pb-3 border-b border-border/30">
                     <p className="text-sm font-medium">{user.name}</p>
                     <p className="text-xs text-muted-foreground">

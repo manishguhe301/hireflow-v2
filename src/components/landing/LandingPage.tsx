@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link';
 import {
   Briefcase,
@@ -8,6 +9,7 @@ import {
   ArrowRight,
   Menu,
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const featuredJobs = [
   { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
@@ -27,6 +29,8 @@ const companies = [
 
 
 export default function HomePage() {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
@@ -52,7 +56,7 @@ export default function HomePage() {
             <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/40 transition ">
               <Menu className="h-5 w-5" />
             </summary>
-            <div className="absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 bg-background shadow-xl p-4 space-y-3 backdrop-blur-3xl">
+            <div className={`absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 ${isDark ? 'bg-slate-950' : 'bg-slate-50'} shadow-xl p-4 space-y-3 backdrop-blur-xl`}>
               <Link
                 href='#jobs'
                 className="w-full block text-sm text-muted-foreground hover:text-primary transition"
@@ -77,7 +81,7 @@ export default function HomePage() {
                 className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition "
               >
                 <Link
-                  className=""
+                  className="w-full block text-sm text-muted-foreground hover:text-primary transition"
                   href='/login'
                 >
                   Login
