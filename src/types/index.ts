@@ -1,6 +1,5 @@
 import { ApplicationStatus, CompanyStatus, EmploymentType, ExperienceLevel, JobStatus, Role, WorkMode } from "@prisma/client";
 
-
 export interface User {
   id: string;
   email: string;
