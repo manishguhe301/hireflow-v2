@@ -31,11 +31,11 @@ const Navbar = () => {
   const links = user?.role as Role ? navLinks[user?.role as Role] : []
 
   const handleLogout = async () => {
-    // const toastId = toast.loading('Logging out...')
-    // await signOut({
-    //   callbackUrl: '/login',
-    // })
-    // toast.dismiss(toastId)
+    const toastId = toast.loading('Logging out...')
+    await signOut({
+      callbackUrl: '/login',
+    })
+    toast.dismiss(toastId)
   }
 
   return (
