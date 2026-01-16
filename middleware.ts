@@ -20,6 +20,16 @@ export async function middleware(req: NextRequest) {
 
   const userRole = token?.role as Role | undefined;
 
+  if (pathname === '/' && token) {
+    const redirectUrl =
+      userRole === Role.PLATFORM_ADMIN
+        ? '/admin'
+        : userRole === Role.COMPANY_ADMIN
+        ? '/company'
+        : '/jobs';
+    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  }
+
   if (pathname === '/redirect') {
     const redirectUrl =
       userRole === Role.PLATFORM_ADMIN
@@ -73,6 +83,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/admin/:path*',
     '/company/:path*',
     '/dashboard/:path*',
