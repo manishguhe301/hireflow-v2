@@ -49,10 +49,15 @@ const Login = () => {
         return;
       }
 
-      const sessionRes = await fetch('/api/auth/session');
-      const session = await sessionRes.json();
+      // const sessionRes = await fetch('/api/auth/session');
+      // const session = await sessionRes.json();
 
-      const role = res.ok ? session?.user?.role : null;
+      const { data: session } = await fetch('/api/auth/session').then(r => r.json());
+      toast.success('Login successful')
+      reset()
+
+      //  const role = res.ok ? session?.user?.role : null;
+      const role = session?.user?.role
 
       if (role === 'PLATFORM_ADMIN') {
         router.push('/admin');
@@ -61,8 +66,8 @@ const Login = () => {
       } else {
         router.push('/jobs');
       }
-      toast.success('Login successful')
-      reset()
+      // toast.success('Login successful')
+      // reset()
     }
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     catch (error: any) {
