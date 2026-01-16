@@ -105,6 +105,9 @@ const Navbar = () => {
                     <Link
                       key={link.href}
                       href={link.href}
+                      onClick={(e) => {
+                        e.currentTarget.closest('details')?.removeAttribute('open')
+                      }}
                       className="block text-sm text-muted-foreground hover:text-primary transition"
                     >
                       {link.label}
