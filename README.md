@@ -274,7 +274,7 @@ hireflow/
 │   │   ├── (protected)/       # Dashboard routes
 │   │   │   ├── admin/         # Platform admin pages
 │   │   │   ├── company/       # Company admin pages
-│   │   │   └── seeker/        # Job seeker pages
+│   │   │   ├── seeker/        # Job seeker pages
 │   │   │   └── jobs/          # Jobs Page
 │   │   ├── api/               # API routes
 │   │   │   ├── auth/          # NextAuth endpoints
@@ -282,8 +282,6 @@ hireflow/
 │   │   │   ├── jobs/          # Job APIs
 │   │   │   ├── applications/  # Application APIs
 │   │   │   └── users/         # User APIs
-│   │   ├── jobs/              # Public job pages
-│   │   └── companies/         # Public company pages
 ├── src/
 │   ├── components/            # Reusable components
 │   │   ├── ui/               # UI components
