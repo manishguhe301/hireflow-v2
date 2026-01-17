@@ -11,6 +11,7 @@ const navLinks: Record<Role, { href: string; label: string }[]> = {
     { href: '/admin', label: 'Dashboard' },
     { href: '/admin/companies', label: 'Companies' },
     { href: '/admin/users', label: 'Users' },
+    { href: '/admin/create-admin', label: 'Create Admin' },
   ],
   COMPANY_ADMIN: [
     { href: '/company', label: 'Dashboard' },
