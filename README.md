@@ -1,7 +1,8 @@
-# HireFlow
+# HireFlow 
 
 A comprehensive job portal platform built with Next.js, featuring role-based access control for Platform Admins, Company Admins, and Job Seekers.
 
+**Status:** 🚧 In Development | **Version:** 1.0.0
 ## 🚀 Features
 
 ### For Platform Admins
@@ -630,7 +631,7 @@ INTERVIEW_SCHEDULED (Interview arranged)
 
 #### Workflow Management
 
-- **Multi-step forms** with validation at each step
+- **Multi-step forms (OPTIONAL)** with validation at each step
 - **Draft saving** for incomplete forms
 - **Form state persistence** across sessions
 - **Progress indicators** for multi-step processes
