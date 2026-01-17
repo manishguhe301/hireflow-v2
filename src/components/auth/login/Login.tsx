@@ -1,6 +1,6 @@
 'use client'
 
-import { isValidEmail, showError } from '@/src/utils/helper'
+import { isValidEmail } from '@/src/utils/helper'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 
 type Inputs = {
   email: string
@@ -27,7 +28,9 @@ const Login = () => {
       password: '',
     },
   })
-  const router = useRouter()
+  const router = useRouter();
+  const searchParams = useSearchParams()
+  const callbackURL = searchParams.get('callbackUrl')
   const [passType, setPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -54,7 +57,7 @@ const Login = () => {
       toast.success('Login successful')
       reset()
 
-      router.replace('/redirect')
+      router.replace(callbackURL || '/redirect')
     } catch (error) {
       console.error(error)
       toast.error('Something went wrong. Please try again.')
