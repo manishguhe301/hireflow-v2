@@ -236,7 +236,7 @@ A comprehensive job portal platform built with Next.js, featuring role-based acc
 - **File Types:** Images (JPEG, PNG), Documents (PDF)
 - **Max Sizes:** 5MB for resumes, 2MB for images
 
-### Email Service
+<!-- ### Email Service
 
 - **Service:** NodeMailer with SMTP or SendGrid/Mailgun
 - **Templates:** HTML email templates
@@ -244,12 +244,12 @@ A comprehensive job portal platform built with Next.js, featuring role-based acc
   - Email verification
   - Password reset
   - Application status updates
-  - Company approval notifications
+  - Company approval notifications -->
 
 ### Notifications
 
 - **In-App:** Real-time notification system
-- **Email:** Transactional emails
+<!-- - **Email:** Transactional emails -->
 - **Types:** Application updates, job alerts, admin actions
 
 ### Development Tools
@@ -316,7 +316,7 @@ The application uses a comprehensive MongoDB schema with Prisma ORM including:
 #### **User Model**
 
 - Multi-role support (Job Seeker, Company Admin, Platform Admin)
-- Email verification
+<!-- - Email verification -->
 - Secure password hashing
 - Relations to profiles, companies, applications, and saved jobs
 
@@ -485,205 +485,11 @@ The application uses a comprehensive MongoDB schema with Prisma ORM including:
 - Work mode preferences
 - Notice period
 
-## 🚦 Development Phases
-
-The project follows a comprehensive 14-phase development roadmap spanning 63 days:
-
-### **Phase 0: Project Foundation** (Days 1-2)
-
-- Next.js 14 initialization with TypeScript
-- Tailwind CSS setup and theming
-- Prisma ORM configuration
-- MongoDB connection setup
-- Database schema creation
-- Redux Toolkit store structure
-- NextAuth.js configuration
-- Project folder structure
-- Dependency installation
-
-### **Phase 1: Authentication System** (Days 3-5)
-
-- NextAuth.js with MongoDB adapter
-- Sign up flow with role selection
-- Login/logout functionality
-- JWT and refresh token implementation
-- Protected route middleware
-- Role-based access control
-- Session management
-- Password reset flow
-- Email verification
-
-### **Phase 2: Platform Admin - Company Approval** (Days 6-9)
-
-- Admin dashboard with statistics
-- Company approval workflow
-- Pending companies list and details
-- Approve/reject functionality with reasons
-- Email notification system
-- User and company management
-- Search and filter capabilities
-- Platform-wide analytics
-
-### **Phase 3: Company Profile System** (Days 10-14)
-
-- Multi-step company profile creation
-- Company logo and document uploads
-- Form validation with Zod
-- Profile management APIs
-- Edit and resubmit functionality
-- Public company profile pages
-- Approval status tracking
-- Company search for job seekers
-
-### **Phase 4: Job Posting & Management** (Days 15-19)
-
-- Multi-step job creation form
-- Rich text editor for descriptions
-- Skills tags input system
-- Job management APIs (CRUD)
-- Jobs dashboard for companies
-- Job status management
-- Edit, close, and duplicate jobs
-- Job performance metrics
-- Application and view tracking
-
-### **Phase 5: Job Seeker Profile System** (Days 20-25)
-
-- Multi-step profile creation wizard
-- Photo and resume upload
-- Work experience management
-- Education and certifications
-- Skills with proficiency levels
-- Profile APIs
-- Public profile view
-- Profile completion indicator
-- Portfolio and social links
-- Job preferences and visibility settings
-
-### **Phase 6: Job Browsing & Search** (Days 26-30)
-
-- Public jobs listing page
-- Job card component design
-- Keyword search with debouncing
-- Advanced filtering system:
-  - Category, location, work mode
-  - Employment type, experience level
-  - Salary range, company
-  - Date posted filters
-- Sort functionality
-- Job details page
-- Similar jobs recommendations
-- Share functionality
-
-### **Phase 7: Job Application System** (Days 31-35)
-
-- Application flow with modal/page
-- Resume selection from profile
-- Custom resume upload option
-- Cover letter functionality
-- Duplicate application prevention
-- Application APIs
-- My Applications dashboard
-- Status-wise filtering
-- Application timeline visualization
-- Withdraw application feature
-- Application statistics
-
-### **Phase 8: Company Application Management** (Days 36-40)
-
-- Applications dashboard for companies
-- Applicant list with filters
-- Application review interface
-- Resume preview and download
-- Status management system
-- Internal notes functionality
-- Status change history
-- Bulk actions (reject, shortlist)
-- Applicant data export (CSV)
-- Email notifications to applicants
-
-### **Phase 9: Saved Jobs & Bookmarks** (Days 41-42)
-
-- Save/unsave job functionality
-- Saved jobs page
-- Quick apply from saved jobs
-- Saved indicator on job cards
-
-### **Phase 10: Dashboards & Analytics** (Days 43-47)
-
-- Job Seeker dashboard with stats
-- Recommended jobs algorithm
-- Profile completion prompts
-- Company dashboard with metrics
-- Charts and visualizations:
-  - Applications over time
-  - Applications by status
-  - Job performance analytics
-  - Applicant funnel
-- Platform admin analytics
-- User growth and trends
-- Activity logs
-
-### **Phase 11: Notifications System** (Days 48-50)
-
-- Notification database model
-- In-app notification bell
-- Notification dropdown
-- Mark as read functionality
-- Email notification service
-- Email templates for:
-  - Application received
-  - Status changes
-  - Company approval/rejection
-  - New job postings
-
-### **Phase 12: UI/UX Polish** (Days 51-55)
-
-- Skeleton loaders throughout
-- Loading spinners and progress indicators
-- Optimistic UI updates
-- Error boundaries and handling
-- Toast notifications
-- Form validation errors
-- 404 and 500 error pages
-- Mobile responsiveness
-- Touch-friendly interactions
-- Page transitions and animations
-- Hover effects and micro-interactions
-- Accessibility improvements:
-  - Keyboard navigation
-  - ARIA labels
-  - Screen reader support
-  - Color contrast
-  - Focus indicators
-
-### **Phase 13: Testing & Bug Fixes** (Days 56-60)
-
-- Comprehensive manual testing
-- Edge case testing
-- Cross-browser compatibility
-- Bug fixes and optimization
-- Database query optimization
-- Code refactoring
-- End-to-end testing
-- Security checks
-
-### **Phase 14: Deployment & Documentation** (Days 61-63)
-
-- Vercel deployment setup
-- MongoDB Atlas configuration
-- Environment variables setup
-- Production deployment
-- Performance monitoring
-- README and documentation
-- API documentation
-- Demo video/screenshots
-
 ## 📝 Key Workflows
 
 ### Company Onboarding Flow
 
-1. **Sign Up:** Register as Company Admin with email verification
+1. **Sign Up:** Register as Company Admin 
 2. **Create Profile:** Fill out comprehensive company information
    - Basic details (name, logo, description)
    - Industry classification and company size
@@ -699,7 +505,7 @@ The project follows a comprehensive 14-phase development roadmap spanning 63 day
 
 ### Job Seeker Application Flow
 
-1. **Sign Up:** Register as Job Seeker with email verification
+1. **Sign Up:** Register as Job Seeker 
 2. **Create Profile:** Build comprehensive professional profile
    - Personal information and photo
    - Upload resume/CV
@@ -773,7 +579,7 @@ INTERVIEW_SCHEDULED (Interview arranged)
 - **NextAuth.js integration** with secure session management
 - **Role-based access control (RBAC)** protecting routes and APIs
 - **JWT with refresh tokens** for persistent authentication
-- **Email verification** and password reset flows
+<!-- - **Email verification** and password reset flows -->
 - **Protected API routes** with middleware validation
 - **Session persistence** across page reloads
 
@@ -817,7 +623,7 @@ INTERVIEW_SCHEDULED (Interview arranged)
 #### Notifications
 
 - **In-app notification center** with read/unread status
-- **Email notifications** for critical events
+<!-- - **Email notifications** for critical events -->
 - **Real-time updates** for application status changes
 - **Notification preferences** (user-configurable)
 - **Notification history** and archiving
@@ -940,7 +746,7 @@ INTERVIEW_SCHEDULED (Interview arranged)
 - **Internal notes** for company hiring teams
 - **Bulk operations** saving time for recruiters
 - **Status history** for audit trails
-- **Email notifications** keeping users informed
+<!-- - **Email notifications** keeping users informed -->
 - **Profile completion tracking** encouraging quality profiles
 
 This project demonstrates a deep understanding of:
