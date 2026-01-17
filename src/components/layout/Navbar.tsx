@@ -20,7 +20,7 @@ const navLinks: Record<Role, { href: string; label: string }[]> = {
   ],
   JOB_SEEKER: [
     { href: '/jobs', label: 'Browse Jobs' },
-    { href: '/dashboard', label: 'My Applications' },
+    { href: '/dashboard', label: 'Dashboard' },
     { href: '/dashboard/profile', label: 'Profile' },
     { href: '/dashboard/saved', label: 'Saved Jobs' },
   ],
