@@ -35,6 +35,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null)
 
   const fetchStats = async () => {
+    if(!isLoading) setIsLoading(true)
     try {
       const res = await AppSdk.getData('/api/admin/stats', null)
       if (res.error) {
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
           <p className="text-muted-foreground">Failed to load dashboard data</p>
           <button
             onClick={fetchStats}
-            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg border border-background/30"
           >
             Retry
           </button>
@@ -81,7 +82,7 @@ const AdminDashboard = () => {
   return (
     <div className="p-8 space-y-10 max-w-[1400px] mx-auto animate-in fade-in duration-500">
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">Platform Admin Dashboard</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="mt-2 text-lg text-muted-foreground">
           Manage companies, users, and platform settings
         </p>
