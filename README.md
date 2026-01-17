@@ -1103,11 +1103,9 @@ This project demonstrates a deep understanding of:
 - Performance optimization
 - Code organization and architecture
 
-Perfect for showcasing in a portfolio or during technical interviews! 🚀
-
 ## 📧 Contact
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
+Email - [manishguhe301@gmail.com](manishguhe301@gmail.com)
 
 Project Link: [https://github.com/yourusername/hireflow](https://github.com/yourusername/hireflow)
 
