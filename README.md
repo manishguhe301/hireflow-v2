@@ -265,102 +265,17 @@ A comprehensive job portal platform built with Next.js, featuring role-based acc
 - MongoDB database
 - npm or yarn
 
-## 🔧 Installation
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/hireflow.git
-cd hireflow
-```
-
-2. Install dependencies
-
-```bash
-npm install
-```
-
-4. Set up environment variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Database
-DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/hireflow"
-
-# NextAuth
-NEXTAUTH_SECRET="your-super-secret-key-min-32-characters"
-NEXTAUTH_URL="http://localhost:3000"
-
-# File Upload (Choose one)
-# AWS S3
-AWS_ACCESS_KEY_ID="your-aws-access-key"
-AWS_SECRET_ACCESS_KEY="your-aws-secret-key"
-AWS_REGION="us-east-1"
-AWS_S3_BUCKET_NAME="hireflow-uploads"
-
-# OR Cloudinary
-CLOUDINARY_CLOUD_NAME="your-cloud-name"
-CLOUDINARY_API_KEY="your-api-key"
-CLOUDINARY_API_SECRET="your-api-secret"
-
-# Email Service (Choose one)
-# SMTP
-SMTP_HOST="smtp.gmail.com"
-SMTP_PORT="587"
-SMTP_USER="your-email@gmail.com"
-SMTP_PASSWORD="your-app-password"
-
-# OR SendGrid
-SENDGRID_API_KEY="your-sendgrid-api-key"
-
-# App Configuration
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_MAX_RESUME_SIZE="5242880" # 5MB in bytes
-NEXT_PUBLIC_MAX_IMAGE_SIZE="2097152"  # 2MB in bytes
-```
-
-5. Initialize database
-
-```bash
-# Generate Prisma Client
-npx prisma generate
-
-# Push schema to database
-npx prisma db push
-
-# (Optional) Seed database with platform admin
-npx prisma db seed
-```
-
-6. Run the development server
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` to see the application.
-
-### Default Platform Admin Credentials (After Seeding)
-
-```
-Email: admin@hireflow.com
-Password: Admin@123456
-```
-
-**⚠️ Important:** Change these credentials immediately after first login in production!
-
 ## 📁 Project Structure
 
 ```
 hireflow/
-├── src/
 │   ├── app/                    # Next.js 14 App Router
 │   │   ├── (auth)/            # Authentication routes
-│   │   ├── (dashboard)/       # Dashboard routes
+│   │   ├── (protected)/       # Dashboard routes
 │   │   │   ├── admin/         # Platform admin pages
 │   │   │   ├── company/       # Company admin pages
 │   │   │   └── seeker/        # Job seeker pages
+│   │   │   └── jobs/          # Jobs Page
 │   │   ├── api/               # API routes
 │   │   │   ├── auth/          # NextAuth endpoints
 │   │   │   ├── companies/     # Company APIs
@@ -369,6 +284,7 @@ hireflow/
 │   │   │   └── users/         # User APIs
 │   │   ├── jobs/              # Public job pages
 │   │   └── companies/         # Public company pages
+├── src/
 │   ├── components/            # Reusable components
 │   │   ├── ui/               # UI components
 │   │   ├── forms/            # Form components
