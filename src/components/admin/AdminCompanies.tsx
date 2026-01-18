@@ -154,7 +154,7 @@ const AdminCompanies = () => {
 
       if (res.success) {
         toast.success('Company approved successfully')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab) // Refresh
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab) 
       }
     } catch (error) {
       toast.error('Failed to approve company')
