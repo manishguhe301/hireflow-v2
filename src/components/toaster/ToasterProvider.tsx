@@ -11,7 +11,7 @@ export function ToasterProvider() {
       richColors
       closeButton
       position='bottom-right'
-      theme={theme as 'light' | 'dark' | 'system'}
+      theme={theme as 'light' | 'dark'}
     />
   );
 }
