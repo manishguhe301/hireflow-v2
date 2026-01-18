@@ -6,15 +6,16 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
     const body = await req.json();
     const { status, rejectionReason } = body;
 
@@ -93,15 +94,15 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const { id } = params;
 
     const company = await prisma.company.findUnique({
       where: { id },
