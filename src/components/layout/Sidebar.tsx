@@ -69,10 +69,12 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
     <aside
       className={clsx(
         'w-64 flex-col border-r border-border/40 px-4 py-6 transition',
+        'md:fixed md:inset-y-0 md:left-0 md:h-screen md:overflow-y-auto',
         mobile ? 'flex h-full' : 'hidden md:flex',
         isDark ? 'bg-slate-950' : 'bg-slate-50'
       )}
     >
+
       <div className="mb-8 px-2">
         <span className="text-lg font-semibold">
           HireFlow<span className="text-primary">.</span>
