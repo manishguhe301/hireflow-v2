@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Building2,
   Search,
@@ -12,8 +12,9 @@ import {
 import clsx from 'clsx'
 import { Company, CompanyStatus } from '@prisma/client'
 import Link from 'next/link'
-
-/* ================= MOCK DATA (PRISMA-SAFE) ================= */
+import { AppSdk } from '@/src/utils/AppSdk'
+import { toast } from 'sonner'
+import { Spinner } from '../elements/Loader'
 
 const mockCompanies: Company[] = [
   {
@@ -108,6 +109,7 @@ const AdminCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>(mockCompanies)
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
   const [search, setSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
@@ -127,9 +129,32 @@ const AdminCompanies = () => {
   //   )
   // }
 
+  const fetchCompanies = async (status?: string) => {
+    setIsLoading(true)
+    try {
+      const url = status
+        ? `/api/admin/companies?status=${status}`
+        : '/api/admin/companies'
+
+      const res = await AppSdk.getData(url, null)
+
+      // setCompanies(res.companies)
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to fetch companies, please try again.')
+    }
+    finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+  }, [activeTab])
+
+
   return (
     <div className="p-8 space-y-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
-      {/* Header */}
       <div>
         <h1 className="text-4xl font-bold tracking-tight">
           Manage Companies
@@ -138,7 +163,6 @@ const AdminCompanies = () => {
           Review and manage registered companies
         </p>
       </div>
-
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex gap-2">
           {TABS.map((tab) => (
@@ -158,7 +182,6 @@ const AdminCompanies = () => {
             </button>
           ))}
         </div>
-
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -169,98 +192,105 @@ const AdminCompanies = () => {
           />
         </div>
       </div>
-
-      {/* Table */}
-      {filteredCompanies.length === 0 ? (
-        <div className="py-20 text-center">
-          <Building2 className="h-10 w-10 mx-auto text-muted-foreground" />
-          <p className="mt-4 text-muted-foreground">No companies found</p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-2xl border border-border/40 bg-card">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/40 border-b border-border/40">
-              <tr>
-                <th className="px-6 py-4 text-left">Company</th>
-                <th className="px-6 py-4 text-left">Industry</th>
-                <th className="px-6 py-4 text-left">Location</th>
-                <th className="px-6 py-4 text-left">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCompanies.map((company) => (
-                <tr
-                  key={company.id}
-                  className='w-full'
-                >
-                  <td className="px-6 py-4">
-                    <div className="font-medium">{company.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {company.contactEmail}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">{company.industry}</td>
-                  <td className="px-6 py-4">{company.location}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={clsx(
-                        'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
-                        STATUS_STYLE[company.status]
-                      )}
-                    >
-                      {company.status === 'PENDING' && <Clock className="h-3 w-3" />}
-                      {company.status === 'APPROVED' && <CheckCircle className="h-3 w-3" />}
-                      {company.status === 'REJECTED' && <XCircle className="h-3 w-3" />}
-                      {company.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="inline-flex items-center gap-2">
-                      <Link
-                        href={`/admin/companies/${company.id}`}
-                        target='_blank'
-                        className="text-muted-600 hover:underline text-xs"
-                      >View Details</Link>
-                      {company.status === 'PENDING' && (
-                        <>
-                          <button
-                            // onClick={() => updateStatus(company.id, 'APPROVED')}
-                            className="text-green-600 hover:underline text-xs"
+      {isLoading ?
+        <div className='flex items-center justify-center'>
+          <Spinner />
+        </div > :
+        <>
+          <div>
+            {/* Table */}
+            {filteredCompanies.length === 0 ? (
+              <div className="py-20 text-center">
+                <Building2 className="h-10 w-10 mx-auto text-muted-foreground" />
+                <p className="mt-4 text-muted-foreground">No companies found</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-2xl border border-border/40 bg-card">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/40 border-b border-border/40">
+                    <tr>
+                      <th className="px-6 py-4 text-left">Company</th>
+                      <th className="px-6 py-4 text-left">Industry</th>
+                      <th className="px-6 py-4 text-left">Location</th>
+                      <th className="px-6 py-4 text-left">Status</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredCompanies.map((company) => (
+                      <tr
+                        key={company.id}
+                        className='w-full hover:bg-muted/30 transition'
+                      >
+                        <td className="px-6 py-4">
+                          <div className="font-medium">{company.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {company.contactEmail}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">{company.industry}</td>
+                        <td className="px-6 py-4">{company.location}</td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={clsx(
+                              'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
+                              STATUS_STYLE[company.status]
+                            )}
                           >
-                            Approve
-                          </button>
-                          <button
-                            // onClick={() => updateStatus(company.id, 'REJECTED')}
-                            className="text-red-600 hover:underline text-xs"
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
+                            {company.status === 'PENDING' && <Clock className="h-3 w-3" />}
+                            {company.status === 'APPROVED' && <CheckCircle className="h-3 w-3" />}
+                            {company.status === 'REJECTED' && <XCircle className="h-3 w-3" />}
+                            {company.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="inline-flex items-center gap-2">
+                            <Link
+                              href={`/admin/companies/${company.id}`}
+                              target='_blank'
+                              className="text-muted-600 hover:underline text-xs"
+                            >View Details</Link>
+                            {company.status === 'PENDING' && (
+                              <>
+                                <button
+                                  // onClick={() => updateStatus(company.id, 'APPROVED')}
+                                  className="text-green-600 hover:underline text-xs"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  // onClick={() => updateStatus(company.id, 'REJECTED')}
+                                  className="text-red-600 hover:underline text-xs"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
 
-                      {company.status === 'APPROVED' && (
-                        <button
-                          // onClick={() => updateStatus(company.id, 'REJECTED')}
-                          className="text-red-600 hover:underline text-xs"
-                        >
-                          Reject
-                        </button>
-                      )}
+                            {company.status === 'APPROVED' && (
+                              <button
+                                // onClick={() => updateStatus(company.id, 'REJECTED')}
+                                className="text-red-600 hover:underline text-xs"
+                              >
+                                Reject
+                              </button>
+                            )}
 
-                      <button className="text-muted-foreground hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                            <button className="text-muted-foreground hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </button>
 
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>}
+    </div >
   )
 }
 
