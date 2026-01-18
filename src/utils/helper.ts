@@ -111,24 +111,3 @@ export const showError = (
   setError(message);
   setTimeout(() => setError(''), 3000);
 };
-
-export const navLinks: Record<Role, { href: string; label: string }[]> = {
-  PLATFORM_ADMIN: [
-    { href: '/admin', label: 'Dashboard' },
-    { href: '/admin/companies', label: 'Companies' },
-    { href: '/admin/users', label: 'Users' },
-    { href: '/admin/create-admin', label: 'Create Admin' },
-  ],
-  COMPANY_ADMIN: [
-    { href: '/company', label: 'Dashboard' },
-    { href: '/company/jobs', label: 'Jobs' },
-    { href: '/company/applications', label: 'Applications' },
-    { href: '/company/profile', label: 'Company Profile' },
-  ],
-  JOB_SEEKER: [
-    { href: '/jobs', label: 'Browse Jobs' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/dashboard/profile', label: 'Profile' },
-    { href: '/dashboard/saved', label: 'Saved Jobs' },
-  ],
-};
