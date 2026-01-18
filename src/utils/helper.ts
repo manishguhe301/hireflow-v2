@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { CompanyStatus } from '@prisma/client';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -111,3 +111,16 @@ export const showError = (
   setError(message);
   setTimeout(() => setError(''), 3000);
 };
+
+export const STATUS_STYLE: Record<CompanyStatus, string> = {
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  APPROVED: 'bg-green-100 text-green-700',
+  REJECTED: 'bg-red-100 text-red-700',
+};
+
+export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Pending', value: 'PENDING' },
+  { label: 'Approved', value: 'APPROVED' },
+  { label: 'Rejected', value: 'REJECTED' },
+];
