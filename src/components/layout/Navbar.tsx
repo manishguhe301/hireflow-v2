@@ -28,7 +28,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
             <Menu size={18} />
           </button>
 
-          <Link href="/redirect" className="text-lg font-semibold">
+          <Link href="/redirect" className="md:hidden text-lg font-semibold">
             HireFlow<span className="text-primary">.</span>
           </Link>
         </div>

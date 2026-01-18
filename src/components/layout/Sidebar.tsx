@@ -9,6 +9,7 @@ import {
   Briefcase,
   Bookmark,
   FileText,
+  X,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -75,10 +76,18 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
       )}
     >
 
-      <div className="mb-8 px-2">
+      <div className="mb-8 px-2 flex items-center justify-between">
         <span className="text-lg font-semibold">
           HireFlow<span className="text-primary">.</span>
         </span>
+        {
+          mobile &&
+          (
+            <button className='p-1 border rounded-md' onClick={closeSidebar}>
+              <X size={16} />
+            </button>
+          )
+        }
       </div>
 
       <nav className="space-y-1">
@@ -93,8 +102,8 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
               className={clsx(
                 'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
                 isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                  ? 'bg-primary/10 text-primary font-bold!'
+                  : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground font-normal'
               )}
               onClick={() => {
                 if (mobile && closeSidebar) {
