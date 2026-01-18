@@ -4,6 +4,46 @@ import { CompanyStatus, Role } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    const company = await prisma.company.findUnique({
+      where: { id: id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    if (!company) {
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ company });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
