@@ -15,101 +15,15 @@ import Link from 'next/link'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
-
-export const mockCompanies: Company[] = [
-  {
-    id: '65f1a1a1a1a1a1a1a1a1a1a1',
-    userId: '64u1',
-    name: 'Acme Technologies',
-    logo: null,
-    description: 'Enterprise SaaS platform',
-    industry: 'Software',
-    companySize: '51-200',
-    foundedYear: 2018,
-    website: 'https://acme.com',
-    linkedinProfile: null,
-    location: 'Bangalore, India',
-    contactEmail: 'hr@acme.com',
-    contactPhone: null,
-    address: null,
-    businessDocument: null,
-    taxDocument: null,
-    status: 'PENDING',
-    rejectionReason: null,
-    approvedAt: null,
-    approvedBy: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '65f1b2b2b2b2b2b2b2b2b2b2',
-    userId: '64u2',
-    name: 'FinStack',
-    logo: null,
-    description: 'Fintech infrastructure',
-    industry: 'FinTech',
-    companySize: '11-50',
-    foundedYear: 2020,
-    website: 'https://finstack.io',
-    linkedinProfile: null,
-    location: 'Mumbai, India',
-    contactEmail: 'careers@finstack.io',
-    contactPhone: null,
-    address: null,
-    businessDocument: null,
-    taxDocument: null,
-    status: 'APPROVED',
-    rejectionReason: null,
-    approvedAt: new Date(),
-    approvedBy: 'admin_1',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '65f1c3c3c3c3c3c3c3c3c3c3',
-    userId: '64u3',
-    name: 'Healthify',
-    logo: null,
-    description: 'Healthcare platform',
-    industry: 'Healthcare',
-    companySize: '201-500',
-    foundedYear: 2015,
-    website: null,
-    linkedinProfile: null,
-    location: 'London, UK',
-    contactEmail: 'jobs@healthify.com',
-    contactPhone: null,
-    address: null,
-    businessDocument: null,
-    taxDocument: null,
-    status: 'REJECTED',
-    rejectionReason: 'Invalid documents, Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore sunt error ab autem ratione facere, vero debitis deleniti ad odit amet esse ex omnis delectus, id nemo quam! Maxime natus accusamus ducimus expedita cumque nihil eum vero, dolore quae qui culpa nulla harum deleniti eius recusandae sed quasi unde perspiciatis, temporibus tempore officiis repudiandae laborum. Quisquam praesentium iure, exercitationem molestias modi consequuntur quasi? Rerum sequi fuga, suscipit impedit corporis, ullam itaque porro ex magnam, culpa esse corrupti ipsam nesciunt repellat eum. Nemo quis in consequuntur corporis praesentium vitae, doloribus laudantium voluptas eaque perspiciatis amet, sequi quo itaque, repudiandae cumque fugiat.',
-    approvedAt: null,
-    approvedBy: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-] as const
-
-
-const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
-  { label: 'All', value: 'ALL' },
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'Approved', value: 'APPROVED' },
-  { label: 'Rejected', value: 'REJECTED' },
-]
-
-export const STATUS_STYLE: Record<CompanyStatus, string> = {
-  PENDING: 'bg-yellow-100 text-yellow-700',
-  APPROVED: 'bg-green-100 text-green-700',
-  REJECTED: 'bg-red-100 text-red-700',
-}
+import { mockCompanies } from '@/src/utils/mock'
+import { STATUS_STYLE, TABS } from '@/src/utils/helper'
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>(mockCompanies)
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
@@ -147,6 +61,7 @@ const AdminCompanies = () => {
   }, [activeTab])
 
   const handleApprove = async (id: string) => {
+    setLoadingAction(`approve-${id}`)
     try {
       const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
         status: 'APPROVED'
@@ -159,6 +74,9 @@ const AdminCompanies = () => {
     } catch (error) {
       toast.error('Failed to approve company')
     }
+    finally {
+      setLoadingAction(null)
+    }
   }
 
   const handleReject = async (id: string, reason: string) => {
@@ -166,6 +84,7 @@ const AdminCompanies = () => {
       toast.error('Please provide a rejection reason')
       return
     }
+    setLoadingAction(`reject-${id}`)
 
     try {
       const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
@@ -180,11 +99,15 @@ const AdminCompanies = () => {
     } catch (error) {
       toast.error('Failed to reject company')
     }
+    finally {
+      setLoadingAction(null)
+    }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this company?')) return
 
+    setLoadingAction(`delete-${id}`)
     try {
       const res = await AppSdk.deleteData(`/api/admin/companies/${id}`, null)
 
@@ -194,6 +117,9 @@ const AdminCompanies = () => {
       }
     } catch (error) {
       toast.error('Failed to delete company')
+    }
+    finally {
+      setLoadingAction(null)
     }
   }
 
@@ -299,31 +225,50 @@ const AdminCompanies = () => {
                                 <button
                                   onClick={() => handleApprove(company.id)}
                                   className="text-green-600 hover:underline text-xs"
+                                  disabled={loadingAction === `approve-${company.id}`}
                                 >
-                                  Approve
+                                  {loadingAction === `approve-${company.id}` ?
+                                    'Approving...' : 'Approve'}
                                 </button>
                                 <button
-                                  onClick={() => handleReject(company.id, 'Reason here')}
+                                  onClick={() => {
+                                    const reason = prompt('Enter rejection reason:');
+                                    if (reason) handleReject(company.id, reason);
+                                  }}
+                                  disabled={loadingAction === `reject-${company.id}`}
                                   className="text-red-600 hover:underline text-xs"
                                 >
-                                  Reject
+                                  {loadingAction === `reject-${company.id}` ?
+                                    'Rejecting...' : 'Reject'}
                                 </button>
                               </>
                             )}
 
                             {company.status === 'APPROVED' && (
                               <button
-                                onClick={() => handleReject(company.id, 'Reason here')}
+                                onClick={() => {
+                                  const reason = prompt('Enter rejection reason:');
+                                  if (reason) handleReject(company.id, reason);
+                                }}
                                 className="text-red-600 hover:underline text-xs"
+                                disabled={loadingAction === `reject-${company.id}`}
                               >
-                                Reject
+                                {loadingAction === `reject-${company.id}` ?
+                                  'Rejecting...' : 'Reject'}
                               </button>
                             )}
 
-                            <button onClick={() => handleDelete(company.id)}>
-                              <Trash2 className="h-4 w-4" />
+                            <button
+                              className="text-muted-foreground hover:text-destructive disabled:opacity-50"
+                              disabled={loadingAction === `delete-${company.id}`}
+                              onClick={() => handleDelete(company.id)}
+                            >
+                              {loadingAction === `delete-${company.id}` ? (
+                                <Spinner className="h-4 w-4" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
                             </button>
-
                           </div>
                         </td>
                       </tr>
