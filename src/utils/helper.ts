@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
   return d.toLocaleDateString('en-US', {
@@ -83,7 +85,7 @@ export function calculateProfileCompletion(profile: any): number {
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  wait: number
+  wait: number,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
   return function (...args: Parameters<T>) {
@@ -104,8 +106,29 @@ export function isPasswordValid(password: string): boolean {
 
 export const showError = (
   message: string,
-  setError: React.Dispatch<React.SetStateAction<string>>
+  setError: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   setError(message);
   setTimeout(() => setError(''), 3000);
+};
+
+export const navLinks: Record<Role, { href: string; label: string }[]> = {
+  PLATFORM_ADMIN: [
+    { href: '/admin', label: 'Dashboard' },
+    { href: '/admin/companies', label: 'Companies' },
+    { href: '/admin/users', label: 'Users' },
+    { href: '/admin/create-admin', label: 'Create Admin' },
+  ],
+  COMPANY_ADMIN: [
+    { href: '/company', label: 'Dashboard' },
+    { href: '/company/jobs', label: 'Jobs' },
+    { href: '/company/applications', label: 'Applications' },
+    { href: '/company/profile', label: 'Company Profile' },
+  ],
+  JOB_SEEKER: [
+    { href: '/jobs', label: 'Browse Jobs' },
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/dashboard/profile', label: 'Profile' },
+    { href: '/dashboard/saved', label: 'Saved Jobs' },
+  ],
 };

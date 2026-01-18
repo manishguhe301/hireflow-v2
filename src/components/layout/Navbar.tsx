@@ -1,30 +1,11 @@
 'use client'
+import { navLinks } from "@/src/utils/helper"
 import { Role } from "@prisma/client"
 import { Menu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { toast } from "sonner"
-
-const navLinks: Record<Role, { href: string; label: string }[]> = {
-  PLATFORM_ADMIN: [
-    { href: '/admin', label: 'Dashboard' },
-    { href: '/admin/companies', label: 'Companies' },
-    { href: '/admin/users', label: 'Users' },
-  ],
-  COMPANY_ADMIN: [
-    { href: '/company', label: 'Dashboard' },
-    { href: '/company/jobs', label: 'Jobs' },
-    { href: '/company/applications', label: 'Applications' },
-    { href: '/company/profile', label: 'Company Profile' },
-  ],
-  JOB_SEEKER: [
-    { href: '/jobs', label: 'Browse Jobs' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/dashboard/profile', label: 'Profile' },
-    { href: '/dashboard/saved', label: 'Saved Jobs' },
-  ],
-}
 
 const Navbar = () => {
   const { data: session } = useSession()
