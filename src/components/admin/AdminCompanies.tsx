@@ -16,7 +16,7 @@ import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
 
-const mockCompanies: Company[] = [
+export const mockCompanies: Company[] = [
   {
     id: '65f1a1a1a1a1a1a1a1a1a1a1',
     userId: '64u1',
@@ -83,7 +83,7 @@ const mockCompanies: Company[] = [
     businessDocument: null,
     taxDocument: null,
     status: 'REJECTED',
-    rejectionReason: 'Invalid documents',
+    rejectionReason: 'Invalid documents, Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore sunt error ab autem ratione facere, vero debitis deleniti ad odit amet esse ex omnis delectus, id nemo quam! Maxime natus accusamus ducimus expedita cumque nihil eum vero, dolore quae qui culpa nulla harum deleniti eius recusandae sed quasi unde perspiciatis, temporibus tempore officiis repudiandae laborum. Quisquam praesentium iure, exercitationem molestias modi consequuntur quasi? Rerum sequi fuga, suscipit impedit corporis, ullam itaque porro ex magnam, culpa esse corrupti ipsam nesciunt repellat eum. Nemo quis in consequuntur corporis praesentium vitae, doloribus laudantium voluptas eaque perspiciatis amet, sequi quo itaque, repudiandae cumque fugiat.',
     approvedAt: null,
     approvedBy: null,
     createdAt: new Date(),
@@ -99,7 +99,7 @@ const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
   { label: 'Rejected', value: 'REJECTED' },
 ]
 
-const STATUS_STYLE: Record<CompanyStatus, string> = {
+export const STATUS_STYLE: Record<CompanyStatus, string> = {
   PENDING: 'bg-yellow-100 text-yellow-700',
   APPROVED: 'bg-green-100 text-green-700',
   REJECTED: 'bg-red-100 text-red-700',
@@ -121,14 +121,6 @@ const AdminCompanies = () => {
     })
   }, [companies, activeTab, search])
 
-  // const updateStatus = (id: string, status: CompanyStatus) => {
-  //   setCompanies((prev) =>
-  //     prev.map((c) =>
-  //       c.id === id ? { ...c, status } : c
-  //     )
-  //   )
-  // }
-
   const fetchCompanies = async (status?: string) => {
     setIsLoading(true)
     try {
@@ -138,7 +130,9 @@ const AdminCompanies = () => {
 
       const res = await AppSdk.getData(url, null)
 
-      // setCompanies(res.companies)
+      if (res.companies) {
+        setCompanies(res.companies)
+      }
     } catch (error) {
       console.error(error);
       toast.error('Failed to fetch companies, please try again.')
@@ -151,6 +145,57 @@ const AdminCompanies = () => {
   useEffect(() => {
     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
   }, [activeTab])
+
+  const handleApprove = async (id: string) => {
+    try {
+      const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
+        status: 'APPROVED'
+      })
+
+      if (res.success) {
+        toast.success('Company approved successfully')
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab) // Refresh
+      }
+    } catch (error) {
+      toast.error('Failed to approve company')
+    }
+  }
+
+  const handleReject = async (id: string, reason: string) => {
+    if (!reason) {
+      toast.error('Please provide a rejection reason')
+      return
+    }
+
+    try {
+      const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
+        status: 'REJECTED',
+        rejectionReason: reason
+      })
+
+      if (res.success) {
+        toast.success('Company rejected')
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+      }
+    } catch (error) {
+      toast.error('Failed to reject company')
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this company?')) return
+
+    try {
+      const res = await AppSdk.deleteData(`/api/admin/companies/${id}`, null)
+
+      if (res.success) {
+        toast.success('Company deleted')
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+      }
+    } catch (error) {
+      toast.error('Failed to delete company')
+    }
+  }
 
 
   return (
@@ -247,19 +292,18 @@ const AdminCompanies = () => {
                           <div className="inline-flex items-center gap-2">
                             <Link
                               href={`/admin/companies/${company.id}`}
-                              target='_blank'
                               className="text-muted-600 hover:underline text-xs"
                             >View Details</Link>
                             {company.status === 'PENDING' && (
                               <>
                                 <button
-                                  // onClick={() => updateStatus(company.id, 'APPROVED')}
+                                  onClick={() => handleApprove(company.id)}
                                   className="text-green-600 hover:underline text-xs"
                                 >
                                   Approve
                                 </button>
                                 <button
-                                  // onClick={() => updateStatus(company.id, 'REJECTED')}
+                                  onClick={() => handleReject(company.id, 'Reason here')}
                                   className="text-red-600 hover:underline text-xs"
                                 >
                                   Reject
@@ -269,14 +313,14 @@ const AdminCompanies = () => {
 
                             {company.status === 'APPROVED' && (
                               <button
-                                // onClick={() => updateStatus(company.id, 'REJECTED')}
+                                onClick={() => handleReject(company.id, 'Reason here')}
                                 className="text-red-600 hover:underline text-xs"
                               >
                                 Reject
                               </button>
                             )}
 
-                            <button className="text-muted-foreground hover:text-destructive">
+                            <button onClick={() => handleDelete(company.id)}>
                               <Trash2 className="h-4 w-4" />
                             </button>
 
