@@ -5,6 +5,7 @@ import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
 import { useSession } from 'next-auth/react'
 import { Spinner } from '@/src/components/elements/Loader'
+import clsx from 'clsx'
 
 export default function ProtectedLayout({
   children,
@@ -38,17 +39,31 @@ export default function ProtectedLayout({
     <div className="flex min-h-screen">
       <Sidebar />
 
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <div className="absolute left-0 top-0 h-full w-64 bg-card border-r border-border/40">
-            <Sidebar mobile closeSidebar={() => setSidebarOpen(false)} />
-          </div>
+      <div
+        className={clsx(
+          'fixed inset-0 z-50 md:hidden',
+          sidebarOpen ? 'pointer-events-auto' : 'pointer-events-none'
+        )}
+      >
+        <div
+          className={clsx(
+            'absolute inset-0 bg-black/40 transition-opacity duration-300',
+            sidebarOpen ? 'opacity-100' : 'opacity-0'
+          )}
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        <div
+          className={clsx(
+            'absolute left-0 top-0 h-full w-64 bg-card border-r border-border/40',
+            'transform transition-transform duration-300 ease-out',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          )}
+        >
+          <Sidebar mobile closeSidebar={() => setSidebarOpen(false)} />
         </div>
-      )}
+      </div>
+
 
 
       <div className="flex flex-1 flex-col md:pl-64">
