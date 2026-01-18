@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Building2,
@@ -21,7 +21,8 @@ import DocumentCard from './DocumentCard'
 import InfoRow from './InfoRow'
 import InfoCard from './InfoCard'
 import { Spinner } from '../elements/Loader'
-import { STATUS_STYLE } from './AdminCompanies'
+import { STATUS_STYLE } from '@/src/utils/helper'
+import { mockCompanies } from '@/src/utils/mock'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -29,6 +30,8 @@ const CompanyDetails = () => {
 
   const [company, setCompany] = useState<Company | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [rejectionReason, setRejectionReason] = useState('')
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
   const fetchCompany = async () => {
     try {
@@ -45,7 +48,19 @@ const CompanyDetails = () => {
     fetchCompany()
   }, [id])
 
+  // const mockCompany = useMemo(
+  //   () => mockCompanies.find((c) => c.id === id),
+  //   [id]
+  // )
+  // useEffect(() => {
+  //   if (mockCompany) {
+  //     setCompany(mockCompany)
+  //     setIsLoading(false)
+  //   }
+  // }, [mockCompany])
+
   const handleApprove = async (id: string) => {
+    setLoadingAction(`approve-${id}`)
     try {
       const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
         status: 'APPROVED'
@@ -57,6 +72,8 @@ const CompanyDetails = () => {
       }
     } catch (error) {
       toast.error('Failed to approve company')
+    } finally {
+      setLoadingAction(null)
     }
   }
 
@@ -65,7 +82,7 @@ const CompanyDetails = () => {
       toast.error('Please provide a rejection reason')
       return
     }
-
+    setLoadingAction(`reject-${id}`)
     try {
       const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
         status: 'REJECTED',
@@ -78,8 +95,19 @@ const CompanyDetails = () => {
       }
     } catch (error) {
       toast.error('Failed to reject company')
+    } finally {
+      setLoadingAction(null)
     }
   }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <Spinner className="h-8 w-8" />
+      </div>
+    )
+  }
+
 
   if (!company) {
     return (
@@ -103,15 +131,6 @@ const CompanyDetails = () => {
             Back to Companies
           </button>
         </div>
-      </div>
-    )
-  }
-
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <Spinner className="h-8 w-8" />
       </div>
     )
   }
@@ -178,29 +197,7 @@ const CompanyDetails = () => {
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Admin Actions</h2>
 
-          {company.status === 'PENDING' && (
-            <div className="flex flex-wrap gap-3">
-              <button className="px-4 py-2 rounded-xl bg-green-600 text-white text-sm hover:opacity-90"
-                onClick={() => handleApprove(company.id)}
-              >
-                Approve Company
-              </button>
-              <button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90"
-                onClick={() => handleReject(company.id, 'reason')}
-              >
-                Reject Company
-              </button>
-            </div>
-          )}
-
-          {company.status === 'APPROVED' && (
-            <button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90" onClick={() => handleReject(company.id, 'reason')}
-            >
-              Reject Company
-            </button>
-          )}
-
-          {/* <div className="max-w-xl">
+          <div className="max-w-xl">
             <label className="text-sm text-muted-foreground">
               Rejection Reason (required when rejecting)
             </label>
@@ -211,7 +208,33 @@ const CompanyDetails = () => {
               className="mt-2 w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
               rows={4}
             />
-          </div> */}
+          </div>
+
+          {company.status === 'PENDING' && (
+            <div className="flex flex-wrap gap-3">
+              <button className="px-4 py-2 rounded-xl bg-green-600 text-white text-sm hover:opacity-90"
+                onClick={() => handleApprove(company.id)}
+                disabled={loadingAction === `approve-${company.id}`}
+              >
+                {loadingAction === `approve-${company.id}` ? 'Approving Company...' : 'Approve Company'}
+              </button>
+              <button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90"
+                onClick={() => handleReject(company.id, rejectionReason)}
+                disabled={loadingAction === `reject-${company.id}`}
+              >
+                {loadingAction === `reject-${company.id}` ? 'Rejecting Company...' : 'Reject Company'}
+              </button>
+            </div>
+          )}
+
+          {company.status === 'APPROVED' && (
+            <button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90" onClick={() => handleReject(company.id, rejectionReason)}
+            >
+              Reject Company
+            </button>
+          )}
+
+
         </section>
       )}
 
