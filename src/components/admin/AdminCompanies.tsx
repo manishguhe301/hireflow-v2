@@ -164,7 +164,7 @@ const AdminCompanies = () => {
         </p>
       </div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center flex-wrap">
           {TABS.map((tab) => (
             <button
               key={tab.value}
@@ -193,7 +193,7 @@ const AdminCompanies = () => {
         </div>
       </div>
       {isLoading ?
-        <div className='flex items-center justify-center'>
+        <div className='flex items-center justify-center min-h-75'>
           <Spinner />
         </div > :
         <>
