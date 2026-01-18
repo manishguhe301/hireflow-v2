@@ -54,9 +54,9 @@ export async function GET() {
     });
   } catch (error) {
     console.error(error);
-    NextResponse.json(
+    return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
