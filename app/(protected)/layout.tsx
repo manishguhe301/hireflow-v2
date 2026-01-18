@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
 import { useSession } from 'next-auth/react'
@@ -13,6 +13,18 @@ export default function ProtectedLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { status } = useSession()
+
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [sidebarOpen])
 
   if (status === 'loading') {
     return (
