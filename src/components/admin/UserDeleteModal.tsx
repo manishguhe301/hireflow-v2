@@ -41,7 +41,7 @@ const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingA
             className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm hover:opacity-90 disabled:opacity-70"
           >
             {loadingAction === `delete-${deleteUserId}` ? (
-              <Spinner className="h-4 w-4" />
+              'Deleting...'
             ) : (
               'Delete'
             )}
