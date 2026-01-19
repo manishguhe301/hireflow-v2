@@ -17,7 +17,8 @@ import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
 import { mockCompanies } from '@/src/utils/mock'
 import { STATUS_STYLE, TABS } from '@/src/utils/helper'
-import Modal from '../ui/Modal'
+import DeleteCompanyModal from './DeleteCompanyModal'
+import RejectCompanyModal from './RejectCompanyModal'
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>(mockCompanies)
@@ -26,6 +27,8 @@ const AdminCompanies = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteCompanyId, setDeleteCompanyId] = useState<string | null>(null)
+  const [rejectCompanyId, setRejectCompanyId] = useState<string | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
@@ -47,7 +50,7 @@ const AdminCompanies = () => {
       const res = await AppSdk.getData(url, null)
 
       if (res.companies) {
-        // setCompanies(res.companies)
+        setCompanies(res.companies)
       }
     } catch (error) {
       console.error(error);
@@ -103,6 +106,8 @@ const AdminCompanies = () => {
     }
     finally {
       setLoadingAction(null)
+      setRejectCompanyId(null)
+      setRejectReason('')
     }
   }
 
@@ -171,7 +176,6 @@ const AdminCompanies = () => {
         </div > :
         <>
           <div>
-            {/* Table */}
             {filteredCompanies.length === 0 ? (
               <div className="py-20 text-center">
                 <Building2 className="h-10 w-10 mx-auto text-muted-foreground" />
@@ -233,10 +237,7 @@ const AdminCompanies = () => {
                                     'Approving...' : 'Approve'}
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    const reason = prompt('Enter rejection reason:');
-                                    if (reason) handleReject(company.id, reason);
-                                  }}
+                                  onClick={() => setRejectCompanyId(company.id)}
                                   disabled={loadingAction === `reject-${company.id}`}
                                   className="text-red-600 hover:underline text-xs"
                                 >
@@ -248,10 +249,7 @@ const AdminCompanies = () => {
 
                             {company.status === 'APPROVED' && (
                               <button
-                                onClick={() => {
-                                  const reason = prompt('Enter rejection reason:');
-                                  if (reason) handleReject(company.id, reason);
-                                }}
+                                onClick={() => setRejectCompanyId(company.id)}
                                 className="text-red-600 hover:underline text-xs"
                                 disabled={loadingAction === `reject-${company.id}`}
                               >
@@ -281,44 +279,24 @@ const AdminCompanies = () => {
             )}
           </div>
         </>}
-      <Modal
-        open={!!deleteCompanyId}
-        onClose={() => setDeleteCompanyId(null)}
-        className="max-w-md"
-      >
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">
-            Delete company?
-          </h3>
-
-          <p className="text-sm text-muted-foreground">
-            This action is irreversible. The company and all related data will be permanently removed.
-          </p>
-
-          <div className="flex justify-end gap-3 pt-4">
-            <button
-              onClick={() => setDeleteCompanyId(null)}
-              className="px-4 py-2 rounded-xl border border-border/40 text-sm hover:bg-muted/40"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={handleDelete}
-              disabled={loadingAction === `delete-${deleteCompanyId}`}
-              className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm hover:opacity-90 disabled:opacity-70"
-            >
-              {loadingAction === `delete-${deleteCompanyId}` ? (
-                <Spinner className="h-4 w-4" />
-              ) : (
-                'Delete'
-              )}
-            </button>
-          </div>
-        </div>
-      </Modal>
+      <DeleteCompanyModal
+        deleteCompanyId={deleteCompanyId}
+        setDeleteCompanyId={setDeleteCompanyId}
+        handleDelete={handleDelete}
+        loadingAction={loadingAction}
+      />
+      <RejectCompanyModal
+        rejectCompanyId={rejectCompanyId}
+        setRejectCompanyId={setRejectCompanyId}
+        rejectReason={rejectReason}
+        setRejectReason={setRejectReason}
+        onReject={handleReject}
+        loadingAction={loadingAction}
+      />
     </div >
   )
 }
 
 export default AdminCompanies
+
+
