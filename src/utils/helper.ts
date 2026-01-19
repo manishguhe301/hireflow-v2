@@ -1,4 +1,4 @@
-import { CompanyStatus } from '@prisma/client';
+import { CompanyStatus, Role } from '@prisma/client';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -124,3 +124,19 @@ export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
   { label: 'Approved', value: 'APPROVED' },
   { label: 'Rejected', value: 'REJECTED' },
 ];
+
+export const ADMIN_USERS_TABS: {
+  label: string;
+  value: Role | 'ALL';
+}[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Company Admins', value: Role.COMPANY_ADMIN },
+  { label: 'Job Seekers', value: Role.JOB_SEEKER },
+  { label: 'Platform Admins', value: Role.PLATFORM_ADMIN },
+];
+
+export const ROLE_STYLE: Record<Role, string> = {
+  JOB_SEEKER: 'bg-blue-100 text-blue-700',
+  COMPANY_ADMIN: 'bg-purple-100 text-purple-700',
+  PLATFORM_ADMIN: 'bg-gray-200 text-gray-800',
+};

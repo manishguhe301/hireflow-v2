@@ -1,7 +1,8 @@
+import AdminUsersList from "@/src/components/admin/AdminUsersList"
 
 const AdminUsersPage = () => {
   return (
-    <div>AdminUsersPage</div>
+    <><AdminUsersList /></>
   )
 }
 
