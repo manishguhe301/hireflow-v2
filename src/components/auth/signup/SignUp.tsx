@@ -61,7 +61,7 @@ const SignUp = () => {
       name: data.name.trim(),
       email: data.email.trim(),
       password: data.password.trim(),
-      role: data.role.trim()
+      role: data.role
     }
 
     try {
@@ -251,6 +251,7 @@ const SignUp = () => {
             <Button
               type='submit'
               isLoading={isLoading}
+              disabled={isLoading}
             >
               Create account
             </Button>

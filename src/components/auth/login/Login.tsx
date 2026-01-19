@@ -177,6 +177,7 @@ const Login = () => {
             <Button
               type="submit"
               isLoading={isLoading}
+              disabled={isLoading}
             >
               Login
             </Button>
