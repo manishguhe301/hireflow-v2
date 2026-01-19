@@ -12,38 +12,7 @@ import {
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
-
-const featuredJobs = [
-  { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
-  { id: 2, title: 'Backend Developer', company: 'CloudCore', location: 'Bangalore', type: 'Full-time', tag: 'Urgent' },
-  { id: 3, title: 'UI/UX Designer', company: 'Designify', location: 'Mumbai', type: 'Hybrid', tag: 'New' },
-  { id: 4, title: 'Product Lead', company: 'Aura', location: 'Remote', type: 'Full-time', tag: 'Remote' },
-];
-
-const companies = [
-  { id: 1, name: "TechNova" },
-  { id: 2, name: "CloudCore" },
-  { id: 3, name: "Designify" },
-  { id: 4, name: "Aura" },
-  { id: 5, name: "ByteLabs" },
-  { id: 6, name: "NextZen" },
-];
-
-const links = [
-  {
-    label: 'Jobs',
-    href: '#jobs'
-  },
-  {
-    label: 'Companies',
-    href: '#companies'
-  },
-  {
-    label: 'How it works',
-    href: '#how-it-works'
-  },
-]
-
+import { companies, featuredJobs, links } from '@/src/utils/mock';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
