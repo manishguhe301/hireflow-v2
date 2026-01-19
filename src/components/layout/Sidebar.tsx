@@ -93,7 +93,8 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
       <nav className="space-y-1">
         {links.map((link) => {
           const isActive =
-            pathname === link.href || pathname.startsWith(`${link.href}/`)
+            pathname === link.href
+          // || pathname.includes(`${link.href}/`)
 
           return (
             <Link
