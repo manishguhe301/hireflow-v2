@@ -2,12 +2,12 @@
 
 import { isPasswordValid, isValidEmail, showError } from '@/src/utils/helper'
 import { Role } from '@prisma/client'
-import { Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
-// import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Spinner } from '../elements/Loader'
 
 type Inputs = {
@@ -34,7 +34,7 @@ const CreateAdminUser = () => {
   })
 
   const password = watch('password')
-  // const router = useRouter()
+  const router = useRouter()
 
   const [error, setError] = useState('')
   const [passType, setPassType] = useState<'password' | 'text'>('password')
@@ -86,6 +86,13 @@ const CreateAdminUser = () => {
   return (
     <div className="p-4 md:p-8 md:px-8 w-full max-w-xl mx-auto animate-in fade-in duration-500">
       <div className="mb-8">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 cursor-pointer"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Users
+        </button>
         <h1 className="text-3xl font-bold tracking-tight">
           Create Platform Admin
         </h1>

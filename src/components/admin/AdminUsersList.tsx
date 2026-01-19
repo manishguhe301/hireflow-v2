@@ -3,11 +3,12 @@ import { AppSdk } from "@/src/utils/AppSdk"
 import { ADMIN_USERS_TABS, formatDate, ROLE_STYLE } from "@/src/utils/helper"
 import { Role, User } from "@prisma/client"
 import clsx from "clsx"
-import { Check, Search, Trash2, Users, X } from "lucide-react"
+import { Check, Search, Trash2, UserPlus, Users, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { Spinner } from "../elements/Loader"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 
 const labels = {
   JOB_SEEKER: 'Job Seeker',
@@ -104,14 +105,22 @@ const AdminUsersList = () => {
             </button>
           ))}
         </div>
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search users..."
-            className="w-full rounded-xl border border-border/40 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
-          />
+        <div className="flex justify-between items-center gap-2">
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search users..."
+              className="w-full rounded-xl border border-border/40 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
+            />
+          </div>
+          <Link href="/admin/create-admin">
+            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition flex items-center gap-2 whitespace-nowrap border border-primary/30">
+              <UserPlus className="h-4 w-4" />
+              Create Admin
+            </button>
+          </Link>
         </div>
       </div>
       {isLoading ?
