@@ -178,6 +178,7 @@ const Login = () => {
               type="submit"
               isLoading={isLoading}
               disabled={isLoading}
+              className='w-full py-3'
             >
               Login
             </Button>

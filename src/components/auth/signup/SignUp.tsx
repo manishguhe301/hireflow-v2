@@ -252,6 +252,7 @@ const SignUp = () => {
               type='submit'
               isLoading={isLoading}
               disabled={isLoading}
+              className='py-3 w-full'
             >
               Create account
             </Button>
