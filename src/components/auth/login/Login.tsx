@@ -35,6 +35,9 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
+    const email = data.email.trim()
+    const password = data.password.trim()
+
     if (!isValidEmail(data.email)) {
       toast.error('Invalid email format')
       return
@@ -44,8 +47,8 @@ const Login = () => {
 
     try {
       const res = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
+        email,
+        password,
         redirect: false,
       })
 

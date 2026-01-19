@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { CompanyStatus, Role } from '@prisma/client';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -110,4 +110,33 @@ export const showError = (
 ) => {
   setError(message);
   setTimeout(() => setError(''), 3000);
+};
+
+export const STATUS_STYLE: Record<CompanyStatus, string> = {
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  APPROVED: 'bg-green-100 text-green-700',
+  REJECTED: 'bg-red-100 text-red-700',
+};
+
+export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Pending', value: 'PENDING' },
+  { label: 'Approved', value: 'APPROVED' },
+  { label: 'Rejected', value: 'REJECTED' },
+];
+
+export const ADMIN_USERS_TABS: {
+  label: string;
+  value: Role | 'ALL';
+}[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Company Admins', value: Role.COMPANY_ADMIN },
+  { label: 'Job Seekers', value: Role.JOB_SEEKER },
+  { label: 'Platform Admins', value: Role.PLATFORM_ADMIN },
+];
+
+export const ROLE_STYLE: Record<Role, string> = {
+  JOB_SEEKER: 'bg-blue-100 text-blue-700',
+  COMPANY_ADMIN: 'bg-purple-100 text-purple-700',
+  PLATFORM_ADMIN: 'bg-gray-200 text-gray-800',
 };
