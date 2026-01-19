@@ -5,6 +5,7 @@ import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
 import { useSession } from 'next-auth/react'
 import { Spinner } from '@/src/components/elements/Loader'
+import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 
 export default function ProtectedLayout({
@@ -14,14 +15,16 @@ export default function ProtectedLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { status } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
-    if (sidebarOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
+    if (status === 'unauthenticated') {
+      router.replace('/login')
     }
+  }, [status, router])
 
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
@@ -33,6 +36,10 @@ export default function ProtectedLayout({
         <Spinner className="h-8 w-8" />
       </div>
     )
+  }
+
+  if (status === 'unauthenticated') {
+    return null
   }
 
   return (
@@ -63,8 +70,6 @@ export default function ProtectedLayout({
           <Sidebar mobile closeSidebar={() => setSidebarOpen(false)} />
         </div>
       </div>
-
-
 
       <div className="flex flex-1 flex-col md:pl-64">
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
