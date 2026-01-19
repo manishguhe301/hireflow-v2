@@ -19,10 +19,11 @@ const RejectCompanyModal = ({
   loadingAction,
 }: RejectCompanyModalProps) => {
   const isLoading = loadingAction === `reject-${rejectCompanyId}`
+  const isOpen = Boolean(rejectCompanyId)
 
   return (
     <Modal
-      open={!!rejectCompanyId}
+      open={isOpen}
       onClose={() => {
         setRejectCompanyId(null)
         setRejectReason('')

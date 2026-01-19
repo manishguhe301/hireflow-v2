@@ -85,10 +85,11 @@ const AdminCompanies = () => {
   }
 
   const handleReject = async (id: string, reason: string) => {
-    if (!reason) {
+    if (!reason.trim()) {
       toast.error('Please provide a rejection reason')
       return
     }
+
     setLoadingAction(`reject-${id}`)
 
     try {
@@ -130,6 +131,13 @@ const AdminCompanies = () => {
       setDeleteCompanyId(null)
     }
   }
+
+  useEffect(() => {
+    setRejectCompanyId(null)
+    setRejectReason('')
+    setDeleteCompanyId(null)
+  }, [activeTab])
+
 
   return (
     <div className="p-4 md:p-8 md:px-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto animate-in fade-in duration-500 max-sm:max-w-screen">
@@ -231,14 +239,22 @@ const AdminCompanies = () => {
                                 <button
                                   onClick={() => handleApprove(company.id)}
                                   className="text-green-600 hover:underline text-xs"
-                                  disabled={loadingAction === `approve-${company.id}`}
+                                  disabled={
+                                    loadingAction === `approve-${company.id}` ||
+                                    !!rejectCompanyId
+                                  }
                                 >
                                   {loadingAction === `approve-${company.id}` ?
                                     'Approving...' : 'Approve'}
                                 </button>
                                 <button
-                                  onClick={() => setRejectCompanyId(company.id)}
-                                  disabled={loadingAction === `reject-${company.id}`}
+                                  onClick={() => {
+                                    setDeleteCompanyId(null)
+                                    setRejectCompanyId(company.id)
+                                  }}
+                                  disabled={
+                                    !!loadingAction && loadingAction !== `reject-${company.id}`
+                                  }
                                   className="text-red-600 hover:underline text-xs"
                                 >
                                   {loadingAction === `reject-${company.id}` ?
@@ -249,10 +265,14 @@ const AdminCompanies = () => {
 
                             {company.status === 'APPROVED' && (
                               <button
-                                onClick={() => setRejectCompanyId(company.id)}
+                                onClick={() => {
+                                  setDeleteCompanyId(null)
+                                  setRejectCompanyId(company.id)
+                                }}
                                 className="text-red-600 hover:underline text-xs"
-                                disabled={loadingAction === `reject-${company.id}`}
-                              >
+                                disabled={
+                                  !!loadingAction && loadingAction !== `reject-${company.id}`
+                                }                              >
                                 {loadingAction === `reject-${company.id}` ?
                                   'Rejecting...' : 'Reject'}
                               </button>
@@ -261,7 +281,10 @@ const AdminCompanies = () => {
                             <button
                               className="text-muted-foreground hover:text-destructive disabled:opacity-50"
                               disabled={loadingAction === `delete-${company.id}`}
-                              onClick={() => setDeleteCompanyId(company.id)}
+                              onClick={() => {
+                                setRejectCompanyId(null)
+                                setDeleteCompanyId(company.id)
+                              }}
                             >
                               {loadingAction === `delete-${company.id}` ? (
                                 <Spinner className="h-4 w-4" />
