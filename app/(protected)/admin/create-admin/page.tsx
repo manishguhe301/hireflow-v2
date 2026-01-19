@@ -1,7 +1,8 @@
+import CreateAdminUser from "@/src/components/admin/CreateAdminUser"
 
 const CreateAdminPage = () => {
   return (
-    <div>CreateAdminPage</div>
+    <CreateAdminUser />
   )
 }
 

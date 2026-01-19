@@ -130,7 +130,7 @@ const AdminUsersList = () => {
                 <table className="w-full text-sm">
                   <thead className="bg-muted/40 border-b border-border/40">
                     <tr>
-                      <th className="px-6 py-4 text-left">Id</th>
+                      {/* <th className="px-6 py-4 text-left">Id</th> */}
                       <th className="px-6 py-4 text-left">Name</th>
                       <th className="px-6 py-4 text-left">Email</th>
                       <th className="px-6 py-4 text-left">Role</th>
@@ -145,9 +145,9 @@ const AdminUsersList = () => {
                         key={user.id}
                         className='w-full hover:bg-muted/30 transition'
                       >
-                        <td className="px-6 py-4">
+                        {/* <td className="px-6 py-4">
                           {user.id}
-                        </td>
+                        </td> */}
                         <td className="px-6 py-4">
                           {user.name}
                         </td>
@@ -173,7 +173,7 @@ const AdminUsersList = () => {
                           {
                             user.id !== session?.user?.id ? (
                               <button
-                                className="text-muted-foreground hover:text-destructive disabled:opacity-50"
+                                className="text-muted-foreground hover:text-destructive disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                                 disabled={
                                   loadingAction === `delete-${user.id}` ||
                                   user.id === session?.user?.id
