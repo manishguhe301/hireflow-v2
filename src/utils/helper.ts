@@ -140,3 +140,9 @@ export const ROLE_STYLE: Record<Role, string> = {
   COMPANY_ADMIN: 'bg-purple-100 text-purple-700',
   PLATFORM_ADMIN: 'bg-gray-200 text-gray-800',
 };
+
+export const labels = {
+  JOB_SEEKER: 'Job Seeker',
+  COMPANY_ADMIN: 'Company Admin',
+  PLATFORM_ADMIN: 'Platform Admin',
+};

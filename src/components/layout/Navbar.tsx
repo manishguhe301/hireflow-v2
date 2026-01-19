@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { useBreadcrumbs } from '@/src/store/hooks/useBreadCrumb'
 import { Button } from '../ui/Button'
+import { labels } from '@/src/utils/helper'
 
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const { data: session } = useSession()
@@ -62,7 +63,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col text-right">
               <span className="text-sm font-medium">{user.name}</span>
-              <span className="text-xs text-muted-foreground">{user.role}</span>
+              <span className="text-xs text-muted-foreground">{labels[user.role]}</span>
             </div>
 
             <Button
