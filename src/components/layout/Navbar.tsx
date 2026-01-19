@@ -14,7 +14,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const handleLogout = async () => {
     const toastId = toast.loading('Logging out...')
     await signOut({
-      callbackUrl: '/redirect',
+      callbackUrl: '/',
     })
     toast.dismiss(toastId)
   }
