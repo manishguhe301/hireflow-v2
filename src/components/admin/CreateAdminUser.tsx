@@ -2,13 +2,14 @@
 
 import { isPasswordValid, isValidEmail, showError } from '@/src/utils/helper'
 import { Role } from '@prisma/client'
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useRouter } from 'next/navigation'
-import { Spinner } from '../elements/Loader'
+import { FormInput } from '../ui/FormInput'
+import { Button } from '../ui/Button'
 
 type Inputs = {
   name: string
@@ -37,10 +38,6 @@ const CreateAdminUser = () => {
   const router = useRouter()
 
   const [error, setError] = useState('')
-  const [passType, setPassType] = useState<'password' | 'text'>('password')
-  const [confirmPassType, setConfirmPassType] = useState<'password' | 'text'>(
-    'password'
-  )
   const [isLoading, setIsLoading] = useState(false)
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -102,92 +99,44 @@ const CreateAdminUser = () => {
       </div>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-        <div className="space-y-1">
-          <label className="text-sm text-muted-foreground">Full name</label>
-          <input
-            placeholder="John Doe"
-            {...register('name', { required: true })}
-            className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-          />
-          {errors.name && (
-            <span className="text-xs text-destructive">Required</span>
-          )}
-        </div>
+        <FormInput
+          label="Full name"
+          placeholder="John Doe"
+          register={register('name', { required: true })}
+          error={errors.name}
+        />
 
-        <div className="space-y-1">
-          <label className="text-sm text-muted-foreground">Email</label>
-          <input
-            placeholder="admin@email.com"
-            {...register('email', { required: true })}
-            className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-          />
-          {errors.email && (
-            <span className="text-xs text-destructive">Required</span>
-          )}
-        </div>
 
-        <div className="space-y-1">
-          <label className="text-sm text-muted-foreground">Password</label>
-          <div className="relative">
-            <input
-              type={passType}
-              placeholder="••••••••"
-              {...register('password', { required: true })}
-              className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary/40"
-            />
-            <button
-              type="button"
-              onClick={() =>
-                setPassType(passType === 'password' ? 'text' : 'password')
-              }
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {passType === 'password' ? (
-                <Eye size={18} />
-              ) : (
-                <EyeOff size={18} />
-              )}
-            </button>
-          </div>
-        </div>
+        <FormInput
+          label="Email"
+          type="email"
+          placeholder="admin@email.com"
+          register={register('email', { required: true })}
+          error={errors.email}
+        />
 
-        <div className="space-y-1">
-          <label className="text-sm text-muted-foreground">
-            Confirm password
-          </label>
-          <div className="relative">
-            <input
-              type={confirmPassType}
-              placeholder="••••••••"
-              {...register('confirmPassword', {
-                required: true,
-                validate: (value) =>
-                  value === password || 'Passwords do not match',
-              })}
-              className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary/40"
-            />
-            <button
-              type="button"
-              onClick={() =>
-                setConfirmPassType(
-                  confirmPassType === 'password' ? 'text' : 'password'
-                )
-              }
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {confirmPassType === 'password' ? (
-                <Eye size={18} />
-              ) : (
-                <EyeOff size={18} />
-              )}
-            </button>
-          </div>
-          {errors.confirmPassword && (
-            <span className="text-xs text-destructive">
-              {errors.confirmPassword.message}
-            </span>
-          )}
-        </div>
+
+        <FormInput
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          register={register('password', { required: true })}
+          error={errors.password}
+        />
+
+
+        <FormInput
+          label="Confirm password"
+          type="password"
+          placeholder="••••••••"
+          register={register('confirmPassword', {
+            required: true,
+            validate: (value) =>
+              value === password || 'Passwords do not match',
+          })}
+          error={errors.confirmPassword}
+        />
+
 
         {error && (
           <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
@@ -195,30 +144,13 @@ const CreateAdminUser = () => {
           </div>
         )}
 
-        <button
+        <Button
           type="submit"
+          isLoading={isLoading}
           disabled={isLoading}
-          className="
-            w-full rounded-2xl
-            border border-border/40
-            bg-foreground
-            px-4 py-3
-            text-sm font-semibold
-            text-background
-            transition
-            hover:opacity-90
-            focus-visible:outline-none
-            focus-visible:ring-2
-            focus-visible:ring-primary/40
-            disabled:opacity-70
-          "
         >
-          {isLoading ? (
-            <Spinner className="h-5 w-5 mx-auto" />
-          ) : (
-            'Create Admin'
-          )}
-        </button>
+          Create Admin
+        </Button>
       </form>
     </div>
   )
