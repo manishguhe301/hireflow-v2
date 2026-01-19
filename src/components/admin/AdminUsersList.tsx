@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { Spinner } from "../elements/Loader"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import Modal from "../ui/Modal"
 
 const labels = {
   JOB_SEEKER: 'Job Seeker',
@@ -23,7 +24,7 @@ const AdminUsersList = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const { data: session } = useSession()
-  const user = session?.user
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
 
   const fetchUsers = async (role?: string) => {
     setIsLoading(true)
@@ -57,12 +58,12 @@ const AdminUsersList = () => {
     )
   }, [users, search])
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return
+  const handleDelete = async () => {
+    if (!deleteUserId) return
 
-    setLoadingAction(`delete-${id}`)
+    setLoadingAction(`delete-${deleteUserId}`)
     try {
-      const res = await AppSdk.deleteData(`/api/admin/users/${id}`, null)
+      const res = await AppSdk.deleteData(`/api/admin/users/${deleteUserId}`, null)
 
       if (res.success) {
         toast.success('User deleted')
@@ -73,6 +74,7 @@ const AdminUsersList = () => {
     }
     finally {
       setLoadingAction(null)
+      setDeleteUserId(null)
     }
   }
 
@@ -187,7 +189,7 @@ const AdminUsersList = () => {
                                   loadingAction === `delete-${user.id}` ||
                                   user.id === session?.user?.id
                                 }
-                                onClick={() => handleDelete(user.id)}
+                                onClick={() => setDeleteUserId(user.id)}
                               >
                                 {loadingAction === `delete-${user.id}` ? (
                                   <Spinner className="h-4 w-4" />
@@ -209,6 +211,43 @@ const AdminUsersList = () => {
           </div>
         </>
       }
+      <Modal
+        open={!!deleteUserId}
+        onClose={() => setDeleteUserId(null)}
+        className="max-w-md"
+      >
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">
+            Delete user?
+          </h3>
+
+          <p className="text-sm text-muted-foreground">
+            This action cannot be undone. The user and all related data will be permanently removed.
+          </p>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              onClick={() => setDeleteUserId(null)}
+              className="px-4 py-2 rounded-xl border border-border/40 text-sm hover:bg-muted/40"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={handleDelete}
+              disabled={loadingAction === `delete-${deleteUserId}`}
+              className="px-4 py-2 rounded-xl bg-danger text-danger-foreground border border-danger text-sm hover:opacity-90 disabled:opacity-70"
+            >
+              {loadingAction === `delete-${deleteUserId}` ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                'Delete'
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
     </div>
   )
 }

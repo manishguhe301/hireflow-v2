@@ -17,6 +17,7 @@ import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
 import { mockCompanies } from '@/src/utils/mock'
 import { STATUS_STYLE, TABS } from '@/src/utils/helper'
+import Modal from '../ui/Modal'
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>(mockCompanies)
@@ -24,6 +25,7 @@ const AdminCompanies = () => {
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [deleteCompanyId, setDeleteCompanyId] = useState<string | null>(null)
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
@@ -45,7 +47,7 @@ const AdminCompanies = () => {
       const res = await AppSdk.getData(url, null)
 
       if (res.companies) {
-        setCompanies(res.companies)
+        // setCompanies(res.companies)
       }
     } catch (error) {
       console.error(error);
@@ -104,12 +106,12 @@ const AdminCompanies = () => {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this company?')) return
+  const handleDelete = async () => {
+    if (!deleteCompanyId) return
 
-    setLoadingAction(`delete-${id}`)
+    setLoadingAction(`delete-${deleteCompanyId}`)
     try {
-      const res = await AppSdk.deleteData(`/api/admin/companies/${id}`, null)
+      const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
 
       if (res.success) {
         toast.success('Company deleted')
@@ -120,9 +122,9 @@ const AdminCompanies = () => {
     }
     finally {
       setLoadingAction(null)
+      setDeleteCompanyId(null)
     }
   }
-
 
   return (
     <div className="p-4 md:p-8 md:px-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto animate-in fade-in duration-500 max-sm:max-w-screen">
@@ -261,7 +263,7 @@ const AdminCompanies = () => {
                             <button
                               className="text-muted-foreground hover:text-destructive disabled:opacity-50"
                               disabled={loadingAction === `delete-${company.id}`}
-                              onClick={() => handleDelete(company.id)}
+                              onClick={() => setDeleteCompanyId(company.id)}
                             >
                               {loadingAction === `delete-${company.id}` ? (
                                 <Spinner className="h-4 w-4" />
@@ -279,6 +281,42 @@ const AdminCompanies = () => {
             )}
           </div>
         </>}
+      <Modal
+        open={!!deleteCompanyId}
+        onClose={() => setDeleteCompanyId(null)}
+        className="max-w-md"
+      >
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">
+            Delete company?
+          </h3>
+
+          <p className="text-sm text-muted-foreground">
+            This action is irreversible. The company and all related data will be permanently removed.
+          </p>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              onClick={() => setDeleteCompanyId(null)}
+              className="px-4 py-2 rounded-xl border border-border/40 text-sm hover:bg-muted/40"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={handleDelete}
+              disabled={loadingAction === `delete-${deleteCompanyId}`}
+              className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm hover:opacity-90 disabled:opacity-70"
+            >
+              {loadingAction === `delete-${deleteCompanyId}` ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                'Delete'
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div >
   )
 }
