@@ -2,14 +2,16 @@
 
 import { isPasswordValid, isValidEmail, showError } from '@/src/utils/helper'
 import { Role } from '@prisma/client'
-import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useRouter } from 'next/navigation'
+import { FormInput } from '../../ui/FormInput'
+import { FormRadioGroup } from '../../ui/FormRadioGroup'
+import { FormRadioCard } from '../../ui/FormRadioCard'
+import { Button } from '../../ui/Button'
 
 type Inputs = {
   name: string
@@ -40,8 +42,6 @@ const SignUp = () => {
   const router = useRouter()
 
   const [error, setError] = useState('')
-  const [passType, setPassType] = useState<'password' | 'text'>('password')
-  const [confirmPassType, setConfirmPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -80,7 +80,7 @@ const SignUp = () => {
         countdown -= 1
 
         if (countdown > 0) {
-          toast.success(`Redirecting to login in ${countdown}s...`, {
+          toast.success(`Account created successfully. Redirecting to login in ${countdown}s...`, {
             id: toastId,
           })
         } else {
@@ -189,154 +189,72 @@ const SignUp = () => {
             className="space-y-6"
           >
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-sm text-muted-foreground">Full name</label>
-                <input
-                  placeholder="John Doe"
-                  {...register('name', { required: true })}
-                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-                />
-                {errors.name && (
-                  <span className="text-xs text-destructive">Required</span>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm text-muted-foreground">Email</label>
-                <input
-                  // type="email"
-                  placeholder="john@email.com"
-                  {...register('email', { required: true })}
-                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-                />
-                {errors.email && (
-                  <span className="text-xs text-destructive">Required</span>
-                )}
-              </div>
+              <FormInput
+                label='Full Name'
+                placeholder='John Doe'
+                type='text'
+                register={register('name', { required: true })}
+                error={errors.name}
+              />
+              <FormInput
+                label="Email"
+                type="email"
+                placeholder="john@email.com"
+                register={register('email', { required: true })}
+                error={errors.email}
+              />
             </div>
-
-            <div className="space-y-1">
-              <label className="text-sm text-muted-foreground">Password</label>
-              <div className="relative">
-                <input
-                  type={passType}
-                  placeholder="••••••••"
-                  {...register('password', { required: true })}
-                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary/40"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setPassType(passType === 'password' ? 'text' : 'password')
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {passType === 'password' ? <Eye size={18} /> : <EyeOff size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <span className="text-xs text-destructive">Required</span>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-sm text-muted-foreground">Confirm password</label>
-              <div className="relative">
-                <input
-                  type={confirmPassType}
-                  placeholder="••••••••"
-                  {...register('confirmPassword', {
-                    required: true,
-                    validate: (value) =>
-                      value === password || 'Passwords do not match',
-                  })}
-                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setConfirmPassType(confirmPassType === 'password' ? 'text' : 'password')
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {confirmPassType === 'password' ? <Eye size={18} /> : <EyeOff size={18} />}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <span className="text-xs text-destructive">
-                  {errors.confirmPassword.message || 'Required'}
-                </span>
-              )}
-            </div>
+            <FormInput
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              register={register('password', { required: true })}
+              error={errors.password}
+            />
+            <FormInput
+              label="Confirm Password"
+              type="password"
+              placeholder="••••••••"
+              register={register('confirmPassword', {
+                required: true, validate: (value) =>
+                  value === password || 'Passwords do not match',
+              })}
+              error={errors.confirmPassword}
+            />
 
 
-            <div className="space-y-3">
-              <label className="text-sm text-muted-foreground">
-                What best describes you?
-              </label>
+            <FormRadioGroup
+              label="What best describes you?"
+              error={errors.role}
+            >
+              <FormRadioCard
+                value={Role.JOB_SEEKER}
+                title="Job Seeker"
+                description="Discover and apply to relevant roles"
+                register={register('role', { required: true })}
+              />
 
-              <label className="flex items-start gap-4 rounded-2xl border border-border/40 px-4 py-4 cursor-pointer has-[:checked]:border-primary/40 has-[:checked]:bg-primary/5 transition">
-                <input
-                  type="radio"
-                  value={Role.JOB_SEEKER}
-                  {...register('role')}
-                  className="sr-only peer"
-                />
-                <div className="mt-1 h-4 w-4 rounded-full border-2 border-muted-foreground peer-checked:border-primary peer-checked:border-[5px] transition" />
-                <div>
-                  <p className="font-medium">Job Seeker</p>
-                  <p className="text-sm text-muted-foreground">
-                    Discover and apply to relevant roles
-                  </p>
-                </div>
-              </label>
+              <FormRadioCard
+                value={Role.COMPANY_ADMIN}
+                title="Company Admin"
+                description="Post jobs and manage applicants"
+                register={register('role', { required: true })}
+              />
+            </FormRadioGroup>
 
-              <label className="flex items-start gap-4 rounded-2xl border border-border/40 px-4 py-4 cursor-pointer has-[:checked]:border-primary/40 has-[:checked]:bg-primary/5 transition">
-                <input
-                  type="radio"
-                  value={Role.COMPANY_ADMIN}
-                  {...register('role')}
-                  className="sr-only peer"
-                />
-                <div className="mt-1 h-4 w-4 rounded-full border-2 border-muted-foreground peer-checked:border-primary peer-checked:border-[5px] transition" />
-                <div>
-                  <p className="font-medium">Company Admin</p>
-                  <p className="text-sm text-muted-foreground">
-                    Post jobs and manage applicants
-                  </p>
-                </div>
-              </label>
-            </div>
 
             {error && (
               <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
               </div>
             )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="
-    w-full rounded-2xl
-    border border-border/40
-    bg-foreground
-    px-4 py-3
-    text-sm font-semibold
-    text-background
-    transition
-    hover:opacity-90
-    focus-visible:outline-none
-    focus-visible:ring-2
-    focus-visible:ring-primary/40
-    disabled:opacity-70
-  "
+            <Button
+              type='submit'
+              isLoading={isLoading}
             >
-              {isLoading ? <Spinner className="h-5 w-5 mx-auto" /> : 'Create account'}
-            </button>
-
+              Create account
+            </Button>
           </form>
-
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link href="/login" className="text-foreground hover:underline">

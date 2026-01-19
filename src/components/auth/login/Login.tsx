@@ -1,15 +1,15 @@
 'use client'
 
 import { isValidEmail } from '@/src/utils/helper'
-import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { Spinner } from '../../elements/Loader'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
+import { FormInput } from '../../ui/FormInput'
+import { Button } from '../../ui/Button'
 
 type Inputs = {
   email: string
@@ -31,7 +31,6 @@ const Login = () => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const callbackURL = searchParams.get('callbackUrl')
-  const [passType, setPassType] = useState<'password' | 'text'>('password')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -159,63 +158,29 @@ const Login = () => {
             onSubmit={handleSubmit(handleFormSubmit)}
             className="space-y-6"
           >
-            <div className="space-y-1">
-              <div className="space-y-1">
-                <label className="text-sm text-muted-foreground">Email</label>
-                <input
-                  placeholder="john@email.com"
-                  {...register('email', { required: true })}
-                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-                />
-                {errors.email && (
-                  <span className="text-xs text-destructive">Required</span>
-                )}
-              </div>
-            </div>
+            <FormInput
+              label="Email"
+              type="email"
+              placeholder="john@email.com"
+              register={register('email', { required: true })}
+              error={errors.email}
+            />
 
-            <div className="space-y-1">
-              <label className="text-sm text-muted-foreground">Password</label>
-              <div className="relative">
-                <input
-                  type={passType}
-                  placeholder="••••••••"
-                  {...register('password', { required: true })}
-                  className="w-full rounded-xl border border-border/40 bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary/40"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setPassType(passType === 'password' ? 'text' : 'password')
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {passType === 'password' ? <Eye size={18} /> : <EyeOff size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <span className="text-xs text-destructive">Required</span>
-              )}
-            </div>
-            <button
+            <FormInput
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              register={register('password', { required: true })}
+              error={errors.password}
+            />
+
+            <Button
               type="submit"
-              disabled={isLoading}
-              className="
-    w-full rounded-2xl
-    border border-border/40
-    bg-foreground
-    px-4 py-3
-    text-sm font-semibold
-    text-background
-    transition
-    hover:opacity-90
-    focus-visible:outline-none
-    focus-visible:ring-2
-    focus-visible:ring-primary/40
-    disabled:opacity-70
-  "
+              isLoading={isLoading}
             >
-              {isLoading ? <Spinner className="h-5 w-5 mx-auto" /> : 'Login'}
-            </button>
+              Login
+            </Button>
+
           </form>
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{' '}
