@@ -148,7 +148,7 @@ const CreateAdminUser = () => {
           type="submit"
           isLoading={isLoading}
           disabled={isLoading}
-          className='w-full'
+          className='w-full py-3'
         >
           Create Admin
         </Button>
