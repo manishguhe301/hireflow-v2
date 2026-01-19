@@ -58,10 +58,10 @@ const SignUp = () => {
     setIsLoading(true)
 
     const user = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      role: data.role
+      name: data.name.trim(),
+      email: data.email.trim(),
+      password: data.password.trim(),
+      role: data.role.trim()
     }
 
     try {
