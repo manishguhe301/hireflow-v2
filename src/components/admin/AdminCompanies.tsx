@@ -51,7 +51,7 @@ const AdminCompanies = () => {
       const res = await AppSdk.getData(url, null)
 
       if (res.companies) {
-        setCompanies(res.companies)
+        // setCompanies(res.companies)
       }
     } catch (error) {
       console.error(error);

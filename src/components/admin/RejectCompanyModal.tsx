@@ -64,7 +64,7 @@ const RejectCompanyModal = ({
             onClick={() =>
               rejectCompanyId && onReject(rejectCompanyId, rejectReason)
             }
-            className="px-4! py-2! rounded-xl bg-red-500 text-white hover:opacity-90 disabled:opacity-50 w-full"
+            className="px-4! py-2! rounded-xl bg-red-500 text-white hover:opacity-90 disabled:opacity-50 w-full border-red-500"
           >
             {isLoading ? <Spinner className="h-4 w-4" /> : 'Reject'}
           </Button>

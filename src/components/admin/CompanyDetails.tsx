@@ -49,16 +49,16 @@ const CompanyDetails = () => {
     fetchCompany()
   }, [id])
 
-  const mockCompany = useMemo(
-    () => mockCompanies.find((c) => c.id === id),
-    [id]
-  )
-  useEffect(() => {
-    if (mockCompany) {
-      setCompany(mockCompany)
-      setIsLoading(false)
-    }
-  }, [mockCompany])
+  // const mockCompany = useMemo(
+  //   () => mockCompanies.find((c) => c.id === id),
+  //   [id]
+  // )
+  // useEffect(() => {
+  //   if (mockCompany) {
+  //     setCompany(mockCompany)
+  //     setIsLoading(false)
+  //   }
+  // }, [mockCompany])
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
@@ -213,13 +213,13 @@ const CompanyDetails = () => {
 
           {company.status === 'PENDING' && (
             <div className="flex flex-wrap gap-3">
-              <Button className="px-4 py-2  bg-green-600 text-white text-sm hover:opacity-90"
+              <Button className="px-4 py-2 border-none  bg-green-600 text-white text-sm hover:opacity-90"
                 onClick={() => handleApprove(company.id)}
                 disabled={loadingAction === `approve-${company.id}`}
               >
                 {loadingAction === `approve-${company.id}` ? 'Approving Company...' : 'Approve Company'}
               </Button>
-              <Button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90"
+              <Button className="px-4 py-2 rounded-xl bg-red-600 text-white border-none text-sm hover:opacity-90"
                 onClick={() => handleReject(company.id, rejectionReason)}
                 disabled={loadingAction === `reject-${company.id}`}
               >
@@ -229,7 +229,8 @@ const CompanyDetails = () => {
           )}
 
           {company.status === 'APPROVED' && (
-            <Button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90" onClick={() => handleReject(company.id, rejectionReason)}
+            <Button
+              className="px-4 py-2 rounded-xl bg-red-600 text-white border-none text-sm hover:opacity-90" onClick={() => handleReject(company.id, rejectionReason)}
             >
               Reject Company
             </Button>
