@@ -83,13 +83,13 @@ const CreateAdminUser = () => {
   return (
     <div className="p-4 md:p-8 md:px-8 w-full max-w-xl mx-auto animate-in fade-in duration-500">
       <div className="mb-8">
-        <button
+        <Button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 cursor-pointer"
+          className="inline-flex items-center gap-2  mb-6 border-none p-0!"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Users
-        </button>
+        </Button>
         <h1 className="text-3xl font-bold tracking-tight">
           Create Platform Admin
         </h1>
@@ -148,6 +148,7 @@ const CreateAdminUser = () => {
           type="submit"
           isLoading={isLoading}
           disabled={isLoading}
+          className='w-full'
         >
           Create Admin
         </Button>

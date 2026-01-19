@@ -5,6 +5,7 @@ import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useBreadcrumbs } from '@/src/store/hooks/useBreadCrumb'
+import { Button } from '../ui/Button'
 
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const { data: session } = useSession()
@@ -24,12 +25,12 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
 
-          <button
+          <Button
             onClick={onMenuClick}
-            className="md:hidden rounded-lg border border-border/40 p-2 hover:bg-muted/40"
+            className="md:hidden rounded-lg border border-border/40 p-2! hover:bg-muted/40 w-fit!"
           >
             <Menu size={18} />
-          </button>
+          </Button>
 
           <Link href="/redirect" className="md:hidden text-lg font-semibold">
             HireFlow<span className="text-primary">.</span>
@@ -64,12 +65,12 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
               <span className="text-xs text-muted-foreground">{user.role}</span>
             </div>
 
-            <button
+            <Button
               onClick={handleLogout}
-              className="rounded-full border border-destructive/30 bg-destructive/10 px-4 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/20 transition"
+              className="rounded-full!  px-4! py-1.5! text-sm  transition"
             >
               Logout
-            </button>
+            </Button>
           </div>
         )}
       </div>

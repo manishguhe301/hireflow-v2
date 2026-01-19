@@ -10,6 +10,7 @@ import { Spinner } from "../elements/Loader"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import UserDeleteModal from "./UserDeleteModal"
+import { Button } from "../ui/Button"
 
 const labels = {
   JOB_SEEKER: 'Job Seeker',
@@ -118,10 +119,10 @@ const AdminUsersList = () => {
             />
           </div>
           <Link href="/admin/create-admin">
-            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition flex items-center gap-2 whitespace-nowrap border border-primary/30">
+            <Button className="  transition flex items-center gap-2 whitespace-nowrap ">
               <UserPlus className="h-4 w-4" />
               Create Admin
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
@@ -183,8 +184,8 @@ const AdminUsersList = () => {
                         <td className="px-6 py-4 text-right">
                           {
                             user.id !== session?.user?.id ? (
-                              <button
-                                className="text-muted-foreground hover:text-destructive disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                              <Button
+                                className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed"
                                 disabled={
                                   !!loadingAction ||
                                   user.id === session?.user?.id
@@ -197,7 +198,7 @@ const AdminUsersList = () => {
                                 ) : (
                                   <Trash2 className="h-4 w-4" />
                                 )}
-                              </button>
+                              </Button>
                             ) : <div>
                               <span className="text-muted-foreground">You</span>
                             </div>

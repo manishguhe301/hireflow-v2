@@ -19,6 +19,7 @@ import { mockCompanies } from '@/src/utils/mock'
 import { STATUS_STYLE, TABS } from '@/src/utils/helper'
 import DeleteCompanyModal from './DeleteCompanyModal'
 import RejectCompanyModal from './RejectCompanyModal'
+import { Button } from '../ui/Button'
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState<Company[]>(mockCompanies)
@@ -236,9 +237,9 @@ const AdminCompanies = () => {
                             >View Details</Link>
                             {company.status === 'PENDING' && (
                               <>
-                                <button
+                                <Button
                                   onClick={() => handleApprove(company.id)}
-                                  className="text-green-600 hover:underline text-xs"
+                                  className="text-green-600 border-none w-fit p-0! hover:underline text-xs"
                                   disabled={
                                     loadingAction === `approve-${company.id}` ||
                                     !!rejectCompanyId
@@ -246,8 +247,8 @@ const AdminCompanies = () => {
                                 >
                                   {loadingAction === `approve-${company.id}` ?
                                     'Approving...' : 'Approve'}
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   onClick={() => {
                                     setDeleteCompanyId(null)
                                     setRejectCompanyId(company.id)
@@ -255,31 +256,31 @@ const AdminCompanies = () => {
                                   disabled={
                                     !!loadingAction && loadingAction !== `reject-${company.id}`
                                   }
-                                  className="text-red-600 hover:underline text-xs"
+                                  className="text-red-600 hover:underline text-xs border-none w-fit p-0!"
                                 >
                                   {loadingAction === `reject-${company.id}` ?
                                     'Rejecting...' : 'Reject'}
-                                </button>
+                                </Button>
                               </>
                             )}
 
                             {company.status === 'APPROVED' && (
-                              <button
+                              <Button
                                 onClick={() => {
                                   setDeleteCompanyId(null)
                                   setRejectCompanyId(company.id)
                                 }}
-                                className="text-red-600 hover:underline text-xs"
+                                className="text-red-600 hover:underline text-xs p-0! border-none w-fit"
                                 disabled={
                                   !!loadingAction && loadingAction !== `reject-${company.id}`
                                 }                              >
                                 {loadingAction === `reject-${company.id}` ?
                                   'Rejecting...' : 'Reject'}
-                              </button>
+                              </Button>
                             )}
 
-                            <button
-                              className="text-muted-foreground hover:text-destructive disabled:opacity-50"
+                            <Button
+                              className="p-0! border-none"
                               disabled={loadingAction === `delete-${company.id}`}
                               onClick={() => {
                                 setRejectCompanyId(null)
@@ -291,7 +292,7 @@ const AdminCompanies = () => {
                               ) : (
                                 <Trash2 className="h-4 w-4" />
                               )}
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>

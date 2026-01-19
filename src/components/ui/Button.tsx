@@ -27,9 +27,9 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 }
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'px-3 py-2 text-xs rounded-xl',
-  md: 'px-4 py-3 text-sm rounded-2xl',
-  lg: 'px-6 py-3.5 text-base rounded-2xl',
+  sm: 'px-3 py-1 text-xs rounded-xl',
+  md: 'px-4 py-2 text-sm rounded-xl',
+  lg: 'px-6 py-3.5 text-base rounded-xl',
 }
 
 export const Button = ({
@@ -47,9 +47,9 @@ export const Button = ({
       {...props}
       disabled={disabled || isLoading}
       className={clsx(
-        'w-full font-semibold border transition',
+        'w-fit font-semibold border transition',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-        'disabled:opacity-70 disabled:cursor-not-allowed',
+        'disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer',
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         className

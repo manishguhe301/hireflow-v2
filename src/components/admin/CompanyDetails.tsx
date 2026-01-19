@@ -23,6 +23,7 @@ import InfoCard from './InfoCard'
 import { Spinner } from '../elements/Loader'
 import { STATUS_STYLE } from '@/src/utils/helper'
 import { mockCompanies } from '@/src/utils/mock'
+import { Button } from '../ui/Button'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -48,16 +49,16 @@ const CompanyDetails = () => {
     fetchCompany()
   }, [id])
 
-  // const mockCompany = useMemo(
-  //   () => mockCompanies.find((c) => c.id === id),
-  //   [id]
-  // )
-  // useEffect(() => {
-  //   if (mockCompany) {
-  //     setCompany(mockCompany)
-  //     setIsLoading(false)
-  //   }
-  // }, [mockCompany])
+  const mockCompany = useMemo(
+    () => mockCompanies.find((c) => c.id === id),
+    [id]
+  )
+  useEffect(() => {
+    if (mockCompany) {
+      setCompany(mockCompany)
+      setIsLoading(false)
+    }
+  }, [mockCompany])
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
@@ -124,12 +125,12 @@ const CompanyDetails = () => {
             </p>
           </div>
 
-          <button
+          <Button
             onClick={() => router.push('/admin/companies')}
             className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition"
           >
             Back to Companies
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -137,13 +138,13 @@ const CompanyDetails = () => {
 
   return (
     <div className="p-8 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
-      <button
+      <Button
         onClick={() => router.back()}
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        className="inline-flex items-center gap-2 text-sm border-none p-0!"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Companies
-      </button>
+      </Button>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
@@ -212,29 +213,27 @@ const CompanyDetails = () => {
 
           {company.status === 'PENDING' && (
             <div className="flex flex-wrap gap-3">
-              <button className="px-4 py-2 rounded-xl bg-green-600 text-white text-sm hover:opacity-90"
+              <Button className="px-4 py-2  bg-green-600 text-white text-sm hover:opacity-90"
                 onClick={() => handleApprove(company.id)}
                 disabled={loadingAction === `approve-${company.id}`}
               >
                 {loadingAction === `approve-${company.id}` ? 'Approving Company...' : 'Approve Company'}
-              </button>
-              <button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90"
+              </Button>
+              <Button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90"
                 onClick={() => handleReject(company.id, rejectionReason)}
                 disabled={loadingAction === `reject-${company.id}`}
               >
                 {loadingAction === `reject-${company.id}` ? 'Rejecting Company...' : 'Reject Company'}
-              </button>
+              </Button>
             </div>
           )}
 
           {company.status === 'APPROVED' && (
-            <button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90" onClick={() => handleReject(company.id, rejectionReason)}
+            <Button className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90" onClick={() => handleReject(company.id, rejectionReason)}
             >
               Reject Company
-            </button>
+            </Button>
           )}
-
-
         </section>
       )}
 

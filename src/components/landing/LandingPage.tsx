@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { Button } from '../ui/Button';
 
 const featuredJobs = [
   { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
@@ -99,8 +100,8 @@ export default function HomePage() {
               ))}
 
               <div className='pb-3 border-b border-border/30'></div>
-              <button
-                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition "
+              <Button
+                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2! text-sm font-medium text-destructive hover:bg-destructive/20 transition "
               >
                 <Link
                   className="w-full block text-sm text-muted-foreground hover:text-primary transition"
@@ -108,7 +109,7 @@ export default function HomePage() {
                 >
                   Login
                 </Link>
-              </button>
+              </Button>
             </div>
           </details>
         </div>

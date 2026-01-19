@@ -1,6 +1,7 @@
 import React from 'react'
 import Modal from '../ui/Modal'
 import { Spinner } from '../elements/Loader'
+import { Button } from '../ui/Button'
 
 type UserDeleteModalProps = {
   deleteUserId: string | null,
@@ -28,24 +29,24 @@ const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingA
         </p>
 
         <div className="flex justify-end gap-3 pt-4">
-          <button
+          <Button
             onClick={() => setDeleteUserId(null)}
-            className="px-4 py-2 rounded-xl border border-border/40 text-sm hover:bg-muted/40"
+            className=" px-4! py-2! rounded-xl w-full"
           >
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handleDelete}
             disabled={loadingAction === `delete-${deleteUserId}`}
-            className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm hover:opacity-90 disabled:opacity-70"
+            className="px-4! py-2! border-none! rounded-xl bg-red-500 text-white  disabled:opacity-70 w-full "
           >
             {loadingAction === `delete-${deleteUserId}` ? (
               'Deleting...'
             ) : (
               'Delete'
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

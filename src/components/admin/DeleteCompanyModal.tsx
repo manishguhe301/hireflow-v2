@@ -1,4 +1,5 @@
 import { Spinner } from "../elements/Loader"
+import { Button } from "../ui/Button"
 import Modal from "../ui/Modal"
 
 type DeleteCompanyModalProps = {
@@ -30,24 +31,24 @@ const DeleteCompanyModal = ({
         </p>
 
         <div className="flex justify-end gap-3 pt-4">
-          <button
+          <Button
             onClick={() => setDeleteCompanyId(null)}
-            className="px-4 py-2 rounded-xl border border-border/40 text-sm hover:bg-muted/40"
+            className="px-4! py-2! rounded-xl w-full "
           >
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handleDelete}
             disabled={loadingAction === `delete-${deleteCompanyId}`}
-            className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm hover:opacity-90 disabled:opacity-70"
+            className="px-4! py-2!  bg-red-500 text-white rounded-xl border-red-500  disabled:opacity-70 w-full"
           >
             {loadingAction === `delete-${deleteCompanyId}` ? (
               <Spinner className="h-4 w-4" />
             ) : (
               'Delete'
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

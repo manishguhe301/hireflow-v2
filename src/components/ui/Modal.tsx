@@ -4,6 +4,7 @@ import { ReactNode, useEffect } from 'react'
 import { X } from 'lucide-react'
 import clsx from 'clsx'
 import { useTheme } from 'next-themes'
+import { Button } from './Button'
 
 interface ModalProps {
   open: boolean
@@ -45,12 +46,12 @@ const Modal = ({ open, onClose, children, className }: ModalProps) => {
           className
         )}
       >
-        <button
+        <Button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-md p-1 text-foreground/70 hover:text-foreground hover:bg-muted/40 transition cursor-pointer border"
+          className="absolute right-4 top-4 rounded-md p-1! text-foreground/70 hover:text-foreground hover:bg-muted/40 transition cursor-pointer border"
         >
           <X size={18} />
-        </button>
+        </Button>
 
         <div className="p-6 text-foreground">{children}</div>
       </div>

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import StatCard from './StatCard'
+import { Button } from '../ui/Button'
 
 interface DashboardStats {
   companies: {
@@ -68,12 +69,12 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load dashboard data</p>
-          <button
+          <Button
             onClick={fetchStats}
-            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg border border-background/30"
+            className="mt-4"
           >
             Retry
-          </button>
+          </Button>
         </div>
       </div>
     )
