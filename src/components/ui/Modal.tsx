@@ -49,7 +49,7 @@ const Modal = ({ open, onClose, children, className }: ModalProps) => {
         <Button
           onClick={onClose}
           variant='danger'
-          className="absolute right-4 top-4 rounded-md p-1!   transition cursor-pointer border border-border/40 bg-none!"
+          className="absolute right-4 top-4 rounded-md p-1!   transition cursor-pointer border border-border/60 bg-none!"
         >
           <X size={18} />
         </Button>

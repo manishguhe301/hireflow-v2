@@ -56,7 +56,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
 
   if (status === 'loading') {
     return (
-      <div className='hidden md:flex w-64 flex-col items-center justify-center border-r border-border/40 bg-card px-4 py-6'>
+      <div className='hidden md:flex w-64 flex-col items-center justify-center border-r border-border/60 bg-card px-4 py-6'>
         <Spinner className="h-8 w-8" />
       </div>
     )
@@ -70,7 +70,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'w-64 flex-col border-r border-border/40 px-4 py-6 transition',
+        'w-64 flex-col border-r border-border/60 px-4 py-6 transition',
         'md:fixed md:inset-y-0 md:left-0 md:min-h-screen md:overflow-y-auto',
         mobile ? 'flex h-full' : 'hidden md:flex',
         'bg-background'

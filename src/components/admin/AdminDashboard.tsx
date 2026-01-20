@@ -180,7 +180,7 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/admin/companies"
-            className="p-6 bg-card border border-border/40 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
           >
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition">
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
 
           <Link
             href="/admin/users"
-            className="p-6 bg-card border border-border/40 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
           >
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center transition">
@@ -216,7 +216,7 @@ const AdminDashboard = () => {
 
           <Link
             href="/admin/create-admin"
-            className="p-6 bg-card border border-border/40 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
           >
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center transition">

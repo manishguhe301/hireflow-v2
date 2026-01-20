@@ -190,7 +190,7 @@ const AdminCompanies = () => {
                 <p className="mt-4 text-muted-foreground">No companies found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-border/40 bg-card">
+              <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
                 <CompaniesTable
                   filteredCompanies={filteredCompanies}
                   handleApprove={handleApprove}

@@ -22,7 +22,7 @@ const UsersTable = ({
 
   return (
     <table className="w-full text-sm">
-      <thead className="bg-muted/40 border-b border-border/40">
+      <thead className="bg-muted/40 border-b border-border/60">
         <tr>
           {/* <th className="px-6 py-4 text-left">Id</th> */}
           <th className="px-6 py-4 text-left">Name</th>

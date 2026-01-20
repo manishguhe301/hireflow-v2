@@ -136,7 +136,7 @@ const AdminUsersList = () => {
                 <p className="mt-4 text-muted-foreground">No users found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-border/40 bg-card">
+              <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
                 <UsersTable
                   filteredUsers={filteredUsers}
                   loadingAction={loadingAction}

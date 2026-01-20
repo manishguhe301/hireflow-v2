@@ -62,7 +62,7 @@ export default function ProtectedLayout({
 
         <div
           className={clsx(
-            'absolute left-0 top-0 h-full w-64 bg-card border-r border-border/40',
+            'absolute left-0 top-0 h-full w-64 bg-card border-r border-border/60',
             'transform transition-transform duration-300 ease-out',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           )}
