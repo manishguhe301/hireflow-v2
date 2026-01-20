@@ -1,4 +1,5 @@
 import { Spinner } from "../elements/Loader"
+import { Button } from "../ui/Button"
 import Modal from "../ui/Modal"
 
 type RejectCompanyModalProps = {
@@ -48,25 +49,25 @@ const RejectCompanyModal = ({
         />
 
         <div className="flex justify-end gap-3 pt-4">
-          <button
+          <Button
             onClick={() => {
               setRejectCompanyId(null)
               setRejectReason('')
             }}
-            className="px-4 py-2 rounded-xl border border-border/40 text-sm hover:bg-muted/40"
+            className="px-4! py-2! rounded-xl! w-full "
           >
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
             disabled={!rejectReason.trim() || isLoading}
             onClick={() =>
               rejectCompanyId && onReject(rejectCompanyId, rejectReason)
             }
-            className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm hover:opacity-90 disabled:opacity-50"
+            className="px-4! py-2! rounded-xl bg-red-500 text-white hover:opacity-90 disabled:opacity-50 w-full border-red-500"
           >
             {isLoading ? <Spinner className="h-4 w-4" /> : 'Reject'}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

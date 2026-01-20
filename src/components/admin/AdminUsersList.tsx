@@ -10,12 +10,8 @@ import { Spinner } from "../elements/Loader"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import UserDeleteModal from "./UserDeleteModal"
-
-const labels = {
-  JOB_SEEKER: 'Job Seeker',
-  COMPANY_ADMIN: 'Company Admin',
-  PLATFORM_ADMIN: 'Platform Admin',
-}
+import { Button } from "../ui/Button"
+import UsersTable from "./UsersTable"
 
 const AdminUsersList = () => {
   const [users, setUsers] = useState<User[]>([])
@@ -23,7 +19,6 @@ const AdminUsersList = () => {
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
-  const { data: session } = useSession()
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
 
   const fetchUsers = async (role?: string) => {
@@ -118,10 +113,10 @@ const AdminUsersList = () => {
             />
           </div>
           <Link href="/admin/create-admin">
-            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 transition flex items-center gap-2 whitespace-nowrap border border-primary/30">
+            <Button className="  transition flex items-center gap-2 whitespace-nowrap ">
               <UserPlus className="h-4 w-4" />
               Create Admin
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
@@ -138,75 +133,11 @@ const AdminUsersList = () => {
               </div>
             ) : (
               <div className="overflow-x-auto rounded-2xl border border-border/40 bg-card">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/40 border-b border-border/40">
-                    <tr>
-                      {/* <th className="px-6 py-4 text-left">Id</th> */}
-                      <th className="px-6 py-4 text-left">Name</th>
-                      <th className="px-6 py-4 text-left">Email</th>
-                      <th className="px-6 py-4 text-left">Role</th>
-                      <th className="px-6 py-4 text-left">Email Verified</th>
-                      <th className="px-6 py-4 text-right">Created At</th>
-                      <th className="px-6 py-4 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr
-                        key={user.id}
-                        className='w-full hover:bg-muted/30 transition'
-                      >
-                        {/* <td className="px-6 py-4">
-                          {user.id}
-                        </td> */}
-                        <td className="px-6 py-4">
-                          {user.name}
-                        </td>
-                        <td className="px-6 py-4">{user.email}</td>
-                        <td className="px-6 py-4">{labels[user.role]}</td>
-                        <td className="px-6 py-4">
-                          {user.emailVerified ? (
-                            <div className="inline-flex items-center gap-2">
-                              <Check size={18} color="green" />
-                              <span className="text-green-600 text-xs">Verified</span>
-                            </div>
-                          ) : (
-                            <div className="inline-flex items-center gap-2">
-                              <X size={18} color='red' />
-                              <span className="text-red-600 text-xs">Not Verified</span>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          {formatDate(user.createdAt)}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          {
-                            user.id !== session?.user?.id ? (
-                              <button
-                                className="text-muted-foreground hover:text-destructive disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-                                disabled={
-                                  !!loadingAction ||
-                                  user.id === session?.user?.id
-                                }
-
-                                onClick={() => setDeleteUserId(user.id)}
-                              >
-                                {loadingAction === `delete-${user.id}` ? (
-                                  <Spinner className="h-4 w-4" />
-                                ) : (
-                                  <Trash2 className="h-4 w-4" />
-                                )}
-                              </button>
-                            ) : <div>
-                              <span className="text-muted-foreground">You</span>
-                            </div>
-                          }
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <UsersTable
+                  filteredUsers={filteredUsers}
+                  loadingAction={loadingAction}
+                  setDeleteUserId={setDeleteUserId}
+                />
               </div>
             )}
           </div>

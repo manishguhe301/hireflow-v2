@@ -11,38 +11,8 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-
-const featuredJobs = [
-  { id: 1, title: 'Frontend Engineer', company: 'TechNova', location: 'Remote', type: 'Full-time', tag: 'High Growth' },
-  { id: 2, title: 'Backend Developer', company: 'CloudCore', location: 'Bangalore', type: 'Full-time', tag: 'Urgent' },
-  { id: 3, title: 'UI/UX Designer', company: 'Designify', location: 'Mumbai', type: 'Hybrid', tag: 'New' },
-  { id: 4, title: 'Product Lead', company: 'Aura', location: 'Remote', type: 'Full-time', tag: 'Remote' },
-];
-
-const companies = [
-  { id: 1, name: "TechNova" },
-  { id: 2, name: "CloudCore" },
-  { id: 3, name: "Designify" },
-  { id: 4, name: "Aura" },
-  { id: 5, name: "ByteLabs" },
-  { id: 6, name: "NextZen" },
-];
-
-const links = [
-  {
-    label: 'Jobs',
-    href: '#jobs'
-  },
-  {
-    label: 'Companies',
-    href: '#companies'
-  },
-  {
-    label: 'How it works',
-    href: '#how-it-works'
-  },
-]
-
+import { Button } from '../ui/Button';
+import { companies, featuredJobs, links } from '@/src/utils/mock';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -99,8 +69,8 @@ export default function HomePage() {
               ))}
 
               <div className='pb-3 border-b border-border/30'></div>
-              <button
-                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2 text-sm font-medium text-destructive hover:bg-destructive/20 transition "
+              <Button
+                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2! text-sm font-medium text-destructive hover:bg-destructive/20 transition "
               >
                 <Link
                   className="w-full block text-sm text-muted-foreground hover:text-primary transition"
@@ -108,7 +78,7 @@ export default function HomePage() {
                 >
                   Login
                 </Link>
-              </button>
+              </Button>
             </div>
           </details>
         </div>
