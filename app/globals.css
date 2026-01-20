@@ -66,6 +66,9 @@
   --warning: 251 191 36; /* amber-400 */
   --warning-foreground: 15 23 42; /* slate-900 */
 
+  --destructive: 239 68 68; /* red-500 */
+  --destructive-foreground: 255 255 255; /* white */
+
   --info: 59 130 246; /* blue-500 */
   --info-foreground: 255 255 255; /* white */
 
