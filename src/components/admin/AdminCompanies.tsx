@@ -155,8 +155,12 @@ const AdminCompanies = () => {
                 'px-4 py-2 rounded-xl text-sm font-medium border transition cursor-pointer',
                 activeTab === tab.value
                   ? tab.value === 'ALL'
-                    ? 'bg-blue-500 text-white border-blue-500 shadow-lg'
-                    : `${STATUS_STYLE[tab.value as CompanyStatus]} shadow-lg`
+                    ? 'bg-primary text-primary-foreground border-primary/40 shadow-md'
+                    : tab.value === 'PENDING'
+                      ? 'bg-amber-400 text-amber-950 border-amber-950/40 shadow-md'
+                      : tab.value === 'APPROVED'
+                        ? 'bg-success/10 text-success border-success/40 shadow-md'
+                        : 'bg-destructive/10 text-destructive border-destructive/40 shadow-md'
                   : 'bg-card border-border/40 hover:bg-muted/40'
               )}
             >
@@ -170,7 +174,7 @@ const AdminCompanies = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search companies..."
-            className="w-full rounded-xl border border-border/40 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
+            className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
           />
         </div>
       </div>
@@ -186,7 +190,7 @@ const AdminCompanies = () => {
                 <p className="mt-4 text-muted-foreground">No companies found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-border/40 bg-card">
+              <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
                 <CompaniesTable
                   filteredCompanies={filteredCompanies}
                   handleApprove={handleApprove}

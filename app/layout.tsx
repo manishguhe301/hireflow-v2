@@ -10,7 +10,7 @@ import { ToasterProvider } from '@/src/components/toaster/ToasterProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'HireFlow - Professional Job Application Tracker',
+  title: 'HireFlow. - Professional Job Application Tracker',
   description: 'Track your job applications, manage company profiles, and find your dream job',
 };
 

@@ -24,7 +24,7 @@ export default function NotFound() {
         <div className="mt-8 flex items-center justify-center">
           <Link
             href="/redirect"
-            className="inline-flex items-center gap-2 rounded-xl border border-border/40 bg-card px-5 py-2.5 text-sm font-medium hover:bg-muted/40 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-border/60 bg-card px-5 py-2.5 text-sm font-medium hover:bg-muted/40 transition"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to dashboard
@@ -32,7 +32,7 @@ export default function NotFound() {
         </div>
 
         <p className="mt-10 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} HireFlow — Verified hiring, simplified.
+          © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span> — Verified hiring, simplified.
         </p>
       </div>
     </main>
