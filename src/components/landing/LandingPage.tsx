@@ -32,8 +32,8 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
+     <main className="min-h-screen bg-background text-foreground flex flex-col">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between max-md:mx-0">
           <Link href="/" className="text-xl font-semibold tracking-tight">
             HireFlow<span className="text-primary">.</span>
@@ -51,31 +51,29 @@ export default function HomePage() {
             </Link>
           </nav>
         </div>
+
         <div className="relative md:hidden px-6">
           <details className="group">
-            <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/40 transition ">
+            <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/50 transition">
               <Menu className="h-5 w-5" />
             </summary>
-            <div className={`absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 ${isDark ? 'bg-slate-950' : 'bg-slate-50'} shadow-xl p-4 space-y-3 backdrop-blur-xl`}>
+
+            <div className="absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 bg-card shadow-xl p-4 space-y-3 backdrop-blur-xl">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={handleMenuClose}
-                  className="w-full block text-sm text-muted-foreground hover:text-primary transition"
+                  className="block text-sm text-muted-foreground hover:text-primary transition"
                 >
                   {link.label}
                 </Link>
               ))}
 
-              <div className='pb-3 border-b border-border/30'></div>
-              <Button
-                className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2! text-sm font-medium text-destructive hover:bg-destructive/20 transition "
-              >
-                <Link
-                  className="w-full block text-sm text-muted-foreground hover:text-primary transition"
-                  href='/login'
-                >
+              <div className="pb-3 border-b border-border/60" />
+
+              <Button className="w-full rounded-xl border border-primary/30 bg-primary/10 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition">
+                <Link href="/login" className="block w-full">
                   Login
                 </Link>
               </Button>
@@ -87,7 +85,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-6 py-28 grid gap-16 md:grid-cols-2 items-center">
           <div>
-            <span className="inline-block mb-6 rounded-full border border-border/40 bg-muted/40 px-4 py-1 text-xs tracking-widest text-muted-foreground">
+            <span className="inline-block mb-6 rounded-full border border-border/40 bg-muted/50 px-4 py-1 text-xs tracking-widest text-muted-foreground">
               TRUSTED BY 5,000+ PROFESSIONALS
             </span>
 
@@ -96,7 +94,7 @@ export default function HomePage() {
               <span className="block text-primary">Build your career.</span>
             </h1>
 
-            <p className="mt-6 text-lg text-muted-foreground/80 max-w-xl">
+            <p className="mt-6 text-lg text-muted-foreground max-w-xl">
               HireFlow is a three-tier platform connecting job seekers with manually verified companies.
               Experience transparent hiring with real-time application tracking.
             </p>
@@ -108,51 +106,34 @@ export default function HomePage() {
               >
                 Get Started <ArrowRight className="w-4 h-4" />
               </Link>
+
               <Link
                 href="#jobs"
-                className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted/40 transition"
+                className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted/50 transition"
               >
                 Browse Jobs
               </Link>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1">
-              <div className="rounded-2xl border border-border/30 bg-card p-6">
-                <Briefcase className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">Quality Jobs</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Curated opportunities from verified companies only.
-                </p>
+          <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1">
+            {[
+              { icon: Briefcase, title: 'Quality Jobs', desc: 'Curated opportunities from verified companies only.' },
+              { icon: ShieldCheck, title: 'Verified Companies', desc: 'Every employer is manually approved.' },
+              { icon: Workflow, title: 'Application Tracking', desc: 'Track your hiring progress in real-time.' },
+              { icon: UserCircle, title: 'Complete Profiles', desc: 'Build detailed and professional profiles.' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="rounded-2xl border border-border/60 bg-card p-6">
+                <Icon className="w-6 h-6 text-primary mb-4" />
+                <h3 className="font-semibold">{title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
               </div>
-              <div className="rounded-2xl border border-border/30 bg-card p-6">
-                <ShieldCheck className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">Verified Companies</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Platform admin approval ensures every employer is legitimate.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/30 bg-card p-6">
-                <Workflow className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">Application Tracking</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Track your applications from &quot;Applied&quot; to &quot;Hired&quot; in real-time.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/30 bg-card p-6">
-                <UserCircle className="w-6 h-6 text-primary mb-4" />
-                <h3 className="font-semibold">Complete Profiles</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Build detailed profiles with resume, skills, and experience.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border/30" id='companies'>
+      <section className="border-t border-border/60" id='companies'>
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-semibold tracking-tight">
@@ -167,7 +148,7 @@ export default function HomePage() {
             {companies.map(company => (
               <div
                 key={company.id}
-                className="group flex flex-col items-center justify-center rounded-2xl border border-border/30 bg-card p-6 hover:border-primary/30 transition"
+                className="group flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-6 hover:border-primary/30 transition"
               >
                 <div className="relative mb-4">
                   <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
@@ -185,7 +166,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="how-it-works" className="border-t border-border/30">
+      <section id="how-it-works" className="border-t border-border/60">
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-semibold tracking-tight">
@@ -197,7 +178,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-border/30 bg-card p-8 hover:border-primary/30 transition group">
+            <div className="rounded-2xl border border-border/60 bg-card p-8 hover:border-primary/30 transition group">
               <div className="mb-6">
                 <div className="relative inline-flex">
                   <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl" />
@@ -219,7 +200,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/30 bg-card p-8 hover:border-primary/30 transition group">
+            <div className="rounded-2xl border border-border/60 bg-card p-8 hover:border-primary/30 transition group">
               <div className="mb-6">
                 <div className="relative inline-flex">
                   <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl" />
@@ -241,7 +222,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/30 bg-card p-8 hover:border-primary/30 transition group">
+            <div className="rounded-2xl border border-border/60 bg-card p-8 hover:border-primary/30 transition group">
               <div className="mb-6">
                 <div className="relative inline-flex">
                   <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl" />
@@ -264,7 +245,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-12 rounded-2xl border border-border/30 bg-muted/30 p-6">
+          <div className="mt-12 rounded-2xl border border-border/60 bg-muted/30 p-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <h4 className="font-semibold mb-1">Ready to get started?</h4>
@@ -284,7 +265,7 @@ export default function HomePage() {
       </section>
 
 
-      <section id="jobs" className="border-t border-border/30 bg-muted/30">
+      <section id="jobs" className="border-t border-border/60 bg-muted/30">
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="flex items-end justify-between mb-14">
             <div>
@@ -303,7 +284,7 @@ export default function HomePage() {
               <Link
                 key={job.id}
                 href="/login"
-                className="group rounded-2xl border border-border/30 bg-card p-6 transition hover:border-primary/30 hover:shadow-lg"
+                className="group rounded-2xl border border-border/60 bg-card p-6 transition hover:border-primary/30 hover:shadow-lg"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-start gap-5">
@@ -340,7 +321,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="mt-auto border-t border-border/30">
+      <footer className="mt-auto border-t border-border/60">
         <div className="mx-auto max-w-7xl px-6 py-14 grid gap-10 md:grid-cols-3">
           <div>
             <h4 className="font-semibold">HireFlow.</h4>
