@@ -57,7 +57,12 @@ const CompaniesTable = ({
               <span
                 className={clsx(
                   'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
-                  STATUS_STYLE[company.status]
+                  company.status === 'PENDING'
+                    ? 'bg-warning/10 text-warning'
+                    : company.status === 'APPROVED'
+                      ? 'bg-success/10 text-success'
+                      : 'bg-destructive/10 text-destructive'
+
                 )}
               >
                 {company.status === 'PENDING' && <Clock className="h-3 w-3" />}
@@ -70,21 +75,26 @@ const CompaniesTable = ({
               <div className="inline-flex items-center gap-2">
                 <Link
                   href={`/admin/companies/${company.id}`}
-                  className="text-muted-600 hover:underline text-xs"
-                >View Details</Link>
+                  className="text-muted-foreground hover:underline text-xs"
+                >
+                  View Details
+                </Link>
+
                 {company.status === 'PENDING' && (
                   <>
                     <Button
                       onClick={() => handleApprove(company.id)}
-                      className="text-green-600 border-none w-fit p-0! hover:underline text-xs"
                       disabled={
                         loadingAction === `approve-${company.id}` ||
                         !!rejectCompanyId
                       }
+                      className="text-success hover:underline text-xs border-none w-fit p-0! bg-transparent!"
                     >
-                      {loadingAction === `approve-${company.id}` ?
-                        'Approving...' : 'Approve'}
+                      {loadingAction === `approve-${company.id}`
+                        ? 'Approving...'
+                        : 'Approve'}
                     </Button>
+
                     <Button
                       onClick={() => {
                         setDeleteCompanyId(null)
@@ -93,11 +103,13 @@ const CompaniesTable = ({
                       disabled={
                         !!loadingAction && loadingAction !== `reject-${company.id}`
                       }
-                      className="text-red-600 hover:underline text-xs border-none w-fit p-0!"
+                      className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent"
                     >
-                      {loadingAction === `reject-${company.id}` ?
-                        'Rejecting...' : 'Reject'}
+                      {loadingAction === `reject-${company.id}`
+                        ? 'Rejecting...'
+                        : 'Reject'}
                     </Button>
+
                   </>
                 )}
 
@@ -107,8 +119,7 @@ const CompaniesTable = ({
                       setDeleteCompanyId(null)
                       setRejectCompanyId(company.id)
                     }}
-                    className="text-red-600 hover:underline text-xs p-0! border-none w-fit"
-                    disabled={
+                    className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent" disabled={
                       !!loadingAction && loadingAction !== `reject-${company.id}`
                     }                              >
                     {loadingAction === `reject-${company.id}` ?
@@ -117,7 +128,7 @@ const CompaniesTable = ({
                 )}
 
                 <Button
-                  className="p-0! border-none"
+                  className="p-0! border-none text-destructive! bg-transparent hover:text-destructive/80"
                   disabled={loadingAction === `delete-${company.id}`}
                   onClick={() => {
                     setRejectCompanyId(null)
@@ -130,6 +141,7 @@ const CompaniesTable = ({
                     <Trash2 className="h-4 w-4" />
                   )}
                 </Button>
+
               </div>
             </td>
           </tr>
