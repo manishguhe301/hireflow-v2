@@ -25,14 +25,12 @@ export default function HomePage() {
 
   if (!mounted) return null
 
-  const isDark = theme === 'dark'
-
   const handleMenuClose = (e: React.MouseEvent) => {
     e.currentTarget.closest('details')?.removeAttribute('open')
   }
 
   return (
-     <main className="min-h-screen bg-background text-foreground flex flex-col">
+    <main className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between max-md:mx-0">
           <Link href="/" className="text-xl font-semibold tracking-tight">
@@ -54,11 +52,11 @@ export default function HomePage() {
 
         <div className="relative md:hidden px-6">
           <details className="group">
-            <summary className="list-none cursor-pointer rounded-full border border-border/40 p-2 hover:bg-muted/50 transition">
+            <summary className="list-none cursor-pointer rounded-full border border-border/60 p-2 hover:bg-muted/50 transition">
               <Menu className="h-5 w-5" />
             </summary>
 
-            <div className="absolute right-6 mt-3 w-56 rounded-2xl border border-border/40 bg-card shadow-xl p-4 space-y-3 backdrop-blur-xl">
+            <div className="absolute right-6 mt-3 w-56 rounded-2xl border border-border/60 bg-background shadow-xl p-4 space-y-3 ">
               {links.map((link) => (
                 <Link
                   key={link.href}
@@ -72,7 +70,9 @@ export default function HomePage() {
 
               <div className="pb-3 border-b border-border/60" />
 
-              <Button className="w-full rounded-xl border border-primary/30 bg-primary/10 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition">
+              <Button
+                variant='primary'
+                className="w-full rounded-xl border">
                 <Link href="/login" className="block w-full">
                   Login
                 </Link>
@@ -85,7 +85,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-6 py-28 grid gap-16 md:grid-cols-2 items-center">
           <div>
-            <span className="inline-block mb-6 rounded-full border border-border/40 bg-muted/50 px-4 py-1 text-xs tracking-widest text-muted-foreground">
+            <span className="inline-block mb-6 rounded-full border border-border/60 bg-muted/50 px-4 py-1 text-xs tracking-widest text-muted-foreground">
               TRUSTED BY 5,000+ PROFESSIONALS
             </span>
 
@@ -95,7 +95,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-              HireFlow is a three-tier platform connecting job seekers with manually verified companies.
+              HireFlow<span className="text-primary">.</span> is a three-tier platform connecting job seekers with manually verified companies.
               Experience transparent hiring with real-time application tracking.
             </p>
 
@@ -137,7 +137,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-semibold tracking-tight">
-              Verified companies on HireFlow
+              Verified companies on HireFlow<span className="text-primary">.</span>
             </h2>
             <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto">
               Every company is manually reviewed and approved by our platform admins before they can post jobs
@@ -193,7 +193,7 @@ export default function HomePage() {
                 Sign up and create your comprehensive profile with resume, work experience, skills, and certifications. Browse verified jobs, apply with one click, and track every application status in real-time.
               </p>
 
-              <div className="pt-4 border-t border-border/20">
+              <div className="pt-4 border-t border-border/60">
                 <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
                   For Candidates
                 </span>
@@ -215,7 +215,7 @@ export default function HomePage() {
                 Submit your company profile with business documents for platform admin approval. Once verified, post unlimited jobs, review applications, and manage the entire hiring workflow.
               </p>
 
-              <div className="pt-4 border-t border-border/20">
+              <div className="pt-4 border-t border-border/60">
                 <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
                   For Employers
                 </span>
@@ -237,7 +237,7 @@ export default function HomePage() {
                 Review and approve company registrations with business verification. Monitor platform activity, manage users, and ensure quality standards across all job postings and applications.
               </p>
 
-              <div className="pt-4 border-t border-border/20">
+              <div className="pt-4 border-t border-border/60">
                 <span className="text-xs font-medium text-primary/70 uppercase tracking-wider">
                   Quality Control
                 </span>
@@ -324,7 +324,7 @@ export default function HomePage() {
       <footer className="mt-auto border-t border-border/60">
         <div className="mx-auto max-w-7xl px-6 py-14 grid gap-10 md:grid-cols-3">
           <div>
-            <h4 className="font-semibold">HireFlow.</h4>
+            <h4 className="font-semibold">HireFlow<span className="text-primary">.</span></h4>
             <p className="mt-3 text-sm text-muted-foreground max-w-xs">
               A verified job platform with three-tier system ensuring quality hiring for both companies and job seekers.
             </p>
@@ -349,8 +349,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="border-t border-border/20 py-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} HireFlow. Verified hiring for modern teams.
+        <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
+          © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span> Verified hiring for modern teams.
         </div>
       </footer>
     </main>

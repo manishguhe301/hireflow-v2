@@ -51,7 +51,7 @@ const Login = () => {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} HireFlow
+          © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
         </p>
       </aside>
 
