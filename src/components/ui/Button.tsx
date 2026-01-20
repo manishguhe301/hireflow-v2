@@ -17,7 +17,7 @@ type ButtonProps = {
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    'bg-foreground text-background border-border/40 hover:opacity-90',
+    'bg-primary text-primary-foreground border-primary/30 hover:opacity-90',
   danger:
     'bg-destructive text-destructive-foreground border-destructive/40 hover:opacity-90',
   outline:
@@ -25,6 +25,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   ghost:
     'bg-transparent text-foreground border-transparent hover:bg-muted/40',
 }
+
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
   sm: 'px-3 py-1 text-xs rounded-xl',

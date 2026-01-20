@@ -20,7 +20,7 @@ export const FormRadioCard = ({
     <label
       className={clsx(
         'flex items-start gap-4 rounded-2xl border px-4 py-4 cursor-pointer transition',
-        'border-border/40',
+        'border-border/60',
         'has-[:checked]:border-primary/40',
         'has-[:checked]:bg-primary/5'
       )}
@@ -32,11 +32,10 @@ export const FormRadioCard = ({
         className="sr-only peer"
       />
 
-      {/* Custom radio */}
       <div
         className={clsx(
           'mt-1 h-4 w-4 rounded-full border-2 transition',
-          'border-muted-foreground',
+          'border-border',
           'peer-checked:border-primary',
           'peer-checked:border-[5px]'
         )}

@@ -22,13 +22,13 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
-
           <Button
             onClick={onMenuClick}
-            className="md:hidden rounded-lg border border-border/40 p-2! hover:bg-muted/40 w-fit!"
+            variant="ghost"
+            className="md:hidden rounded-lg hover:bg-muted/50 p-0!"
           >
             <Menu size={18} />
           </Button>
@@ -37,7 +37,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
             HireFlow<span className="text-primary">.</span>
           </Link>
 
-          {breadcrumbs.length > 1 &&
+          {breadcrumbs.length > 1 && (
             <nav className="hidden md:flex items-center gap-1 text-sm text-muted-foreground">
               {breadcrumbs.map((crumb, index) => (
                 <div key={`${crumb.href}-${index}`} className="flex items-center gap-1">
@@ -56,19 +56,23 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
                   )}
                 </div>
               ))}
-            </nav>}
+            </nav>
+          )}
         </div>
 
         {user && (
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col text-right">
               <span className="text-sm font-medium">{user.name}</span>
-              <span className="text-xs text-muted-foreground">{labels[user.role]}</span>
+              <span className="text-xs text-muted-foreground">
+                {labels[user.role]}
+              </span>
             </div>
 
             <Button
               onClick={handleLogout}
-              className="rounded-full!  px-4! py-1.5! text-sm  transition"
+              variant="danger"
+              className="rounded-full px-4 py-1.5 text-sm border-border/60"
             >
               Logout
             </Button>

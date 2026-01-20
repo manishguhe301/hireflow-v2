@@ -74,6 +74,7 @@ const LoginForm = () => {
       >
         ← Back to Home
       </Link>
+
       <div className="mb-10 text-center lg:text-left">
         <h2 className="text-3xl font-semibold tracking-tight">
           Login
@@ -82,44 +83,40 @@ const LoginForm = () => {
           Enter your credentials to access your account
         </p>
       </div>
-      <div>
-        <form
-          onSubmit={handleSubmit(handleFormSubmit)}
-          className="space-y-6"
+
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        <FormInput
+          label="Email"
+          type="email"
+          placeholder="john@email.com"
+          register={register('email', { required: true })}
+          error={errors.email}
+        />
+
+        <FormInput
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          register={register('password', { required: true })}
+          error={errors.password}
+        />
+
+        <Button
+          type="submit"
+          isLoading={isLoading}
+          disabled={isLoading}
+          className="w-full py-3"
         >
-          <FormInput
-            label="Email"
-            type="email"
-            placeholder="john@email.com"
-            register={register('email', { required: true })}
-            error={errors.email}
-          />
+          Login
+        </Button>
+      </form>
 
-          <FormInput
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            register={register('password', { required: true })}
-            error={errors.password}
-          />
-
-          <Button
-            type="submit"
-            isLoading={isLoading}
-            disabled={isLoading}
-            className='w-full py-3'
-          >
-            Login
-          </Button>
-
-        </form>
-        <p className="mt-8 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-foreground hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+      <p className="mt-8 text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{' '}
+        <Link href="/signup" className="text-foreground hover:underline">
+          Sign up
+        </Link>
+      </p>
     </div>
   )
 }

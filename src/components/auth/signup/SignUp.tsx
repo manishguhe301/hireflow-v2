@@ -5,7 +5,7 @@ import SignUpForm from './SignUpForm'
 const SignUp = () => {
   return (
     <main className="min-h-screen bg-background text-foreground grid lg:grid-cols-5">
-      <aside className="hidden lg:flex lg:col-span-2 flex-col justify-between px-20 py-16 border-r border-border/30 bg-muted/20">
+      <aside className="hidden lg:flex lg:col-span-2 flex-col justify-between px-20 py-16 border-r border-border/60 bg-muted/30">
         <Link
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition"
@@ -63,7 +63,7 @@ const SignUp = () => {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} HireFlow
+          © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
         </p>
       </aside>
 

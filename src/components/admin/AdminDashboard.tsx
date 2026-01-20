@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null)
 
   const fetchStats = async () => {
-    if(!isLoading) setIsLoading(true)
+    if (!isLoading) setIsLoading(true)
     try {
       const res = await AppSdk.getData('/api/admin/stats', null)
       if (res.error) {
@@ -104,30 +104,35 @@ const AdminDashboard = () => {
             title="Total Companies"
             value={stats.companies.total}
             description="All registered companies"
-            icon={<Building2 className="h-7 w-7 text-blue-600" />}
-            colorClass="bg-blue-50"
+            icon={<Building2 className="h-7 w-7 text-blue-600 dark:text-blue-400" />}
+            colorClass="bg-info/10"
           />
+
           <StatCard
             title="Pending Approval"
             value={stats.companies.pending}
             description="Awaiting admin review"
-            icon={<Clock className="h-7 w-7 text-yellow-600" />}
-            colorClass="bg-yellow-50"
+            icon={<Clock className="h-7 w-7 text-amber-500 dark:text-amber-400" />}
+            colorClass="bg-warning/10"
           />
+
           <StatCard
             title="Approved"
             value={stats.companies.approved}
             description="Active companies"
-            icon={<CheckCircle className="h-7 w-7 text-green-600" />}
-            colorClass="bg-green-50"
+            icon={<CheckCircle className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />}
+            colorClass="bg-success/10"
           />
+
           <StatCard
             title="Rejected"
             value={stats.companies.rejected}
             description="Declined companies"
-            icon={<XCircle className="h-7 w-7 text-red-600" />}
-            colorClass="bg-red-50"
+            icon={<XCircle className="h-7 w-7 text-red-600 dark:text-red-400" />}
+            colorClass="bg-destructive/10"
           />
+
+
         </div>
       </section>
 
@@ -146,23 +151,27 @@ const AdminDashboard = () => {
             title="Total Users"
             value={stats.users.total}
             description="All platform users"
-            icon={<Users className="h-7 w-7 text-purple-600" />}
-            colorClass="bg-purple-50"
+            icon={<Users className="h-7 w-7 text-violet-600 dark:text-violet-400" />}
+            colorClass="bg-info/10"
           />
+
           <StatCard
             title="Job Seekers"
             value={stats.users.jobSeekers}
             description="Active job seekers"
-            icon={<Briefcase className="h-7 w-7 text-indigo-600" />}
-            colorClass="bg-indigo-50"
+            icon={<Briefcase className="h-7 w-7 text-primary" />}
+            colorClass="bg-primary/10"
           />
+
           <StatCard
             title="Platform Admins"
             value={stats.users.admins}
             description="Admin accounts"
-            icon={<UserCog className="h-7 w-7 text-gray-600" />}
-            colorClass="bg-gray-50"
+            icon={<UserCog className="h-7 w-7 text-slate-600 dark:text-slate-400" />}
+            colorClass="bg-muted"
           />
+
+
         </div>
       </section>
 
@@ -171,48 +180,57 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/admin/companies"
-            className="p-6 bg-card border border-border/40 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
           >
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
-                <Building2 className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition">
+                <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="font-semibold">Manage Companies</p>
-                <p className="text-sm text-muted-foreground">Review and approve companies</p>
+                <p className="text-sm text-muted-foreground">
+                  Review and approve companies
+                </p>
               </div>
             </div>
           </Link>
+
 
           <Link
             href="/admin/users"
-            className="p-6 bg-card border border-border/40 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
           >
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center transition">
+                <Users className="h-6 w-6 text-violet-600 dark:text-violet-400" />
               </div>
               <div>
                 <p className="font-semibold">Manage Users</p>
-                <p className="text-sm text-muted-foreground">View and manage all users</p>
+                <p className="text-sm text-muted-foreground">
+                  View and manage all users
+                </p>
               </div>
             </div>
           </Link>
 
+
           <Link
             href="/admin/create-admin"
-            className="p-6 bg-card border border-border/40 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
           >
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition">
-                <UserCog className="h-6 w-6 text-gray-600" />
+              <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center transition">
+                <UserCog className="h-6 w-6 text-slate-600 dark:text-slate-400" />
               </div>
               <div>
                 <p className="font-semibold">Create Admin</p>
-                <p className="text-sm text-muted-foreground">Add new platform admin</p>
+                <p className="text-sm text-muted-foreground">
+                  Add new platform admin
+                </p>
               </div>
             </div>
           </Link>
+
         </div>
       </section>
     </div>

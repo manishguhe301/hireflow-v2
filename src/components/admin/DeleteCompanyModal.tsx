@@ -19,7 +19,7 @@ const DeleteCompanyModal = ({
     <Modal
       open={!!deleteCompanyId}
       onClose={() => setDeleteCompanyId(null)}
-      className="max-w-md"
+      className="max-w-md "
     >
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">
@@ -40,8 +40,9 @@ const DeleteCompanyModal = ({
 
           <Button
             onClick={handleDelete}
+            variant="danger"
             disabled={loadingAction === `delete-${deleteCompanyId}`}
-            className="px-4! py-2!  bg-red-500 text-white rounded-xl border-red-500  disabled:opacity-70 w-full"
+            className="px-4! py-2!  disabled:opacity-70 w-full"
           >
             {loadingAction === `delete-${deleteCompanyId}` ? (
               <Spinner className="h-4 w-4" />

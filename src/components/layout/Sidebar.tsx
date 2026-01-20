@@ -56,7 +56,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
 
   if (status === 'loading') {
     return (
-      <div className='hidden md:flex w-64 flex-col items-center justify-center border-r border-border/40 bg-card px-4 py-6'>
+      <div className='hidden md:flex w-64 flex-col items-center justify-center border-r border-border/60 bg-card px-4 py-6'>
         <Spinner className="h-8 w-8" />
       </div>
     )
@@ -70,42 +70,41 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'w-64 flex-col border-r border-border/40 px-4 py-6 transition',
+        'w-64 flex-col border-r border-border/60 px-4 py-6 transition',
         'md:fixed md:inset-y-0 md:left-0 md:min-h-screen md:overflow-y-auto',
         mobile ? 'flex h-full' : 'hidden md:flex',
-        isDark ? 'bg-slate-950' : 'bg-slate-50'
+        'bg-background'
       )}
     >
-
       <div className="mb-8 px-2 flex items-center justify-between">
         <span className="text-lg font-semibold">
           HireFlow<span className="text-primary">.</span>
         </span>
-        {
-          mobile &&
-          (
-            <Button className='p-1! border rounded-md w-fit!' onClick={closeSidebar}>
-              <X size={16} />
-            </Button>
-          )
-        }
+
+        {mobile && (
+          <Button
+            variant="ghost"
+            onClick={closeSidebar}
+            className="p-1 rounded-md hover:bg-muted/40"
+          >
+            <X size={16} />
+          </Button>
+        )}
       </div>
 
       <nav className="space-y-1">
         {links.map((link) => {
-          const isActive =
-            pathname === link.href
-          // || pathname.includes(`${link.href}/`)
+          const isActive = pathname === link.href
 
           return (
             <Link
               key={link.href}
               href={link.href}
               className={clsx(
-                'flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition',
+                'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition',
                 isActive
-                  ? 'bg-primary/10 text-primary font-bold!'
-                  : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground font-normal'
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
               )}
               onClick={() => {
                 if (mobile && closeSidebar) {
@@ -114,7 +113,9 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
               }}
             >
               {link.icon}
-              {link.label}
+              <span className={isActive ? 'font-semibold' : 'font-normal'}>
+                {link.label}
+              </span>
             </Link>
           )
         })}

@@ -40,12 +40,13 @@ export const FormInput = ({
           placeholder={placeholder}
           className={clsx(
             'w-full rounded-xl border px-4 py-3 text-sm outline-none transition',
-            'bg-background border-border/40 focus:border-primary/40',
+            'bg-background text-foreground border-border/60 focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
             disabled && 'opacity-70 cursor-not-allowed',
             error && 'border-destructive/60',
             className
           )}
         />
+
 
         {isPassword && (
           <button

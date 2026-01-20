@@ -10,7 +10,7 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, description, icon, colorClass }: StatCardProps) => {
   return (
-    <div className="bg-card border border-border/40 rounded-2xl p-6 hover:border-primary/40 transition hover:shadow-lg">
+    <div className="bg-card border border-border/60 rounded-2xl p-6 hover:border-primary/40 transition hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
