@@ -111,6 +111,7 @@ const SignUpForm = () => {
       >
         ← Back to Home
       </Link>
+
       <div className="mb-10 text-center lg:text-left">
         <h2 className="text-3xl font-semibold tracking-tight">
           Create your account
@@ -120,15 +121,11 @@ const SignUpForm = () => {
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit(handleFormSubmit)}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div className="grid sm:grid-cols-2 gap-4">
           <FormInput
-            label='Full Name'
-            placeholder='John Doe'
-            type='text'
+            label="Full Name"
+            placeholder="John Doe"
             register={register('name', { required: true })}
             error={errors.name}
           />
@@ -140,6 +137,7 @@ const SignUpForm = () => {
             error={errors.email}
           />
         </div>
+
         <FormInput
           label="Password"
           type="password"
@@ -147,29 +145,25 @@ const SignUpForm = () => {
           register={register('password', { required: true })}
           error={errors.password}
         />
+
         <FormInput
           label="Confirm Password"
           type="password"
           placeholder="••••••••"
           register={register('confirmPassword', {
-            required: true, validate: (value) =>
-              value === password || 'Passwords do not match',
+            required: true,
+            validate: (value) => value === password || 'Passwords do not match',
           })}
           error={errors.confirmPassword}
         />
 
-
-        <FormRadioGroup
-          label="What best describes you?"
-          error={errors.role}
-        >
+        <FormRadioGroup label="What best describes you?" error={errors.role}>
           <FormRadioCard
             value={Role.JOB_SEEKER}
             title="Job Seeker"
             description="Discover and apply to relevant roles"
             register={register('role', { required: true })}
           />
-
           <FormRadioCard
             value={Role.COMPANY_ADMIN}
             title="Company Admin"
@@ -178,21 +172,22 @@ const SignUpForm = () => {
           />
         </FormRadioGroup>
 
-
         {error && (
           <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
+
         <Button
-          type='submit'
+          type="submit"
           isLoading={isLoading}
           disabled={isLoading}
-          className='py-3 w-full'
+          className="py-3 w-full"
         >
           Create account
         </Button>
       </form>
+
       <p className="mt-8 text-center text-sm text-muted-foreground">
         Already have an account?{' '}
         <Link href="/login" className="text-foreground hover:underline">
