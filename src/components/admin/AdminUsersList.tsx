@@ -93,8 +93,12 @@ const AdminUsersList = () => {
                 'px-4 py-2 rounded-xl text-sm font-medium border transition cursor-pointer',
                 activeTab === tab.value
                   ? tab.value === 'ALL'
-                    ? 'bg-blue-500 text-white border-blue-500 shadow-lg'
-                    : `${ROLE_STYLE[tab.value as Role]} shadow-lg`
+                    ? 'bg-primary text-primary-foreground border-primary/40 shadow-md'
+                    : tab.value === 'PLATFORM_ADMIN'
+                      ? 'bg-info/10 text-info border-info/40 shadow-md'
+                      : tab.value === 'COMPANY_ADMIN'
+                        ? 'bg-info/50 text-secondary-foreground border-secondary/40 shadow-md'
+                        : 'bg-accent text-foreground border-border/40 shadow-md'
                   : 'bg-card border-border/40 hover:bg-muted/40'
               )}
             >
@@ -109,11 +113,11 @@ const AdminUsersList = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search users..."
-              className="w-full rounded-xl border border-border/40 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
+              className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
             />
           </div>
           <Link href="/admin/create-admin">
-            <Button className="  transition flex items-center gap-2 whitespace-nowrap ">
+            <Button className="transition flex items-center gap-2 whitespace-nowrap ">
               <UserPlus className="h-4 w-4" />
               Create Admin
             </Button>

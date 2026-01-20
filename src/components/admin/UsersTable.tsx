@@ -67,7 +67,8 @@ const UsersTable = ({
               {
                 user.id !== session?.user?.id ? (
                   <Button
-                    className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed"
+                    variant='danger'
+                    className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed bg-transparent! "
                     disabled={
                       !!loadingAction ||
                       user.id === session?.user?.id
@@ -78,7 +79,7 @@ const UsersTable = ({
                     {loadingAction === `delete-${user.id}` ? (
                       <Spinner className="h-4 w-4" />
                     ) : (
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     )}
                   </Button>
                 ) : <div>

@@ -23,6 +23,9 @@
   --color-accent: rgb(var(--accent));
   --color-accent-foreground: rgb(var(--accent-foreground));
 
+  --color-info: rgb(var(--info));
+  --color-info-foreground: rgb(var(--info-foreground));
+
   --color-warning: rgb(var(--warning));
   --color-warning-foreground: rgb(var(--warning-foreground));
 
