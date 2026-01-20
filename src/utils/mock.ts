@@ -1,4 +1,4 @@
-import { Company } from '@prisma/client'
+import { Company } from '@prisma/client';
 export const mockCompanies: Company[] = [
   {
     id: '65f1a1a1a1a1a1a1a1a1a1a1',
@@ -66,10 +66,70 @@ export const mockCompanies: Company[] = [
     businessDocument: null,
     taxDocument: null,
     status: 'REJECTED',
-    rejectionReason: 'Invalid documents, Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore sunt error ab autem ratione facere, vero debitis deleniti ad odit amet esse ex omnis delectus, id nemo quam! Maxime natus accusamus ducimus expedita cumque nihil eum vero, dolore quae qui culpa nulla harum deleniti eius recusandae sed quasi unde perspiciatis, temporibus tempore officiis repudiandae laborum. Quisquam praesentium iure, exercitationem molestias modi consequuntur quasi? Rerum sequi fuga, suscipit impedit corporis, ullam itaque porro ex magnam, culpa esse corrupti ipsam nesciunt repellat eum. Nemo quis in consequuntur corporis praesentium vitae, doloribus laudantium voluptas eaque perspiciatis amet, sequi quo itaque, repudiandae cumque fugiat.',
+    rejectionReason:
+      'Invalid documents, Lorem ipsum, dolor sit amet consectetur adipisicing elit. Inventore sunt error ab autem ratione facere, vero debitis deleniti ad odit amet esse ex omnis delectus, id nemo quam! Maxime natus accusamus ducimus expedita cumque nihil eum vero, dolore quae qui culpa nulla harum deleniti eius recusandae sed quasi unde perspiciatis, temporibus tempore officiis repudiandae laborum. Quisquam praesentium iure, exercitationem molestias modi consequuntur quasi? Rerum sequi fuga, suscipit impedit corporis, ullam itaque porro ex magnam, culpa esse corrupti ipsam nesciunt repellat eum. Nemo quis in consequuntur corporis praesentium vitae, doloribus laudantium voluptas eaque perspiciatis amet, sequi quo itaque, repudiandae cumque fugiat.',
     approvedAt: null,
     approvedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
-] as const
+] as const;
+
+export const featuredJobs = [
+  {
+    id: 1,
+    title: 'Frontend Engineer',
+    company: 'TechNova',
+    location: 'Remote',
+    type: 'Full-time',
+    tag: 'High Growth',
+  },
+  {
+    id: 2,
+    title: 'Backend Developer',
+    company: 'CloudCore',
+    location: 'Bangalore',
+    type: 'Full-time',
+    tag: 'Urgent',
+  },
+  {
+    id: 3,
+    title: 'UI/UX Designer',
+    company: 'Designify',
+    location: 'Mumbai',
+    type: 'Hybrid',
+    tag: 'New',
+  },
+  {
+    id: 4,
+    title: 'Product Lead',
+    company: 'Aura',
+    location: 'Remote',
+    type: 'Full-time',
+    tag: 'Remote',
+  },
+];
+
+export const companies = [
+  { id: 1, name: 'TechNova' },
+  { id: 2, name: 'CloudCore' },
+  { id: 3, name: 'Designify' },
+  { id: 4, name: 'Aura' },
+  { id: 5, name: 'ByteLabs' },
+  { id: 6, name: 'NextZen' },
+];
+
+export const links = [
+  {
+    label: 'Jobs',
+    href: '#jobs',
+  },
+  {
+    label: 'Companies',
+    href: '#companies',
+  },
+  {
+    label: 'How it works',
+    href: '#how-it-works',
+  },
+];

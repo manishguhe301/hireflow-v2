@@ -17,6 +17,7 @@ import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { Spinner } from '../elements/Loader'
 import { useTheme } from 'next-themes'
+import { Button } from '../ui/Button'
 
 const SIDEBAR_LINKS: Record<
   Role,
@@ -83,9 +84,9 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
         {
           mobile &&
           (
-            <button className='p-1 border rounded-md' onClick={closeSidebar}>
+            <Button className='p-1! border rounded-md w-fit!' onClick={closeSidebar}>
               <X size={16} />
-            </button>
+            </Button>
           )
         }
       </div>
