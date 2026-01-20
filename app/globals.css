@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Mapping your CSS variables to Tailwind utility names */
   --color-background: rgb(var(--background));
   --color-foreground: rgb(var(--foreground));
 
@@ -54,7 +53,7 @@
   --accent: 240 253 244; /* green-50 */
   --accent-foreground: 15 23 42; /* slate-900 */
 
-  /* Brand - Emerald Green (Professional, Growth) */
+  /* Brand */
   --primary: 16 185 129; /* emerald-500 */
   --primary-foreground: 255 255 255; /* white */
 
