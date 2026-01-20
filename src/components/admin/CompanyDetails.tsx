@@ -49,16 +49,16 @@ const CompanyDetails = () => {
     fetchCompany()
   }, [id])
 
-  const mockCompany = useMemo(
-    () => mockCompanies.find((c) => c.id === id),
-    [id]
-  )
-  useEffect(() => {
-    if (mockCompany) {
-      setCompany(mockCompany)
-      setIsLoading(false)
-    }
-  }, [mockCompany])
+  // const mockCompany = useMemo(
+  //   () => mockCompanies.find((c) => c.id === id),
+  //   [id]
+  // )
+  // useEffect(() => {
+  //   if (mockCompany) {
+  //     setCompany(mockCompany)
+  //     setIsLoading(false)
+  //   }
+  // }, [mockCompany])
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
