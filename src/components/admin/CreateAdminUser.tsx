@@ -84,13 +84,14 @@ const CreateAdminUser = () => {
     <div className="p-4 md:p-8 md:px-8 w-full max-w-xl mx-auto animate-in fade-in duration-500">
       <div className="mb-8">
         <Button
-          variant='outline'
+          variant="ghost"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2  mb-6 border-none p-0! bg-transparent!"
+          className="inline-flex items-center gap-2 mb-6 p-0!"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Users
         </Button>
+
         <h1 className="text-3xl font-bold tracking-tight">
           Create Platform Admin
         </h1>
