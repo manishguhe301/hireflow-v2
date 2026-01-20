@@ -32,11 +32,10 @@ export const FormRadioCard = ({
         className="sr-only peer"
       />
 
-      {/* Custom radio */}
       <div
         className={clsx(
           'mt-1 h-4 w-4 rounded-full border-2 transition',
-          'border-muted-foreground',
+          'border-border',
           'peer-checked:border-primary',
           'peer-checked:border-[5px]'
         )}
