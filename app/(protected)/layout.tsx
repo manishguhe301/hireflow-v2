@@ -54,7 +54,7 @@ export default function ProtectedLayout({
       >
         <div
           className={clsx(
-            'absolute inset-0 bg-black/40 transition-opacity duration-300',
+            'absolute inset-0 bg-black/30 transition-opacity duration-300',
             sidebarOpen ? 'opacity-100' : 'opacity-0'
           )}
           onClick={() => setSidebarOpen(false)}
