@@ -34,7 +34,7 @@ const Modal = ({ open, onClose, children, className }: ModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/10 backdrop-blur-md transition-opacity"
       // onClick={onClose}
       />
 
@@ -48,12 +48,13 @@ const Modal = ({ open, onClose, children, className }: ModalProps) => {
       >
         <Button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition cursor-pointer border border-border/40"
+          variant='danger'
+          className="absolute right-4 top-4 rounded-md p-1!   transition cursor-pointer border border-border/40 bg-none!"
         >
           <X size={18} />
         </Button>
 
-        <div className="p-6 text-foreground">
+        <div className="p-6 text-foreground bg-background/90 border border-border rounded-lg">
           {children}
         </div>
       </div>
