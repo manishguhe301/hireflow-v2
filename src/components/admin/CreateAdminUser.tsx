@@ -84,8 +84,9 @@ const CreateAdminUser = () => {
     <div className="p-4 md:p-8 md:px-8 w-full max-w-xl mx-auto animate-in fade-in duration-500">
       <div className="mb-8">
         <Button
+          variant='outline'
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2  mb-6 border-none p-0!"
+          className="inline-flex items-center gap-2  mb-6 border-none p-0! bg-transparent!"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Users
@@ -139,7 +140,7 @@ const CreateAdminUser = () => {
 
 
         {error && (
-          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <div className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
