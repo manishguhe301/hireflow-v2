@@ -49,16 +49,16 @@ const CompanyDetails = () => {
     fetchCompany()
   }, [id])
 
-  // const mockCompany = useMemo(
-  //   () => mockCompanies.find((c) => c.id === id),
-  //   [id]
-  // )
-  // useEffect(() => {
-  //   if (mockCompany) {
-  //     setCompany(mockCompany)
-  //     setIsLoading(false)
-  //   }
-  // }, [mockCompany])
+  const mockCompany = useMemo(
+    () => mockCompanies.find((c) => c.id === id),
+    [id]
+  )
+  useEffect(() => {
+    if (mockCompany) {
+      setCompany(mockCompany)
+      setIsLoading(false)
+    }
+  }, [mockCompany])
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
@@ -140,11 +140,13 @@ const CompanyDetails = () => {
     <div className="p-8 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
       <Button
         onClick={() => router.back()}
-        className="inline-flex items-center gap-2 text-sm border-none p-0!"
+        variant="ghost"
+        className="inline-flex items-center gap-2 text-sm p-0!"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Companies
       </Button>
+
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
@@ -155,7 +157,11 @@ const CompanyDetails = () => {
         <span
           className={clsx(
             'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium w-fit',
-            STATUS_STYLE[company.status]
+            company.status === 'PENDING'
+              ? 'bg-warning/10 text-warning'
+              : company.status === 'APPROVED'
+                ? 'bg-success/10 text-success'
+                : 'bg-destructive/10 text-destructive'
           )}
         >
           {company.status === 'PENDING' && <Clock className="h-4 w-4" />}
@@ -163,6 +169,7 @@ const CompanyDetails = () => {
           {company.status === 'REJECTED' && <XCircle className="h-4 w-4" />}
           {company.status}
         </span>
+
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -206,34 +213,46 @@ const CompanyDetails = () => {
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Enter reason for rejection..."
-              className="mt-2 w-full rounded-xl border border-border/40 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
+              className="mt-2 w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
               rows={4}
             />
+
           </div>
 
           {company.status === 'PENDING' && (
             <div className="flex flex-wrap gap-3">
-              <Button className="px-4 py-2 border-none  bg-green-600 text-white text-sm hover:opacity-90"
+              <Button
                 onClick={() => handleApprove(company.id)}
                 disabled={loadingAction === `approve-${company.id}`}
+                className="px-4 py-2 text-sm bg-success text-success-foreground hover:opacity-90"
               >
-                {loadingAction === `approve-${company.id}` ? 'Approving Company...' : 'Approve Company'}
+                {loadingAction === `approve-${company.id}`
+                  ? 'Approving Company...'
+                  : 'Approve Company'}
               </Button>
-              <Button className="px-4 py-2 rounded-xl bg-red-600 text-white border-none text-sm hover:opacity-90"
+
+              <Button
+                variant="danger"
                 onClick={() => handleReject(company.id, rejectionReason)}
                 disabled={loadingAction === `reject-${company.id}`}
+                className="px-4 py-2 text-sm bg-destructive text-destructive-foreground hover:opacity-90"
               >
-                {loadingAction === `reject-${company.id}` ? 'Rejecting Company...' : 'Reject Company'}
+                {loadingAction === `reject-${company.id}`
+                  ? 'Rejecting Company...'
+                  : 'Reject Company'}
               </Button>
             </div>
           )}
 
           {company.status === 'APPROVED' && (
             <Button
-              className="px-4 py-2 rounded-xl bg-red-600 text-white border-none text-sm hover:opacity-90" onClick={() => handleReject(company.id, rejectionReason)}
+              variant='danger'
+              onClick={() => handleReject(company.id, rejectionReason)}
+              className="px-4 py-2 text-sm bg-destructive text-destructive-foreground hover:opacity-90"
             >
               Reject Company
             </Button>
+
           )}
         </section>
       )}
