@@ -1,17 +1,15 @@
-import { authOptions } from '@/src/lib/auth';
+import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
 import { isPasswordValid, isValidEmail } from '@/src/utils/helper';
 import { Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+    if (!guard.ok) {
+      return guard.response;
     }
 
     const body = await req.json();

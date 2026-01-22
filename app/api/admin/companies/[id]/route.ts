@@ -1,3 +1,4 @@
+import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { authOptions } from '@/src/lib/auth';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
@@ -11,9 +12,9 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+    if (!guard.ok) {
+      return guard.response;
     }
 
     const company = await prisma.company.findUnique({
