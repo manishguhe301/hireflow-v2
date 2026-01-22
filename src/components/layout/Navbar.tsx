@@ -22,7 +22,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex items-center justify-between px-4 md:px-6 py-4">
         <div className="flex items-center gap-3">
           <Button
             onClick={onMenuClick}
@@ -35,7 +35,9 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
           <Link href="/redirect" className="md:hidden text-lg font-semibold">
             HireFlow<span className="text-primary">.</span>
           </Link>
-          <Breadcrumb />
+          <div className='hidden md:block'>
+            <Breadcrumb />
+          </div>
         </div>
 
         {user && (

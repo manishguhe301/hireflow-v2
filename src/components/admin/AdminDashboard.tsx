@@ -81,7 +81,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="p-8 space-y-10 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+    <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto animate-in fade-in duration-500">
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="mt-2 text-lg text-muted-foreground">
