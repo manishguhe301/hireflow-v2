@@ -36,11 +36,11 @@ export function useCompany() {
     if (
       !companyState.company &&
       !companyState.isLoading &&
-      !companyState.error
+      !companyState.isFetched
     ) {
       fetchCompany();
     }
-  }, [dispatch, companyState]);
+  }, [companyState.isFetched, companyState.isLoading, dispatch]);
 
   return companyState;
 }

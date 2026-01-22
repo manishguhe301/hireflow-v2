@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Company, CompanyStatus } from '@prisma/client';
+import { Company } from '@prisma/client';
 
 interface CompanyState {
   company: Company | null;
@@ -9,6 +9,7 @@ interface CompanyState {
   missingFields: string[];
   isLoading: boolean;
   error: string | null;
+  isFetched: boolean;
 }
 
 const initialState: CompanyState = {
@@ -19,6 +20,7 @@ const initialState: CompanyState = {
   missingFields: [],
   isLoading: false,
   error: null,
+  isFetched: false,
 };
 
 const companySlice = createSlice({
@@ -46,6 +48,7 @@ const companySlice = createSlice({
       state.missingFields = action.payload.missingFields;
       state.isLoading = false;
       state.error = null;
+      state.isFetched = true;
     },
 
     setError: (state, action: PayloadAction<string>) => {
@@ -60,6 +63,7 @@ const companySlice = createSlice({
       state.completionPercentage = 0;
       state.missingFields = [];
       state.error = null;
+      state.isFetched = false;
     },
   },
 });
