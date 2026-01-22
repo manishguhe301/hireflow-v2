@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Spinner } from '@/src/components/elements/Loader'
 import { useCompany } from '@/src/store/hooks/useCompany'
+import { Button } from '../ui/Button'
 
 export default function CompanyProfileGuard({ children }: { children: React.ReactNode }) {
   const {
@@ -41,9 +42,9 @@ export default function CompanyProfileGuard({ children }: { children: React.Reac
             Create your company profile to start posting jobs and receiving applications.
           </p>
           <Link href="/company/profile-setup">
-            <button className="rounded-xl bg-warning px-4 py-2 text-sm font-medium text-warning-foreground">
+            <Button className="bg-warning text-warning-foreground">
               Create Profile
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
@@ -70,9 +71,9 @@ export default function CompanyProfileGuard({ children }: { children: React.Reac
             </div>
 
             <Link href="/company/profile-setup">
-              <button className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <Button className="mt-4 ">
                 Complete Profile
-              </button>
+              </Button>
             </Link>
           </div>
 
