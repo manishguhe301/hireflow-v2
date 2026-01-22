@@ -36,7 +36,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
           <Link href="/redirect" className="md:hidden text-lg font-semibold">
             HireFlow<span className="text-primary">.</span>
           </Link>
-
+          {/* 
           {breadcrumbs.length > 1 && (
             <nav className="hidden md:flex items-center gap-1 text-sm text-muted-foreground">
               {breadcrumbs.map((crumb, index) => (
@@ -57,7 +57,8 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
                 </div>
               ))}
             </nav>
-          )}
+          )} 
+           */}
         </div>
 
         {user && (
