@@ -34,7 +34,7 @@ export function useCompany() {
     };
 
     if (
-      !companyState.company &&
+      // !companyState.company &&
       !companyState.isLoading &&
       !companyState.isFetched
     ) {
