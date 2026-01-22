@@ -1,7 +1,6 @@
-import { authOptions } from '@/src/lib/auth';
+import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
-import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function DELETE(
@@ -11,9 +10,9 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+    if (!guard.ok) {
+      return guard.response;
     }
 
     const user = await prisma.user.findUnique({
