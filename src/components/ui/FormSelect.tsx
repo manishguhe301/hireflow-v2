@@ -28,7 +28,7 @@ export const FormSelect = ({
   className,
 }: FormSelectProps) => {
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 w-full">
       <label className="text-sm text-muted-foreground">
         {label}
       </label>

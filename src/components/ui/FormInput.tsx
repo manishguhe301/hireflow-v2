@@ -8,11 +8,13 @@ import clsx from 'clsx'
 type FormInputProps = {
   label: string
   placeholder?: string
-  type?: 'text' | 'email' | 'password'
+  type?: 'text' | 'email' | 'password' | 'number' | 'url'
   register: UseFormRegisterReturn
   error?: FieldError
   disabled?: boolean
   className?: string
+  minLength?: number
+  maxLength?: number
 }
 
 export const FormInput = ({
@@ -23,13 +25,15 @@ export const FormInput = ({
   error,
   disabled,
   className,
+  minLength,
+  maxLength,
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
   const isPassword = type === 'password'
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 w-full">
       <label className="text-sm text-muted-foreground">{label}</label>
 
       <div className="relative">
@@ -41,10 +45,15 @@ export const FormInput = ({
           className={clsx(
             'w-full rounded-xl border px-4 py-3 text-sm outline-none transition',
             'bg-background text-foreground border-border/60 focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
+            'appearance-none',
+            type === 'number' &&
+            '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]',
             disabled && 'opacity-70 cursor-not-allowed',
             error && 'border-destructive/60',
             className
           )}
+          min={minLength}
+          max={maxLength}
         />
 
 
