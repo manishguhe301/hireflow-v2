@@ -6,9 +6,58 @@ import Step2Contact from './Step2Contact'
 import Step3Documents from './Step3Documents'
 import Step4Review from './Step4Review'
 import { Button } from '../../ui/Button'
+import { useForm } from 'react-hook-form'
+
+export type ProfileFormInputs = {
+  name: string,
+  description: string,
+  industry: string,
+  companySize: string,
+  foundedYear: string,
+  website: string,
+  linkedinProfile: string,
+
+  contactEmail: string,
+  contactPhone: string,
+  location: string,
+  address: string,
+
+  logo: File | null,
+  businessDocument: File | null,
+  taxDocument: File | null
+}
 
 const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(0)
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    watch,
+    reset
+  } = useForm<ProfileFormInputs>({
+    defaultValues: {
+      //step 1
+      name: '',
+      description: '',
+      industry: '',
+      companySize: '',
+      foundedYear: '',
+      website: '',
+      linkedinProfile: '',
+
+      // Step 2 
+      contactEmail: '',
+      contactPhone: '',
+      location: '',
+      address: '',
+
+      // Step 3 
+      logo: null,
+      businessDocument: null,
+      taxDocument: null,
+    }
+  })
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
@@ -20,12 +69,12 @@ const ProfileSetup = () => {
           />
         </div>
 
-        <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-          {currentStep === 0 && <Step1BasicInfo />}
-          {currentStep === 1 && <Step2Contact />}
-          {currentStep === 2 && <Step3Documents />}
-          {currentStep === 3 && <Step4Review />}
-        </div>
+        <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+          {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} />}
+          {currentStep === 1 && <Step2Contact register={register} errors={errors} />}
+          {currentStep === 2 && <Step3Documents register={register} errors={errors} />}
+          {currentStep === 3 && <Step4Review register={register} errors={errors} />}
+        </form>
 
         <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4">
           {currentStep < 3 ? (
