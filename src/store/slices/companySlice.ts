@@ -3,10 +3,6 @@ import { Company } from '@prisma/client';
 
 interface CompanyState {
   company: Company | null;
-  exists: boolean;
-  isComplete: boolean;
-  completionPercentage: number;
-  missingFields: string[];
   isLoading: boolean;
   error: string | null;
   isFetched: boolean;
@@ -14,10 +10,6 @@ interface CompanyState {
 
 const initialState: CompanyState = {
   company: null,
-  exists: false,
-  isComplete: false,
-  completionPercentage: 0,
-  missingFields: [],
   isLoading: false,
   error: null,
   isFetched: false,
@@ -35,17 +27,9 @@ const companySlice = createSlice({
       state,
       action: PayloadAction<{
         company: Company | null;
-        exists: boolean;
-        isComplete: boolean;
-        completionPercentage: number;
-        missingFields: string[];
       }>,
     ) => {
       state.company = action.payload.company;
-      state.exists = action.payload.exists;
-      state.isComplete = action.payload.isComplete;
-      state.completionPercentage = action.payload.completionPercentage;
-      state.missingFields = action.payload.missingFields;
       state.isLoading = false;
       state.error = null;
       state.isFetched = true;
@@ -58,10 +42,6 @@ const companySlice = createSlice({
 
     clearCompany: (state) => {
       state.company = null;
-      state.exists = false;
-      state.isComplete = false;
-      state.completionPercentage = 0;
-      state.missingFields = [];
       state.error = null;
       state.isFetched = false;
     },

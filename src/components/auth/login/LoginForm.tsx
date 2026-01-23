@@ -31,6 +31,7 @@ const LoginForm = () => {
   const searchParams = useSearchParams()
   const callbackURL = searchParams.get('callbackUrl')
   const [isLoading, setIsLoading] = useState(false)
+
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     const email = data.email.trim()
     const password = data.password.trim()

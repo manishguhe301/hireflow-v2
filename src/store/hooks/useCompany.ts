@@ -19,13 +19,14 @@ export function useCompany() {
           return;
         }
 
+        if (!('company' in res)) {
+          dispatch(setError('Invalid server response'));
+          return;
+        }
+
         dispatch(
           setCompany({
             company: res.company,
-            exists: res.exists,
-            isComplete: res.isComplete,
-            completionPercentage: res.completionPercentage,
-            missingFields: res.missingFields,
           }),
         );
       } catch (error) {
@@ -33,11 +34,7 @@ export function useCompany() {
       }
     };
 
-    if (
-      // !companyState.company &&
-      !companyState.isLoading &&
-      !companyState.isFetched
-    ) {
+    if (!companyState.isLoading && !companyState.isFetched) {
       fetchCompany();
     }
   }, [companyState.isFetched, companyState.isLoading, dispatch]);
