@@ -35,7 +35,7 @@ const ProfileSetup = () => {
     register,
     formState: { errors },
     // handleSubmit,
-    // watch,
+    watch,
     // reset
   } = useForm<ProfileFormInputs>({
     defaultValues: {
@@ -75,7 +75,12 @@ const ProfileSetup = () => {
           {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} />}
           {currentStep === 1 && <Step2Contact register={register} errors={errors} />}
           {currentStep === 2 && <Step3Documents register={register} errors={errors} />}
-          {currentStep === 3 && <Step4Review register={register} errors={errors} />}
+          {currentStep === 3 &&
+            <Step4Review
+              setCurrentStep={setCurrentStep}
+              watch={watch}
+            />
+          }
         </form>
 
         <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0">
