@@ -78,9 +78,9 @@ const ProfileSetup = () => {
           {currentStep === 3 && <Step4Review register={register} errors={errors} />}
         </form>
 
-        <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0">
           {currentStep < 3 ? (
-            <Button onClick={() => setCurrentStep(prev => prev + 1)}>
+            <Button onClick={() => setCurrentStep(prev => prev + 1)} className='max-md:w-1/2'>
               Next
             </Button>
           ) : (
