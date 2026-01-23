@@ -20,7 +20,7 @@ const Step3Documents = ({
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <FileUpload<ProfileFormInputs>
           label="Company Logo"
           description="PNG, JPG or SVG (max 2MB)"

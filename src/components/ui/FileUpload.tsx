@@ -60,9 +60,13 @@ export function FileUpload<T extends FieldValues>({
           )}
 
           <div className="flex flex-col">
-            <span className="text-sm font-medium">
+            <span
+              className="text-sm font-medium truncate max-w-45 sm:max-w-65"
+              title={fileName || undefined}
+            >
               {fileName || 'Choose file'}
             </span>
+
             {description && (
               <span className="text-xs text-muted-foreground">
                 {description}
