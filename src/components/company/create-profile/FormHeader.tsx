@@ -13,10 +13,12 @@ const steps = [
 
 const FormHeader = ({
   currentStep,
-  setCurrentStep,
+  handleNext,
+  handlePrev
 }: {
   currentStep: number
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  handleNext: () => void
+  handlePrev: () => void
 }) => {
   const totalSteps = steps.length
 
@@ -35,7 +37,7 @@ const FormHeader = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setCurrentStep(prev => prev - 1)}
+          onClick={handlePrev}
           disabled={currentStep === 0}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -58,7 +60,7 @@ const FormHeader = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setCurrentStep(prev => prev + 1)}
+          onClick={handleNext}
           disabled={currentStep === totalSteps - 1}
         >
           <ChevronRight className="h-4 w-4" />

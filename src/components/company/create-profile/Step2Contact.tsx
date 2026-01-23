@@ -17,6 +17,11 @@ type CountryApiResponse = {
   }
 }
 
+type CountryOption = {
+  label: string
+  value: string
+}
+
 const Step2Contact = ({
   register,
   errors,
@@ -27,7 +32,7 @@ const Step2Contact = ({
   const { data: session } = useSession()
 
   const [countries, setCountries] = useState<
-    { label: string; value: string }[]
+    CountryOption[]
   >([])
   const [loading, setLoading] = useState(true)
 
@@ -45,7 +50,15 @@ const Step2Contact = ({
         }))
         .sort((a: { label: string, value: string }, b: { label: string, value: string }) => a.label.localeCompare(b.label))
 
-      setCountries(formatted)
+      const popularCountries = ['United States', 'India', 'United Kingdom', 'Canada']
+      const popular = formatted.filter((c: CountryOption) => popularCountries.includes(c.value))
+      const others = formatted.filter((c: CountryOption) => !popularCountries.includes(c.value))
+
+      setCountries([
+        ...popular,
+        { label: '---', value: '', disabled: true },
+        ...others
+      ])
     } catch (error) {
       console.error(error)
       toast.error('Failed to load countries')
@@ -77,7 +90,7 @@ const Step2Contact = ({
             required: 'Contact email is required',
             value: session?.user?.email || '',
           })}
-          error={errors.logo}
+          error={errors.contactEmail}
         />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -91,7 +104,7 @@ const Step2Contact = ({
                 return phoneRegex.test(value) || 'Invalid phone number format'
               },
             })}
-            type='number'
+            type='tel'
             error={errors.contactPhone}
           />
 

@@ -40,11 +40,26 @@ const Section = ({
   )
 }
 
-const Item = ({ label, value }: { label: string; value?: string }) => (
+const Item = ({
+  label,
+  value,
+  required = true
+}: {
+  label: string
+  value?: string
+  required?: boolean
+}) => (
   <div>
-    <p className="text-xs text-muted-foreground">{label}</p>
-    <p className={clsx('font-medium', !value && 'text-muted-foreground')}>
-      {value || '—'}
+    <p className="text-xs text-muted-foreground">
+      {label}
+      {required && !value && <span className="text-red-500 ml-1">*</span>}
+    </p>
+    <p className={clsx(
+      'font-medium',
+      !value && required && 'text-red-500',
+      !value && !required && 'text-muted-foreground'
+    )}>
+      {value || (required ? 'Required' : '—')}
     </p>
   </div>
 )
@@ -78,7 +93,8 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
         <Item label="Industry" value={data.industry} />
         <Item label="Company Size" value={data.companySize} />
         <Item label="Website" value={data.website} />
-        <Item label="LinkedIn" value={data.linkedinProfile} />
+        <Item label="LinkedIn" value={data.linkedinProfile}
+          required={false} />
         <div className="sm:col-span-2">
           <Item label="Description" value={data.description} />
         </div>
@@ -86,10 +102,10 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
 
       <Section title="Contact Information" onEdit={() => setCurrentStep(1)}>
         <Item label="Contact Email" value={data.contactEmail} />
-        <Item label="Contact Phone" value={data.contactPhone} />
+        <Item label="Contact Phone" value={data.contactPhone} required={false} />
         <Item label="Country" value={data.location} />
         <div className="sm:col-span-2">
-          <Item label="Address" value={data.address} />
+          <Item label="Address" value={data.address} required={false} />
         </div>
       </Section>
 

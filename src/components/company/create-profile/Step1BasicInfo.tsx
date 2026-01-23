@@ -54,8 +54,11 @@ const Step1BasicInfo = ({
             label="Founded Year"
             register={register('foundedYear', {
               required: true,
-              validate: (value) =>
-                parseInt(value) > 1900 || 'Enter a valid year',
+              validate: (value) => {
+                const year = parseInt(value)
+                const currentYear = new Date().getFullYear()
+                return (year >= 1800 && year <= currentYear) || 'Enter a valid year'
+              }
             })}
             placeholder="2010"
             type="number"

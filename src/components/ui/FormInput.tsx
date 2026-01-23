@@ -8,7 +8,7 @@ import clsx from 'clsx'
 type FormInputProps = {
   label: string
   placeholder?: string
-  type?: 'text' | 'email' | 'password' | 'number' | 'url'
+  type?: 'text' | 'email' | 'password' | 'number' | 'url' | 'tel'
   register: UseFormRegisterReturn
   error?: FieldError
   disabled?: boolean

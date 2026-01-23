@@ -97,12 +97,13 @@ const ProfileSetup = () => {
     }
   }
 
+  const handlePrev = () => setCurrentStep((prev) => prev - 1)
+
   const handleFormSubmit: SubmitHandler<ProfileFormInputs> = (data) => {
     console.log(data);
     reset()
     setCurrentStep(0)
   }
-
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
@@ -110,7 +111,8 @@ const ProfileSetup = () => {
         <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
           <FormHeader
             currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
+            handleNext={handleNext}
+            handlePrev={handlePrev}
           />
         </div>
 
@@ -127,6 +129,15 @@ const ProfileSetup = () => {
         </form>
 
         <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0">
+          {currentStep > 0 && (
+            <Button
+              onClick={handlePrev}
+              variant="outline"
+              className="max-md:w-1/2"
+            >
+              Previous
+            </Button>
+          )}
           {currentStep < 3 ? (
             <Button
               onClick={handleNext}
