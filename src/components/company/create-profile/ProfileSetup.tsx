@@ -84,7 +84,7 @@ const ProfileSetup = () => {
               Next
             </Button>
           ) : (
-            <Button variant="primary">
+            <Button variant="primary" className='max-md:w-1/2'>
               Submit
             </Button>
           )}
