@@ -87,10 +87,11 @@ const Step2Contact = ({
             register={register('contactPhone', {
               validate: (value) => {
                 if (!value) return true
-                const pattern = /^\+?[1-9]\d{1,14}$/
-                return pattern.test(value) || 'Enter a valid phone number'
+                const phoneRegex = /^\+?[1-9]\d{1,14}$/
+                return phoneRegex.test(value) || 'Invalid phone number format'
               },
             })}
+            type='number'
             error={errors.contactPhone}
           />
 
