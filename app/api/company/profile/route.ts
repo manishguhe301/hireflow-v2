@@ -16,33 +16,8 @@ export async function GET() {
       },
     });
 
-    const requiredFields = [
-      'name',
-      'description',
-      'industry',
-      'companySize',
-      'location',
-      'contactEmail',
-      'website',
-      'businessDocument',
-    ];
-
-    const filledFields = company
-      ? requiredFields.filter((field) => company[field as keyof typeof company])
-      : [];
-
-    const completionPercentage = company
-      ? Math.round((filledFields.length / requiredFields.length) * 100)
-      : 0;
-
     return NextResponse.json({
       company: company || null,
-      exists: !!company,
-      isComplete: completionPercentage === 100,
-      completionPercentage,
-      missingFields: company
-        ? requiredFields.filter((f) => !company[f as keyof typeof company])
-        : requiredFields,
     });
   } catch (error) {
     console.error(error);
