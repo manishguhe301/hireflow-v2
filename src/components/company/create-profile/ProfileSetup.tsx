@@ -32,9 +32,9 @@ const ProfileSetup = () => {
   const {
     register,
     formState: { errors },
-    handleSubmit,
-    watch,
-    reset
+    // handleSubmit,
+    // watch,
+    // reset
   } = useForm<ProfileFormInputs>({
     defaultValues: {
       //step 1
