@@ -77,12 +77,12 @@ const Step2Contact = ({
             required: 'Contact email is required',
             value: session?.user?.email || '',
           })}
-          error={errors.contactEmail}
+          error={errors.logo}
         />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
-            label="Contact Phone"
+            label="Contact Phone (Optional)"
             placeholder="+1 555 123 4567"
             register={register('contactPhone', {
               validate: (value) => {
@@ -117,7 +117,7 @@ const Step2Contact = ({
         </div>
 
         <FormTextarea
-          label="Address"
+          label="Address (Optional)"
           placeholder="Street, city, state, postal code"
           register={register('address')}
           error={errors.address}

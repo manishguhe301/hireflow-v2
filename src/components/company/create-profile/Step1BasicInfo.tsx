@@ -112,7 +112,7 @@ const Step1BasicInfo = ({
           />
 
           <FormInput
-            label="LinkedIn Profile"
+            label="LinkedIn Profile (Optional)"
             placeholder="https://linkedin.com/company/your-company"
             type="url"
             register={register('linkedinProfile', {
