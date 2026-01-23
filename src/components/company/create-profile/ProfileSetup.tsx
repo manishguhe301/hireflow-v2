@@ -7,6 +7,7 @@ import Step3Documents from './Step3Documents'
 import Step4Review from './Step4Review'
 import { Button } from '../../ui/Button'
 import { useForm } from 'react-hook-form'
+import { useSession } from 'next-auth/react'
 
 export type ProfileFormInputs = {
   name: string,
@@ -29,6 +30,7 @@ export type ProfileFormInputs = {
 
 const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(0)
+  const { data: session } = useSession()
   const {
     register,
     formState: { errors },
@@ -47,7 +49,7 @@ const ProfileSetup = () => {
       linkedinProfile: '',
 
       // Step 2 
-      contactEmail: '',
+      contactEmail: session?.user?.email || '',
       contactPhone: '',
       location: '',
       address: '',
