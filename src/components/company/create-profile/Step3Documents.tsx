@@ -45,6 +45,7 @@ const Step3Documents = ({
           name="taxDocument"
           register={register}
           error={errors.taxDocument}
+          required={false}
         />
       </div>
     </div>
