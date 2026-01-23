@@ -1,8 +1,8 @@
-import React from 'react'
+import ProfileSetup from '@/src/components/company/create-profile/ProfileSetup'
 
 const ProfileSetupPage = () => {
   return (
-    <div>ProfileSetupPage</div>
+    <ProfileSetup />
   )
 }
 
