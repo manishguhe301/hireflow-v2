@@ -7,10 +7,7 @@ import { Button } from '../ui/Button'
 
 export default function CompanyProfileGuard({ children }: { children: React.ReactNode }) {
   const {
-    exists,
-    isComplete,
     company,
-    completionPercentage,
     error,
     isLoading,
   } = useCompany()
@@ -31,7 +28,7 @@ export default function CompanyProfileGuard({ children }: { children: React.Reac
     )
   }
 
-  if (!exists) {
+  if (!company) {
     return (
       <div className='px-6 max-sm:px-4'>
         <div className="my-6 w-full space-y-4 rounded-2xl border border-warning/30 bg-warning/10 p-6 ">
@@ -51,38 +48,17 @@ export default function CompanyProfileGuard({ children }: { children: React.Reac
     )
   }
 
-  if (!isComplete) {
+  if (company?.status === 'PENDING') {
     return (
-      <div className='px-6 max-sm:px-4 my-6 max-sm:my-4'>
-        <div className="space-y-6 ">
-          <div className="mx-auto  rounded-2xl border border-primary/30 bg-primary/5 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  Complete Your Profile
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Your profile is {completionPercentage}% complete.
-                </p>
-              </div>
-              <span className="text-2xl font-bold text-primary">
-                {completionPercentage}%
-              </span>
-            </div>
-
-            <Link href="/company/profile-setup">
-              <Button className="mt-4 ">
-                Complete Profile
-              </Button>
-            </Link>
-          </div>
-
-          <div className="mx-auto max-w-2xl">
-            <h1 className="text-3xl font-bold">Company Dashboard</h1>
-            <p className="text-muted-foreground">
-              Welcome, {company?.name}
-            </p>
-          </div>
+      <div className="px-6 max-sm:px-4 my-6">
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 space-y-2">
+          <h3 className="text-lg font-semibold">
+            Profile Under Review
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Your company profile has been submitted and is currently under review.
+            You&apos;ll be notified once it&apos;s approved.
+          </p>
         </div>
       </div>
     )

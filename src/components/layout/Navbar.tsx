@@ -7,16 +7,20 @@ import { toast } from 'sonner'
 import { Button } from '../ui/Button'
 import { labels } from '@/src/utils/helper'
 import { Breadcrumb } from '../ui/Breadcrumb'
+import { useAppDispatch } from '@/src/store/hooks'
+import { clearCompany } from '@/src/store/slices/companySlice'
 
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const { data: session } = useSession()
   const user = session?.user
+  const dispatch = useAppDispatch()
 
   const handleLogout = async () => {
     const toastId = toast.loading('Logging out...')
     await signOut({
       callbackUrl: '/',
     })
+    dispatch(clearCompany())
     toast.dismiss(toastId)
   }
 
