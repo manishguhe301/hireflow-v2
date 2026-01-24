@@ -23,9 +23,9 @@ export type ProfileFormInputs = {
   location: string,
   address: string,
 
-  logo: File | null,
-  businessDocument: File | null,
-  taxDocument: File | null
+  logo: FileList,
+  businessDocument: FileList,
+  taxDocument: FileList
 }
 
 const STEP_FIELDS: Record<number, (keyof ProfileFormInputs)[]> = {
@@ -76,9 +76,9 @@ const ProfileSetup = () => {
       address: '', //optional
 
       // Step 3 
-      logo: null,
-      businessDocument: null,
-      taxDocument: null, //optional
+      // logo: null,
+      // businessDocument: null,
+      // taxDocument: null, //optional
     }
   })
 
