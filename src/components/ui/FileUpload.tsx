@@ -10,6 +10,7 @@ import {
 import clsx from 'clsx'
 import { UploadCloud, CheckCircle, X } from 'lucide-react'
 import Image from 'next/image'
+import { formatFileSize, validateFileSize, validateFileType } from '@/src/utils/helper'
 
 type FileUploadProps<T extends FieldValues> = {
   label: string
@@ -34,25 +35,16 @@ export function FileUpload<T extends FieldValues>({
 }: FileUploadProps<T>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
+  const [fileSize, setFileSize] = useState<number | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
 
   const validateFile = (file: File) => {
-    if (maxSizeMB && file.size > maxSizeMB * 1024 * 1024) {
+    if (maxSizeMB && !validateFileSize(file, maxSizeMB)) {
       return `File size must be less than ${maxSizeMB}MB`
     }
 
-    if (accept) {
-      const allowedTypes = accept.split(',').map(t => t.trim())
-      const isValidType = allowedTypes.some(type => {
-        if (type.endsWith('/*')) {
-          return file.type.startsWith(type.replace('/*', ''))
-        }
-        return file.type === type
-      })
-
-      if (!isValidType) {
-        return 'Invalid file type'
-      }
+    if (accept && !validateFileType(file, accept)) {
+      return 'Invalid file type'
     }
 
     return true
@@ -70,6 +62,7 @@ export function FileUpload<T extends FieldValues>({
     e.stopPropagation()
     setFileName(null)
     setPreview(null)
+    setFileSize(null)
     if (inputRef.current) {
       inputRef.current.value = ''
     }
@@ -154,7 +147,7 @@ export function FileUpload<T extends FieldValues>({
           </div>
           <div className="text-xs text-muted-foreground">
             <p className="font-medium">{fileName}</p>
-            <p>{(preview.length / 1024).toFixed(2)} KB</p>
+            <p>{fileSize && formatFileSize(fileSize)}</p>
           </div>
         </div>
       )}
@@ -173,6 +166,7 @@ export function FileUpload<T extends FieldValues>({
           const file = e.target.files?.[0]
           if (file) {
             setFileName(file.name)
+            setFileSize(file.size)
 
             if (file.type.startsWith('image/')) {
               const reader = new FileReader()
