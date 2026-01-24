@@ -1,4 +1,5 @@
 import { Company } from '@prisma/client';
+
 export const mockCompanies: Company[] = [
   {
     id: '65f1a1a1a1a1a1a1a1a1a1a1',
