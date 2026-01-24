@@ -100,6 +100,7 @@ model Company {
   userId            String         @unique @db.ObjectId
   name              String
   logo              String?
+  logoPath          String?        
   description       String
   industry          String
   companySize       String
@@ -115,7 +116,9 @@ model Company {
   
   // Documents
   businessDocument  String?
+  businessDocPath   String?
   taxDocument       String?
+  taxDocPath        String?
   
   // Status
   status            CompanyStatus  @default(PENDING)
