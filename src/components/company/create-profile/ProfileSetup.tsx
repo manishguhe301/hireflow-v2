@@ -8,6 +8,10 @@ import Step4Review from './Step4Review'
 import { Button } from '../../ui/Button'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
+import { setCompany } from '@/src/store/slices/companySlice'
 
 export type ProfileFormInputs = {
   name: string,
@@ -81,6 +85,10 @@ const ProfileSetup = () => {
       // taxDocument: null, //optional
     }
   })
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const dispatch = useDispatch()
+
 
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep]
@@ -99,10 +107,56 @@ const ProfileSetup = () => {
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
-  const handleFormSubmit: SubmitHandler<ProfileFormInputs> = (data) => {
-    console.log(data);
-    reset()
-    setCurrentStep(0)
+  const handleFormSubmit: SubmitHandler<ProfileFormInputs> = async (data) => {
+    setIsSubmitting(true)
+    try {
+      const formData = new FormData()
+
+      formData.append('name', data.name)
+      formData.append('description', data.description)
+      formData.append('industry', data.industry)
+      formData.append('companySize', data.companySize)
+      formData.append('foundedYear', data.foundedYear)
+      formData.append('website', data.website)
+      formData.append('linkedinProfile', data.linkedinProfile || '')
+      formData.append('contactEmail', data.contactEmail)
+      formData.append('contactPhone', data.contactPhone || '')
+      formData.append('location', data.location)
+      formData.append('address', data.address || '')
+
+      if (data.logo?.[0]) {
+        formData.append('logo', data.logo[0])
+      }
+      if (data.businessDocument?.[0]) {
+        formData.append('businessDocument', data.businessDocument[0])
+      }
+      if (data.taxDocument?.[0]) {
+        formData.append('taxDocument', data.taxDocument[0])
+      }
+
+      const response = await fetch('/api/company/profile', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        toast.error(result.error || 'Failed to create profile')
+        return
+      }
+
+      dispatch(setCompany({ company: result.company }))
+
+      toast.success('Profile submitted for approval!')
+      reset()
+      router.push('/company')
+    } catch (error) {
+      console.error('Submit error:', error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -133,6 +187,7 @@ const ProfileSetup = () => {
             <Button
               onClick={handlePrev}
               variant="outline"
+              disabled={isSubmitting}
               className="max-md:w-1/2"
             >
               Previous
@@ -140,14 +195,20 @@ const ProfileSetup = () => {
           )}
           {currentStep < 3 ? (
             <Button
+              disabled={isSubmitting}
               onClick={handleNext}
               className="max-md:w-1/2"
             >
               Next
             </Button>
           ) : (
-            <Button onClick={handleSubmit(handleFormSubmit)} variant="primary" className="max-md:w-1/2">
-              Submit
+            <Button
+              disabled={isSubmitting}
+              onClick={handleSubmit(handleFormSubmit)}
+              variant="primary"
+              className="max-md:w-1/2"
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit for Approval'}
             </Button>
           )}
         </div>
