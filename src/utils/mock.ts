@@ -1,4 +1,5 @@
 import { Company } from '@prisma/client';
+
 export const mockCompanies: Company[] = [
   {
     id: '65f1a1a1a1a1a1a1a1a1a1a1',
@@ -23,6 +24,9 @@ export const mockCompanies: Company[] = [
     approvedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
+    logoPath: null,
+    businessDocPath: null,
+    taxDocPath: null,
   },
   {
     id: '65f1b2b2b2b2b2b2b2b2b2b2',
@@ -47,6 +51,9 @@ export const mockCompanies: Company[] = [
     approvedBy: 'admin_1',
     createdAt: new Date(),
     updatedAt: new Date(),
+    logoPath: null,
+    businessDocPath: null,
+    taxDocPath: null,
   },
   {
     id: '65f1c3c3c3c3c3c3c3c3c3c3',
@@ -72,6 +79,9 @@ export const mockCompanies: Company[] = [
     approvedBy: null,
     createdAt: new Date(),
     updatedAt: new Date(),
+    logoPath: null,
+    businessDocPath: null,
+    taxDocPath: null,
   },
 ] as const;
 
