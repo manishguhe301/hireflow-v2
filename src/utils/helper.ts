@@ -49,14 +49,6 @@ export function getInitials(name: string): string {
     .substring(0, 2);
 }
 
-export function isValidFileType(file: File, allowedTypes: string[]): boolean {
-  return allowedTypes.includes(file.type);
-}
-
-export function isValidFileSize(file: File, maxSizeMB: number): boolean {
-  return file.size <= maxSizeMB * 1024 * 1024;
-}
-
 export function generateSlug(text: string): string {
   return text
     .toLowerCase()
@@ -146,3 +138,23 @@ export const labels = {
   COMPANY_ADMIN: 'Company Admin',
   PLATFORM_ADMIN: 'Platform Admin',
 };
+
+export function validateFileType(file: File, accept: string): boolean {
+  const allowedTypes = accept.split(',').map((t) => t.trim());
+  return allowedTypes.some((type) => {
+    if (type.endsWith('/*')) {
+      return file.type.startsWith(type.replace('/*', ''));
+    }
+    return file.type === type;
+  });
+}
+
+export function validateFileSize(file: File, maxSizeMB: number): boolean {
+  return file.size <= maxSizeMB * 1024 * 1024;
+}
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}

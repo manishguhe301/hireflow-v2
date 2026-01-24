@@ -64,14 +64,33 @@ const Item = ({
   </div>
 )
 
-const FileItem = ({ label, file }: { label: string; file?: File | null }) => (
-  <div>
-    <p className="text-xs text-muted-foreground">{label}</p>
-    <p className="font-medium truncate">
-      {file?.name || 'Not uploaded'}
-    </p>
-  </div>
-)
+const FileItem = ({
+  label,
+  file,
+  required = true
+}: {
+  label: string
+  file?: FileList
+  required?: boolean
+}) => {
+  const fileName = file?.[0]?.name
+
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground">
+        {label}
+        {required && !fileName && <span className="text-red-500 ml-1">*</span>}
+      </p>
+      <p className={clsx(
+        'font-medium truncate',
+        !fileName && required && 'text-red-500',
+        !fileName && !required && 'text-muted-foreground'
+      )}>
+        {fileName || (required ? 'Required' : 'Not uploaded')}
+      </p>
+    </div>
+  )
+}
 
 const Step4Review = ({ watch, setCurrentStep }: Props) => {
   const data = watch()
@@ -110,9 +129,9 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
       </Section>
 
       <Section title="Documents" onEdit={() => setCurrentStep(2)}>
-        <FileItem label="Company Logo" file={data.logo} />
-        <FileItem label="Business Document" file={data.businessDocument} />
-        <FileItem label="Tax Document" file={data.taxDocument} />
+        <FileItem label="Company Logo" file={data.logo} required />
+        <FileItem label="Business Document" file={data.businessDocument} required />
+        <FileItem label="Tax Document" file={data.taxDocument} required={false} />
       </Section>
     </div>
   )
