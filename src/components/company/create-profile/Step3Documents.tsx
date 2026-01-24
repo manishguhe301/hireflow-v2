@@ -28,24 +28,30 @@ const Step3Documents = ({
           register={register}
           error={errors.logo}
           required
+          accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+          maxSizeMB={2}
         />
 
         <FileUpload<ProfileFormInputs>
           label="Business Registration Document"
-          description="PDF or image file"
+          description="PDF or image file (max 5MB)"
           name="businessDocument"
           register={register}
           error={errors.businessDocument}
           required
+          accept="application/pdf,image/*"
+          maxSizeMB={5}
         />
 
         <FileUpload<ProfileFormInputs>
           label="Tax Document (Optional)"
-          description="GST, VAT or equivalent"
+          description="GST, VAT or equivalent (max 5MB)"
           name="taxDocument"
           register={register}
           error={errors.taxDocument}
           required={false}
+          accept="application/pdf,image/*"
+          maxSizeMB={5}
         />
       </div>
     </div>
