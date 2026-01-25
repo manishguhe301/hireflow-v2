@@ -5,9 +5,11 @@ const InfoCard = ({
   title: string
   children: React.ReactNode
 }) => (
-  <div className="bg-card border border-border/60 rounded-2xl p-6 space-y-4">
-    <h3 className="font-semibold">{title}</h3>
-    {children}
+  <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-5 shadow-sm">
+    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      {title}
+    </h3>
+    <div className="space-y-4">{children}</div>
   </div>
 )
 
