@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FormHeader from './FormHeader'
 import Step1BasicInfo from './Step1BasicInfo'
 import Step2Contact from './Step2Contact'
@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { toast } from 'sonner'
 import { setCompany } from '@/src/store/slices/companySlice'
+import { useCompany } from '@/src/store/hooks/useCompany'
+import { CompanyStatus } from '@prisma/client'
 
 export type ProfileFormInputs = {
   name: string,
@@ -88,6 +90,17 @@ const ProfileSetup = () => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const dispatch = useDispatch()
+  const { company } = useCompany();
+
+  useEffect(() => {
+    if (
+      company &&
+      (company.status === CompanyStatus.APPROVED ||
+        company.status === CompanyStatus.PENDING)
+    ) {
+      router.replace('/')
+    }
+  }, [company, router])
 
 
   const handleNext = async () => {

@@ -11,6 +11,7 @@ type FormTextareaProps = {
   disabled?: boolean
   rows?: number
   className?: string
+  maxLength?: number
 }
 
 export const FormTextarea = ({
@@ -21,6 +22,7 @@ export const FormTextarea = ({
   disabled,
   rows = 4,
   className,
+  maxLength = 500,
 }: FormTextareaProps) => {
   return (
     <div className="space-y-1">
@@ -30,6 +32,7 @@ export const FormTextarea = ({
 
       <textarea
         {...register}
+        maxLength={maxLength}
         disabled={disabled}
         rows={rows}
         placeholder={placeholder}
@@ -43,11 +46,11 @@ export const FormTextarea = ({
         )}
       />
 
-      {error && (
-        <span className="text-xs text-destructive">
-          {error.message || 'Required'}
-        </span>
-      )}
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>{error?.message}</span>
+        <span>Max {maxLength} characters</span>
+      </div>
     </div>
   )
 }
+
