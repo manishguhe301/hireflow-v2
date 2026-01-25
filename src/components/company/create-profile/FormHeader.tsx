@@ -14,11 +14,13 @@ const steps = [
 const FormHeader = ({
   currentStep,
   handleNext,
-  handlePrev
+  handlePrev,
+  disabled
 }: {
   currentStep: number
   handleNext: () => void
   handlePrev: () => void
+  disabled: boolean
 }) => {
   const totalSteps = steps.length
 
@@ -38,7 +40,7 @@ const FormHeader = ({
           variant="ghost"
           size="sm"
           onClick={handlePrev}
-          disabled={currentStep === 0}
+          disabled={currentStep === 0 || disabled}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -61,7 +63,7 @@ const FormHeader = ({
           variant="ghost"
           size="sm"
           onClick={handleNext}
-          disabled={currentStep === totalSteps - 1}
+          disabled={currentStep === totalSteps - 1 || disabled}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

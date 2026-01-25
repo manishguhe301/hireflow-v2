@@ -33,7 +33,6 @@ const CompanyDetails = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [rejectionReason, setRejectionReason] = useState('')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState(false)
 
   const fetchCompany = async () => {
     try {
@@ -261,10 +260,14 @@ const CompanyDetails = () => {
           <DocumentCard
             label="Business Registration"
             companyId={company.id}
+            hasDocument={Boolean(company.businessDocPath)}
+            type='business'
           />
           <DocumentCard
             label="Tax Document"
             companyId={company.id}
+            hasDocument={Boolean(company.taxDocPath)}
+            type='tax'
           />
         </div>
       </section>
