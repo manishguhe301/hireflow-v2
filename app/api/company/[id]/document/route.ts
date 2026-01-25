@@ -12,19 +12,32 @@ export async function GET(
   if (!guard.ok) return guard.response;
 
   const { id } = await params;
+  const { searchParams } = new URL(req.url);
+  const type = searchParams.get('type');
 
   const company = await prisma.company.findUnique({
-    where: { id: id },
+    where: { id },
   });
 
-  if (!company?.businessDocPath) {
+  if (!company) {
+    return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+  }
+
+  let filePath: string | null = null;
+
+  if (type === 'business') {
+    filePath = company.businessDocPath;
+  }
+
+  if (type === 'tax') {
+    filePath = company.taxDocPath;
+  }
+
+  if (!filePath) {
     return NextResponse.json({ error: 'Document not found' }, { status: 404 });
   }
 
-  const signedUrl = await getSignedUrl(
-    company.businessDocPath,
-    'company-documents',
-  );
+  const signedUrl = await getSignedUrl(filePath, 'company-documents');
 
   return NextResponse.json({ url: signedUrl });
 }
