@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Building2,
@@ -24,6 +24,7 @@ import InfoCard from './InfoCard'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
+import { mockCompanies } from '@/src/utils/mock'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -32,6 +33,7 @@ const CompanyDetails = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [rejectionReason, setRejectionReason] = useState('')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const fetchCompany = async () => {
     try {
@@ -108,7 +110,7 @@ const CompanyDetails = () => {
       const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
 
       if (res.success) {
-        toast.success('Company deleted')
+        toast.success('Company deleted successfully!')
         router.push('/admin/companies')
       }
     } catch (error) {
@@ -321,8 +323,14 @@ const CompanyDetails = () => {
               <Button
                 variant="danger"
                 onClick={() => handleDelete(company.id)}
+                disabled={loadingAction === `delete-${company.id}`}
               >
-                Delete Company
+                {loadingAction === `delete-${company.id}` ? (
+                  <div className='flex flex-row gap-2'>
+                    <span>Deleting…</span>
+                    <Spinner className="h-4 w-4" />
+                  </div>
+                ) : 'Delete Company'}
               </Button>
             </div>
           )}
