@@ -1,6 +1,5 @@
 'use client'
-
-import React, { use, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Building2,
@@ -11,7 +10,9 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  ArrowLeft
+  ArrowLeft,
+  Users,
+  Calendar
 } from 'lucide-react'
 import clsx from 'clsx'
 import { Company } from '@prisma/client'
@@ -21,14 +22,12 @@ import DocumentCard from './DocumentCard'
 import InfoRow from './InfoRow'
 import InfoCard from './InfoCard'
 import { Spinner } from '../elements/Loader'
-import { STATUS_STYLE } from '@/src/utils/helper'
-import { mockCompanies } from '@/src/utils/mock'
 import { Button } from '../ui/Button'
+import { formatDate } from '@/src/utils/helper'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-
   const [company, setCompany] = useState<Company | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [rejectionReason, setRejectionReason] = useState('')
@@ -101,6 +100,25 @@ const CompanyDetails = () => {
     }
   }
 
+  const handleDelete = async (deleteCompanyId: string) => {
+    if (!deleteCompanyId) return
+
+    setLoadingAction(`delete-${deleteCompanyId}`)
+    try {
+      const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
+
+      if (res.success) {
+        toast.success('Company deleted')
+        router.push('/admin/companies')
+      }
+    } catch (error) {
+      toast.error('Failed to delete company')
+    }
+    finally {
+      setLoadingAction(null)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
@@ -112,22 +130,20 @@ const CompanyDetails = () => {
 
   if (!company) {
     return (
-      <div className="min-h-[500px] flex items-center justify-center">
-        <div className="max-w-md text-center space-y-6">
-          <div className="mx-auto h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-            <Building2 className="h-8 w-8 text-muted-foreground" />
+      <div className="flex min-h-[70vh] items-center justify-center px-6">
+        <div className="w-full max-w-md rounded-2xl border border-border/40 bg-card p-8 text-center space-y-4 shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+            <Building2 className="h-7 w-7 text-muted-foreground" />
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold">Company not found</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              The company you&apos;re trying to access doesn&apos;t exist or may have been removed.
-            </p>
-          </div>
+          <h2 className="text-xl font-semibold">Company not found</h2>
+          <p className="text-sm text-muted-foreground">
+            The company you’re looking for doesn’t exist or may have been removed.
+          </p>
 
           <Button
             onClick={() => router.push('/admin/companies')}
-            className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition"
+            className="mt-2"
           >
             Back to Companies
           </Button>
@@ -135,6 +151,7 @@ const CompanyDetails = () => {
       </div>
     )
   }
+
 
   return (
     <div className="p-8 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
@@ -148,36 +165,82 @@ const CompanyDetails = () => {
       </Button>
 
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">{company.name}</h1>
-          <p className="mt-2 text-muted-foreground">{company.description}</p>
+      <div className="rounded-3xl border border-border/40 bg-card p-8 shadow-sm">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-start gap-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
+              {company.logo ? (
+                //eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={company.logo}
+                  alt={`${company.name} logo`}
+                  className="h-full w-full object-contain"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-muted-foreground">
+                  {company.name.charAt(0)}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                {company.name}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {company.industry} • {company.location}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className={clsx(
+              'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold',
+              company.status === 'PENDING' &&
+              'bg-warning/10 text-warning border border-warning/20',
+              company.status === 'APPROVED' &&
+              'bg-success/10 text-success border border-success/20',
+              company.status === 'REJECTED' &&
+              'bg-destructive/10 text-destructive border border-destructive/20'
+            )}
+          >
+            {company.status === 'PENDING' && <Clock className="h-4 w-4" />}
+            {company.status === 'APPROVED' && <CheckCircle className="h-4 w-4" />}
+            {company.status === 'REJECTED' && <XCircle className="h-4 w-4" />}
+            {company.status}
+          </div>
         </div>
-
-        <span
-          className={clsx(
-            'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium w-fit',
-            company.status === 'PENDING'
-              ? 'bg-warning/10 text-warning'
-              : company.status === 'APPROVED'
-                ? 'bg-success/10 text-success'
-                : 'bg-destructive/10 text-destructive'
-          )}
-        >
-          {company.status === 'PENDING' && <Clock className="h-4 w-4" />}
-          {company.status === 'APPROVED' && <CheckCircle className="h-4 w-4" />}
-          {company.status === 'REJECTED' && <XCircle className="h-4 w-4" />}
-          {company.status}
-        </span>
-
       </div>
+      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3">
+        <h2 className="text-lg font-semibold">
+          About the Company
+        </h2>
 
+        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+          {company.description}
+        </p>
+      </div>
+      {company.status === 'REJECTED' && company.rejectionReason && (
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 space-y-2">
+          <div className="flex items-center gap-2">
+            <XCircle className="h-5 w-5 text-destructive" />
+            <h2 className="text-sm font-semibold text-destructive">
+              Rejection Reason
+            </h2>
+          </div>
+
+          <p className="text-sm text-muted-foreground whitespace-pre-line">
+            {company.rejectionReason}
+          </p>
+        </div>
+      )}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InfoCard title="Company Information">
           <InfoRow icon={<Building2 />} label="Industry" value={company.industry} />
           <InfoRow icon={<MapPin />} label="Location" value={company.location} />
-          <InfoRow label="Company Size" value={company.companySize} />
-          <InfoRow label="Founded" value={company.foundedYear?.toString() || '—'} />
+          <InfoRow label="Company Size" icon={<Users />} value={company.companySize} />
+          <InfoRow label="Founded" icon={<Calendar />} value={company.foundedYear?.toString() || '—'} />
         </InfoCard>
 
         <InfoCard title="Contact Information">
@@ -188,10 +251,11 @@ const CompanyDetails = () => {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold">Documents</h2>
+        <h2 className="text-lg font-semibold">Documents</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DocumentCard
-            label="Business Document"
+            label="Business Registration"
             url={company.businessDocument}
           />
           <DocumentCard
@@ -201,74 +265,76 @@ const CompanyDetails = () => {
         </div>
       </section>
 
+
       {company.status !== 'REJECTED' && (
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Admin Actions</h2>
 
-          <div className="max-w-xl">
-            <label className="text-sm text-muted-foreground">
-              Rejection Reason (required when rejecting)
-            </label>
-            <textarea
-              value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Enter reason for rejection..."
-              className="mt-2 w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
-              rows={4}
-            />
-
-          </div>
-
           {company.status === 'PENDING' && (
-            <div className="flex flex-wrap gap-3">
-              <Button
-                onClick={() => handleApprove(company.id)}
-                disabled={loadingAction === `approve-${company.id}`}
-                className="px-4 py-2 text-sm bg-success text-success-foreground hover:opacity-90"
-              >
-                {loadingAction === `approve-${company.id}`
-                  ? 'Approving Company...'
-                  : 'Approve Company'}
-              </Button>
+            <div className="max-w-xl space-y-4 rounded-2xl border border-border/40 bg-card p-6">
+              <div>
+                <label className="text-sm text-muted-foreground">
+                  Rejection Reason (required if rejecting)
+                </label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Explain why this company is being rejected…"
+                  className="mt-2 w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
+                  rows={4}
+                />
+              </div>
 
-              <Button
-                variant="danger"
-                onClick={() => handleReject(company.id, rejectionReason)}
-                disabled={loadingAction === `reject-${company.id}`}
-                className="px-4 py-2 text-sm bg-destructive text-destructive-foreground hover:opacity-90"
-              >
-                {loadingAction === `reject-${company.id}`
-                  ? 'Rejecting Company...'
-                  : 'Reject Company'}
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => handleApprove(company.id)}
+                  disabled={loadingAction === `approve-${company.id}`}
+                  className="bg-success text-success-foreground"
+                >
+                  {loadingAction === `approve-${company.id}`
+                    ? 'Approving…'
+                    : 'Approve Company'}
+                </Button>
+
+                <Button
+                  variant="danger"
+                  onClick={() => handleReject(company.id, rejectionReason)}
+                  disabled={loadingAction === `reject-${company.id}`}
+                >
+                  {loadingAction === `reject-${company.id}`
+                    ? 'Rejecting…'
+                    : 'Reject Company'}
+                </Button>
+              </div>
             </div>
           )}
 
           {company.status === 'APPROVED' && (
-            <Button
-              variant='danger'
-              onClick={() => handleReject(company.id, rejectionReason)}
-              className="px-4 py-2 text-sm bg-destructive text-destructive-foreground hover:opacity-90"
-            >
-              Reject Company
-            </Button>
+            <div className="max-w-xl rounded-2xl border border-destructive/30 bg-destructive/10 p-6 space-y-3">
+              <h3 className="text-sm font-semibold text-destructive">
+                Danger Zone
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Deleting an approved company is permanent and cannot be undone.
+              </p>
 
+              <Button
+                variant="danger"
+                onClick={() => handleDelete(company.id)}
+              >
+                Delete Company
+              </Button>
+            </div>
           )}
         </section>
       )}
 
       <section className="text-xs text-muted-foreground">
-        {/* USE HERE FORMAT DATES HELPERS */}
-        Created at: {company.createdAt.toLocaleDateString()} •
-        Last updated: {company.updatedAt.toLocaleDateString()}
+        Created at: {formatDate(company.createdAt)} •
+        Last updated: {formatDate(company.updatedAt)}
       </section>
     </div>
   )
 }
 
 export default CompanyDetails
-
-
-
-
-
