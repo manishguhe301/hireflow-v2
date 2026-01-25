@@ -72,6 +72,10 @@ const Step1BasicInfo = ({
           rows={5}
           register={register('description', {
             required: 'Description is required',
+            maxLength: {
+              value: 500,
+              message: 'Description cannot exceed 500 characters',
+            },
           })}
           error={errors.description}
         />
