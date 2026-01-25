@@ -98,9 +98,6 @@ const ProfileSetup = () => {
       (company.status === CompanyStatus.APPROVED ||
         company.status === CompanyStatus.PENDING)
     ) {
-      toast.error(
-        company.status === CompanyStatus.PENDING ? 'You have already created a company profile. Please wait for approval.' : 'You have already created a company profile.',
-      )
       router.replace('/')
     }
   }, [company, router])

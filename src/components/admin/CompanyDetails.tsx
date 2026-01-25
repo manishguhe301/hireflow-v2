@@ -24,7 +24,7 @@ import InfoCard from './InfoCard'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
-import { mockCompanies } from '@/src/utils/mock'
+import { companyIndustries } from '@/src/utils/mock'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -154,6 +154,8 @@ const CompanyDetails = () => {
     )
   }
 
+  const companyIndustry = companyIndustries.find((ind) =>
+    ind.value === company.industry)?.label || company.industry
 
   return (
     <div className="p-8 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
@@ -187,11 +189,11 @@ const CompanyDetails = () => {
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight capitalize">
                 {company.name}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {company.industry} • {company.location}
+                {companyIndustry} • {company.location}
               </p>
             </div>
           </div>
@@ -239,7 +241,7 @@ const CompanyDetails = () => {
       )}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InfoCard title="Company Information">
-          <InfoRow icon={<Building2 />} label="Industry" value={company.industry} />
+          <InfoRow icon={<Building2 />} label="Industry" value={companyIndustry} />
           <InfoRow icon={<MapPin />} label="Location" value={company.location} />
           <InfoRow label="Company Size" icon={<Users />} value={company.companySize} />
           <InfoRow label="Founded" icon={<Calendar />} value={company.foundedYear?.toString() || '—'} />
@@ -258,11 +260,11 @@ const CompanyDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DocumentCard
             label="Business Registration"
-            url={company.businessDocument}
+            companyId={company.id}
           />
           <DocumentCard
             label="Tax Document"
-            url={company.taxDocument}
+            companyId={company.id}
           />
         </div>
       </section>
