@@ -5,23 +5,7 @@ import { ProfileFormInputs } from './ProfileSetup'
 import { FormTextarea } from '../../ui/FormTextarea'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
-
-const companySizes = [
-  { label: '1–10', value: '1-10' },
-  { label: '11–50', value: '11-50' },
-  { label: '51–200', value: '51-200' },
-  { label: '201–500', value: '201-500' },
-]
-
-const companyIndustries = [
-  { label: 'Technology', value: 'technology' },
-  { label: 'Finance', value: 'finance' },
-  { label: 'Healthcare', value: 'healthcare' },
-  { label: 'Education', value: 'education' },
-  { label: 'Retail', value: 'retail' },
-  { label: 'Manufacturing', value: 'manufacturing' },
-  { label: 'Other', value: 'other' },
-]
+import { companyIndustries, companySizes } from '@/src/utils/mock'
 
 const Step1BasicInfo = ({
   register,
