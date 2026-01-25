@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import FormHeader from './FormHeader'
 import Step1BasicInfo from './Step1BasicInfo'
 import Step2Contact from './Step2Contact'
@@ -91,14 +91,17 @@ const ProfileSetup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const dispatch = useDispatch()
   const { company } = useCompany();
+  const hasCheckedRedirect = useRef(false)
 
   useEffect(() => {
+    if (hasCheckedRedirect.current) return
+
     if (
       company &&
       (company.status === CompanyStatus.APPROVED ||
         company.status === CompanyStatus.PENDING)
     ) {
-      router.replace('/')
+      router.replace('/company')
     }
   }, [company, router])
 
@@ -180,6 +183,7 @@ const ProfileSetup = () => {
             currentStep={currentStep}
             handleNext={handleNext}
             handlePrev={handlePrev}
+            disabled={isSubmitting}
           />
         </div>
 

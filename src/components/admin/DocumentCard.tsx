@@ -6,11 +6,18 @@ import { toast } from "sonner"
 import { Button } from "../ui/Button"
 
 const DocumentCard = ({
-  label, companyId
+  label,
+  companyId,
+  hasDocument,
+  type
+
 }: {
   label: string
   companyId: string
+  hasDocument: boolean
+  type: 'business' | 'tax'
 }) => {
+
   const [loading, setLoading] = useState(false)
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
 
@@ -18,9 +25,9 @@ const DocumentCard = ({
     setLoading(true)
     try {
       const res = await AppSdk.getData(
-        `/api/company/${companyId}/document`,
+        `/api/company/${companyId}/document?type=${type}`,
         null
-      )
+      );
 
       if (!res?.url) {
         toast.error('Failed to retrieve document')
@@ -43,7 +50,13 @@ const DocumentCard = ({
           <span className="text-sm font-medium">{label}</span>
         </div>
 
-        {!signedUrl && (
+        {!hasDocument && (
+          <span className="text-xs text-muted-foreground">
+            Not uploaded
+          </span>
+        )}
+
+        {hasDocument && !signedUrl && (
           <Button
             size="sm"
             variant="outline"
@@ -55,7 +68,7 @@ const DocumentCard = ({
             {!loading && <Eye className="h-4 w-4" />}
           </Button>
         )}
-        {signedUrl && (
+        {hasDocument && signedUrl && (
           <div className="flex items-center gap-2 text-sm">
             <ExternalLink className="h-4 w-4 text-primary" />
             <Link
