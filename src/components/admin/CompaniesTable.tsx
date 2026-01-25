@@ -49,7 +49,7 @@ const CompaniesTable = ({
               className='w-full hover:bg-muted/30 transition'
             >
               <td className="px-6 py-4">
-                <div className="font-medium">{company.name}</div>
+                <div className="font-medium capitalize">{company.name}</div>
                 <div className="text-xs text-muted-foreground">
                   {company.contactEmail}
                 </div>
