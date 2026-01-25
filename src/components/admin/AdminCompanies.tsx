@@ -10,14 +10,13 @@ import { Company, CompanyStatus } from '@prisma/client'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
-import { mockCompanies } from '@/src/utils/mock'
-import { STATUS_STYLE, TABS } from '@/src/utils/helper'
+import { TABS } from '@/src/utils/helper'
 import DeleteCompanyModal from './DeleteCompanyModal'
 import RejectCompanyModal from './RejectCompanyModal'
 import CompaniesTable from './CompaniesTable'
 
 const AdminCompanies = () => {
-  const [companies, setCompanies] = useState<Company[]>(mockCompanies)
+  const [companies, setCompanies] = useState<Company[]>([])
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
