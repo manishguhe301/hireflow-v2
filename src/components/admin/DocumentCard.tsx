@@ -55,21 +55,20 @@ const DocumentCard = ({
             {!loading && <Eye className="h-4 w-4" />}
           </Button>
         )}
+        {signedUrl && (
+          <div className="flex items-center gap-2 text-sm">
+            <ExternalLink className="h-4 w-4 text-primary" />
+            <Link
+              href={signedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline underline-offset-2 break-all"
+            >
+              Open document
+            </Link>
+          </div>
+        )}
       </div>
-
-      {signedUrl && (
-        <div className="flex items-center gap-2 text-sm">
-          <ExternalLink className="h-4 w-4 text-primary" />
-          <Link
-            href={signedUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline underline-offset-2 break-all"
-          >
-            Open document
-          </Link>
-        </div>
-      )}
     </div>
   )
 }
