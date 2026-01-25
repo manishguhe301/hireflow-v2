@@ -1,7 +1,6 @@
 'use client'
 
 import { useCompany } from '@/src/store/hooks/useCompany'
-import Link from 'next/link'
 
 export default function CompanyDashboard() {
   const { company } = useCompany()
