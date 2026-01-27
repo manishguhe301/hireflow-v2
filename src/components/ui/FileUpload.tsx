@@ -8,9 +8,9 @@ import {
   UseFormRegister,
 } from 'react-hook-form'
 import clsx from 'clsx'
-import { UploadCloud, CheckCircle, X } from 'lucide-react'
+import { UploadCloud, CheckCircle, X, FileText } from 'lucide-react'
 import Image from 'next/image'
-import { formatFileSize, validateFileSize, validateFileType } from '@/src/utils/helper'
+import { formatFileSize, getFileNameFromPath, validateFileSize, validateFileType } from '@/src/utils/helper'
 
 type FileUploadProps<T extends FieldValues> = {
   label: string
@@ -21,6 +21,8 @@ type FileUploadProps<T extends FieldValues> = {
   required?: boolean
   accept?: string
   maxSizeMB?: number
+  existingFileUrl?: string | null
+  isImage?: boolean
 }
 
 export function FileUpload<T extends FieldValues>({
@@ -32,6 +34,8 @@ export function FileUpload<T extends FieldValues>({
   required = false,
   accept,
   maxSizeMB,
+  existingFileUrl,
+  isImage = false,
 }: FileUploadProps<T>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -51,7 +55,7 @@ export function FileUpload<T extends FieldValues>({
   }
 
   const { ref, onChange, ...rest } = register(name, {
-    required: required ? 'This file is required' : false,
+    required: required && !existingFileUrl ? 'This file is required' : false,
     validate: (value) => {
       if (!value?.[0]) return true
       return validateFile(value[0])
@@ -68,12 +72,37 @@ export function FileUpload<T extends FieldValues>({
     }
   }
 
+  const showExisting = existingFileUrl && !fileName
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">
         {label}
         {required && <span className="ml-1 text-destructive">*</span>}
       </label>
+
+      {showExisting && (
+        <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            {isImage ? (
+              // eslint-disable-next-line
+              <img
+                src={existingFileUrl}
+                alt="Current file"
+                className="h-16 w-16 rounded-lg object-cover"
+              />
+            ) : (
+              <FileText className="h-8 w-8 text-primary" />
+            )}
+            <div className="flex-1">
+              <p className="text-sm font-medium">{getFileNameFromPath(existingFileUrl)}</p>
+              <p className="text-xs text-muted-foreground">
+                Click below to replace with a new file
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div
         role="button"
@@ -98,7 +127,7 @@ export function FileUpload<T extends FieldValues>({
               className="text-sm font-medium truncate"
               title={fileName || undefined}
             >
-              {fileName || 'Choose file'}
+              {fileName || (showExisting ? 'Replace file' : 'Choose file')}
             </span>
 
             {description && (

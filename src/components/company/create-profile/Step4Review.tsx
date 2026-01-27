@@ -5,6 +5,8 @@ import { UseFormWatch } from 'react-hook-form'
 import { ProfileFormInputs } from './ProfileSetup'
 import { Pencil } from 'lucide-react'
 import clsx from 'clsx'
+import { useCompany } from '@/src/store/hooks/useCompany'
+import { getFileNameFromPath } from '@/src/utils/helper'
 
 type Props = {
   watch: UseFormWatch<ProfileFormInputs>
@@ -67,33 +69,50 @@ const Item = ({
 const FileItem = ({
   label,
   file,
+  existingFileUrl,
   required = true
 }: {
   label: string
   file?: FileList
+  existingFileUrl?: string | null
   required?: boolean
 }) => {
-  const fileName = file?.[0]?.name
+  const newFileName = file?.[0]?.name
+
+  const existingFileName = existingFileUrl ? getFileNameFromPath(existingFileUrl) : null
+
+  const displayName = newFileName || existingFileName
+  const hasFile = !!(newFileName || existingFileName)
 
   return (
     <div>
       <p className="text-xs text-muted-foreground">
         {label}
-        {required && !fileName && <span className="text-red-500 ml-1">*</span>}
+        {required && !hasFile && <span className="text-red-500 ml-1">*</span>}
       </p>
-      <p className={clsx(
-        'font-medium truncate',
-        !fileName && required && 'text-red-500',
-        !fileName && !required && 'text-muted-foreground'
-      )}>
-        {fileName || (required ? 'Required' : 'Not uploaded')}
-      </p>
+      <div className="flex items-center gap-2">
+        <p className={clsx(
+          'font-medium truncate',
+          !hasFile && required && 'text-red-500',
+          !hasFile && !required && 'text-muted-foreground'
+        )}>
+          {displayName || (required ? 'Required' : 'Not uploaded')}
+        </p>
+        {!newFileName && existingFileName && (
+          <span className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
+            Existing
+          </span>
+        )}
+      </div>
     </div>
   )
 }
 
 const Step4Review = ({ watch, setCurrentStep }: Props) => {
   const data = watch()
+  const { company } = useCompany()
+
+  const existingCompany = company?.status === 'REJECTED' ? company : null
 
   return (
     <div className="space-y-8">
@@ -112,8 +131,7 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
         <Item label="Industry" value={data.industry} />
         <Item label="Company Size" value={data.companySize} />
         <Item label="Website" value={data.website} />
-        <Item label="LinkedIn" value={data.linkedinProfile}
-          required={false} />
+        <Item label="LinkedIn" value={data.linkedinProfile} required={false} />
         <div className="sm:col-span-2">
           <Item label="Description" value={data.description} />
         </div>
@@ -129,9 +147,24 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
       </Section>
 
       <Section title="Documents" onEdit={() => setCurrentStep(2)}>
-        <FileItem label="Company Logo" file={data.logo} required />
-        <FileItem label="Business Document" file={data.businessDocument} required />
-        <FileItem label="Tax Document" file={data.taxDocument} required={false} />
+        <FileItem
+          label="Company Logo"
+          file={data.logo}
+          existingFileUrl={existingCompany?.logo}
+          required
+        />
+        <FileItem
+          label="Business Document"
+          file={data.businessDocument}
+          existingFileUrl={existingCompany?.businessDocument}
+          required
+        />
+        <FileItem
+          label="Tax Document"
+          file={data.taxDocument}
+          existingFileUrl={existingCompany?.taxDocument}
+          required={false}
+        />
       </Section>
     </div>
   )
