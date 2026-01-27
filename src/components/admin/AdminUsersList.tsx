@@ -21,8 +21,10 @@ const AdminUsersList = () => {
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
 
-  const fetchUsers = async (role?: string) => {
-    setIsLoading(true)
+  const fetchUsers = async (role?: string, isLoadingNeeded: boolean = true) => {
+    if (isLoadingNeeded) {
+      setIsLoading(true)
+    }
     try {
       const url = role
         ? `/api/admin/users?role=${role}`
@@ -62,7 +64,7 @@ const AdminUsersList = () => {
 
       if (res.success) {
         toast.success('User deleted')
-        fetchUsers(activeTab === 'ALL' ? undefined : activeTab)
+        fetchUsers(activeTab === 'ALL' ? undefined : activeTab, false)
       }
     } catch (error) {
       toast.error('Failed to delete user')

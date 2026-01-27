@@ -35,8 +35,10 @@ const AdminCompanies = () => {
     })
   }, [companies, activeTab, search])
 
-  const fetchCompanies = async (status?: string) => {
-    setIsLoading(true)
+  const fetchCompanies = async (status?: string, isLoadingNeeded: boolean = true) => {
+    if (isLoadingNeeded) {
+      setIsLoading(true)
+    }
     try {
       const url = status
         ? `/api/admin/companies?status=${status}`
@@ -69,7 +71,7 @@ const AdminCompanies = () => {
 
       if (res.success) {
         toast.success('Company approved successfully')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
       }
     } catch (error) {
       toast.error('Failed to approve company')
@@ -95,7 +97,7 @@ const AdminCompanies = () => {
 
       if (res.success) {
         toast.success('Company rejected')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
       }
     } catch (error) {
       toast.error('Failed to reject company')
@@ -116,7 +118,7 @@ const AdminCompanies = () => {
 
       if (res.success) {
         toast.success('Company deleted')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
       }
     } catch (error) {
       toast.error('Failed to delete company')

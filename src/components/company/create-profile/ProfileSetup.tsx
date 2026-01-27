@@ -98,9 +98,7 @@ const ProfileSetup = () => {
     if (hasCheckedRedirect.current) return
 
     if (
-      company &&
-      (company.status === CompanyStatus.APPROVED ||
-        company.status === CompanyStatus.PENDING)
+      company?.status === CompanyStatus.PENDING
     ) {
       router.replace('/company')
       hasCheckedRedirect.current = true
@@ -108,7 +106,7 @@ const ProfileSetup = () => {
   }, [company, router])
 
   useEffect(() => {
-    if (company && company.status === CompanyStatus.REJECTED) {
+    if (company && (company.status === CompanyStatus.REJECTED || company.status === CompanyStatus.APPROVED)) {
       setValue('name', company.name)
       setValue('description', company.description)
       setValue('industry', company.industry)
@@ -168,7 +166,10 @@ const ProfileSetup = () => {
         formData.append('taxDocument', data.taxDocument[0])
       }
 
-      const isUpdate = company && company.status === CompanyStatus.REJECTED
+      const isUpdate = company && (
+        company.status === CompanyStatus.REJECTED ||
+        company.status === CompanyStatus.APPROVED
+      )
       const method = isUpdate ? 'PATCH' : 'POST'
 
       const response = await fetch('/api/company/profile', {
@@ -185,9 +186,16 @@ const ProfileSetup = () => {
 
       dispatch(setCompany({ company: result.company }))
 
-      toast.success('Profile submitted for approval!')
+      if (company?.status === CompanyStatus.REJECTED) {
+        toast.success('Profile resubmitted for approval!')
+      } else if (company?.status === CompanyStatus.APPROVED) {
+        toast.success('Profile updated successfully!')
+      } else {
+        toast.success('Profile submitted for approval!')
+      }
+      if (company?.status === CompanyStatus.APPROVED) { router.push('/company/profile') }
+      else { router.push('/company') }
       reset()
-      router.push('/company')
     } catch (error) {
       console.error('Submit error:', error)
       toast.error('Something went wrong. Please try again.')
@@ -211,6 +219,19 @@ const ProfileSetup = () => {
           </p>
         </div>
       )}
+      
+      {company?.status === CompanyStatus.APPROVED && (
+        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+          <p className="text-sm text-primary font-medium">
+            Editing an approved profile
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Please review all steps before saving changes to ensure your profile
+            remains accurate and up to date.
+          </p>
+        </div>
+      )}
+
       <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
         <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
           <FormHeader
@@ -259,11 +280,14 @@ const ProfileSetup = () => {
               variant="primary"
               className="max-md:w-1/2"
             >
-              {isSubmitting ? 'Submitting...' :
-                (company?.status === CompanyStatus.REJECTED
+              {isSubmitting
+                ? 'Submitting...'
+                : company?.status === CompanyStatus.REJECTED
                   ? 'Resubmit for Approval'
-                  : 'Submit for Approval'
-                )}
+                  : company?.status === CompanyStatus.APPROVED
+                    ? 'Save Changes'
+                    : 'Submit for Approval'
+              }
             </Button>
           )}
         </div>
