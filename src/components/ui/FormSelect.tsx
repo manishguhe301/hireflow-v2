@@ -6,6 +6,7 @@ import clsx from 'clsx'
 type SelectOption = {
   label: string
   value: string
+  disabled?: boolean
 }
 
 type FormSelectProps = {
@@ -54,6 +55,7 @@ export const FormSelect = ({
           <option
             key={option.value}
             value={option.value}
+            disabled={option.disabled}
             className="bg-background text-foreground"
           >
             {option.label}

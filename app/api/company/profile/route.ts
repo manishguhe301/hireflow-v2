@@ -1,5 +1,8 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { uploadFileToSupabase } from '@/src/lib/fileUpload';
+import {
+  deleteFileFromSupabase,
+  uploadFileToSupabase,
+} from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -134,6 +137,144 @@ export async function POST(req: NextRequest) {
       {
         error: 'Internal Server Error',
       },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const guard = await apiAuthGuard([Role.COMPANY_ADMIN]);
+    if (!guard.ok) {
+      return guard.response;
+    }
+
+    const existingCompany = await prisma.company.findUnique({
+      where: { userId: guard.session.user.id },
+    });
+
+    if (!existingCompany) {
+      return NextResponse.json(
+        { error: 'Company profile not found' },
+        { status: 404 },
+      );
+    }
+
+    if (existingCompany.status !== 'REJECTED') {
+      return NextResponse.json(
+        { error: 'Only rejected companies can be resubmitted' },
+        { status: 400 },
+      );
+    }
+
+    const formData = await req.formData();
+
+    const data = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string,
+      industry: formData.get('industry') as string,
+      companySize: formData.get('companySize') as string,
+      foundedYear: formData.get('foundedYear') as string,
+      website: formData.get('website') as string,
+      linkedinProfile: formData.get('linkedinProfile') as string,
+      contactEmail: formData.get('contactEmail') as string,
+      contactPhone: formData.get('contactPhone') as string,
+      location: formData.get('location') as string,
+      address: formData.get('address') as string,
+    };
+
+    if (
+      !data.name ||
+      !data.description ||
+      !data.industry ||
+      !data.companySize
+    ) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 },
+      );
+    }
+
+    const logo = formData.get('logo') as File | null;
+    const businessDocument = formData.get('businessDocument') as File | null;
+    const taxDocument = formData.get('taxDocument') as File | null;
+
+    let logoUrl = existingCompany.logo;
+    let logoPath = existingCompany.logoPath;
+    let businessDocUrl = existingCompany.businessDocument;
+    let businessDocPath = existingCompany.businessDocPath;
+    let taxDocUrl = existingCompany.taxDocument;
+    let taxDocPath = existingCompany.taxDocPath;
+
+    if (logo) {
+      if (existingCompany.logoPath) {
+        await deleteFileFromSupabase(existingCompany.logoPath, 'company-logos');
+      }
+      const logoResult = await uploadFileToSupabase(logo, 'company-logos');
+      logoUrl = logoResult.url;
+      logoPath = logoResult.path;
+    }
+
+    if (businessDocument) {
+      if (existingCompany.businessDocPath) {
+        await deleteFileFromSupabase(
+          existingCompany.businessDocPath,
+          'company-documents',
+        );
+      }
+      const docResult = await uploadFileToSupabase(
+        businessDocument,
+        'company-documents',
+      );
+      businessDocUrl = docResult.url;
+      businessDocPath = docResult.path;
+    }
+
+    if (taxDocument) {
+      if (existingCompany.taxDocPath) {
+        await deleteFileFromSupabase(
+          existingCompany.taxDocPath,
+          'company-documents',
+        );
+      }
+      const taxResult = await uploadFileToSupabase(
+        taxDocument,
+        'company-documents',
+      );
+      taxDocUrl = taxResult.url;
+      taxDocPath = taxResult.path;
+    }
+
+    const updatedCompany = await prisma.company.update({
+      where: { id: existingCompany.id },
+      data: {
+        name: data.name,
+        description: data.description,
+        industry: data.industry,
+        companySize: data.companySize,
+        foundedYear: parseInt(data.foundedYear),
+        website: data.website,
+        linkedinProfile: data.linkedinProfile || null,
+        contactEmail: data.contactEmail,
+        contactPhone: data.contactPhone || null,
+        location: data.location,
+        address: data.address || null,
+        logo: logoUrl,
+        logoPath: logoPath,
+        businessDocument: businessDocUrl,
+        businessDocPath: businessDocPath,
+        taxDocument: taxDocUrl,
+        taxDocPath: taxDocPath,
+        status: 'PENDING',
+        rejectionReason: null,
+      },
+    });
+
+    return NextResponse.json({ success: true, company: updatedCompany });
+  } catch (error) {
+    console.error('Error updating company:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
       { status: 500 },
     );
   }

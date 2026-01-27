@@ -69,11 +69,12 @@ export async function deleteFileFromSupabase(
 export async function getSignedUrl(
   filePath: string,
   bucket: 'company-logos' | 'company-documents',
+  expiresInSeconds: number = 300,
 ): Promise<string> {
   try {
     const { data, error } = await supabaseServer.storage
       .from(bucket)
-      .createSignedUrl(filePath, 3600);
+      .createSignedUrl(filePath, expiresInSeconds);
 
     if (error) {
       console.error('Signed URL error:', error);

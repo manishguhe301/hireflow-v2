@@ -1,6 +1,7 @@
 import { FieldErrors, UseFormRegister } from "react-hook-form"
 import { FileUpload } from "../../ui/FileUpload"
 import { ProfileFormInputs } from "./ProfileSetup"
+import { useCompany } from "@/src/store/hooks/useCompany"
 
 const Step3Documents = ({
   register,
@@ -9,6 +10,10 @@ const Step3Documents = ({
   register: UseFormRegister<ProfileFormInputs>
   errors: FieldErrors<ProfileFormInputs>
 }) => {
+  const { company } = useCompany()
+
+  const existingCompany = company?.status === 'REJECTED' ? company : null
+
   return (
     <div className="space-y-8">
       <div className="space-y-1">
@@ -16,7 +21,9 @@ const Step3Documents = ({
           Documents & Verification
         </h2>
         <p className="text-sm text-muted-foreground">
-          Upload required documents to verify your company.
+          {existingCompany
+            ? "Update your documents if needed, or keep existing ones."
+            : "Upload required documents to verify your company."}
         </p>
       </div>
 
@@ -30,6 +37,8 @@ const Step3Documents = ({
           required
           accept="image/png,image/jpeg,image/jpg,image/svg+xml"
           maxSizeMB={2}
+          existingFileUrl={existingCompany?.logo}
+          isImage
         />
 
         <FileUpload<ProfileFormInputs>
@@ -41,6 +50,7 @@ const Step3Documents = ({
           required
           accept="application/pdf,image/*"
           maxSizeMB={5}
+          existingFileUrl={existingCompany?.businessDocument}
         />
 
         <FileUpload<ProfileFormInputs>
@@ -52,6 +62,7 @@ const Step3Documents = ({
           required={false}
           accept="application/pdf,image/*"
           maxSizeMB={5}
+          existingFileUrl={existingCompany?.taxDocument}
         />
       </div>
     </div>
