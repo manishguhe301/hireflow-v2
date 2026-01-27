@@ -12,7 +12,7 @@ const Step3Documents = ({
 }) => {
   const { company } = useCompany()
 
-  const existingCompany = company?.status === 'REJECTED' ? company : null
+  const existingCompany = company?.status === 'REJECTED' || company?.status === 'APPROVED' ? company : null
 
   return (
     <div className="space-y-8">

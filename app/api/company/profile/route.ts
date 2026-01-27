@@ -4,7 +4,7 @@ import {
   uploadFileToSupabase,
 } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
-import { Role } from '@prisma/client';
+import { CompanyStatus, Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
@@ -160,9 +160,12 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    if (existingCompany.status !== 'REJECTED') {
+    if (
+      existingCompany.status !== 'REJECTED' &&
+      existingCompany.status !== 'APPROVED'
+    ) {
       return NextResponse.json(
-        { error: 'Only rejected companies can be resubmitted' },
+        { error: 'Profile cannot be updated in current state' },
         { status: 400 },
       );
     }
@@ -245,6 +248,12 @@ export async function PATCH(req: NextRequest) {
       taxDocPath = taxResult.path;
     }
 
+    let newStatus: CompanyStatus = existingCompany.status;
+
+    if (existingCompany.status === 'REJECTED') {
+      newStatus = 'PENDING';
+    }
+
     const updatedCompany = await prisma.company.update({
       where: { id: existingCompany.id },
       data: {
@@ -265,8 +274,11 @@ export async function PATCH(req: NextRequest) {
         businessDocPath: businessDocPath,
         taxDocument: taxDocUrl,
         taxDocPath: taxDocPath,
-        status: 'PENDING',
-        rejectionReason: null,
+        status: newStatus,
+        rejectionReason:
+          existingCompany.status === 'REJECTED'
+            ? null
+            : existingCompany.rejectionReason,
       },
     });
 
