@@ -102,6 +102,7 @@ const ProfileSetup = () => {
         company.status === CompanyStatus.PENDING)
     ) {
       router.replace('/company')
+      hasCheckedRedirect.current = true
     }
   }, [company, router])
 

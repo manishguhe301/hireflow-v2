@@ -157,7 +157,7 @@ const CompanyDetails = () => {
     ind.value === company.industry)?.label || company.industry
 
   return (
-    <div className="p-8 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
+    <div className="md:p-8 p-4 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
       <Button
         onClick={() => router.back()}
         variant="ghost"
