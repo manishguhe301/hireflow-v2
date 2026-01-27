@@ -219,6 +219,19 @@ const ProfileSetup = () => {
           </p>
         </div>
       )}
+      
+      {company?.status === CompanyStatus.APPROVED && (
+        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+          <p className="text-sm text-primary font-medium">
+            Editing an approved profile
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Please review all steps before saving changes to ensure your profile
+            remains accurate and up to date.
+          </p>
+        </div>
+      )}
+
       <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
         <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
           <FormHeader
