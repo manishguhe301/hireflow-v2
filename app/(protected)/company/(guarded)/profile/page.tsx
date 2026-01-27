@@ -1,8 +1,9 @@
+import CompanyProfileView from '@/src/components/company/profile/CompanyProfileView'
 import React from 'react'
 
 const CompanyProfilePage = () => {
   return (
-    <div>CompanyProfilePage</div>
+    <CompanyProfileView />
   )
 }
 
