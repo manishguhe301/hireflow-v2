@@ -57,7 +57,7 @@ const Item = ({
       {required && !value && <span className="text-red-500 ml-1">*</span>}
     </p>
     <p className={clsx(
-      'font-medium',
+      'font-medium whitespace-pre-wrap wrap-break-word',
       !value && required && 'text-red-500',
       !value && !required && 'text-muted-foreground'
     )}>

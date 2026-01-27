@@ -104,7 +104,10 @@ const CompanyProfileView = () => {
 
       <div className="rounded-2xl border border-border/40 bg-card p-6">
         <h2 className="text-lg font-semibold">About the Company</h2>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+        <p
+          className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap wrap-break-word"
+
+        >
           {company.description}
         </p>
       </div>

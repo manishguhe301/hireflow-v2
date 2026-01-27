@@ -137,6 +137,7 @@ const Step2Contact = ({
           placeholder="Street, city, state, postal code"
           register={register('address')}
           error={errors.address}
+          maxLength={200}
         />
       </div>
     </div>

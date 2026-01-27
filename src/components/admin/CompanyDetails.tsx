@@ -215,14 +215,15 @@ const CompanyDetails = () => {
           </div>
         </div>
       </div>
-      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3 ">
         <h2 className="text-lg font-semibold">
           About the Company
         </h2>
 
-        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words ">
           {company.description}
         </p>
+
       </div>
       {company.status === 'REJECTED' && company.rejectionReason && (
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 space-y-2">
