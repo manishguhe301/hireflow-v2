@@ -112,7 +112,7 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
   const data = watch()
   const { company } = useCompany()
 
-  const existingCompany = company?.status === 'REJECTED' ? company : null
+  const existingCompany = company?.status === 'REJECTED' || company?.status === 'APPROVED' ? company : null
 
   return (
     <div className="space-y-8">
