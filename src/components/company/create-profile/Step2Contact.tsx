@@ -20,6 +20,7 @@ type CountryApiResponse = {
 type CountryOption = {
   label: string
   value: string
+  disabled?: boolean
 }
 
 const Step2Contact = ({
@@ -91,6 +92,7 @@ const Step2Contact = ({
             value: session?.user?.email || '',
           })}
           error={errors.contactEmail}
+          disabled
         />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
