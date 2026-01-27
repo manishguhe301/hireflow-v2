@@ -63,7 +63,8 @@ const ProfileSetup = () => {
     handleSubmit,
     watch,
     trigger,
-    reset
+    reset,
+    setValue
   } = useForm<ProfileFormInputs>({
     defaultValues: {
       //step 1
@@ -105,6 +106,22 @@ const ProfileSetup = () => {
       hasCheckedRedirect.current = true
     }
   }, [company, router])
+
+  useEffect(() => {
+    if (company && company.status === CompanyStatus.REJECTED) {
+      setValue('name', company.name)
+      setValue('description', company.description)
+      setValue('industry', company.industry)
+      setValue('companySize', company.companySize)
+      setValue('foundedYear', company.foundedYear?.toString() || '')
+      setValue('website', company.website || '')
+      setValue('linkedinProfile', company.linkedinProfile || '')
+      setValue('contactEmail', company.contactEmail)
+      setValue('contactPhone', company.contactPhone || '')
+      setValue('location', company.location)
+      setValue('address', company.address || '')
+    }
+  }, [company, setValue])
 
 
   const handleNext = async () => {
@@ -151,8 +168,11 @@ const ProfileSetup = () => {
         formData.append('taxDocument', data.taxDocument[0])
       }
 
+      const isUpdate = company && company.status === CompanyStatus.REJECTED
+      const method = isUpdate ? 'PATCH' : 'POST'
+
       const response = await fetch('/api/company/profile', {
-        method: 'POST',
+        method,
         body: formData,
       })
 
@@ -178,6 +198,19 @@ const ProfileSetup = () => {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+      {company?.status === CompanyStatus.REJECTED && company.rejectionReason && (
+        <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
+          <h3 className="text-sm font-semibold text-destructive mb-1">
+            Profile Rejected
+          </h3>
+          <p className="text-sm text-destructive/90">
+            {company.rejectionReason}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Please update your information and resubmit for approval.
+          </p>
+        </div>
+      )}
       <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
         <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
           <FormHeader
@@ -226,7 +259,11 @@ const ProfileSetup = () => {
               variant="primary"
               className="max-md:w-1/2"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit for Approval'}
+              {isSubmitting ? 'Submitting...' :
+                (company?.status === CompanyStatus.REJECTED
+                  ? 'Resubmit for Approval'
+                  : 'Submit for Approval'
+                )}
             </Button>
           )}
         </div>
