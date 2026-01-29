@@ -1,11 +1,15 @@
+import Link from "next/link"
+
 const InfoRow = ({
   icon,
   label,
   value,
+  isLink
 }: {
   icon?: React.ReactNode
   label: string
   value: string
+  isLink?: boolean
 }) => (
   <div className="flex items-start gap-3">
     {icon && (
@@ -15,9 +19,18 @@ const InfoRow = ({
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="text-sm font-semibold text-foreground">
-        {value}
-      </p>
+      {isLink && value !== '—' ? (
+        <Link
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-medium text-primary hover:underline"
+        >
+          {value}
+        </Link>
+      ) : (
+        <p className="text-sm font-medium">{value}</p>
+      )}
     </div>
   </div>
 )
