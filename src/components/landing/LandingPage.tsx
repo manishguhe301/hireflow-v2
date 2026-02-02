@@ -9,14 +9,14 @@ import {
   ArrowRight,
   Menu,
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
+// import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
 import { companies, featuredJobs, links } from '@/src/utils/mock';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-  const { theme } = useTheme()
+  // const { theme } = useTheme()
 
   useEffect(() => {
     //eslint-disable-next-line
@@ -38,8 +38,8 @@ export default function HomePage() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-            <Link href="#jobs" className="hover:text-primary transition">Jobs</Link>
-            <Link href="#companies" className="hover:text-primary transition">Companies</Link>
+            <Link href="/jobs" className="hover:text-primary transition">Jobs</Link>
+            <Link href="/companies" className="hover:text-primary transition">Companies</Link>
             <Link href="#how-it-works" className="hover:text-primary transition">How it works</Link>
             <Link
               href="/login"
@@ -108,7 +108,7 @@ export default function HomePage() {
               </Link>
 
               <Link
-                href="#jobs"
+                href="/jobs"
                 className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted/50 transition"
               >
                 Browse Jobs
