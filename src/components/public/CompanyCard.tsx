@@ -17,11 +17,10 @@ type CompanyCardProps = {
 
 export default function CompanyCard({ company }: CompanyCardProps) {
   return (
-    <Link href={`/explore/companies/${company.id}`}>
-      <div className="group h-full rounded-2xl border border-border/40 bg-card p-6 hover:border-primary/40 hover:shadow-lg transition-all duration-200">
-        {/* Logo */}
-        <div className="mb-4 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden group-hover:border-primary/40 transition">
+    <Link href={`/explore/companies/${company.id}`} className="h-full">
+      <div className="group flex h-full flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-xl">
+        <div className="mb-5 flex justify-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden transition group-hover:border-primary/40">
             {company.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -37,26 +36,24 @@ export default function CompanyCard({ company }: CompanyCardProps) {
           </div>
         </div>
 
-        {/* Company Name */}
-        <h3 className="text-center text-lg font-semibold mb-2 line-clamp-1 group-hover:text-primary transition">
+        <h3 className="mb-2 text-center text-lg font-semibold line-clamp-1 transition group-hover:text-primary">
           {company.name}
         </h3>
 
-        {/* Industry */}
-        <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground mb-3">
-          <Building2 className="h-4 w-4" />
-          <span className="line-clamp-1">{company.industry}</span>
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center gap-1.5">
+            <Building2 className="h-4 w-4 shrink-0" />
+            <span className="line-clamp-1">{company.industry}</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-1.5">
+            <MapPin className="h-4 w-4 shrink-0" />
+            <span className="line-clamp-1">{company.location}</span>
+          </div>
         </div>
 
-        {/* Location */}
-        <div className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground mb-4">
-          <MapPin className="h-4 w-4" />
-          <span className="line-clamp-1">{company.location}</span>
-        </div>
-
-        {/* Job Count */}
-        <div className="mt-auto pt-4 border-t border-border/40">
-          <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary">
+        <div className="mt-auto pt-5">
+          <div className="flex items-center justify-center gap-2 rounded-xl bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition group-hover:bg-primary/10">
             <Briefcase className="h-4 w-4" />
             <span>
               {company.jobCount} {company.jobCount === 1 ? 'job' : 'jobs'} available
@@ -65,5 +62,6 @@ export default function CompanyCard({ company }: CompanyCardProps) {
         </div>
       </div>
     </Link>
+
   )
 }
