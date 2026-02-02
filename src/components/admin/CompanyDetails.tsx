@@ -12,7 +12,8 @@ import {
   Clock,
   ArrowLeft,
   Users,
-  Calendar
+  Calendar,
+  Linkedin
 } from 'lucide-react'
 import clsx from 'clsx'
 import { Company } from '@prisma/client'
@@ -250,7 +251,16 @@ const CompanyDetails = () => {
         <InfoCard title="Contact Information">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
           <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone || '—'} />
-          <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} />
+          <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
+          <InfoRow
+            icon={<Linkedin />}
+            label="LinkedIn"
+            value={company.linkedinProfile || '—'}
+            isLink
+          />
+          {company.address && (
+            <InfoRow icon={<MapPin />} label="Address" value={company.address} />
+          )}
         </InfoCard>
       </section>
 

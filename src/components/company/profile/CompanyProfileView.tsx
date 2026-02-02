@@ -13,6 +13,7 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Linkedin,
 } from 'lucide-react'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { Spinner } from '@/src/components/elements/Loader'
@@ -127,7 +128,16 @@ const CompanyProfileView = () => {
         <InfoCard title="Contact Information">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
           <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone || '—'} />
-          <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} />
+          <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
+          <InfoRow
+            icon={<Linkedin />}
+            label="LinkedIn"
+            value={company.linkedinProfile || '—'}
+            isLink
+          />
+          {company.address && (
+            <InfoRow icon={<MapPin />} label="Address" value={company.address} />
+          )}
         </InfoCard>
       </div>
 
