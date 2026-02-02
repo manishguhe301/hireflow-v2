@@ -1,5 +1,7 @@
+import { Spinner } from '@/src/components/elements/Loader'
 import CompaniesDirectory from '@/src/components/public/CompaniesDirectory'
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Companies - Find Your Next Employer | HireFlow',
@@ -7,5 +9,15 @@ export const metadata: Metadata = {
 }
 
 export default function CompaniesPage() {
-  return <CompaniesDirectory />
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-24">
+          <Spinner className="h-8 w-8" />
+        </div>
+      }
+    >
+      <CompaniesDirectory />
+    </Suspense>
+  )
 }
