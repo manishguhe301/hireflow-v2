@@ -7,12 +7,10 @@ import {
   UserCircle,
   MapPin,
   ArrowRight,
-  Menu,
 } from 'lucide-react';
 // import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Button } from '../ui/Button';
-import { companies, featuredJobs, links } from '@/src/utils/mock';
+import { companies, featuredJobs } from '@/src/utils/mock';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
