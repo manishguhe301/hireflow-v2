@@ -39,6 +39,9 @@ export default function CompaniesDirectory() {
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
 
+  const debouncedFetchRef = useRef<ReturnType<typeof debounce> | null>(null)
+
+
   const fetchCompanies = useCallback(async () => {
     setIsLoading(true)
     try {
@@ -61,13 +64,6 @@ export default function CompaniesDirectory() {
     }
   }, [search, industry, location, page])
 
-  const debouncedFetch = useRef(
-    debounce(() => {
-      setPage(1)
-      fetchCompanies()
-    }, 500),
-  ).current
-
   useEffect(() => {
     const params = new URLSearchParams()
     if (search) params.set('search', search)
@@ -78,9 +74,28 @@ export default function CompaniesDirectory() {
     router.push(`/explore/companies?${params.toString()}`, { scroll: false })
   }, [search, industry, location, page, router])
 
+  // const debouncedFetch = useCallback(
+  //   debounce(() => {
+  //     setPage(1)
+  //     fetchCompanies()
+  //   }, 500),
+  //   [fetchCompanies]
+  // )
+
+  // useEffect(() => {
+  //   debouncedFetch()
+  // }, [search, industry, location, page, debouncedFetch])
+
+  if (!debouncedFetchRef.current) {
+    debouncedFetchRef.current = debounce(() => {
+      fetchCompanies()
+    }, 500)
+  }
+
   useEffect(() => {
-    debouncedFetch()
-  }, [search, industry, location, page, debouncedFetch])
+    debouncedFetchRef.current?.()
+  }, [search, industry, location, page])
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
