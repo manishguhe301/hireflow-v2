@@ -28,7 +28,7 @@ export function formatRelativeTime(date: Date | string): string {
   return `${Math.floor(diffInSeconds / 31536000)} years ago`;
 }
 
-export function formatSalary(min?: number, max?: number): string {
+export function formatSalary(min?: number | null, max?: number | null): string {
   if (!min && !max) return 'Not disclosed';
   if (min && !max) return `₹${min.toLocaleString()}+`;
   if (!min && max) return `Up to ₹${max.toLocaleString()}`;

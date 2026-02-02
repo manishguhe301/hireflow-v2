@@ -7,16 +7,14 @@ import {
   UserCircle,
   MapPin,
   ArrowRight,
-  Menu,
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
+// import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Button } from '../ui/Button';
-import { companies, featuredJobs, links } from '@/src/utils/mock';
+import { companies, featuredJobs } from '@/src/utils/mock';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-  const { theme } = useTheme()
+  // const { theme } = useTheme()
 
   useEffect(() => {
     //eslint-disable-next-line
@@ -31,57 +29,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl max-md:flex max-md:items-center max-md:justify-between">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between max-md:mx-0">
-          <Link href="/" className="text-xl font-semibold tracking-tight">
-            HireFlow<span className="text-primary">.</span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-            <Link href="#jobs" className="hover:text-primary transition">Jobs</Link>
-            <Link href="#companies" className="hover:text-primary transition">Companies</Link>
-            <Link href="#how-it-works" className="hover:text-primary transition">How it works</Link>
-            <Link
-              href="/login"
-              className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-primary hover:bg-primary/20 transition"
-            >
-              Login
-            </Link>
-          </nav>
-        </div>
-
-        <div className="relative md:hidden px-6">
-          <details className="group">
-            <summary className="list-none cursor-pointer rounded-full border border-border/60 p-2 hover:bg-muted/50 transition">
-              <Menu className="h-5 w-5" />
-            </summary>
-
-            <div className="absolute right-6 mt-3 w-56 rounded-2xl border border-border/60 bg-background shadow-xl p-4 space-y-3 ">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={handleMenuClose}
-                  className="block text-sm text-muted-foreground hover:text-primary transition"
-                >
-                  {link.label}
-                </Link>
-              ))}
-
-              <div className="pb-3 border-b border-border/60" />
-
-              <Button
-                variant='primary'
-                className="w-full rounded-xl border">
-                <Link href="/login" className="block w-full">
-                  Login
-                </Link>
-              </Button>
-            </div>
-          </details>
-        </div>
-      </header>
-
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-6 py-28 grid gap-16 md:grid-cols-2 items-center">
           <div>
@@ -108,7 +55,7 @@ export default function HomePage() {
               </Link>
 
               <Link
-                href="#jobs"
+                href="/explore/jobs"
                 className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted/50 transition"
               >
                 Browse Jobs
@@ -274,7 +221,7 @@ export default function HomePage() {
                 Browse active opportunities from verified companies
               </p>
             </div>
-            <Link href="/jobs" className="text-sm text-primary hover:opacity-70 max-sm:hidden">
+            <Link href="/explore/jobs" className="text-sm text-primary hover:opacity-70 max-sm:hidden">
               View all jobs
             </Link>
           </div>
@@ -320,39 +267,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <footer className="mt-auto border-t border-border/60">
-        <div className="mx-auto max-w-7xl px-6 py-14 grid gap-10 md:grid-cols-3">
-          <div>
-            <h4 className="font-semibold">HireFlow<span className="text-primary">.</span></h4>
-            <p className="mt-3 text-sm text-muted-foreground max-w-xs">
-              A verified job platform with three-tier system ensuring quality hiring for both companies and job seekers.
-            </p>
-          </div>
-
-          <div>
-            <h5 className="text-sm font-semibold mb-3">Platform</h5>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/jobs" className="hover:text-primary">Browse Jobs</Link></li>
-              <li><Link href="/signup" className="hover:text-primary">Sign Up</Link></li>
-              <li><Link href="/login" className="hover:text-primary">Login</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h5 className="text-sm font-semibold mb-3">Company</h5>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="#" className="hover:text-primary">About</Link></li>
-              <li><Link href="#" className="hover:text-primary">Privacy</Link></li>
-              <li><Link href="#" className="hover:text-primary">Terms</Link></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span> Verified hiring for modern teams.
-        </div>
-      </footer>
     </main>
   );
 }

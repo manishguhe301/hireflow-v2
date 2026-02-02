@@ -12,11 +12,12 @@ type SelectOption = {
 type FormSelectProps = {
   label: string
   options: SelectOption[]
-  register: UseFormRegisterReturn
+  register?: UseFormRegisterReturn
   placeholder?: string
   error?: FieldError
   disabled?: boolean
   className?: string
+  onChange?: (value: string) => void
 }
 
 export const FormSelect = ({
@@ -27,6 +28,7 @@ export const FormSelect = ({
   error,
   disabled,
   className,
+  onChange
 }: FormSelectProps) => {
   return (
     <div className="space-y-1 w-full">
@@ -36,6 +38,9 @@ export const FormSelect = ({
 
       <select
         {...register}
+        onChange={(e) => {
+          onChange?.(e.target.value) 
+        }}
         disabled={disabled}
         className={clsx(
           'w-full rounded-xl border px-4 py-3 text-sm outline-none transition',
