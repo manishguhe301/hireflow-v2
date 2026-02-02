@@ -23,7 +23,7 @@ export default function NotFound() {
 
         <div className="mt-8 flex items-center justify-center">
           <Link
-            href="/redirect"
+            href="/"
             className="inline-flex items-center gap-2 rounded-xl border border-border/60 bg-card px-5 py-2.5 text-sm font-medium hover:bg-muted/40 transition"
           >
             <ArrowLeft className="h-4 w-4" />
