@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Search, Briefcase } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Spinner } from '../elements/Loader'
@@ -61,13 +61,12 @@ export default function CompaniesDirectory() {
     }
   }, [search, industry, location, page])
 
-  const debouncedFetch = useCallback(
+  const debouncedFetch = useRef(
     debounce(() => {
       setPage(1)
       fetchCompanies()
     }, 500),
-    [fetchCompanies]
-  )
+  ).current
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -203,8 +202,8 @@ export default function CompaniesDirectory() {
                 <button
                   onClick={() => setPage(p)}
                   className={`rounded-lg px-4 py-2 text-sm transition ${page === p
-                      ? 'bg-primary text-primary-foreground'
-                      : 'border border-border/40 hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border/40 hover:bg-muted'
                     }`}
                 >
                   {p}
