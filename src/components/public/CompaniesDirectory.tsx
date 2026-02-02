@@ -84,24 +84,27 @@ export default function CompaniesDirectory() {
   }, [search, industry, location, page, debouncedFetch])
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-3">Explore Companies</h1>
-        <p className="text-lg text-muted-foreground">
-          Discover top employers and find your dream job
+    <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight">Explore Companies</h1>
+        <p className="text-muted-foreground text-lg">
+          Discover verified companies hiring right now
         </p>
       </div>
 
-      <div className="mb-8 space-y-4 rounded-2xl border border-border/40 bg-card p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="relative md:col-span-1">
+      <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="relative md:col-span-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search companies..."
+              placeholder="Search companies by name…"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-border/60 bg-background pl-10 pr-4 py-3 text-sm outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/30 transition"
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
+              }}
+              className="w-full rounded-xl border border-border/60 bg-background pl-10 pr-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
             />
           </div>
 
@@ -112,7 +115,6 @@ export default function CompaniesDirectory() {
               { label: 'All Industries', value: '' },
               ...companyIndustries,
             ]}
-            // register={register('industry')}
             onChange={(value) => {
               setIndustry(value)
               setPage(1)
@@ -121,31 +123,32 @@ export default function CompaniesDirectory() {
 
           <input
             type="text"
-            placeholder="Filter by location..."
+            placeholder="Location"
             value={location}
             onChange={(e) => {
               setLocation(e.target.value)
               setPage(1)
             }}
-            className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/30 transition"
+            className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
           />
         </div>
       </div>
 
-      {pagination && !isLoading && (
-        <div className="mb-6 text-sm text-muted-foreground">
-          Showing {companies.length} of {pagination.total} companies
-        </div>
+      {!isLoading && pagination && (
+        <p className="text-sm text-muted-foreground">
+          Showing <span className="font-medium text-foreground">{companies.length}</span> of{' '}
+          <span className="font-medium text-foreground">{pagination.total}</span> companies
+        </p>
       )}
 
       {isLoading && (
-        <div className="flex justify-center py-20">
+        <div className="flex justify-center py-24">
           <Spinner className="h-8 w-8" />
         </div>
       )}
 
       {!isLoading && companies.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {companies.map((company) => (
             <CompanyCard key={company.id} company={company} />
           ))}
@@ -153,15 +156,13 @@ export default function CompaniesDirectory() {
       )}
 
       {!isLoading && companies.length === 0 && (
-        <div className="text-center py-20">
-          <div className="mb-4 flex justify-center">
-            <div className="rounded-full bg-muted p-6">
-              <Briefcase className="h-12 w-12 text-muted-foreground" />
-            </div>
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+            <Briefcase className="h-10 w-10 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-semibold mb-2">No companies found</h3>
-          <p className="text-muted-foreground mb-6">
-            Try adjusting your filters or search terms
+          <h3 className="text-xl font-semibold mb-1">No companies found</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+            Try adjusting your search or filters to find what you’re looking for.
           </p>
           <button
             onClick={() => {
@@ -170,7 +171,7 @@ export default function CompaniesDirectory() {
               setLocation('')
               setPage(1)
             }}
-            className="text-primary hover:underline"
+            className="text-sm font-medium text-primary hover:underline"
           >
             Clear all filters
           </button>
@@ -178,47 +179,45 @@ export default function CompaniesDirectory() {
       )}
 
       {!isLoading && pagination && pagination.totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-8">
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-4 py-2 rounded-lg border border-border/40 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition"
+            className="rounded-lg border border-border/40 px-4 py-2 text-sm transition hover:bg-muted disabled:opacity-50"
           >
             Previous
           </button>
 
-          <div className="flex items-center gap-2">
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-              .filter((p) => {
-                return (
-                  p === 1 ||
-                  p === pagination.totalPages ||
-                  Math.abs(p - page) <= 1
-                )
-              })
-              .map((p, idx, arr) => (
-                <>
-                  {idx > 0 && arr[idx - 1] !== p - 1 && (
-                    <span key={`ellipsis-${p}`} className="px-2">...</span>
-                  )}
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`px-4 py-2 rounded-lg border transition ${page === p
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'border-border/40 hover:bg-muted'
-                      }`}
-                  >
-                    {p}
-                  </button>
-                </>
-              ))}
-          </div>
+          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+            .filter(
+              (p) =>
+                p === 1 ||
+                p === pagination.totalPages ||
+                Math.abs(p - page) <= 1
+            )
+            .map((p, idx, arr) => (
+              <span key={p} className="flex items-center gap-2">
+                {idx > 0 && arr[idx - 1] !== p - 1 && (
+                  <span className="px-1 text-muted-foreground">…</span>
+                )}
+                <button
+                  onClick={() => setPage(p)}
+                  className={`rounded-lg px-4 py-2 text-sm transition ${page === p
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border/40 hover:bg-muted'
+                    }`}
+                >
+                  {p}
+                </button>
+              </span>
+            ))}
 
           <button
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+            onClick={() =>
+              setPage((p) => Math.min(pagination.totalPages, p + 1))
+            }
             disabled={page === pagination.totalPages}
-            className="px-4 py-2 rounded-lg border border-border/40 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition"
+            className="rounded-lg border border-border/40 px-4 py-2 text-sm transition hover:bg-muted disabled:opacity-50"
           >
             Next
           </button>
