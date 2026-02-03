@@ -1,9 +1,11 @@
 'use client'
+
 import { Company, Job } from '@prisma/client'
-import React from 'react'
 import JobCard from './JobCard'
 import InfoRow from '../admin/InfoRow'
-import { Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
+import { ArrowLeft, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
+import { Button } from '../ui/Button'
+import { useRouter } from 'next/navigation'
 
 type CompanyPublicViewProps = {
   company: Company,
@@ -11,8 +13,18 @@ type CompanyPublicViewProps = {
 }
 
 const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
+  const router = useRouter()
+
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-6">
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="inline-flex items-center gap-2 mb-6 p-0!"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to companies
+      </Button>
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
@@ -75,11 +87,13 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
               icon={<Globe />}
               label="Website"
               value={company.website || '—'}
+              isLink
             />
             <InfoRow
               icon={<Globe />}
               label="LinkedIn"
               value={company.linkedinProfile || '—'}
+              isLink
             />
           </div>
         </div>

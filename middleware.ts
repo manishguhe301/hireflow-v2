@@ -25,8 +25,8 @@ export async function middleware(req: NextRequest) {
       userRole === Role.PLATFORM_ADMIN
         ? '/admin'
         : userRole === Role.COMPANY_ADMIN
-        ? '/company'
-        : '/jobs';
+          ? '/company'
+          : '/jobs';
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
@@ -35,8 +35,8 @@ export async function middleware(req: NextRequest) {
       userRole === Role.PLATFORM_ADMIN
         ? '/admin'
         : userRole === Role.COMPANY_ADMIN
-        ? '/company'
-        : '/jobs';
+          ? '/company'
+          : '/jobs';
 
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
@@ -46,13 +46,24 @@ export async function middleware(req: NextRequest) {
       userRole === Role.PLATFORM_ADMIN
         ? '/admin'
         : userRole === Role.COMPANY_ADMIN
-        ? '/company'
-        : '/jobs';
+          ? '/company'
+          : '/jobs';
+    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  }
+
+  if (pathname.startsWith('/explore') && token) {
+    const redirectUrl =
+      userRole === Role.PLATFORM_ADMIN
+        ? '/admin'
+        : userRole === Role.COMPANY_ADMIN
+          ? '/company'
+          : '/jobs';
+
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
   const matchedRoute = Object.keys(roleBasedRoutes).find((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   if (!matchedRoute) {
@@ -72,8 +83,8 @@ export async function middleware(req: NextRequest) {
       userRole === Role.PLATFORM_ADMIN
         ? '/admin'
         : userRole === Role.COMPANY_ADMIN
-        ? '/company'
-        : '/jobs';
+          ? '/company'
+          : '/jobs';
 
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
@@ -91,5 +102,6 @@ export const config = {
     '/login',
     '/signup',
     '/redirect',
+    '/explore/:path*',
   ],
 };
