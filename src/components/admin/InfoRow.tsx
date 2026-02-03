@@ -1,3 +1,5 @@
+import { cn } from "@/src/utils/utils"
+
 const InfoRow = ({
   icon,
   label,
@@ -13,7 +15,7 @@ const InfoRow = ({
     <div className="flex items-center gap-3">
       <div className="text-muted-foreground">{icon}</div>
       <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground ">{label}</p>
         {isLink && value !== '—' ? (
           <a
             href={value}
@@ -24,7 +26,13 @@ const InfoRow = ({
             {value}
           </a>
         ) : (
-          <p className="text-sm font-medium">{value}</p>
+          <p
+            className={cn('text-sm font-medium',
+              value === '—' && 'text-muted-foreground',
+              !value.includes('@') && 'capitalize'
+            )}
+          >
+            {value}</p>
         )}
       </div>
     </div>

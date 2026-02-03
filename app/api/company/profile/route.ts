@@ -271,6 +271,7 @@ export async function PATCH(req: NextRequest) {
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone || null,
         country: data.country,
+        countryPhoneCode: data.countryPhoneCode,
         address: data.address || null,
         logo: logoUrl,
         logoPath: logoPath,
