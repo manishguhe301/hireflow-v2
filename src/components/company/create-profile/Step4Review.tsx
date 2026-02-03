@@ -139,8 +139,8 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
 
       <Section title="Contact Information" onEdit={() => setCurrentStep(1)}>
         <Item label="Contact Email" value={data.contactEmail} />
-        <Item label="Contact Phone" value={data.contactPhone} required={false} />
-        <Item label="Country" value={data.location} />
+        <Item label="Contact Phone" value={`${data.countryPhoneCode} ${data.contactPhone}`} required={false} />
+        <Item label="Country" value={data.country} />
         <div className="sm:col-span-2">
           <Item label="Address" value={data.address} required={false} />
         </div>
