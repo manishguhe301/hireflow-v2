@@ -91,7 +91,7 @@ const Step2Contact = ({
       })
 
       countryOptions.sort((a, b) => a.label.localeCompare(b.label))
-      phoneOptions.sort((a, b) => a.label.localeCompare(b.label))
+      phoneOptions.sort((a, b) => a.country.localeCompare(b.country))
 
       setCountries(countryOptions)
       setCountryPhoneCodes(phoneOptions)
