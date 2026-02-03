@@ -73,7 +73,7 @@ const CompanyProfileView = () => {
             <div>
               <h1 className="text-2xl font-bold">{company.name}</h1>
               <p className="text-sm text-muted-foreground">
-                {company.industry} • {company.location}
+                {company.industry} • {company.country}
               </p>
             </div>
           </div>
@@ -116,7 +116,7 @@ const CompanyProfileView = () => {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <InfoCard title="Company Information">
           <InfoRow icon={<Building2 />} label="Industry" value={company.industry} />
-          <InfoRow icon={<MapPin />} label="Location" value={company.location} />
+          <InfoRow icon={<MapPin />} label="Location" value={company.country} />
           <InfoRow icon={<Users />} label="Company Size" value={company.companySize} />
           <InfoRow
             icon={<Calendar />}

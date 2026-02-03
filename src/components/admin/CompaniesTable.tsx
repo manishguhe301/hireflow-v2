@@ -55,7 +55,7 @@ const CompaniesTable = ({
                 </div>
               </td>
               <td className="px-6 py-4">{companyIndustry}</td>
-              <td className="px-6 py-4">{company.location}</td>
+              <td className="px-6 py-4">{company.country}</td>
               <td className="px-6 py-4">
                 <span
                   className={clsx(

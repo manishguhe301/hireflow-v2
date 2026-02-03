@@ -26,7 +26,7 @@ export type ProfileFormInputs = {
 
   contactEmail: string,
   contactPhone: string,
-  location: string,
+  country: string,
   address: string,
 
   logo: FileList,
@@ -45,7 +45,7 @@ const STEP_FIELDS: Record<number, (keyof ProfileFormInputs)[]> = {
   ],
   1: [
     'contactEmail',
-    'location',
+    'country',
   ],
   2: [
     'logo',
@@ -78,8 +78,8 @@ const ProfileSetup = () => {
 
       // Step 2 
       contactEmail: session?.user?.email || '',
-      contactPhone: '',//optional
-      location: '',
+      contactPhone: '', //optional
+      country: '',
       address: '', //optional
 
       // Step 3 
@@ -116,7 +116,7 @@ const ProfileSetup = () => {
       setValue('linkedinProfile', company.linkedinProfile || '')
       setValue('contactEmail', company.contactEmail)
       setValue('contactPhone', company.contactPhone || '')
-      setValue('location', company.location)
+      setValue('country', company.country)
       setValue('address', company.address || '')
     }
   }, [company, setValue])
@@ -153,7 +153,7 @@ const ProfileSetup = () => {
       formData.append('linkedinProfile', data.linkedinProfile || '')
       formData.append('contactEmail', data.contactEmail)
       formData.append('contactPhone', data.contactPhone || '')
-      formData.append('location', data.location)
+      formData.append('country', data.country)
       formData.append('address', data.address || '')
 
       if (data.logo?.[0]) {
@@ -219,7 +219,7 @@ const ProfileSetup = () => {
           </p>
         </div>
       )}
-      
+
       {company?.status === CompanyStatus.APPROVED && (
         <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
           <p className="text-sm text-primary font-medium">

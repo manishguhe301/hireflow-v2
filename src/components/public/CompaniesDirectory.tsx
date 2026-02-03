@@ -14,7 +14,7 @@ type Company = {
   name: string
   logo: string | null
   industry: string
-  location: string
+  country: string
   companySize: string
   jobCount: number
 }

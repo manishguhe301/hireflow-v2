@@ -124,10 +124,10 @@ const Step2Contact = ({
               label="Location (Country)"
               placeholder="Select country"
               options={countries}
-              register={register('location', {
+              register={register('country', {
                 required: 'Company location is required',
               })}
-              error={errors.location}
+              error={errors.country}
             />
           )}
         </div>
