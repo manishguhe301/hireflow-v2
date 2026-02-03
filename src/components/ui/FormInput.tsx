@@ -6,7 +6,7 @@ import { FieldError, UseFormRegisterReturn } from 'react-hook-form'
 import clsx from 'clsx'
 
 type FormInputProps = {
-  label: string
+  label?: string
   placeholder?: string
   type?: 'text' | 'email' | 'password' | 'number' | 'url' | 'tel'
   register: UseFormRegisterReturn
