@@ -21,7 +21,7 @@ export async function GET(
         industry: true,
         companySize: true,
         foundedYear: true,
-        location: true,
+        country: true,
         website: true,
         linkedinProfile: true,
       },
