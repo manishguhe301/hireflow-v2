@@ -110,16 +110,37 @@ const Step2Contact = ({
 
 
   useEffect(() => {
-    if (!selectedCountry) return
+    if (!selectedCountry || !countryPhoneCodes.length) return
 
     const match = countryPhoneCodes.find(
       (c) => c.country === selectedCountry
     )
 
     if (match) {
-      setValue('countryPhoneCode', match.value)
+      setValue('countryPhoneCode', match.value, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
     }
   }, [selectedCountry, countryPhoneCodes, setValue])
+
+  useEffect(() => {
+    const selectedCode = watch('countryPhoneCode')
+    if (!selectedCode) return
+
+    const match = countryPhoneCodes.find(
+      (c) => c.value === selectedCode
+    )
+
+    if (match) {
+      setValue('country', match.country, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+    }
+  }, [watch('countryPhoneCode'), countryPhoneCodes, setValue])
+
+
 
   return (
     <div className="space-y-8">

@@ -250,7 +250,7 @@ const CompanyDetails = () => {
 
         <InfoCard title="Contact Information">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
-          <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone || '—'} />
+          <InfoRow icon={<Phone />} label="Phone" value={`${company.countryPhoneCode} ${company.contactPhone}` || '—'} />
           <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
           <InfoRow
             icon={<Linkedin />}
