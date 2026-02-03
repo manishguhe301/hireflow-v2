@@ -109,7 +109,7 @@ model Company {
   linkedinProfile   String?
 
   country          String
-  countryPhoneCode String
+  countryPhoneCode String?
 
   // Contact
   contactEmail      String
