@@ -192,7 +192,7 @@ const CompanyDetails = () => {
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight capitalize">
                 {company.name}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground capitalize">
                 {companyIndustry} • {company.country}
               </p>
             </div>

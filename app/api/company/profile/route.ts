@@ -184,7 +184,6 @@ export async function PATCH(req: NextRequest) {
       linkedinProfile: formData.get('linkedinProfile') as string,
       contactEmail: formData.get('contactEmail') as string,
       contactPhone: formData.get('contactPhone') as string,
-      location: formData.get('location') as string,
       address: formData.get('address') as string,
       country: formData.get('country') as string,
       countryPhoneCode: formData.get('countryPhoneCode') as string,

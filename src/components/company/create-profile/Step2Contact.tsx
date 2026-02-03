@@ -202,8 +202,8 @@ const Step2Contact = ({
             register={register('contactPhone', {
               validate: (value) => {
                 if (!value) return true
-                const phoneRegex = /^\+?[1-9]\d{1,14}$/
-                return phoneRegex.test(value) || 'Invalid phone number format'
+                const phoneRegex = /^[\d\s\-()]+$/
+                return phoneRegex.test(value) || 'Enter only numbers, spaces, or hyphens'
               },
             })}
             type='tel'

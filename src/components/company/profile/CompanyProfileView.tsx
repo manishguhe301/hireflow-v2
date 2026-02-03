@@ -72,7 +72,7 @@ const CompanyProfileView = () => {
 
             <div>
               <h1 className="text-2xl font-bold">{company.name}</h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground capitalize">
                 {company.industry} • {company.country}
               </p>
             </div>
