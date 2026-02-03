@@ -27,6 +27,7 @@ export type ProfileFormInputs = {
   contactEmail: string,
   contactPhone: string,
   country: string,
+  countryPhoneCode: string,
   address: string,
 
   logo: FileList,
@@ -80,6 +81,7 @@ const ProfileSetup = () => {
       contactEmail: session?.user?.email || '',
       contactPhone: '', //optional
       country: '',
+      countryPhoneCode: '',
       address: '', //optional
 
       // Step 3 
@@ -93,6 +95,7 @@ const ProfileSetup = () => {
   const dispatch = useDispatch()
   const { company } = useCompany();
   const hasCheckedRedirect = useRef(false)
+  const selectedCountry = watch('country')
 
   useEffect(() => {
     if (hasCheckedRedirect.current) return
@@ -117,6 +120,7 @@ const ProfileSetup = () => {
       setValue('contactEmail', company.contactEmail)
       setValue('contactPhone', company.contactPhone || '')
       setValue('country', company.country)
+      setValue('countryPhoneCode', company?.countryPhoneCode || '')
       setValue('address', company.address || '')
     }
   }, [company, setValue])
@@ -154,6 +158,7 @@ const ProfileSetup = () => {
       formData.append('contactEmail', data.contactEmail)
       formData.append('contactPhone', data.contactPhone || '')
       formData.append('country', data.country)
+      formData.append('countryPhoneCode', data.countryPhoneCode)
       formData.append('address', data.address || '')
 
       if (data.logo?.[0]) {
@@ -193,8 +198,10 @@ const ProfileSetup = () => {
       } else {
         toast.success('Profile submitted for approval!')
       }
+
       if (company?.status === CompanyStatus.APPROVED) { router.push('/company/profile') }
       else { router.push('/company') }
+
       reset()
     } catch (error) {
       console.error('Submit error:', error)
@@ -244,7 +251,8 @@ const ProfileSetup = () => {
 
         <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
           {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} />}
-          {currentStep === 1 && <Step2Contact register={register} errors={errors} />}
+          {currentStep === 1 && <Step2Contact register={register} errors={errors}
+            selectedCountry={selectedCountry} watch={watch} setValue={setValue} />}
           {currentStep === 2 && <Step3Documents register={register} errors={errors} />}
           {currentStep === 3 &&
             <Step4Review
