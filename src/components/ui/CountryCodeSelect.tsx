@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { ChevronDown } from 'lucide-react'
 import { FieldError } from 'react-hook-form'
@@ -28,11 +28,29 @@ export default function CountryCodeSelect({
   error,
 }: CountryCodeSelectProps) {
   const [open, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   const selected = options.find((o) => o.value === value)
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+
   return (
-    <div className="space-y-1 relative">
+    <div className="space-y-1 relative" ref={wrapperRef}>
       <label className="text-sm text-muted-foreground">{label}</label>
 
       <button
