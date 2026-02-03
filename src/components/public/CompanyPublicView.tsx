@@ -35,8 +35,8 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
               <h1 className="text-2xl font-bold break-words">
                 {company.name}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {company.industry} • {company.location}
+              <p className="text-sm text-muted-foreground capitalize">
+                {company.industry} • {company.country}
               </p>
             </div>
           </div>
@@ -57,7 +57,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
 
           <div className="space-y-2 text-sm">
             <InfoRow icon={<Building2 />} label="Industry" value={company.industry} />
-            <InfoRow icon={<MapPin />} label="Location" value={company.location} />
+            <InfoRow icon={<MapPin />} label="Location" value={company.country} />
             <InfoRow icon={<Users />} label="Company Size" value={company.companySize} />
             <InfoRow
               icon={<Calendar />}
