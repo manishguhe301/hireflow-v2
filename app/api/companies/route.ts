@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
 
     const search = searchParams.get('search') || '';
     const industry = searchParams.get('industry') || '';
-    const location = searchParams.get('location') || '';
+    const country = searchParams.get('country') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const skip = (page - 1) * limit;
@@ -28,9 +28,9 @@ export async function GET(req: NextRequest) {
       where.industry = industry;
     }
 
-    if (location) {
-      where.location = {
-        contains: location,
+    if (country) {
+      where.country = {
+        contains: country,
         mode: 'insensitive',
       };
     }
