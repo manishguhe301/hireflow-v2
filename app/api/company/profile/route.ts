@@ -70,8 +70,9 @@ export async function POST(req: NextRequest) {
       linkedinProfile: formData.get('linkedinProfile') as string,
       contactEmail: formData.get('contactEmail') as string,
       contactPhone: formData.get('contactPhone') as string,
-      location: formData.get('location') as string,
       address: formData.get('address') as string,
+      country: formData.get('country') as string,
+      countryPhoneCode: formData.get('countryPhoneCode') as string,
     };
 
     if (
@@ -114,7 +115,8 @@ export async function POST(req: NextRequest) {
         linkedinProfile: data.linkedinProfile || null,
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone || null,
-        location: data.location,
+        country: data.country,
+        countryPhoneCode: data.countryPhoneCode,
         address: data.address || null,
 
         logo: logoResult.url,
@@ -182,8 +184,9 @@ export async function PATCH(req: NextRequest) {
       linkedinProfile: formData.get('linkedinProfile') as string,
       contactEmail: formData.get('contactEmail') as string,
       contactPhone: formData.get('contactPhone') as string,
-      location: formData.get('location') as string,
       address: formData.get('address') as string,
+      country: formData.get('country') as string,
+      countryPhoneCode: formData.get('countryPhoneCode') as string,
     };
 
     if (
@@ -266,7 +269,8 @@ export async function PATCH(req: NextRequest) {
         linkedinProfile: data.linkedinProfile || null,
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone || null,
-        location: data.location,
+        country: data.country,
+        countryPhoneCode: data.countryPhoneCode,
         address: data.address || null,
         logo: logoUrl,
         logoPath: logoPath,

@@ -192,8 +192,8 @@ const CompanyDetails = () => {
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight capitalize">
                 {company.name}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {companyIndustry} • {company.location}
+              <p className="text-sm text-muted-foreground capitalize">
+                {companyIndustry} • {company.country}
               </p>
             </div>
           </div>
@@ -243,14 +243,14 @@ const CompanyDetails = () => {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InfoCard title="Company Information">
           <InfoRow icon={<Building2 />} label="Industry" value={companyIndustry} />
-          <InfoRow icon={<MapPin />} label="Location" value={company.location} />
+          <InfoRow icon={<MapPin />} label="Location" value={company.country} />
           <InfoRow label="Company Size" icon={<Users />} value={company.companySize} />
           <InfoRow label="Founded" icon={<Calendar />} value={company.foundedYear?.toString() || '—'} />
         </InfoCard>
 
         <InfoCard title="Contact Information">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
-          <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone || '—'} />
+          <InfoRow icon={<Phone />} label="Phone" value={`${company.countryPhoneCode} ${company.contactPhone}` || '—'} />
           <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
           <InfoRow
             icon={<Linkedin />}

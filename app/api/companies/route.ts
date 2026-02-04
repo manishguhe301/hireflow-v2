@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
           name: true,
           logo: true,
           industry: true,
-          location: true,
+          country: true,
           companySize: true,
           _count: {
             select: {
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
       name: company.name,
       logo: company.logo,
       industry: company.industry,
-      location: company.location,
+      country: company.country,
       companySize: company.companySize,
       jobCount: company._count.jobs,
     }));

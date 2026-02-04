@@ -107,8 +107,10 @@ model Company {
   foundedYear       Int?
   website           String?
   linkedinProfile   String?
-  location          String
-  
+
+  country          String
+  countryPhoneCode String?
+
   // Contact
   contactEmail      String
   contactPhone      String?
