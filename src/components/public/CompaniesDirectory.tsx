@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Search, Briefcase } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Spinner } from '../elements/Loader'
 import { FormSelect } from '../ui/FormSelect'
-import { debounce } from '@/src/utils/helper'
 import { companyIndustries } from '@/src/utils/mock'
 import CompanyCard from './CompanyCard'
 
@@ -39,16 +38,13 @@ export default function CompaniesDirectory() {
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
 
-  const debouncedFetchRef = useRef<ReturnType<typeof debounce> | null>(null)
-
-
   const fetchCompanies = useCallback(async () => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
       if (industry) params.set('industry', industry)
-      if (location) params.set('location', location)
+      if (location) params.set('country', location)
       params.set('page', page.toString())
       params.set('limit', '12')
 
@@ -74,28 +70,16 @@ export default function CompaniesDirectory() {
     router.push(`/explore/companies?${params.toString()}`, { scroll: false })
   }, [search, industry, location, page, router])
 
-  // const debouncedFetch = useCallback(
-  //   debounce(() => {
-  //     setPage(1)
-  //     fetchCompanies()
-  //   }, 500),
-  //   [fetchCompanies]
-  // )
-
-  // useEffect(() => {
-  //   debouncedFetch()
-  // }, [search, industry, location, page, debouncedFetch])
-
-  if (!debouncedFetchRef.current) {
-    debouncedFetchRef.current = debounce(() => {
-      fetchCompanies()
-    }, 500)
-  }
-
   useEffect(() => {
-    debouncedFetchRef.current?.()
-  }, [search, industry, location, page])
+    const shouldDebounce = search.length > 0
+    const delay = shouldDebounce ? 500 : 0
 
+    const timer = setTimeout(() => {
+      fetchCompanies()
+    }, delay)
+
+    return () => clearTimeout(timer)
+  }, [search, industry, location, page, fetchCompanies])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
