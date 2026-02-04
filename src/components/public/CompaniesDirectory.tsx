@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Search, Briefcase } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Spinner } from '../elements/Loader'
 import { FormSelect } from '../ui/FormSelect'
-import { debounce } from '@/src/utils/helper'
 import { companyIndustries } from '@/src/utils/mock'
 import CompanyCard from './CompanyCard'
+import Pagination from '../ui/Pagination'
 
 type Company = {
   id: string
@@ -39,16 +39,13 @@ export default function CompaniesDirectory() {
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
 
-  const debouncedFetchRef = useRef<ReturnType<typeof debounce> | null>(null)
-
-
   const fetchCompanies = useCallback(async () => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
       if (industry) params.set('industry', industry)
-      if (location) params.set('location', location)
+      if (location) params.set('country', location)
       params.set('page', page.toString())
       params.set('limit', '12')
 
@@ -74,28 +71,16 @@ export default function CompaniesDirectory() {
     router.push(`/explore/companies?${params.toString()}`, { scroll: false })
   }, [search, industry, location, page, router])
 
-  // const debouncedFetch = useCallback(
-  //   debounce(() => {
-  //     setPage(1)
-  //     fetchCompanies()
-  //   }, 500),
-  //   [fetchCompanies]
-  // )
-
-  // useEffect(() => {
-  //   debouncedFetch()
-  // }, [search, industry, location, page, debouncedFetch])
-
-  if (!debouncedFetchRef.current) {
-    debouncedFetchRef.current = debounce(() => {
-      fetchCompanies()
-    }, 500)
-  }
-
   useEffect(() => {
-    debouncedFetchRef.current?.()
-  }, [search, industry, location, page])
+    const shouldDebounce = search.length > 0
+    const delay = shouldDebounce ? 500 : 0
 
+    const timer = setTimeout(() => {
+      fetchCompanies()
+    }, delay)
+
+    return () => clearTimeout(timer)
+  }, [search, industry, location, page, fetchCompanies])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
@@ -192,50 +177,12 @@ export default function CompaniesDirectory() {
         </div>
       )}
 
-      {!isLoading && pagination && pagination.totalPages > 1 && (
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="rounded-lg border border-border/40 px-4 py-2 text-sm transition hover:bg-muted disabled:opacity-50"
-          >
-            Previous
-          </button>
-
-          {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-            .filter(
-              (p) =>
-                p === 1 ||
-                p === pagination.totalPages ||
-                Math.abs(p - page) <= 1
-            )
-            .map((p, idx, arr) => (
-              <span key={p} className="flex items-center gap-2">
-                {idx > 0 && arr[idx - 1] !== p - 1 && (
-                  <span className="px-1 text-muted-foreground">…</span>
-                )}
-                <button
-                  onClick={() => setPage(p)}
-                  className={`rounded-lg px-4 py-2 text-sm transition ${page === p
-                    ? 'bg-primary text-primary-foreground'
-                    : 'border border-border/40 hover:bg-muted'
-                    }`}
-                >
-                  {p}
-                </button>
-              </span>
-            ))}
-
-          <button
-            onClick={() =>
-              setPage((p) => Math.min(pagination.totalPages, p + 1))
-            }
-            disabled={page === pagination.totalPages}
-            className="rounded-lg border border-border/40 px-4 py-2 text-sm transition hover:bg-muted disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+      {!isLoading && pagination && (
+        <Pagination
+          page={page}
+          totalPages={pagination.totalPages}
+          onPageChange={(p) => setPage(p)}
+        />
       )}
     </div>
   )

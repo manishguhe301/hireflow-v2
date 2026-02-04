@@ -1,5 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { authOptions } from '@/src/lib/auth';
+import { deleteFileFromSupabase } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
 import { getServerSession } from 'next-auth';
@@ -156,6 +157,21 @@ export async function DELETE(
         },
         { status: 404 },
       );
+    }
+
+    if (company.logoPath) {
+      await deleteFileFromSupabase(company.logoPath, 'company-logos');
+    }
+
+    if (company.businessDocPath) {
+      await deleteFileFromSupabase(
+        company.businessDocPath,
+        'company-documents',
+      );
+    }
+
+    if (company.taxDocPath) {
+      await deleteFileFromSupabase(company.taxDocPath, 'company-documents');
     }
 
     await prisma.company.delete({
