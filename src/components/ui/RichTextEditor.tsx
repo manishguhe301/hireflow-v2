@@ -5,7 +5,8 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import clsx from 'clsx'
 import { useEffect } from 'react'
-import { Bold, Italic, List } from 'lucide-react'
+import { Bold, Italic, List, UnderlineIcon } from 'lucide-react'
+import Underline from '@tiptap/extension-underline'
 
 type RichTextEditorProps = {
   label: string
@@ -15,6 +16,8 @@ type RichTextEditorProps = {
   error?: string
   disabled?: boolean
 }
+
+const HEADING_LEVELS = [1, 2, 3, 4] as const
 
 const RichTextEditor = ({
   label,
@@ -27,7 +30,12 @@ const RichTextEditor = ({
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3, 4],
+        },
+      }),
+      Underline,
       Placeholder.configure({
         placeholder: placeholder || '',
       }),
@@ -46,6 +54,8 @@ const RichTextEditor = ({
     }
   }, [value, editor])
 
+  if (!editor) return null
+
   return (
     <div className="space-y-1">
       <label className="text-sm text-muted-foreground">
@@ -61,34 +71,68 @@ const RichTextEditor = ({
       >
 
         {editor && (
-          <div className="flex gap-1 border-b border-border/40 px-2 py-1">
+          <div className="flex flex-wrap gap-1 border-b border-border/40 px-2 py-1">
+            {HEADING_LEVELS.map((level) => (
+              <button
+                key={level}
+                type="button"
+                onClick={() =>
+                  editor.chain().focus().toggleHeading({ level }).run()
+                }
+                className={clsx(
+                  'px-2 py-1 text-xs rounded font-medium',
+                  editor.isActive('heading', { level }) && 'bg-border'
+                )}
+              >
+                H{level}
+              </button>
+            ))}
+
+
+            <div className="w-px bg-border/60 mx-1" />
+
+            {/* Bold */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
               className={clsx(
-                'px-2 py-1 text-sm rounded',
+                'px-2 py-1 rounded',
                 editor.isActive('bold') && 'bg-border'
               )}
             >
               <Bold size={16} />
             </button>
 
+            {/* Italic */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
               className={clsx(
-                'px-2 py-1 text-sm rounded italic',
+                'px-2 py-1 rounded',
                 editor.isActive('italic') && 'bg-border'
               )}
             >
               <Italic size={16} />
             </button>
 
+            {/* Underline */}
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().toggleUnderline().run()}
+              className={clsx(
+                'px-2 py-1 rounded',
+                editor.isActive('underline') && 'bg-border'
+              )}
+            >
+              <UnderlineIcon size={16} />
+            </button>
+
+            {/* Bullet list */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               className={clsx(
-                'px-2 py-1 text-sm rounded',
+                'px-2 py-1 rounded',
                 editor.isActive('bulletList') && 'bg-border'
               )}
             >
