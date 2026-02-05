@@ -12,6 +12,7 @@ import Step3JobLocation from './Step3JobLocation';
 import Step4JobSalary from './Step4JobSalary';
 import Step5JobReview from './Step5JobReview';
 import { Button } from '@/src/components/ui/Button';
+import { isRichTextEmpty } from '@/src/utils/helper';
 
 export type JobFormInputs = {
   title: string;
@@ -108,6 +109,11 @@ const CreateJobForm = () => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  register('description', {
+    validate: (value) =>
+      !isRichTextEmpty(value) || 'Job description is required',
+  })
+
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep]
 
@@ -119,6 +125,19 @@ const CreateJobForm = () => {
     const isValid = await trigger(fields)
 
     if (!isValid) return;
+
+    // if (currentStep === 0) {
+    //   const description = watch('description');
+
+    //   if (isRichTextEmpty(description)) {
+    //     setValue('description', description, {
+    //       shouldValidate: true,
+    //     });
+    //     toast.error('Job description is required');
+    //     return;
+    //   }
+    // }
+
 
     if (currentStep === 2 && workMode !== 'REMOTE') {
       const validCity = await trigger('city')

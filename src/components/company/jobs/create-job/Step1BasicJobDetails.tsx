@@ -3,6 +3,9 @@ import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { JobFormInputs } from './CreateJobForm'
 import { FormInput } from '@/src/components/ui/FormInput'
+import RichTextEditor from '@/src/components/ui/RichTextEditor'
+import { FormSelect } from '@/src/components/ui/FormSelect'
+import { jobCategories } from '@/src/utils/utils'
 
 const Step1BasicJobDetails = ({
   register,
@@ -27,14 +30,44 @@ const Step1BasicJobDetails = ({
       </div>
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
-        <FormInput
-          label="Title"
-          register={register('title', { required: true })}
-          placeholder="Software Engineer"
-          error={errors.title}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormInput
+            label="Title"
+            register={register('title', { required: true })}
+            placeholder="Software Engineer"
+            error={errors.title}
+          />
+          <FormSelect
+            label='Category'
+            register={register('category', { required: 'Category is required' })}
+            options={
+              jobCategories
+            }
+            error={errors.category}
+          />
+        </div>
+        <RichTextEditor
+          label="Description"
+          value={watch('description')}
+          onChange={(val) => {
+            setValue('description', val, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }}
+          error={errors.description?.message}
         />
-
-
+        <RichTextEditor
+          label="Responsibilities (Optional)"
+          value={watch('responsibilities') || ''}
+          onChange={(val) =>
+            setValue('responsibilities', val, {
+              shouldDirty: true,
+            })
+          }
+          placeholder="List day-to-day responsibilities…"
+          error={errors.responsibilities?.message}
+        />
       </div>
     </div>
   )
