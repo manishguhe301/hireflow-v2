@@ -212,7 +212,12 @@ const CreateJobForm = () => {
 
           <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
             {currentStep === 0 &&
-              <Step1BasicJobDetails register={register} errors={errors} />
+              <Step1BasicJobDetails
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 1 &&
               <Step2JobRequirements register={register} errors={errors} />
