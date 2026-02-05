@@ -155,7 +155,8 @@ model Job {
   experienceLevel     ExperienceLevel
   employmentType      EmploymentType
   workMode            WorkMode
-  location            String
+  country             String
+  city                String
   salaryMin           Int?
   salaryMax           Int?
   hideSalary          Boolean          @default(false)
