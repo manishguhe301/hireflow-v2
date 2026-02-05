@@ -156,7 +156,7 @@ model Job {
   employmentType      EmploymentType
   workMode            WorkMode
   country             String
-  city                String
+  city                String?
   salaryMin           Int?
   salaryMax           Int?
   hideSalary          Boolean          @default(false)
