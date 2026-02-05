@@ -126,19 +126,6 @@ const CreateJobForm = () => {
 
     if (!isValid) return;
 
-    // if (currentStep === 0) {
-    //   const description = watch('description');
-
-    //   if (isRichTextEmpty(description)) {
-    //     setValue('description', description, {
-    //       shouldValidate: true,
-    //     });
-    //     toast.error('Job description is required');
-    //     return;
-    //   }
-    // }
-
-
     if (currentStep === 2 && workMode !== 'REMOTE') {
       const validCity = await trigger('city')
       if (!validCity) return
@@ -151,6 +138,7 @@ const CreateJobForm = () => {
 
   const handleFormSubmit: SubmitHandler<JobFormInputs> = async (data) => {
     setIsSubmitting(true)
+    console.log(data);
     try {
       const formData = new FormData()
 
