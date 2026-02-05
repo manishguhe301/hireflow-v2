@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
+import FormHeader from '../../../ui/FormHeader';
+import Step1BasicJobDetails from './Step1BasicJobDetails';
+import Step2JobRequirements from './Step2JobRequirements';
+import Step3JobLocation from './Step3JobLocation';
+import Step4JobSalary from './Step4JobSalary';
+import Step5JobReview from './Step5JobReview';
+import { Button } from '@/src/components/ui/Button';
 
 export type JobFormInputs = {
   title: string;
@@ -46,6 +53,14 @@ const STEP_FIELDS: Record<number, (keyof JobFormInputs)[]> = {
     'numberOfOpenings',
   ]
 }
+
+const jobFormSteps = [
+  { number: 1, label: 'Basic Details' },
+  { number: 2, label: 'Requirements' },
+  { number: 3, label: 'Location & Work Mode' },
+  { number: 4, label: 'Salary & Openings' },
+  { number: 5, label: 'Review & Publish' },
+]
 
 const CreateJobForm = () => {
   const [currentStep, setCurrentStep] = useState(0)
@@ -184,7 +199,76 @@ const CreateJobForm = () => {
   }
 
   return (
-    <div>CreateJobForm</div>
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+      <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
+        <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
+          <FormHeader
+            currentStep={currentStep}
+            handleNext={handleNext}
+            handlePrev={handlePrev}
+            disabled={isSubmitting}
+            steps={jobFormSteps}
+          />
+
+          <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+            {currentStep === 0 &&
+              <Step1BasicJobDetails register={register} errors={errors} />
+            }
+            {currentStep === 1 &&
+              <Step2JobRequirements register={register} errors={errors} />
+            }
+            {currentStep === 2 &&
+              <Step3JobLocation register={register} errors={errors} />
+            }
+            {
+              currentStep === 3 &&
+              <Step4JobSalary
+                register={register}
+                errors={errors}
+              />
+            }
+            {currentStep === 4 &&
+              <Step5JobReview
+                setCurrentStep={setCurrentStep}
+              />
+            }
+          </form>
+
+          <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0">
+            {currentStep > 0 && (
+              <Button
+                onClick={handlePrev}
+                variant="outline"
+                disabled={isSubmitting}
+                className="max-md:w-1/2"
+              >
+                Previous
+              </Button>
+            )}
+            {currentStep < 4 ? (
+              <Button
+                disabled={isSubmitting}
+                onClick={handleNext}
+                className="max-md:w-1/2"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                disabled={isSubmitting}
+                onClick={handleSubmit(handleFormSubmit)}
+                variant="primary"
+                className="max-md:w-1/2"
+              >
+                {isSubmitting ?
+                  'Submitting...' : 'Submit'
+                }
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
