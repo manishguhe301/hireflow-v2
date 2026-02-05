@@ -163,3 +163,12 @@ export const getFileNameFromPath = (path?: string | null) => {
   if (!path) return null;
   return path.split('/').pop()?.replace(/^\d+-/, '');
 };
+
+export const isRichTextEmpty = (value: string) => {
+  if (!value) return true;
+  const text = value
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, '')
+    .trim();
+  return text.length === 0;
+};

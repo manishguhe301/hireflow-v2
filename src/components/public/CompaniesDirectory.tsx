@@ -5,9 +5,9 @@ import { Search, Briefcase } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Spinner } from '../elements/Loader'
 import { FormSelect } from '../ui/FormSelect'
-import { companyIndustries } from '@/src/utils/mock'
 import CompanyCard from './CompanyCard'
 import Pagination from '../ui/Pagination'
+import { companyIndustries } from '@/src/utils/utils'
 
 type Company = {
   id: string
