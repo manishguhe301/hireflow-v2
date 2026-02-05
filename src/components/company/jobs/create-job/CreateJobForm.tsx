@@ -3,7 +3,8 @@ import { EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client';
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 
 export type JobFormInputs = {
   title: string;
@@ -15,7 +16,7 @@ export type JobFormInputs = {
   employmentType: EmploymentType;
   workMode: WorkMode;
   country: string;
-  city: string;
+  city?: string;
   salaryMin?: number;
   salaryMax?: number;
   hideSalary: boolean;
@@ -113,6 +114,74 @@ const CreateJobForm = () => {
   }
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
+
+  const handleFormSubmit: SubmitHandler<JobFormInputs> = async (data) => {
+    setIsSubmitting(true)
+    try {
+      const formData = new FormData()
+
+      formData.append('title', data.title)
+      formData.append('description', data.description)
+      formData.append('requirements', data.requirements)
+
+      if (data.responsibilities) {
+        formData.append('responsibilities', data.responsibilities)
+      }
+
+      formData.append('skills', JSON.stringify(data.skills))
+      formData.append('experienceLevel', data.experienceLevel)
+      formData.append('employmentType', data.employmentType)
+      formData.append('workMode', data.workMode)
+      formData.append('country', data.country)
+
+
+      if (data.city) {
+        formData.append('city', data.city)
+      }
+
+      if (typeof data.salaryMin === 'number') {
+        formData.append('salaryMin', String(data.salaryMin))
+      }
+
+      if (typeof data.salaryMax === 'number') {
+        formData.append('salaryMax', String(data.salaryMax))
+      }
+
+      formData.append('hideSalary', String(data.hideSalary))
+      formData.append('numberOfOpenings', String(data.numberOfOpenings))
+
+      if (data.applicationDeadline) {
+        formData.append(
+          'applicationDeadline',
+          data.applicationDeadline.toISOString()
+        )
+      }
+      formData.append('category', data.category)
+
+
+      const method = 'POST'
+
+      const response = await fetch('/api/company/job', {
+        method,
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        toast.error(result.error || 'Failed to create job')
+        return
+      }
+      toast.success('Job created successfully')
+      reset()
+      router.push('/company/jobs')
+    } catch (error) {
+      console.error('Submit error:', error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div>CreateJobForm</div>
