@@ -27,6 +27,7 @@ export type JobFormInputs = {
   city?: string;
   salaryMin?: number;
   salaryMax?: number;
+  currency?: string;
   hideSalary: boolean;
   numberOfOpenings: number;
   applicationDeadline?: Date;
@@ -64,7 +65,7 @@ const jobFormSteps = [
 ]
 
 const CreateJobForm = () => {
-  const [currentStep, setCurrentStep] = useState(2)
+  const [currentStep, setCurrentStep] = useState(3)
   const { data: session } = useSession()
   const {
     register,
@@ -98,6 +99,7 @@ const CreateJobForm = () => {
       salaryMin: 0, //optional
       salaryMax: 0, //optional
       hideSalary: false,
+      currency: '',
       numberOfOpenings: 1,
       applicationDeadline: new Date(), //optional
     }
@@ -259,6 +261,8 @@ const CreateJobForm = () => {
               <Step4JobSalary
                 register={register}
                 errors={errors}
+                watch={watch}
+                setValue={setValue}
               />
             }
             {currentStep === 4 &&

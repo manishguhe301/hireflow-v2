@@ -1,16 +1,21 @@
 'use client'
-import { FieldErrors, UseFormRegister } from 'react-hook-form'
+import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { JobFormInputs } from './CreateJobForm'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { currencyOptions } from '@/src/utils/utils'
+import FormDatePicker from '@/src/components/ui/FormDatePicker'
 
 const Step4JobSalary = ({
   register,
   errors,
+  watch,
+  setValue,
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
+  watch: UseFormWatch<JobFormInputs>
+  setValue: UseFormSetValue<JobFormInputs>
 }) => {
   return (
     <div className="space-y-8">
@@ -91,14 +96,25 @@ const Step4JobSalary = ({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
-            label="Number of Openings"
+            label="Number of Openings (By default 1)"
             register={register('numberOfOpenings', { required: "Number of openings is required" })}
             placeholder="for example: 10"
             error={errors.numberOfOpenings}
             type='number'
             minLength={1}
           />
-          {/* //date */}
+          <FormDatePicker
+            label="Application Deadline (Optional)"
+            value={watch('applicationDeadline')}
+            minDate={new Date()}
+            onChange={(date) =>
+              setValue('applicationDeadline', date, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            error={errors.applicationDeadline}
+          />
         </div>
       </div>
     </div>
