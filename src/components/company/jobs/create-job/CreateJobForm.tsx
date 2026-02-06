@@ -150,9 +150,24 @@ const CreateJobForm = () => {
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
+  const hasAnyDraftData = (data: JobFormInputs) => {
+    return (
+      !!data.title ||
+      !isRichTextEmpty(data.description) ||
+      !isRichTextEmpty(data.requirements) ||
+      data.skills.length > 0 ||
+      !!data.category
+    )
+  }
+
   const handleFormSubmit =
     (isDraft: boolean): SubmitHandler<JobFormInputs> =>
       async (data) => {
+        if (isDraft && !hasAnyDraftData(data)) {
+          toast.error('Add at least one field before saving as draft')
+          return
+        }
+
         setIsSubmitting(true)
         console.log(data);
         try {
@@ -281,7 +296,6 @@ const CreateJobForm = () => {
             >
               Save as Draft
             </Button>
-
             {currentStep > 0 && (
               <Button
                 onClick={handlePrev}
