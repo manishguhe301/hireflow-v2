@@ -86,3 +86,73 @@ export const employmentTypes = [
   { label: 'Contract', value: 'CONTRACT' },
   { label: 'Internship', value: 'INTERNSHIP' },
 ];
+
+export type SelectOption = {
+  label: string;
+  value: string;
+};
+
+export const jobSkills: SelectOption[] = [
+  { label: 'HTML', value: 'html' },
+  { label: 'CSS', value: 'css' },
+  { label: 'JavaScript', value: 'javascript' },
+  { label: 'TypeScript', value: 'typescript' },
+  { label: 'React', value: 'react' },
+  { label: 'Next.js', value: 'nextjs' },
+  { label: 'Vue.js', value: 'vuejs' },
+  { label: 'Angular', value: 'angular' },
+  { label: 'Tailwind CSS', value: 'tailwindcss' },
+  { label: 'Bootstrap', value: 'bootstrap' },
+
+  { label: 'Node.js', value: 'nodejs' },
+  { label: 'Express.js', value: 'expressjs' },
+  { label: 'NestJS', value: 'nestjs' },
+  { label: 'Java', value: 'java' },
+  { label: 'Spring Boot', value: 'springboot' },
+  { label: 'Python', value: 'python' },
+  { label: 'Django', value: 'django' },
+  { label: 'Flask', value: 'flask' },
+  { label: 'PHP', value: 'php' },
+  { label: 'Laravel', value: 'laravel' },
+
+  { label: 'MongoDB', value: 'mongodb' },
+  { label: 'PostgreSQL', value: 'postgresql' },
+  { label: 'MySQL', value: 'mysql' },
+  { label: 'SQLite', value: 'sqlite' },
+  { label: 'Redis', value: 'redis' },
+
+  { label: 'Docker', value: 'docker' },
+  { label: 'Kubernetes', value: 'kubernetes' },
+  { label: 'AWS', value: 'aws' },
+  { label: 'Azure', value: 'azure' },
+  { label: 'Google Cloud', value: 'gcp' },
+  { label: 'CI/CD', value: 'cicd' },
+  { label: 'Linux', value: 'linux' },
+  { label: 'Nginx', value: 'nginx' },
+
+  { label: 'React Native', value: 'react-native' },
+  { label: 'Flutter', value: 'flutter' },
+  { label: 'Swift', value: 'swift' },
+  { label: 'Kotlin', value: 'kotlin' },
+
+  { label: 'Jest', value: 'jest' },
+  { label: 'Cypress', value: 'cypress' },
+  { label: 'Playwright', value: 'playwright' },
+  { label: 'Unit Testing', value: 'unit-testing' },
+
+  { label: 'Git', value: 'git' },
+  { label: 'GitHub', value: 'github' },
+  { label: 'GitLab', value: 'gitlab' },
+  { label: 'Bitbucket', value: 'bitbucket' },
+
+  { label: 'Figma', value: 'figma' },
+  { label: 'Adobe XD', value: 'adobe-xd' },
+  { label: 'UI/UX Design', value: 'ui-ux' },
+
+  { label: 'REST APIs', value: 'rest-api' },
+  { label: 'GraphQL', value: 'graphql' },
+  { label: 'Microservices', value: 'microservices' },
+  { label: 'Agile / Scrum', value: 'agile' },
+  { label: 'Problem Solving', value: 'problem-solving' },
+  { label: 'Communication', value: 'communication' },
+];
