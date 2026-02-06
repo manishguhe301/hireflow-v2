@@ -1,3 +1,4 @@
+import { ExperienceLevel } from '@prisma/client';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -70,4 +71,18 @@ export const companyIndustries = [
   { label: 'Retail', value: 'retail' },
   { label: 'Manufacturing', value: 'manufacturing' },
   { label: 'Other', value: 'other' },
+];
+
+export const experienceLevels = [
+  { label: 'Entry Level', value: ExperienceLevel.ENTRY },
+  { label: 'Mid Level', value: ExperienceLevel.MID },
+  { label: 'Senior Level', value: ExperienceLevel.SENIOR },
+  { label: 'Lead Level', value: ExperienceLevel.LEAD },
+];
+
+export const employmentTypes = [
+  { label: 'Full Time', value: 'FULL_TIME' },
+  { label: 'Part Time', value: 'PART_TIME' },
+  { label: 'Contract', value: 'CONTRACT' },
+  { label: 'Internship', value: 'INTERNSHIP' },
 ];
