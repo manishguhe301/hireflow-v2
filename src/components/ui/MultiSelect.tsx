@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { X } from 'lucide-react'
 
@@ -30,6 +30,24 @@ const MultiSelect = ({
 }: MultiSelectProps) => {
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
 
   const selectedSet = useMemo(() => new Set(value), [value])
 
@@ -51,7 +69,7 @@ const MultiSelect = ({
   }
 
   return (
-    <div className="space-y-1 w-full">
+    <div className="space-y-1 w-full" ref={containerRef}>
       <label className="text-sm text-muted-foreground">{label}</label>
 
       <div
