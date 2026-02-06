@@ -6,6 +6,7 @@ import { FormTextarea } from '../../ui/FormTextarea'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
 import { companyIndustries, companySizes } from '@/src/utils/utils'
+import StepHeader from '../../ui/StepHeader'
 
 const Step1BasicInfo = ({
   register,
@@ -16,14 +17,10 @@ const Step1BasicInfo = ({
 }) => {
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Company Basics
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Tell us a bit about your company. This information will be visible to candidates.
-        </p>
-      </div>
+      <StepHeader
+        heading='Company Basics'
+        description='Tell us a bit about your company. This information will be visible to candidates.'
+      />
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

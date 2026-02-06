@@ -6,6 +6,7 @@ import { FormSelect } from '@/src/components/ui/FormSelect'
 import { employmentTypes, experienceLevels, jobSkills } from '@/src/utils/utils'
 import RichTextEditor from '@/src/components/ui/RichTextEditor'
 import MultiSelect from '@/src/components/ui/MultiSelect'
+import StepHeader from '@/src/components/ui/StepHeader'
 
 const Step2JobRequirements = ({
   register,
@@ -20,14 +21,10 @@ const Step2JobRequirements = ({
 }) => {
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Requirements & Skills
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          List the skills, experience, and qualifications candidates should have to succeed in this role.
-        </p>
-      </div>
+      <StepHeader
+        heading='Requirements & Skills'
+        description='List the skills, experience, and qualifications candidates should have to succeed in this role.'
+      />
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <RichTextEditor
           label="Requirements"

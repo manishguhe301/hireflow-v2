@@ -6,6 +6,7 @@ import { FormInput } from '@/src/components/ui/FormInput'
 import RichTextEditor from '@/src/components/ui/RichTextEditor'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { jobCategories } from '@/src/utils/utils'
+import StepHeader from '@/src/components/ui/StepHeader'
 
 const Step1BasicJobDetails = ({
   register,
@@ -20,14 +21,10 @@ const Step1BasicJobDetails = ({
 }) => {
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Job Overview
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Create a clear and compelling overview of the role to attract the right candidates.
-        </p>
-      </div>
+      <StepHeader
+        heading="Job Overview"
+        description="Create a clear and compelling overview of the role to attract the right candidates."
+      />
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

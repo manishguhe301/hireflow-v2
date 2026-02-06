@@ -7,6 +7,7 @@ import { Pencil } from 'lucide-react'
 import clsx from 'clsx'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { getFileNameFromPath } from '@/src/utils/helper'
+import StepHeader from '../../ui/StepHeader'
 
 type Props = {
   watch: UseFormWatch<ProfileFormInputs>
@@ -116,15 +117,10 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Review & Submit
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Review your information before submitting. You can edit any section.
-        </p>
-      </div>
-
+      <StepHeader
+        heading='Review & Submit'
+        description='Review your information before submitting. You can edit any section.'
+      />
       <Section title="Company Basics" onEdit={() => setCurrentStep(0)}>
         <Item label="Company Name" value={data.name} />
         <Item label="Founded Year" value={data.foundedYear} />
