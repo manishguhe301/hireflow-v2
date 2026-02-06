@@ -8,6 +8,7 @@ import { JobFormInputs } from './CreateJobForm'
 import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
 import { employmentTypes, experienceLevels, jobCategories, jobSkills, workModes } from '@/src/utils/utils'
+import StepHeader from '@/src/components/ui/StepHeader'
 
 type Props = {
   watch: UseFormWatch<JobFormInputs>
@@ -75,14 +76,10 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Review & Publish
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Review all job details carefully. You can edit any section before publishing.
-        </p>
-      </div>
+      <StepHeader
+        heading='Review & Publish'
+        description='Review all job details carefully. You can edit any section before publishing.'
+      />
 
       <Section title="Basic Details" onEdit={() => setCurrentStep(0)}>
         <Item label="Job Title" value={data.title} />
