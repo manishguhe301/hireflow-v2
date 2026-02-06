@@ -24,7 +24,7 @@ export default function JobCard({ job, companyName }: JobCardProps) {
       <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
         <div className="flex items-center gap-1">
           <MapPin className="h-4 w-4" />
-          <span className="break-words">{job.location}</span>
+          <span className="break-words">{job.country} • {job.city}</span>
         </div>
 
         <div className="flex items-center gap-1">

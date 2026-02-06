@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
 import { Button } from '../ui/Button'
-import { links } from '@/src/utils/mock'
+import { links } from '@/src/utils/utils'
 
 export default function PublicHeader() {
   const handleMenuClose = (e: React.MouseEvent) => {

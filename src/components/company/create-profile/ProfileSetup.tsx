@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import FormHeader from './FormHeader'
+import FormHeader from '../../ui/FormHeader'
 import Step1BasicInfo from './Step1BasicInfo'
 import Step2Contact from './Step2Contact'
 import Step3Documents from './Step3Documents'
@@ -54,6 +54,12 @@ const STEP_FIELDS: Record<number, (keyof ProfileFormInputs)[]> = {
   ],
 }
 
+const steps = [
+  { number: 1, label: 'Basic Info' },
+  { number: 2, label: 'Contact' },
+  { number: 3, label: 'Documents' },
+  { number: 4, label: 'Review' },
+]
 
 const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(0)
@@ -198,7 +204,7 @@ const ProfileSetup = () => {
       } else {
         toast.success('Profile submitted for approval!')
       }
-      
+
       reset()
 
       if (company?.status === CompanyStatus.APPROVED) { router.push('/company/profile') }
@@ -247,6 +253,7 @@ const ProfileSetup = () => {
             handleNext={handleNext}
             handlePrev={handlePrev}
             disabled={isSubmitting}
+            steps={steps}
           />
         </div>
 

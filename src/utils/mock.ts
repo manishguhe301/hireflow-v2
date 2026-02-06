@@ -132,34 +132,3 @@ export const companies = [
   { id: 6, name: 'NextZen' },
 ];
 
-export const links = [
-  {
-    label: 'Jobs',
-    href: '#jobs',
-  },
-  {
-    label: 'Companies',
-    href: '#companies',
-  },
-  {
-    label: 'How it works',
-    href: '#how-it-works',
-  },
-];
-
-export const companySizes = [
-  { label: '1–10', value: '1-10' },
-  { label: '11–50', value: '11-50' },
-  { label: '51–200', value: '51-200' },
-  { label: '201–500', value: '201-500' },
-];
-
-export const companyIndustries = [
-  { label: 'Technology', value: 'technology' },
-  { label: 'Finance', value: 'finance' },
-  { label: 'Healthcare', value: 'healthcare' },
-  { label: 'Education', value: 'education' },
-  { label: 'Retail', value: 'retail' },
-  { label: 'Manufacturing', value: 'manufacturing' },
-  { label: 'Other', value: 'other' },
-];
