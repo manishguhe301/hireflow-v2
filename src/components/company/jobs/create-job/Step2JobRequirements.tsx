@@ -3,8 +3,9 @@ import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { JobFormInputs } from './CreateJobForm'
 import { FormSelect } from '@/src/components/ui/FormSelect'
-import { employmentTypes, experienceLevels } from '@/src/utils/utils'
+import { employmentTypes, experienceLevels, jobSkills } from '@/src/utils/utils'
 import RichTextEditor from '@/src/components/ui/RichTextEditor'
+import MultiSelect from '@/src/components/ui/MultiSelect'
 
 const Step2JobRequirements = ({
   register,
@@ -39,6 +40,20 @@ const Step2JobRequirements = ({
           }}
           error={errors.requirements?.message}
         />
+        <MultiSelect
+          label="Required Skills"
+          options={jobSkills}
+          value={watch('skills')}
+          onChange={(val) =>
+            setValue('skills', val, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          placeholder="Search skills..."
+          error={errors.skills?.message}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormSelect
             label='Experience Level (by default entry level)'
