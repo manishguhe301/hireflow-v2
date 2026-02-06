@@ -66,10 +66,9 @@ const Step4JobSalary = ({
                 <input
                   type="radio"
                   value="false"
-                  {...register('hideSalary', {
-                    setValueAs: (v) => v === 'true',
-                  })}
+                  {...register('hideSalary')}
                   className="peer hidden"
+                  defaultChecked
                 />
                 <div className="rounded-xl border border-border/60 px-4 py-3 text-center text-sm transition peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary">
                   Show Salary
@@ -80,9 +79,7 @@ const Step4JobSalary = ({
                 <input
                   type="radio"
                   value="true"
-                  {...register('hideSalary', {
-                    setValueAs: (v) => v === 'true',
-                  })}
+                  {...register('hideSalary')}
                   className="peer hidden"
                 />
                 <div className="rounded-xl border border-border/60 px-4 py-3 text-center text-sm transition peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-primary">

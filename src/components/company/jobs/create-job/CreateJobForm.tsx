@@ -75,7 +75,8 @@ const CreateJobForm = () => {
     trigger,
     reset,
     setValue,
-    control
+    control,
+    getValues
   } = useForm<JobFormInputs>({
     defaultValues: {
       //step 1
@@ -151,6 +152,7 @@ const CreateJobForm = () => {
     }
 
     setCurrentStep((prev) => prev + 1)
+    console.log(getValues());
   }
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
