@@ -156,3 +156,9 @@ export const jobSkills: SelectOption[] = [
   { label: 'Problem Solving', value: 'problem-solving' },
   { label: 'Communication', value: 'communication' },
 ];
+
+export const workModes = [
+  { label: 'Remote', value: 'REMOTE' },
+  { label: 'Hybrid', value: 'HYBRID' },
+  { label: 'Onsite', value: 'ON_SITE' },
+];
