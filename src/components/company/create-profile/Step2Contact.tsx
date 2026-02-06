@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import { Spinner } from '../../elements/Loader'
 import CountryCodeSelect from '../../ui/CountryCodeSelect'
 import { useCountries } from '@/src/store/hooks/useCountries'
+import StepHeader from '../../ui/StepHeader'
 
 const Step2Contact = ({
   register,
@@ -60,14 +61,10 @@ const Step2Contact = ({
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Contact Information
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          How candidates and our team can reach your company.
-        </p>
-      </div>
+      <StepHeader
+        heading='Contact Information'
+        description='How candidates and our team can reach your company.'
+      />
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

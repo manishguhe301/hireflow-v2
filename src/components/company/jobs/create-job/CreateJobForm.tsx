@@ -94,7 +94,7 @@ const CreateJobForm = () => {
       //step 3
       workMode: 'REMOTE',
       country: '',
-      city: '',
+      city: undefined,
 
       // Step 4 
       // salaryMin: 0, //optional
@@ -150,74 +150,92 @@ const CreateJobForm = () => {
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
-  const handleFormSubmit: SubmitHandler<JobFormInputs> = async (data) => {
-    setIsSubmitting(true)
-    console.log(data);
-    try {
-      const formData = new FormData()
-
-      formData.append('title', data.title)
-      formData.append('description', data.description)
-      formData.append('requirements', data.requirements)
-
-      if (data.responsibilities) {
-        formData.append('responsibilities', data.responsibilities)
-      }
-
-      formData.append('skills', JSON.stringify(data.skills))
-      formData.append('experienceLevel', data.experienceLevel)
-      formData.append('employmentType', data.employmentType)
-      formData.append('workMode', data.workMode)
-      formData.append('country', data.country)
-
-
-      if (data.city) {
-        formData.append('city', data.city)
-      }
-
-      if (typeof data.salaryMin === 'number') {
-        formData.append('salaryMin', String(data.salaryMin))
-      }
-
-      if (typeof data.salaryMax === 'number') {
-        formData.append('salaryMax', String(data.salaryMax))
-      }
-
-      formData.append('hideSalary', String(data.hideSalary))
-      formData.append('numberOfOpenings', String(data.numberOfOpenings))
-
-      if (data.applicationDeadline) {
-        formData.append(
-          'applicationDeadline',
-          data.applicationDeadline.toISOString()
-        )
-      }
-      formData.append('category', data.category)
-
-
-      const method = 'POST'
-
-      const response = await fetch('/api/company/job', {
-        method,
-        body: formData,
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        toast.error(result.error || 'Failed to create job')
-        return
-      }
-      toast.success('Job created successfully')
-      reset()
-      router.push('/company/jobs')
-    } catch (error) {
-      console.error('Submit error:', error)
-      toast.error('Something went wrong. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
+  const hasAnyDraftData = (data: JobFormInputs) => {
+    return (
+      !!data.title ||
+      !isRichTextEmpty(data.description) ||
+      !isRichTextEmpty(data.requirements) ||
+      data.skills.length > 0 ||
+      !!data.category
+    )
   }
+
+  const handleFormSubmit =
+    (isDraft: boolean): SubmitHandler<JobFormInputs> =>
+      async (data) => {
+        if (isDraft && !hasAnyDraftData(data)) {
+          toast.error('Add at least one field before saving as draft')
+          return
+        }
+
+        setIsSubmitting(true)
+        console.log(data);
+        try {
+          const formData = new FormData()
+
+          formData.append('title', data.title)
+          formData.append('description', data.description)
+          formData.append('requirements', data.requirements)
+
+          if (data.responsibilities) {
+            formData.append('responsibilities', data.responsibilities)
+          }
+
+          formData.append('skills', JSON.stringify(data.skills))
+          formData.append('experienceLevel', data.experienceLevel)
+          formData.append('employmentType', data.employmentType)
+          formData.append('workMode', data.workMode)
+          formData.append('country', data.country)
+
+
+          if (data.city) {
+            formData.append('city', data.city)
+          }
+
+          if (typeof data.salaryMin === 'number') {
+            formData.append('salaryMin', String(data.salaryMin))
+          }
+
+          if (typeof data.salaryMax === 'number') {
+            formData.append('salaryMax', String(data.salaryMax))
+          }
+
+          formData.append('hideSalary', String(data.hideSalary))
+          formData.append('numberOfOpenings', String(data.numberOfOpenings))
+
+          if (data.applicationDeadline) {
+            formData.append(
+              'applicationDeadline',
+              data.applicationDeadline.toISOString()
+            )
+          }
+          formData.append('category', data.category)
+          formData.append('status', isDraft ? 'DRAFT' : 'ACTIVE')
+
+
+          const method = 'POST'
+
+          const response = await fetch('/api/company/job', {
+            method,
+            body: formData,
+          })
+
+          const result = await response.json()
+
+          if (!response.ok) {
+            toast.error(result.error || 'Failed to create job')
+            return
+          }
+          toast.success('Job created successfully')
+          reset()
+          router.push('/company/jobs')
+        } catch (error) {
+          console.error('Submit error:', error)
+          toast.error('Something went wrong. Please try again.')
+        } finally {
+          setIsSubmitting(false)
+        }
+      }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
@@ -268,7 +286,16 @@ const CreateJobForm = () => {
             }
           </form>
 
-          <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0">
+          <div className="flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => handleFormSubmit(true)(getValues())}
+              disabled={isSubmitting}
+              className="max-md:w-full"
+            >
+              Save as Draft
+            </Button>
             {currentStep > 0 && (
               <Button
                 onClick={handlePrev}
@@ -290,7 +317,7 @@ const CreateJobForm = () => {
             ) : (
               <Button
                 disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit)}
+                onClick={handleSubmit(handleFormSubmit(false))}
                 variant="primary"
                 className="max-md:w-1/2"
               >

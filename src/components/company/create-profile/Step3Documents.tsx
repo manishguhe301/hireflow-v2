@@ -2,6 +2,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form"
 import { FileUpload } from "../../ui/FileUpload"
 import { ProfileFormInputs } from "./ProfileSetup"
 import { useCompany } from "@/src/store/hooks/useCompany"
+import StepHeader from "../../ui/StepHeader"
 
 const Step3Documents = ({
   register,
@@ -16,16 +17,14 @@ const Step3Documents = ({
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Documents & Verification
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {existingCompany
+      <StepHeader
+        heading="Documents & Verification"
+        description={
+          existingCompany
             ? "Update your documents if needed, or keep existing ones."
-            : "Upload required documents to verify your company."}
-        </p>
-      </div>
+            : "Upload required documents to verify your company."
+        }
+      />
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <FileUpload<ProfileFormInputs>

@@ -7,6 +7,7 @@ import { workModes } from '@/src/utils/utils'
 import { useCountries } from '@/src/store/hooks/useCountries'
 import { Spinner } from '@/src/components/elements/Loader'
 import { FormInput } from '@/src/components/ui/FormInput'
+import StepHeader from '@/src/components/ui/StepHeader'
 
 const Step3JobLocation = ({
   register,
@@ -18,14 +19,10 @@ const Step3JobLocation = ({
   const { countries, loading } = useCountries()
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Location & Work Mode
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Specify where the job is based and how candidates are expected to work.
-        </p>
-      </div>
+      <StepHeader
+        heading='Location & Work Mode'
+        description='Specify where the job is based and how candidates are expected to work.'
+      />
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <FormSelect
