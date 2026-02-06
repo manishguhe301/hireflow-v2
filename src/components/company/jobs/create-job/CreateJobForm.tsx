@@ -94,7 +94,7 @@ const CreateJobForm = () => {
       //step 3
       workMode: 'REMOTE',
       country: '',
-      city: '',
+      city: undefined,
 
       // Step 4 
       // salaryMin: 0, //optional

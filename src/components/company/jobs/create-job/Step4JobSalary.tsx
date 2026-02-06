@@ -32,7 +32,8 @@ const Step4JobSalary = ({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
             label="Minimum Salary in Lakhs(Optional)"
-            register={register('salaryMin')}
+            register={register('salaryMin', { valueAsNumber: true })
+            }
             placeholder="for example: 10"
             error={errors.salaryMin}
             type='number'
@@ -40,7 +41,8 @@ const Step4JobSalary = ({
           />
           <FormInput
             label="Maximum Salary in Lakhs (Optional)"
-            register={register('salaryMax')}
+            register={register('salaryMax', { valueAsNumber: true })
+            }
             placeholder="for example: 20 should be greater than minimum salary"
             error={errors.salaryMax}
             type='number'
