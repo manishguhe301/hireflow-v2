@@ -60,7 +60,7 @@ const Step3JobLocation = ({
 
           <FormInput
             label="City"
-            register={register('city', { required: 'City is required' })}
+            register={register('city')}
             placeholder="for example, Bangalore"
             error={errors.city}
           />

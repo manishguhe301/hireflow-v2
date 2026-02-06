@@ -128,12 +128,6 @@ const CreateJobForm = () => {
       value.length > 0 || 'At least one skill is required',
   })
 
-  register('city', {
-    validate: (value) =>
-      workMode === 'REMOTE' || !!value || 'City is required',
-  })
-
-
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep]
 
@@ -152,14 +146,12 @@ const CreateJobForm = () => {
     }
 
     setCurrentStep((prev) => prev + 1)
-    console.log(getValues());
   }
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
   const handleFormSubmit: SubmitHandler<JobFormInputs> = async (data) => {
     setIsSubmitting(true)
-    console.log('ss');
     console.log(data);
     try {
       const formData = new FormData()
