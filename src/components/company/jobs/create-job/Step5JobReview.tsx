@@ -137,7 +137,7 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
         <Item
           label="Salary"
           value={
-            !data.hideSalary
+            data.hideSalary
               ? 'Hidden'
               : formatSalary(data.salaryMin, data.salaryMax)
           }
