@@ -162,3 +162,14 @@ export const workModes = [
   { label: 'Hybrid', value: 'HYBRID' },
   { label: 'Onsite', value: 'ON_SITE' },
 ];
+
+export const currencyOptions = [
+  { label: 'Indian Rupee (₹)', value: 'INR' },
+  { label: 'US Dollar ($)', value: 'USD' },
+  { label: 'Euro (€)', value: 'EUR' },
+  { label: 'British Pound (£)', value: 'GBP' },
+  { label: 'Australian Dollar (A$)', value: 'AUD' },
+  { label: 'Canadian Dollar (C$)', value: 'CAD' },
+  { label: 'Singapore Dollar (S$)', value: 'SGD' },
+  { label: 'UAE Dirham (د.إ)', value: 'AED' },
+];
