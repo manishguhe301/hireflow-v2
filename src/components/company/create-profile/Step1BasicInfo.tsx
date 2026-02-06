@@ -5,7 +5,7 @@ import { ProfileFormInputs } from './ProfileSetup'
 import { FormTextarea } from '../../ui/FormTextarea'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
-import { companyIndustries, companySizes } from '@/src/utils/mock'
+import { companyIndustries, companySizes } from '@/src/utils/utils'
 
 const Step1BasicInfo = ({
   register,

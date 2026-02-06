@@ -1,26 +1,24 @@
 'use client'
 import React from 'react'
-import { Button } from '../../ui/Button'
+import { Button } from './Button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import clsx from 'clsx'
-
-const steps = [
-  { number: 1, label: 'Basic Info' },
-  { number: 2, label: 'Contact' },
-  { number: 3, label: 'Documents' },
-  { number: 4, label: 'Review' },
-]
 
 const FormHeader = ({
   currentStep,
   handleNext,
   handlePrev,
-  disabled
+  disabled,
+  steps
 }: {
   currentStep: number
   handleNext: () => void
   handlePrev: () => void
   disabled: boolean
+  steps: {
+    number: number;
+    label: string;
+  }[]
 }) => {
   const totalSteps = steps.length
 

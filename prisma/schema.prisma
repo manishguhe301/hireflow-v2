@@ -155,9 +155,11 @@ model Job {
   experienceLevel     ExperienceLevel
   employmentType      EmploymentType
   workMode            WorkMode
-  location            String
+  country             String
+  city                String?
   salaryMin           Int?
   salaryMax           Int?
+  // currency            Currency?
   hideSalary          Boolean          @default(false)
   numberOfOpenings    Int              @default(1)
   applicationDeadline DateTime?
@@ -200,6 +202,18 @@ enum JobStatus {
   CLOSED
   DRAFT
 }
+
+enum Currency {
+  INR  
+  USD  
+  EUR  
+  GBP  
+  AUD  
+  CAD  
+  SGD  
+  AED  
+}
+
 
 // ==================== APPLICATION MODEL ====================
 model Application {

@@ -43,7 +43,8 @@ export async function GET(
       select: {
         id: true,
         title: true,
-        location: true,
+        country: true,
+        city: true,
         workMode: true,
         employmentType: true,
         experienceLevel: true,
