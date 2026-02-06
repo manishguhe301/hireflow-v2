@@ -64,7 +64,7 @@ const jobFormSteps = [
 ]
 
 const CreateJobForm = () => {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(2)
   const { data: session } = useSession()
   const {
     register,
@@ -109,10 +109,27 @@ const CreateJobForm = () => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  //validations below
   register('description', {
     validate: (value) =>
       !isRichTextEmpty(value) || 'Job description is required',
   })
+
+  register('requirements', {
+    validate: (value) =>
+      !isRichTextEmpty(value) || 'requirements is required',
+  })
+
+  register('skills', {
+    validate: (value) =>
+      value.length > 0 || 'At least one skill is required',
+  })
+
+  register('city', {
+    validate: (value) =>
+      workMode === 'REMOTE' || !!value || 'City is required',
+  })
+
 
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep]
@@ -227,7 +244,12 @@ const CreateJobForm = () => {
               />
             }
             {currentStep === 1 &&
-              <Step2JobRequirements register={register} errors={errors} />
+              <Step2JobRequirements
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 2 &&
               <Step3JobLocation register={register} errors={errors} />
