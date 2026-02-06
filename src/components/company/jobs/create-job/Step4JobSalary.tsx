@@ -31,31 +31,31 @@ const Step4JobSalary = ({
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
-            label="Minimum Salary (Optional)"
+            label="Minimum Salary in Lakhs(Optional)"
             register={register('salaryMin')}
-            placeholder="for example: 10000"
+            placeholder="for example: 10"
             error={errors.salaryMin}
             type='number'
             minLength={0}
           />
           <FormInput
-            label="Maximum Salary (Optional)"
+            label="Maximum Salary in Lakhs (Optional)"
             register={register('salaryMax')}
-            placeholder="for example: 20000 should be greater than minimum salary"
+            placeholder="for example: 20 should be greater than minimum salary"
             error={errors.salaryMax}
             type='number'
             minLength={0}
           />
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <FormSelect
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+          {/* <FormSelect
             label='Currency (Optional)'
             register={register('currency')}
             options={
               currencyOptions
             }
             error={errors.currency}
-          />
+          /> */}
           <div className="flex flex-col gap-2">
             <label className="text-sm text-muted-foreground">
               Salary Visibility

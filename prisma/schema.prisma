@@ -159,7 +159,7 @@ model Job {
   city                String?
   salaryMin           Int?
   salaryMax           Int?
-  currency            Currency?
+  // currency            Currency?
   hideSalary          Boolean          @default(false)
   numberOfOpenings    Int              @default(1)
   applicationDeadline DateTime?
