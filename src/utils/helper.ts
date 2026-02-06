@@ -30,9 +30,9 @@ export function formatRelativeTime(date: Date | string): string {
 
 export function formatSalary(min?: number | null, max?: number | null): string {
   if (!min && !max) return 'Not disclosed';
-  if (min && !max) return `₹${min.toLocaleString()}+`;
-  if (!min && max) return `Up to ₹${max.toLocaleString()}`;
-  return `₹${min?.toLocaleString()} - ₹${max?.toLocaleString()}`;
+  if (min && !max) return `₹${min.toLocaleString()}L+`;
+  if (!min && max) return `Up to ₹${max.toLocaleString()}L`;
+  return `₹${min?.toLocaleString()}L - ₹${max?.toLocaleString()}L`;
 }
 
 export function truncate(text: string, length: number): string {
@@ -172,3 +172,8 @@ export const isRichTextEmpty = (value: string) => {
     .trim();
   return text.length === 0;
 };
+
+export const getLabel = (
+  options: { label: string; value: string }[],
+  value?: string,
+) => options.find((o) => o.value === value)?.label || value;

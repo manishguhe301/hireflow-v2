@@ -27,7 +27,7 @@ export type JobFormInputs = {
   city?: string;
   salaryMin?: number;
   salaryMax?: number;
-  currency?: string;
+  // currency?: string;
   hideSalary: boolean;
   numberOfOpenings: number;
   applicationDeadline?: Date;
@@ -65,7 +65,7 @@ const jobFormSteps = [
 ]
 
 const CreateJobForm = () => {
-  const [currentStep, setCurrentStep] = useState(3)
+  const [currentStep, setCurrentStep] = useState(0)
   const { data: session } = useSession()
   const {
     register,
@@ -96,10 +96,10 @@ const CreateJobForm = () => {
       city: '',
 
       // Step 4 
-      salaryMin: 0, //optional
-      salaryMax: 0, //optional
+      // salaryMin: 0, //optional
+      // salaryMax: 0, //optional
       hideSalary: false,
-      currency: '',
+      // currency: '',
       numberOfOpenings: 1,
       applicationDeadline: new Date(), //optional
     }
@@ -111,7 +111,7 @@ const CreateJobForm = () => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  //validations below
+  //validations for fields in which we cannot inline validate
   register('description', {
     validate: (value) =>
       !isRichTextEmpty(value) || 'Job description is required',
@@ -157,6 +157,7 @@ const CreateJobForm = () => {
 
   const handleFormSubmit: SubmitHandler<JobFormInputs> = async (data) => {
     setIsSubmitting(true)
+    console.log('ss');
     console.log(data);
     try {
       const formData = new FormData()
@@ -268,6 +269,7 @@ const CreateJobForm = () => {
             {currentStep === 4 &&
               <Step5JobReview
                 setCurrentStep={setCurrentStep}
+                watch={watch}
               />
             }
           </form>
