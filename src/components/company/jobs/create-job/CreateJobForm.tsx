@@ -67,7 +67,6 @@ const jobFormSteps = [
 
 const CreateJobForm = () => {
   const [currentStep, setCurrentStep] = useState(0)
-  const { data: session } = useSession()
   const {
     register,
     formState: { errors },
@@ -148,6 +147,7 @@ const CreateJobForm = () => {
     }
 
     setCurrentStep((prev) => prev + 1)
+    console.log(getValues());
   }
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
