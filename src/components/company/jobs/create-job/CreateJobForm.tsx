@@ -66,7 +66,7 @@ const jobFormSteps = [
 ]
 
 const CreateJobForm = () => {
-  const [currentStep, setCurrentStep] = useState(4)
+  const [currentStep, setCurrentStep] = useState(0)
   const { data: session } = useSession()
   const {
     register,
