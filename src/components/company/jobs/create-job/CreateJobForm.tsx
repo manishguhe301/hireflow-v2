@@ -112,6 +112,7 @@ const CreateJobForm = () => {
   })
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
 
   //validations for fields in which we cannot inline validate
   register('description', {
@@ -174,7 +175,12 @@ const CreateJobForm = () => {
           return
         }
 
-        setIsSubmitting(true)
+        if (isDraft) {
+          setIsSavingDraft(true)
+        } else {
+          setIsSubmitting(true)
+        }
+
         console.log(data);
         try {
           const formData = new FormData()
@@ -232,16 +238,40 @@ const CreateJobForm = () => {
             toast.error(result.error || 'Failed to create job')
             return
           }
-          toast.success('Job created successfully')
+          toast.success(isDraft ? 'Draft saved successfully' : 'Job created successfully')
           reset()
           setTimeout(() => router.push('/company/jobs'), 100)
         } catch (error) {
           console.error('Submit error:', error)
           toast.error('Something went wrong. Please try again.')
         } finally {
-          setIsSubmitting(false)
+          if (isDraft) {
+            setIsSavingDraft(false)
+          } else {
+            setIsSubmitting(false)
+          }
         }
       }
+
+  const handleDraftSave = async () => {
+    const data = getValues()
+
+    if (!hasAnyDraftData(data)) {
+      toast.error('Add at least one field before saving as draft')
+      return
+    }
+
+    if (currentStep === 4) {
+      const confirmed = window.confirm(
+        'You are on the review page. Do you want to save as draft instead of publishing?'
+      )
+      if (!confirmed) return
+    }
+
+    await handleFormSubmit(true)(data)
+  }
+
+  const isAnyActionInProgress = isSubmitting || isSavingDraft
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
@@ -251,7 +281,7 @@ const CreateJobForm = () => {
             currentStep={currentStep}
             handleNext={handleNext}
             handlePrev={handlePrev}
-            disabled={isSubmitting}
+            disabled={isAnyActionInProgress}
             steps={jobFormSteps}
           />
 
@@ -300,11 +330,11 @@ const CreateJobForm = () => {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => handleFormSubmit(true)(getValues())}
-              disabled={isSubmitting}
+              onClick={handleDraftSave}
+              disabled={isAnyActionInProgress}
               className="max-md:w-full"
             >
-              {isSubmitting ?
+              {isSavingDraft ?
                 <span className="flex items-center gap-2">
                   <Spinner className="h-4 w-4" />
                   Saving...
@@ -317,7 +347,7 @@ const CreateJobForm = () => {
                 <Button
                   onClick={handlePrev}
                   variant="outline"
-                  disabled={isSubmitting}
+                  disabled={isAnyActionInProgress}
                   className="max-md:w-1/2"
                 >
                   Previous
@@ -325,7 +355,7 @@ const CreateJobForm = () => {
               )}
               {currentStep < 4 ? (
                 <Button
-                  disabled={isSubmitting}
+                  disabled={isAnyActionInProgress}
                   onClick={handleNext}
                   className="max-md:w-1/2"
                 >
@@ -333,7 +363,7 @@ const CreateJobForm = () => {
                 </Button>
               ) : (
                 <Button
-                  disabled={isSubmitting}
+                  disabled={isAnyActionInProgress}
                   onClick={handleSubmit(handleFormSubmit(false))}
                   variant="primary"
                   className="max-md:w-1/2"
