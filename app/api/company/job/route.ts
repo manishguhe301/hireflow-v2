@@ -137,32 +137,45 @@ export async function POST(req: NextRequest) {
       status: formData.get('status') as string,
     };
 
-    if (
-      !data.title ||
-      !data.description ||
-      !data.requirements ||
-      !data.skills ||
-      !data.experienceLevel ||
-      !data.employmentType ||
-      !data.workMode ||
-      !data.country ||
-      !data.category
-    ) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 },
-      );
+    const isDraft = data.status === 'DRAFT';
+
+    if (isDraft) {
+      if (!data.title) {
+        return NextResponse.json(
+          { error: 'Title is required to save draft' },
+          { status: 400 },
+        );
+      }
+    } else {
+      if (
+        !data.title ||
+        !data.description ||
+        !data.requirements ||
+        !data.skills ||
+        !data.experienceLevel ||
+        !data.employmentType ||
+        !data.workMode ||
+        !data.country ||
+        !data.category
+      ) {
+        return NextResponse.json(
+          { error: 'Missing required fields' },
+          { status: 400 },
+        );
+      }
     }
 
     let skillsArray: string[] = [];
-    try {
-      skillsArray = JSON.parse(data.skills);
-    } catch (error) {
-      console.error('Error parsing skills:', error);
-      return NextResponse.json(
-        { error: 'Invalid skills format' },
-        { status: 400 },
-      );
+    if (data.skills) {
+      try {
+        skillsArray = JSON.parse(data.skills);
+      } catch (error) {
+        console.error('Error parsing skills:', error);
+        return NextResponse.json(
+          { error: 'Invalid skills format' },
+          { status: 400 },
+        );
+      }
     }
 
     const slug = await generateUniqueSlug(data.title);
@@ -171,23 +184,25 @@ export async function POST(req: NextRequest) {
       data: {
         companyId: company.id,
         title: data.title,
-        description: data.description,
-        requirements: data.requirements,
+        description: data.description || '',
+        requirements: data.requirements || '',
         responsibilities: data.responsibilities || null,
         skills: skillsArray,
-        experienceLevel: data.experienceLevel as ExperienceLevel,
-        employmentType: data.employmentType as EmploymentType,
-        workMode: data.workMode as WorkMode,
-        country: data.country,
+        experienceLevel: (data.experienceLevel as ExperienceLevel) || 'ENTRY',
+        employmentType: (data.employmentType as EmploymentType) || 'FULL_TIME',
+        workMode: (data.workMode as WorkMode) || 'REMOTE',
+        country: data.country || '',
         city: data.city || null,
         salaryMin: data.salaryMin ? parseInt(data.salaryMin) : null,
         salaryMax: data.salaryMax ? parseInt(data.salaryMax) : null,
         hideSalary: data.hideSalary === 'true',
-        numberOfOpenings: parseInt(data.numberOfOpenings),
+        numberOfOpenings: data.numberOfOpenings
+          ? parseInt(data.numberOfOpenings)
+          : 1,
         applicationDeadline: data.applicationDeadline
           ? new Date(data.applicationDeadline)
           : null,
-        category: data.category,
+        category: data.category || '',
         slug,
         status: data.status as JobStatus,
         views: 0,
