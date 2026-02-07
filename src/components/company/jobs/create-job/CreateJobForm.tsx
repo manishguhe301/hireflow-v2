@@ -1,6 +1,5 @@
 'use client'
 import { EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client';
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -371,10 +370,10 @@ const CreateJobForm = () => {
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
                       <Spinner className="h-4 w-4" />
-                      Submitting...
+                      Publishing...
                     </span>
                   ) : (
-                    'Submit'
+                    'Publish Job'
                   )}
                 </Button>
               )}
