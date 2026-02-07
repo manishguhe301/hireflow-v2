@@ -1,6 +1,13 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
-import { JobStatus, Role } from '@prisma/client';
+import { generateSlug } from '@/src/utils/helper';
+import {
+  EmploymentType,
+  ExperienceLevel,
+  JobStatus,
+  Role,
+  WorkMode,
+} from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -63,6 +70,22 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+async function generateUniqueSlug(title: string): Promise<string> {
+  const baseSlug = generateSlug(title).substring(0, 50);
+
+  const randomString = Math.random().toString(36).substring(2, 8);
+  const slug = `${baseSlug}-${randomString}`;
+
+  const existing = await prisma.job.findUnique({ where: { slug } });
+  if (existing) {
+    return generateUniqueSlug(title);
+  }
+
+  return slug;
+}
+
+
 
 export async function DELETE(req: NextRequest) {
   try {
