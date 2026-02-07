@@ -267,7 +267,11 @@ const CreateJobForm = () => {
               />
             }
             {currentStep === 2 &&
-              <Step3JobLocation register={register} errors={errors} />
+              <Step3JobLocation
+                register={register}
+                errors={errors}
+                watch={watch}
+              />
             }
             {
               currentStep === 3 &&
@@ -296,36 +300,38 @@ const CreateJobForm = () => {
             >
               Save as Draft
             </Button>
-            {currentStep > 0 && (
-              <Button
-                onClick={handlePrev}
-                variant="outline"
-                disabled={isSubmitting}
-                className="max-md:w-1/2"
-              >
-                Previous
-              </Button>
-            )}
-            {currentStep < 4 ? (
-              <Button
-                disabled={isSubmitting}
-                onClick={handleNext}
-                className="max-md:w-1/2"
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit(false))}
-                variant="primary"
-                className="max-md:w-1/2"
-              >
-                {isSubmitting ?
-                  'Submitting...' : 'Submit'
-                }
-              </Button>
-            )}
+            <div className="flex gap-3 items-center">
+              {currentStep > 0 && (
+                <Button
+                  onClick={handlePrev}
+                  variant="outline"
+                  disabled={isSubmitting}
+                  className="max-md:w-1/2"
+                >
+                  Previous
+                </Button>
+              )}
+              {currentStep < 4 ? (
+                <Button
+                  disabled={isSubmitting}
+                  onClick={handleNext}
+                  className="max-md:w-1/2"
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(handleFormSubmit(false))}
+                  variant="primary"
+                  className="max-md:w-1/2"
+                >
+                  {isSubmitting ?
+                    'Submitting...' : 'Submit'
+                  }
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
