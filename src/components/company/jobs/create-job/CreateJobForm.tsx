@@ -13,6 +13,7 @@ import Step4JobSalary from './Step4JobSalary';
 import Step5JobReview from './Step5JobReview';
 import { Button } from '@/src/components/ui/Button';
 import { isRichTextEmpty } from '@/src/utils/helper';
+import { Spinner } from '@/src/components/elements/Loader';
 
 export type JobFormInputs = {
   title: string;
@@ -65,7 +66,7 @@ const jobFormSteps = [
 ]
 
 const CreateJobForm = () => {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(4)
   const { data: session } = useSession()
   const {
     register,
@@ -154,9 +155,14 @@ const CreateJobForm = () => {
     return (
       !!data.title ||
       !isRichTextEmpty(data.description) ||
+      !!data.category ||
       !isRichTextEmpty(data.requirements) ||
+      (data.responsibilities && !isRichTextEmpty(data.responsibilities)) ||
       data.skills.length > 0 ||
-      !!data.category
+      !!data.country ||
+      !!data.city ||
+      typeof data.salaryMin === 'number' ||
+      typeof data.salaryMax === 'number'
     )
   }
 
@@ -228,7 +234,7 @@ const CreateJobForm = () => {
           }
           toast.success('Job created successfully')
           reset()
-          router.push('/company/jobs')
+          setTimeout(() => router.push('/company/jobs'), 100)
         } catch (error) {
           console.error('Submit error:', error)
           toast.error('Something went wrong. Please try again.')
@@ -298,8 +304,14 @@ const CreateJobForm = () => {
               disabled={isSubmitting}
               className="max-md:w-full"
             >
-              Save as Draft
+              {isSubmitting ?
+                <span className="flex items-center gap-2">
+                  <Spinner className="h-4 w-4" />
+                  Saving...
+                </span>
+                : 'Save as Draft'}
             </Button>
+
             <div className="flex gap-3 items-center">
               {currentStep > 0 && (
                 <Button
@@ -326,9 +338,14 @@ const CreateJobForm = () => {
                   variant="primary"
                   className="max-md:w-1/2"
                 >
-                  {isSubmitting ?
-                    'Submitting...' : 'Submit'
-                  }
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <Spinner className="h-4 w-4" />
+                      Submitting...
+                    </span>
+                  ) : (
+                    'Submit'
+                  )}
                 </Button>
               )}
             </div>
