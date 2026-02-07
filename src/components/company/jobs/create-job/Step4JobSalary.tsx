@@ -34,10 +34,14 @@ const Step4JobSalary = ({
                 valueAsNumber: true,
                 min: { value: 0, message: 'Minimum salary cannot be negative' },
                 validate: (value, formValues) => {
-                  if (!value) return true
-                  if (formValues.salaryMax && value > formValues.salaryMax) {
+                  if (!value && !formValues.salaryMax) return true
+
+                  if (value && !formValues.salaryMax) return true
+
+                  if (value && formValues.salaryMax && value > formValues.salaryMax) {
                     return 'Minimum salary cannot exceed maximum salary'
                   }
+
                   return true
                 }
               })
@@ -54,8 +58,11 @@ const Step4JobSalary = ({
               valueAsNumber: true,
               min: { value: 0, message: 'Maximum salary cannot be negative' },
               validate: (value, formValues) => {
-                if (!value) return true
-                if (formValues.salaryMin && value < formValues.salaryMin) {
+                if (!value && !formValues.salaryMin) return true
+
+                if (value && !formValues.salaryMin) return true
+
+                if (value && formValues.salaryMin && value < formValues.salaryMin) {
                   return 'Maximum salary must be greater than minimum salary'
                 }
                 return true
