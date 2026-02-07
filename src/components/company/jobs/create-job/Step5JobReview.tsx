@@ -132,14 +132,17 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
 
       <Section title="Salary & Openings" onEdit={() => setCurrentStep(3)}>
         <Item
-          label="Salary"
+          label="Salary Visibility"
           value={
             data.hideSalary
-              ? 'Hidden'
-              : formatSalary(data.salaryMin, data.salaryMax)
+              ? 'Hidden to candidates' : 'Visible to candidates'
           }
         />
-        {/* <Item label="Currency" value={data.currency || '—'} required={false} /> */}
+        <Item
+          label="Salary Offered"
+          value={formatSalary(data.salaryMin, data.salaryMax)}
+          required={false}
+        />
         <Item
           label="Number of Openings"
           value={String(data.numberOfOpenings)}
