@@ -223,6 +223,147 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PATCH(req: NextRequest) {
+  try {
+    const guard = await apiAuthGuard([Role.COMPANY_ADMIN]);
+    if (!guard.ok) {
+      return guard.response;
+    }
+
+    const company = await prisma.company.findUnique({
+      where: { userId: guard.session.user.id },
+    });
+
+    if (!company) {
+      return NextResponse.json(
+        { error: 'Company profile not found' },
+        { status: 404 },
+      );
+    }
+
+    const formData = await req.formData();
+    const jobId = formData.get('jobId') as string;
+
+    if (!jobId) {
+      return NextResponse.json(
+        { error: 'Job ID is required' },
+        { status: 400 },
+      );
+    }
+
+    const existingJob = await prisma.job.findUnique({
+      where: { id: jobId },
+    });
+
+    if (!existingJob) {
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+    }
+
+    if (existingJob.companyId !== company.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized: This job does not belong to your company' },
+        { status: 403 },
+      );
+    }
+
+    const data = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+      requirements: formData.get('requirements') as string,
+      responsibilities: formData.get('responsibilities') as string | null,
+      skills: formData.get('skills') as string,
+      experienceLevel: formData.get('experienceLevel') as string,
+      employmentType: formData.get('employmentType') as string,
+      workMode: formData.get('workMode') as string,
+      country: formData.get('country') as string,
+      city: formData.get('city') as string | null,
+      salaryMin: formData.get('salaryMin') as string | null,
+      salaryMax: formData.get('salaryMax') as string | null,
+      hideSalary: formData.get('hideSalary') as string,
+      numberOfOpenings: formData.get('numberOfOpenings') as string,
+      applicationDeadline: formData.get('applicationDeadline') as string | null,
+      category: formData.get('category') as string,
+      status: formData.get('status') as string | null,
+    };
+
+    if (
+      !data.title ||
+      !data.description ||
+      !data.requirements ||
+      !data.skills ||
+      !data.category
+    ) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 },
+      );
+    }
+
+    let skillsArray: string[] = [];
+    try {
+      skillsArray = JSON.parse(data.skills);
+    } catch (error) {
+      console.error('Error parsing skills:', error);
+      return NextResponse.json(
+        { error: 'Invalid skills format' },
+        { status: 400 },
+      );
+    }
+
+    let slug = existingJob.slug;
+    if (data.title !== existingJob.title) {
+      slug = await generateUniqueSlug(data.title);
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        title: data.title,
+        description: data.description,
+        requirements: data.requirements,
+        responsibilities: data.responsibilities || null,
+        skills: skillsArray,
+        experienceLevel: data.experienceLevel as ExperienceLevel,
+        employmentType: data.employmentType as EmploymentType,
+        workMode: data.workMode as WorkMode,
+        country: data.country,
+        city: data.city || null,
+        salaryMin: data.salaryMin ? parseInt(data.salaryMin) : null,
+        salaryMax: data.salaryMax ? parseInt(data.salaryMax) : null,
+        hideSalary: data.hideSalary === 'true',
+        numberOfOpenings: parseInt(data.numberOfOpenings),
+        applicationDeadline: data.applicationDeadline
+          ? new Date(data.applicationDeadline)
+          : null,
+        category: data.category,
+        slug,
+        ...(data.status && { status: data.status as JobStatus }),
+      },
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+            logo: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      job: updatedJob,
+      message: 'Job updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating job:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   try {
     const guard = await apiAuthGuard([Role.COMPANY_ADMIN]);
