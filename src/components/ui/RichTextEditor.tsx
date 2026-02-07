@@ -7,6 +7,7 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 import { Bold, Italic, List, UnderlineIcon } from 'lucide-react'
 import Underline from '@tiptap/extension-underline'
+import Tooltip from './ToolTip'
 
 type RichTextEditorProps = {
   label: string
@@ -58,9 +59,22 @@ const RichTextEditor = ({
 
   return (
     <div className="space-y-1">
-      <label className="text-sm text-muted-foreground">
+      <label className="flex items-center gap-2 text-sm text-muted-foreground">
         {label}
+
+        <Tooltip
+          content={
+            <div className="space-y-1">
+              <p className="font-medium">Formatting tips</p>
+              <p>• Enter → new paragraph</p>
+              <p>• Shift + Enter → line break / spacing</p>
+              <p>• Use H1–H4 for headings</p>
+              <p>• Use bullet list for points</p>
+            </div>
+          }
+        />
       </label>
+
 
       <div
         className={clsx(
