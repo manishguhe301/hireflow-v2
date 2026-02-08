@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { FieldErrors, UseFormRegister } from 'react-hook-form'
+import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form'
 import { JobFormInputs } from './CreateJobForm'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { workModes } from '@/src/utils/utils'
@@ -12,11 +12,14 @@ import StepHeader from '@/src/components/ui/StepHeader'
 const Step3JobLocation = ({
   register,
   errors,
+  watch
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
+  watch: UseFormWatch<JobFormInputs>
 }) => {
   const { countries, loading } = useCountries()
+  const workMode = watch('workMode')
   return (
     <div className="space-y-8">
       <StepHeader
@@ -57,9 +60,12 @@ const Step3JobLocation = ({
 
           <FormInput
             label="City"
-            register={register('city')}
+            register={register('city', {
+              required: workMode !== 'REMOTE' ? 'City is required for on-site/hybrid roles' : false
+            })}
             placeholder="for example, Bangalore"
             error={errors.city}
+            disabled={workMode === 'REMOTE'}
           />
         </div>
       </div>

@@ -29,7 +29,22 @@ const Step4JobSalary = ({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
             label="Minimum Salary in Lakhs(Optional)"
-            register={register('salaryMin', { valueAsNumber: true })
+            register={
+              register('salaryMin', {
+                valueAsNumber: true,
+                min: { value: 0, message: 'Minimum salary cannot be negative' },
+                validate: (value, formValues) => {
+                  if (!value && !formValues.salaryMax) return true
+
+                  if (value && !formValues.salaryMax) return true
+
+                  if (value && formValues.salaryMax && value > formValues.salaryMax) {
+                    return 'Minimum salary cannot exceed maximum salary'
+                  }
+
+                  return true
+                }
+              })
             }
             placeholder="for example: 10"
             error={errors.salaryMin}
@@ -38,7 +53,21 @@ const Step4JobSalary = ({
           />
           <FormInput
             label="Maximum Salary in Lakhs (Optional)"
-            register={register('salaryMax', { valueAsNumber: true })
+            register={register(
+              'salaryMax', {
+              valueAsNumber: true,
+              min: { value: 0, message: 'Maximum salary cannot be negative' },
+              validate: (value, formValues) => {
+                if (!value && !formValues.salaryMin) return true
+
+                if (value && !formValues.salaryMin) return true
+
+                if (value && formValues.salaryMin && value < formValues.salaryMin) {
+                  return 'Maximum salary must be greater than minimum salary'
+                }
+                return true
+              }
+            })
             }
             placeholder="for example: 20 should be greater than minimum salary"
             error={errors.salaryMax}
@@ -72,11 +101,17 @@ const Step4JobSalary = ({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
             label="Number of Openings (By default 1)"
-            register={register('numberOfOpenings', { required: "Number of openings is required" })}
+            register={register('numberOfOpenings', {
+              required: "Number of openings is required",
+              valueAsNumber: true,
+              min: { value: 1, message: 'At least 1 opening required' },
+              max: { value: 100, message: 'Maximum 100 openings allowed' },
+            })}
             placeholder="for example: 10"
             error={errors.numberOfOpenings}
             type='number'
             minLength={1}
+            maxLength={100}
           />
           <FormDatePicker
             label="Application Deadline (Optional)"

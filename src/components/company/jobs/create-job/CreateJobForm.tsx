@@ -1,8 +1,7 @@
 'use client'
-import { EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client';
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import { EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import FormHeader from '../../../ui/FormHeader';
@@ -13,8 +12,12 @@ import Step4JobSalary from './Step4JobSalary';
 import Step5JobReview from './Step5JobReview';
 import { Button } from '@/src/components/ui/Button';
 import { isRichTextEmpty } from '@/src/utils/helper';
+import { Spinner } from '@/src/components/elements/Loader';
+import { AppSdk } from '@/src/utils/AppSdk';
+import clsx from 'clsx';
 
 export type JobFormInputs = {
+  jobId?: string;
   title: string;
   description: string;
   requirements: string;
@@ -66,7 +69,6 @@ const jobFormSteps = [
 
 const CreateJobForm = () => {
   const [currentStep, setCurrentStep] = useState(0)
-  const { data: session } = useSession()
   const {
     register,
     formState: { errors },
@@ -80,6 +82,7 @@ const CreateJobForm = () => {
   } = useForm<JobFormInputs>({
     defaultValues: {
       //step 1
+      jobId: undefined,
       title: '',
       description: '',
       responsibilities: '', //optional
@@ -111,6 +114,62 @@ const CreateJobForm = () => {
   })
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
+  const params = useParams();
+  const slug = params.slug as string | undefined
+  const isEditMode = !!slug
+  const [jobLoading, setJobLoading] = useState(false)
+  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
+
+  const fetchJobDetails = async () => {
+    setJobLoading(true)
+    try {
+      const res = await AppSdk.getData(`/api/company/jobs/${slug}`, null)
+      const job = res.job
+      if (job) {
+        reset({
+          jobId: job.id,
+          title: job.title,
+          description: job.description,
+          requirements: job.requirements,
+          responsibilities: job.responsibilities ?? '',
+          skills: job.skills,
+          experienceLevel: job.experienceLevel,
+          employmentType: job.employmentType,
+          workMode: job.workMode,
+          country: job.country,
+          city: job.city,
+          salaryMin: job.salaryMin,
+          salaryMax: job.salaryMax,
+          hideSalary: job.hideSalary,
+          numberOfOpenings: job.numberOfOpenings,
+          applicationDeadline: job.applicationDeadline
+            ? new Date(job.applicationDeadline)
+            : undefined,
+          category: job.category,
+        })
+        setJobStatus(job.status)
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to fetch job details, please try again.')
+    } finally {
+      setJobLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!slug) return;
+    fetchJobDetails()
+  }, [slug])
+
+  if (jobLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 h-[90%]">
+        Loading job details... <Spinner />
+      </div>
+    )
+  }
 
   //validations for fields in which we cannot inline validate
   register('description', {
@@ -146,6 +205,7 @@ const CreateJobForm = () => {
     }
 
     setCurrentStep((prev) => prev + 1)
+    console.log(getValues());
   }
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
@@ -154,9 +214,14 @@ const CreateJobForm = () => {
     return (
       !!data.title ||
       !isRichTextEmpty(data.description) ||
+      !!data.category ||
       !isRichTextEmpty(data.requirements) ||
+      (data.responsibilities && !isRichTextEmpty(data.responsibilities)) ||
       data.skills.length > 0 ||
-      !!data.category
+      !!data.country ||
+      !!data.city ||
+      typeof data.salaryMin === 'number' ||
+      typeof data.salaryMax === 'number'
     )
   }
 
@@ -168,7 +233,12 @@ const CreateJobForm = () => {
           return
         }
 
-        setIsSubmitting(true)
+        if (isDraft) {
+          setIsSavingDraft(true)
+        } else {
+          setIsSubmitting(true)
+        }
+
         console.log(data);
         try {
           const formData = new FormData()
@@ -212,10 +282,13 @@ const CreateJobForm = () => {
           formData.append('category', data.category)
           formData.append('status', isDraft ? 'DRAFT' : 'ACTIVE')
 
+          if (isEditMode && data.jobId) {
+            formData.append('jobId', data.jobId)
+          }
 
-          const method = 'POST'
+          const method = isEditMode ? 'PATCH' : 'POST'
 
-          const response = await fetch('/api/company/job', {
+          const response = await fetch('/api/company/jobs', {
             method,
             body: formData,
           })
@@ -226,26 +299,72 @@ const CreateJobForm = () => {
             toast.error(result.error || 'Failed to create job')
             return
           }
-          toast.success('Job created successfully')
+          const successMessage = isEditMode
+            ? isDraft
+              ? 'Draft updated successfully'
+              : 'Job updated successfully'
+            : isDraft
+              ? 'Draft saved successfully'
+              : 'Job created successfully'
+
+          toast.success(successMessage)
           reset()
-          router.push('/company/jobs')
+          setTimeout(() => router.push('/company/jobs'), 100)
         } catch (error) {
           console.error('Submit error:', error)
           toast.error('Something went wrong. Please try again.')
         } finally {
-          setIsSubmitting(false)
+          if (isDraft) {
+            setIsSavingDraft(false)
+          } else {
+            setIsSubmitting(false)
+          }
         }
       }
 
+  const handleDraftSave = async () => {
+    const data = getValues()
+
+    if (!hasAnyDraftData(data)) {
+      toast.error('Add at least one field before saving as draft')
+      return
+    }
+
+    if (currentStep === 4) {
+      const confirmed = window.confirm(
+        'You are on the review page. Do you want to save as draft instead of publishing?'
+      )
+      if (!confirmed) return
+    }
+
+    await handleFormSubmit(true)(data)
+  }
+
+  const handleReopenJob = () => {
+
+  }
+
+  const isAnyActionInProgress = isSubmitting || isSavingDraft
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+      {isEditMode && (
+        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+          <p className="text-sm text-primary font-medium">
+            Editing a Job
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Review all steps before saving to ensure the job details stay accurate and up to date.
+          </p>
+        </div>
+      )}
       <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
         <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
           <FormHeader
             currentStep={currentStep}
             handleNext={handleNext}
             handlePrev={handlePrev}
-            disabled={isSubmitting}
+            disabled={isAnyActionInProgress}
             steps={jobFormSteps}
           />
 
@@ -267,7 +386,11 @@ const CreateJobForm = () => {
               />
             }
             {currentStep === 2 &&
-              <Step3JobLocation register={register} errors={errors} />
+              <Step3JobLocation
+                register={register}
+                errors={errors}
+                watch={watch}
+              />
             }
             {
               currentStep === 3 &&
@@ -286,46 +409,91 @@ const CreateJobForm = () => {
             }
           </form>
 
-          <div className="flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0">
-            <Button
+          <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
+            isEditMode && jobStatus !== 'DRAFT' && 'justify-end!'
+          )}>
+            {!isEditMode || jobStatus === 'DRAFT' ? <Button
               type="button"
               variant="ghost"
-              onClick={() => handleFormSubmit(true)(getValues())}
-              disabled={isSubmitting}
+              onClick={handleDraftSave}
+              disabled={isAnyActionInProgress}
               className="max-md:w-full"
             >
-              Save as Draft
-            </Button>
-            {currentStep > 0 && (
-              <Button
-                onClick={handlePrev}
-                variant="outline"
-                disabled={isSubmitting}
-                className="max-md:w-1/2"
-              >
-                Previous
-              </Button>
-            )}
-            {currentStep < 4 ? (
-              <Button
-                disabled={isSubmitting}
-                onClick={handleNext}
-                className="max-md:w-1/2"
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit(false))}
-                variant="primary"
-                className="max-md:w-1/2"
-              >
-                {isSubmitting ?
-                  'Submitting...' : 'Submit'
-                }
-              </Button>
-            )}
+              {isSavingDraft ?
+                <span className="flex items-center gap-2">
+                  <Spinner className="h-4 w-4" />
+                  Saving...
+                </span>
+                : 'Save as Draft'}
+            </Button> : null
+            }
+
+            <div className="flex gap-3 items-center">
+              {currentStep > 0 && (
+                <Button
+                  onClick={handlePrev}
+                  variant="outline"
+                  disabled={isAnyActionInProgress}
+                  className="max-md:w-1/2"
+                >
+                  Previous
+                </Button>
+              )}
+              {currentStep < 4 ? (
+                <>
+                  <Button
+                    disabled={isAnyActionInProgress}
+                    onClick={handleNext}
+                    className="max-md:w-1/2"
+                  >
+                    Next
+                  </Button>
+
+                  {isEditMode && jobStatus === 'ACTIVE' && (
+                    <Button
+                      disabled={isAnyActionInProgress}
+                      onClick={handleSubmit(handleFormSubmit(false))}
+                      variant="primary"
+                      className="max-md:w-1/2"
+                    >
+                      Save Changes
+                    </Button>
+                  )}
+
+                  {isEditMode && jobStatus === 'CLOSED' && (
+                    <Button
+                      disabled={isAnyActionInProgress}
+                      onClick={handleReopenJob}
+                      variant="primary"
+                      className="max-md:w-1/2"
+                    >
+                      Reopen Job
+                    </Button>
+                  )
+                  }
+                </>
+              ) : (
+                <>
+
+                  <Button
+                    disabled={isAnyActionInProgress}
+                    onClick={handleSubmit(handleFormSubmit(false))}
+                    variant="primary"
+                    className="max-md:w-1/2"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <Spinner className="h-4 w-4" />
+                        {isEditMode ? 'Saving...' : 'Publishing...'}
+                      </span>
+                    ) : (
+                      isEditMode ? 'Save Changes' : 'Publish Job'
+                    )}
+                  </Button>
+                </>
+              )}
+
+            </div>
           </div>
         </div>
       </div>

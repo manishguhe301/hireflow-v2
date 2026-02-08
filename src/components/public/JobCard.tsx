@@ -1,5 +1,7 @@
 'use client'
 
+import { formatRelativeTime, formatSalary, getLabel } from "@/src/utils/helper"
+import { employmentTypes, experienceLevels, workModes } from "@/src/utils/utils"
 import { Job } from "@prisma/client"
 import { Briefcase, Clock, MapPin } from "lucide-react"
 
@@ -30,13 +32,13 @@ export default function JobCard({ job, companyName }: JobCardProps) {
         <div className="flex items-center gap-1">
           <Briefcase className="h-4 w-4" />
           <span>
-            {job.workMode} • {job.employmentType}
+            {getLabel(workModes, job.workMode)} • {getLabel(employmentTypes, job.employmentType)}
           </span>
         </div>
 
         <div className="flex items-center gap-1">
           <Clock className="h-4 w-4" />
-          <span>{job.experienceLevel}</span>
+          <span>{getLabel(experienceLevels, job.experienceLevel)}</span>
         </div>
       </div>
 
@@ -44,13 +46,13 @@ export default function JobCard({ job, companyName }: JobCardProps) {
         <p className="text-sm font-medium">
           {job.hideSalary
             ? 'Salary not disclosed'
-            : job.salaryMin && job.salaryMax
-              ? `₹${job.salaryMin} – ₹${job.salaryMax}`
+            : job.salaryMin || job.salaryMax
+              ? formatSalary(job.salaryMin, job.salaryMax)
               : '—'}
         </p>
 
         <span className="text-xs text-muted-foreground">
-          {new Date(job.createdAt).toLocaleDateString()}
+          {formatRelativeTime(job.createdAt)}
         </span>
       </div>
     </div>
