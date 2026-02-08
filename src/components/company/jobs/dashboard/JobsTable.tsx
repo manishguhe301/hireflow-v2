@@ -3,9 +3,24 @@ import { Button } from '@/src/components/ui/Button'
 import { jobCategories } from '@/src/utils/utils'
 import { Job } from '@prisma/client'
 import clsx from 'clsx'
-import { CheckCircle, Clock, Trash2, XCircle } from 'lucide-react'
+import { CheckCircle, Clock, Pencil, Trash2, XCircle } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+
+export const checkIsPublishable = (job: Job) => {
+  return Boolean(
+    job.title?.trim() &&
+    job.description?.trim() &&
+    job.requirements?.trim() &&
+    job.skills?.length > 0 &&
+    job.experienceLevel &&
+    job.employmentType &&
+    job.workMode &&
+    job.country?.trim() &&
+    job.category?.trim() &&
+    job.numberOfOpenings > 0
+  )
+}
 
 const JobsTable = ({
   jobs,
@@ -58,7 +73,7 @@ const JobsTable = ({
                 </span>
               </td>
               <td className="px-6 py-4">{job.views}</td>
-              <td className="px-6 py-4 text-right">
+              {/* <td className="px-6 py-4 text-right">
                 <div className="inline-flex items-center gap-2">
                   {job.status === 'ACTIVE' &&
                     <Link
@@ -111,6 +126,64 @@ const JobsTable = ({
                     )}
                   </Button>
 
+                </div>
+              </td> */}
+              <td className="px-6 py-4 text-right">
+                <div className="inline-flex items-center gap-3">
+
+                  {job.status !== 'DRAFT' && (
+                    <Link
+                      href={`/company/jobs/${job.slug}`}
+                      className="text-xs text-muted-foreground hover:underline"
+                    >
+                      View
+                    </Link>
+                  )}
+
+                  <Link
+                    href={`/company/jobs/edit/${job.slug}`}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    Edit
+                  </Link>
+
+                  {job.status === 'DRAFT' && (
+                    checkIsPublishable(job) ? (
+                      <Button
+                        className="p-0! bg-transparent! border-none text-success hover:underline text-xs"
+                      >
+                        Publish
+                      </Button>
+                    ) : (
+                      <Link
+                        href={`/company/jobs/edit/${job.slug}`}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        Complete Details
+                      </Link>
+                    )
+                  )}
+
+                  {job.status === 'ACTIVE' && (
+                    <Button
+                      className="p-0! bg-transparent! border-none text-destructive! hover:underline text-xs"
+                    >
+                      Close
+                    </Button>
+                  )}
+
+                  <Button
+                    className="p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80"
+                    disabled={loadingAction === `delete-${job.id}`}
+                    onClick={() => setDeleteJobId(job.id)}
+                  >
+                    {loadingAction === `delete-${job.id}` ? (
+                      <Spinner className="h-4 w-4" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
               </td>
             </tr>
