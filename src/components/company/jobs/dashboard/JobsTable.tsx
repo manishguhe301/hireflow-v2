@@ -16,7 +16,6 @@ const JobsTable = ({
   setDeleteJobId: React.Dispatch<React.SetStateAction<string | null>>,
   loadingAction: string | null,
 }) => {
-  // title, status, category, views,
   return (
     <table className="w-full text-sm">
       <thead className="bg-muted/40 border-b border-border/60">
