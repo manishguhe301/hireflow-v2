@@ -149,19 +149,12 @@ const JobsTable = ({
                   </Link>
 
                   {job.status === 'DRAFT' && (
-                    checkIsPublishable(job) ? (
+                    checkIsPublishable(job) && (
                       <Button
                         className="p-0! bg-transparent! border-none text-success hover:underline text-xs"
                       >
                         Publish
                       </Button>
-                    ) : (
-                      <Link
-                        href={`/company/jobs/edit/${job.slug}`}
-                        className="text-xs text-primary hover:underline"
-                      >
-                        Complete Details
-                      </Link>
                     )
                   )}
 
@@ -170,6 +163,14 @@ const JobsTable = ({
                       className="p-0! bg-transparent! border-none text-destructive! hover:underline text-xs"
                     >
                       Close
+                    </Button>
+                  )}
+
+                  {job.status === 'CLOSED' && (
+                    <Button
+                      className="p-0! bg-transparent! border-none text-success! hover:underline text-xs"
+                    >
+                      Reopen
                     </Button>
                   )}
 
