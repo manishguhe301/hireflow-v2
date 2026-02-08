@@ -1,16 +1,21 @@
 'use client'
+import { Spinner } from '@/src/components/elements/Loader'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { JOB_TABS } from '@/src/utils/helper'
 import { Job, JobStatus } from '@prisma/client'
 import clsx from 'clsx'
+import { Briefcase } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import JobsTable from './JobsTable'
 
 const ManageJobs = () => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
   const [isLoading, setIsLoading] = useState(true)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
+
 
   const fetchJobs = async (status?: string, isLoadingNeeded: boolean = true) => {
     if (isLoadingNeeded) {
@@ -66,7 +71,37 @@ const ManageJobs = () => {
           ))}
         </div>
       </div>
-    </div>
+      {isLoading ?
+        <div className='flex items-center justify-center min-h-75'>
+          <Spinner />
+        </div > : <>
+          {jobs.length === 0 ? (
+            <div className="py-20 text-center">
+              <Briefcase className="h-10 w-10 mx-auto text-muted-foreground" />
+              <p className="mt-4 text-muted-foreground">No Jobs found</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
+              <JobsTable
+                jobs={jobs}
+                loadingAction={loadingAction}
+                setDeleteJobId={setDeleteJobId}
+              // handleApprove={handleApprove}
+              // loadingAction={loadingAction}
+              // rejectCompanyId={rejectCompanyId}
+              // setRejectCompanyId={setRejectCompanyId}
+              />
+            </div>
+          )}
+        </>
+      }
+      {/* <DeleteCompanyModal
+        deleteCompanyId={deleteCompanyId}
+        setDeleteCompanyId={setDeleteCompanyId}
+        handleDelete={handleDelete}
+        loadingAction={loadingAction}
+      /> */}
+    </div >
   )
 }
 
