@@ -17,6 +17,7 @@ import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
 
 export type JobFormInputs = {
+  jobId?: string;
   title: string;
   description: string;
   requirements: string;
@@ -81,6 +82,7 @@ const CreateJobForm = () => {
   } = useForm<JobFormInputs>({
     defaultValues: {
       //step 1
+      jobId: undefined,
       title: '',
       description: '',
       responsibilities: '', //optional
@@ -126,6 +128,7 @@ const CreateJobForm = () => {
       const job = res.job
       if (job) {
         reset({
+          jobId: job.id,
           title: job.title,
           description: job.description,
           requirements: job.requirements,
@@ -279,6 +282,9 @@ const CreateJobForm = () => {
           formData.append('category', data.category)
           formData.append('status', isDraft ? 'DRAFT' : 'ACTIVE')
 
+          if (isEditMode && data.jobId) {
+            formData.append('jobId', data.jobId)
+          }
 
           const method = isEditMode ? 'PATCH' : 'POST'
 
