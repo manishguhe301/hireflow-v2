@@ -1,4 +1,4 @@
-import { CompanyStatus, Role } from '@prisma/client';
+import { CompanyStatus, Role, Job, JobStatus } from '@prisma/client';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -115,6 +115,13 @@ export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
   { label: 'Pending', value: 'PENDING' },
   { label: 'Approved', value: 'APPROVED' },
   { label: 'Rejected', value: 'REJECTED' },
+];
+
+export const JOB_TABS: { label: string; value: JobStatus | 'ALL' }[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Active', value: 'ACTIVE' },
+  { label: 'Closed', value: 'CLOSED' },
+  { label: 'Draft', value: 'DRAFT' },
 ];
 
 export const ADMIN_USERS_TABS: {

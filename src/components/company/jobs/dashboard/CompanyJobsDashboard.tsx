@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
+import ManageJobs from './ManageJobs'
 
 const CompanyJobsDashboard = () => {
   return (
@@ -22,10 +23,7 @@ const CompanyJobsDashboard = () => {
           Create Job
         </Link>
       </div>
-
-      <div className="rounded-2xl border border-border/40 bg-card py-24 text-center text-muted-foreground">
-        Job listings will appear here
-      </div>
+      <ManageJobs />
     </div>
   )
 }

@@ -10,7 +10,7 @@ type SelectOption = {
 }
 
 type FormSelectProps = {
-  label: string
+  label?: string
   options: SelectOption[]
   register?: UseFormRegisterReturn
   placeholder?: string
