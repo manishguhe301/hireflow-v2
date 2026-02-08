@@ -23,8 +23,8 @@ const ManageJobs = () => {
     }
     try {
       const url = status
-        ? `/api/company/job?status=${status}`
-        : '/api/company/job'
+        ? `/api/company/jobs?status=${status}`
+        : '/api/company/jobs'
 
       const res = await AppSdk.getData(url, null)
 
@@ -33,7 +33,7 @@ const ManageJobs = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error('Failed to fetch companies, please try again.')
+      toast.error('Failed to fetch jobs, please try again.')
     }
     finally {
       setIsLoading(false)

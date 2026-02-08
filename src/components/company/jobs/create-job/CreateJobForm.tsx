@@ -226,7 +226,7 @@ const CreateJobForm = () => {
 
           const method = 'POST'
 
-          const response = await fetch('/api/company/job', {
+          const response = await fetch('/api/company/jobs', {
             method,
             body: formData,
           })
