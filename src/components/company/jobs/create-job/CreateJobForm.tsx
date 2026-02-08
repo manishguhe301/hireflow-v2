@@ -299,7 +299,15 @@ const CreateJobForm = () => {
             toast.error(result.error || 'Failed to create job')
             return
           }
-          toast.success(isDraft ? 'Draft saved successfully' : 'Job created successfully')
+          const successMessage = isEditMode
+            ? isDraft
+              ? 'Draft updated successfully'
+              : 'Job updated successfully'
+            : isDraft
+              ? 'Draft saved successfully'
+              : 'Job created successfully'
+
+          toast.success(successMessage)
           reset()
           setTimeout(() => router.push('/company/jobs'), 100)
         } catch (error) {
