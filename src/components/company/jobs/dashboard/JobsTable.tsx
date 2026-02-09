@@ -1,5 +1,6 @@
 import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
+import { isRichTextEmpty } from '@/src/utils/helper'
 import { jobCategories } from '@/src/utils/utils'
 import { Job } from '@prisma/client'
 import clsx from 'clsx'
@@ -10,8 +11,8 @@ import React from 'react'
 export const checkIsPublishable = (job: Job) => {
   return Boolean(
     job.title?.trim() &&
-    job.description?.trim() &&
-    job.requirements?.trim() &&
+    !isRichTextEmpty(job.description) &&
+    !isRichTextEmpty(job.requirements) &&
     job.skills?.length > 0 &&
     job.experienceLevel &&
     job.employmentType &&
@@ -31,11 +32,13 @@ export interface JobWithCount extends Job {
 const JobsTable = ({
   jobs,
   setDeleteJobId,
-  loadingAction
+  loadingAction,
+  handleStatusChange,
 }: {
   jobs: JobWithCount[],
   setDeleteJobId: React.Dispatch<React.SetStateAction<string | null>>,
   loadingAction: string | null,
+  handleStatusChange: (slug: string, newStatus: 'ACTIVE' | 'CLOSED') => Promise<void>
 }) => {
   return (
     <table className="w-full text-sm">
@@ -81,68 +84,13 @@ const JobsTable = ({
               </td>
               <td className="px-6 py-4">{job.views}</td>
               <td className="px-6 py-4">{job._count.applications}</td>
-              {/* <td className="px-6 py-4 text-right">
-                <div className="inline-flex items-center gap-2">
-                  {job.status === 'ACTIVE' &&
-                    <Link
-                      href={`/company/jobs/${job.slug}`}
-                      className="text-muted-foreground hover:underline text-xs"
-                    >
-                      View Details
-                    </Link>
-                  }
-
-                  {job.status === 'DRAFT' && (
-                    <>
-                      <Button
-                        // onClick={() => handleApprove(company.id)}
-                        // disabled={
-                        //   loadingAction === `approve-${company.id}` ||
-                        //   !!rejectCompanyId
-                        // }
-                        className="text-success hover:underline text-xs border-none w-fit p-0! bg-transparent!"
-                      >
-                        Publish
-                      </Button>
-                    </>
-                  )}
-
-                  {job.status === 'ACTIVE' &&
-                    <Button
-                      onClick={() => {
-                        setDeleteJobId(null)
-                      }}
-                      disabled={
-                        !!loadingAction && loadingAction !== `close-${job.id}`
-                      }
-                      className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent"
-                    >
-                      Mark as closed
-                    </Button>
-                  }
-                  <Button
-                    className="p-0! border-none text-destructive! bg-transparent hover:text-destructive/80"
-                    disabled={loadingAction === `delete-${job.id}`}
-                    onClick={() => {
-                      setDeleteJobId(job.id)
-                    }}
-                  >
-                    {loadingAction === `delete-${job.id}` ? (
-                      <Spinner className="h-4 w-4" />
-                    ) : (
-                      <Trash2 className="h-4 w-4" />
-                    )}
-                  </Button>
-
-                </div>
-              </td> */}
               <td className="px-6 py-4 text-right">
                 <div className="inline-flex items-center gap-3">
 
                   {job.status !== 'DRAFT' && (
                     <Link
                       href={`/company/jobs/${job.slug}`}
-                      className="text-xs text-muted-foreground hover:underline"
+                      className={clsx("text-xs text-muted-foreground hover:underline", loadingAction && 'pointer-events-none opacity-50')}
                     >
                       View
                     </Link>
@@ -150,7 +98,7 @@ const JobsTable = ({
 
                   <Link
                     href={`/company/jobs/edit/${job.slug}`}
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                    className={clsx("inline-flex items-center gap-1 text-xs text-primary hover:underline", loadingAction && 'pointer-events-none opacity-50')}
                   >
                     <Pencil className="h-3 w-3" />
                     Edit
@@ -159,31 +107,45 @@ const JobsTable = ({
                   {job.status === 'DRAFT' && (
                     checkIsPublishable(job) && (
                       <Button
-                        className="p-0! bg-transparent! border-none text-success hover:underline text-xs"
+                        className={clsx("p-0! bg-transparent! border-none text-success hover:underline text-xs", loadingAction && 'pointer-events-none opacity-50')}
+                        onClick={() => handleStatusChange(job.slug, 'ACTIVE')}
+                        disabled={loadingAction === `publish-${job.id}`}
                       >
-                        Publish
+                        {loadingAction === `publish-${job.id}` ? (
+                          <Spinner className="h-3 w-3" />
+                        ) : (
+                          'Publish'
+                        )}
                       </Button>
                     )
                   )}
 
                   {job.status === 'ACTIVE' && (
                     <Button
-                      className="p-0! bg-transparent! border-none text-destructive! hover:underline text-xs"
+                      className={clsx("p-0! bg-transparent! border-none text-destructive! hover:underline text-xs", loadingAction && 'pointer-events-none opacity-50')}
+                      onClick={() => handleStatusChange(job.slug, 'CLOSED')}
+                      disabled={loadingAction === `close-${job.id}`}
                     >
-                      Close
+                      {loadingAction === `close-${job.id}` ? (
+                        <Spinner className="h-3 w-3" />
+                      ) : (
+                        'Close'
+                      )}
                     </Button>
                   )}
 
                   {job.status === 'CLOSED' && (
                     <Button
-                      className="p-0! bg-transparent! border-none text-success! hover:underline text-xs"
+                      className={clsx("p-0! bg-transparent! border-none text-success! hover:underline text-xs", loadingAction && 'pointer-events-none opacity-50')}
+                      onClick={() => handleStatusChange(job.slug, 'ACTIVE')}
+                      disabled={loadingAction === `reopen-${job.id}`}
                     >
                       Reopen
                     </Button>
                   )}
 
                   <Button
-                    className="p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80"
+                    className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80", loadingAction && 'pointer-events-none opacity-50')}
                     disabled={loadingAction === `delete-${job.id}`}
                     onClick={() => setDeleteJobId(job.id)}
                   >

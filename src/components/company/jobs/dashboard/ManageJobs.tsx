@@ -8,6 +8,7 @@ import { Briefcase } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import JobsTable, { JobWithCount } from './JobsTable'
+import DeleteJobModal from './DeleteJobModal'
 
 const ManageJobs = () => {
   const [jobs, setJobs] = useState<JobWithCount[]>([])
@@ -15,7 +16,6 @@ const ManageJobs = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
-
 
   const fetchJobs = async (status?: string, isLoadingNeeded: boolean = true) => {
     if (isLoadingNeeded) {
@@ -43,6 +43,77 @@ const ManageJobs = () => {
   useEffect(() => {
     fetchJobs(activeTab === 'ALL' ? undefined : activeTab)
   }, [activeTab])
+
+
+  const handleStatusChange = async (slug: string, newStatus: 'ACTIVE' | 'CLOSED') => {
+    const job = jobs.find(j => j.slug === slug)
+    if (!job) return
+
+    const actionType = newStatus === 'ACTIVE'
+      ? (job.status === 'DRAFT' ? 'publish' : 'reopen')
+      : 'close'
+
+    setLoadingAction(`${actionType}-${job.id}`)
+
+    try {
+      const res = await fetch(`/api/company/jobs/${slug}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to update job status')
+        return
+      }
+
+      toast.success(data.message)
+      await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false)
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong')
+    } finally {
+      setLoadingAction(null)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!deleteJobId) return;
+
+    const job = jobs.find(j => j.id === deleteJobId);
+    if (!job) return;
+
+    setLoadingAction(`delete-${deleteJobId}`);
+
+    try {
+      const res = await fetch(`/api/company/jobs/${job.slug}`, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to delete job');
+        return;
+      }
+
+      if (data.action === 'closed') {
+        toast.warning(data.message);
+      } else {
+        toast.success(data.message);
+      }
+
+      setDeleteJobId(null);
+      await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false);
+    } catch (error) {
+      console.error(error);
+      toast.error('Something went wrong');
+    } finally {
+      setLoadingAction(null);
+    }
+  };
 
 
   return (
@@ -86,21 +157,18 @@ const ManageJobs = () => {
                 jobs={jobs}
                 loadingAction={loadingAction}
                 setDeleteJobId={setDeleteJobId}
-              // handleApprove={handleApprove}
-              // loadingAction={loadingAction}
-              // rejectCompanyId={rejectCompanyId}
-              // setRejectCompanyId={setRejectCompanyId}
+                handleStatusChange={handleStatusChange}
               />
             </div>
           )}
         </>
       }
-      {/* <DeleteCompanyModal
-        deleteCompanyId={deleteCompanyId}
-        setDeleteCompanyId={setDeleteCompanyId}
+      <DeleteJobModal
+        deleteJobId={deleteJobId}
+        setDeleteJobId={setDeleteJobId}
         handleDelete={handleDelete}
         loadingAction={loadingAction}
-      /> */}
+      />
     </div >
   )
 }
