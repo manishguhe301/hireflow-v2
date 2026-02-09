@@ -25,6 +25,7 @@ import InfoCard from '../admin/InfoCard'
 import InfoRow from '../admin/InfoRow'
 import { formatDate, getLabel, JOB_STATUS_STYLE } from '@/src/utils/helper'
 import { jobCategories } from '@/src/utils/utils'
+import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
 
 interface JobDetails extends Job {
   _count: {
@@ -46,6 +47,7 @@ const JobDetails = () => {
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [job, setJob] = useState<JobDetails | null>(null)
+  const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
 
   const fetchJobDetails = async () => {
     try {
@@ -98,11 +100,6 @@ const JobDetails = () => {
 
   const handleDelete = async () => {
     if (!job) return
-
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this job? This action cannot be undone.'
-    )
-    if (!confirmed) return
 
     setLoadingAction(`delete-${job.id}`)
 
@@ -303,11 +300,13 @@ const JobDetails = () => {
           </Button>
         )}
 
-        <Button variant="danger"
-          className='flex items-center justify-center gap-1'
-          onClick={handleDelete}
-          disabled={loadingAction === `delete-${job.id}`}
+        <Button
+          variant="danger"
+          className="flex items-center justify-center gap-1"
+          onClick={() => setDeleteJobId(job.id)}
+          disabled={!!loadingAction}
         >
+
           {loadingAction === `delete-${job.id}` ? (
             <span className='flex justify-center items-center gap-1'>
               <Spinner className="h-4 w-4 mr-1" />
@@ -321,6 +320,14 @@ const JobDetails = () => {
           )}
         </Button>
       </div>
+
+      <DeleteJobModal
+        deleteJobId={deleteJobId}
+        setDeleteJobId={setDeleteJobId}
+        handleDelete={handleDelete}
+        loadingAction={loadingAction}
+      />
+
     </div >
   )
 }
