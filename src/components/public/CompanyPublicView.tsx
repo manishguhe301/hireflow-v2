@@ -14,6 +14,7 @@ type CompanyPublicViewProps = {
 
 const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
+  console.log(company, jobs);
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-6">

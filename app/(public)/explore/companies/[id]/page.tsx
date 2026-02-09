@@ -55,6 +55,7 @@ export default async function CompanyPage({
 }) {
   const { id } = await params
   const data = await getCompany(id)
+  console.log(data);
 
   if (!data) {
     notFound()
