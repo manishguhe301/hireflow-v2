@@ -15,6 +15,7 @@ import {
   Clock,
   CheckCircle,
   Calendar,
+  RefreshCcwDot,
 } from 'lucide-react'
 import clsx from 'clsx'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
@@ -185,9 +186,10 @@ const JobDetails = () => {
 
       <div className="flex justify-end gap-3">
         <Button
-          variant="primary"
+          variant="outline"
           onClick={() => router.push(`/company/jobs/edit/${job.slug}`)}
-          className='flex items-center justify-center gap-1 '
+          className='flex items-center justify-center gap-1 text-success border-success '
+
         >
           <Edit className="h-4 w-4 mr-1" />
           Edit Job
@@ -201,6 +203,15 @@ const JobDetails = () => {
             Close Job
           </Button>
         )}
+        {job.status === 'CLOSED' && (
+          <Button
+            variant="primary"
+            className='flex items-center justify-center gap-1'
+          >
+            <RefreshCcwDot className="h-4 w-4 mr-1" />
+            Reopen
+          </Button>
+        )}
 
         <Button variant="danger"
           className='flex items-center justify-center gap-1'
@@ -209,7 +220,7 @@ const JobDetails = () => {
           Delete
         </Button>
       </div>
-    </div>
+    </div >
   )
 }
 
