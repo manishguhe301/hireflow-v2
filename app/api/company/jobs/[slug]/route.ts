@@ -13,18 +13,50 @@ export async function GET(
       return guard.response;
     }
 
-    const company = await prisma.company.findUnique({
+    const companyExists = await prisma.company.findUnique({
       where: { userId: guard.session.user.id },
     });
 
-    if (!company) {
+    if (!companyExists) {
       return NextResponse.json(
         {
-          error:
-            'Company profile not found. ',
+          error: 'Company profile not found. ',
         },
         { status: 404 },
       );
+    }
+
+    const { searchParams } = new URL(req.url);
+
+    const company = searchParams.get('company') === 'true';
+    const savedJobs = searchParams.get('savedJobs') === 'true';
+    const applications = searchParams.get('applications') === 'true';
+    const counts = searchParams.get('counts') === 'true';
+
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const include: any = {};
+
+    if (company) {
+      include.company = true;
+    }
+
+    if (counts) {
+      include._count = {
+        select: {
+          applications: true,
+          ...(savedJobs && { savedJobs: true }),
+        },
+      };
+    }
+
+    if (applications) {
+      include.applications = {
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+        },
+      };
     }
 
     const { slug } = await params;
@@ -37,6 +69,7 @@ export async function GET(
       where: {
         slug,
       },
+      include,
     });
 
     if (!job) {
