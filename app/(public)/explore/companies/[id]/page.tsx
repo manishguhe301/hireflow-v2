@@ -1,20 +1,32 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import CompanyPublicView from '@/src/components/public/CompanyPublicView'
+import prisma from '@/src/lib/prisma'
 
 async function getCompany(id: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-
   try {
-    const res = await fetch(`${baseUrl}/api/companies/${id}`, {
-      cache: 'no-store',
+    const company = await prisma.company.findUnique({
+      where: {
+        id,
+        status: 'APPROVED'
+      },
+      include: {
+        jobs: {
+          where: {
+            status: 'ACTIVE'
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
+      }
     })
 
-    if (!res.ok) {
+    if (!company) {
       return null
     }
 
-    return res.json()
+    return { company, jobs: company.jobs }
   } catch (error) {
     console.error('Error fetching company:', error)
     return null
@@ -55,7 +67,6 @@ export default async function CompanyPage({
 }) {
   const { id } = await params
   const data = await getCompany(id)
-  console.log(data);
 
   if (!data) {
     notFound()
