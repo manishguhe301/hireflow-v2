@@ -165,8 +165,8 @@ const CreateJobForm = () => {
 
   if (jobLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 h-[90%]">
-        Loading job details... <Spinner />
+      <div className="flex items-center text-sm justify-center gap-2 h-[90%]">
+        Loading job details... <Spinner className='w-6 h-6'/>
       </div>
     )
   }
