@@ -22,12 +22,18 @@ export const checkIsPublishable = (job: Job) => {
   )
 }
 
+export interface JobWithCount extends Job {
+  _count: {
+    applications: number
+  }
+}
+
 const JobsTable = ({
   jobs,
   setDeleteJobId,
   loadingAction
 }: {
-  jobs: Job[],
+  jobs: JobWithCount[],
   setDeleteJobId: React.Dispatch<React.SetStateAction<string | null>>,
   loadingAction: string | null,
 }) => {
@@ -39,11 +45,12 @@ const JobsTable = ({
           <th className="px-6 py-4 text-left">Category</th>
           <th className="px-6 py-4 text-left">Status</th>
           <th className="px-6 py-4 text-left">Views</th>
+          <th className="px-6 py-4 text-left">Applications</th>
           <th className="px-6 py-4 text-right">Actions</th>
         </tr>
       </thead>
       <tbody>
-        {jobs.map((job: Job) => {
+        {jobs.map((job: JobWithCount) => {
           const jobCategory = jobCategories.filter((ind) => ind.value === job.category)[0]?.label
           return (
             <tr
@@ -73,6 +80,7 @@ const JobsTable = ({
                 </span>
               </td>
               <td className="px-6 py-4">{job.views}</td>
+              <td className="px-6 py-4">{job._count.applications}</td>
               {/* <td className="px-6 py-4 text-right">
                 <div className="inline-flex items-center gap-2">
                   {job.status === 'ACTIVE' &&

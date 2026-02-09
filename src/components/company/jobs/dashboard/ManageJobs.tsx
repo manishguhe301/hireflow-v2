@@ -7,10 +7,10 @@ import clsx from 'clsx'
 import { Briefcase } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import JobsTable from './JobsTable'
+import JobsTable, { JobWithCount } from './JobsTable'
 
 const ManageJobs = () => {
-  const [jobs, setJobs] = useState<Job[]>([])
+  const [jobs, setJobs] = useState<JobWithCount[]>([])
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
   const [isLoading, setIsLoading] = useState(true)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
