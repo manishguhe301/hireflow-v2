@@ -110,6 +110,12 @@ export const STATUS_STYLE: Record<CompanyStatus, string> = {
   REJECTED: 'bg-red-100 text-red-700',
 };
 
+export const JOB_STATUS_STYLE: Record<JobStatus, string> = {
+  ACTIVE: 'bg-green-100 text-green-700',
+  CLOSED: 'bg-red-100 text-red-700',
+  DRAFT: 'bg-yellow-100 text-yellow-700',
+};
+
 export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
   { label: 'All', value: 'ALL' },
   { label: 'Pending', value: 'PENDING' },

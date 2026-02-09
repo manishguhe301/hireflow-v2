@@ -67,6 +67,34 @@ const jobFormSteps = [
   { number: 5, label: 'Review & Publish' },
 ]
 
+const JOB_STATUS_UI: Record<JobStatus, {
+  className: string
+  title: string
+  message: (step: number) => string
+}> = {
+  DRAFT: {
+    className: 'bg-warning/10 border-warning/30 text-warning',
+    title: 'Draft Job',
+    message: (step) =>
+      step >= 4
+        ? 'All required details look complete. You can publish this job now.'
+        : 'This job is saved as a draft. Complete all steps to publish it.',
+  },
+  ACTIVE: {
+    className: 'bg-success/10 border-success/30 text-success',
+    title: 'Active Job',
+    message: () =>
+      'This job is live and visible to candidates. Any changes will update it immediately.',
+  },
+  CLOSED: {
+    className: 'bg-destructive/10 border-destructive/30 text-destructive',
+    title: 'Closed Job',
+    message: () =>
+      'This job is closed and no longer accepting applications. You can reopen it anytime.',
+  },
+}
+
+
 const CreateJobForm = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const {
@@ -165,8 +193,8 @@ const CreateJobForm = () => {
 
   if (jobLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 h-[90%]">
-        Loading job details... <Spinner />
+      <div className="flex items-center text-sm justify-center gap-2 h-[90%]">
+        Loading job details... <Spinner className='w-6 h-6' />
       </div>
     )
   }
@@ -340,24 +368,26 @@ const CreateJobForm = () => {
     await handleFormSubmit(true)(data)
   }
 
-  const handleReopenJob = () => {
-
-  }
-
   const isAnyActionInProgress = isSubmitting || isSavingDraft
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-      {isEditMode && (
-        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-          <p className="text-sm text-primary font-medium">
-            Editing a Job
+      {jobStatus && (
+        <div
+          className={clsx(
+            'mb-6 rounded-2xl border p-4',
+            JOB_STATUS_UI[jobStatus].className
+          )}
+        >
+          <p className="text-sm font-semibold">
+            {JOB_STATUS_UI[jobStatus].title}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Review all steps before saving to ensure the job details stay accurate and up to date.
+          <p className="mt-1 text-xs text-muted-foreground">
+            {JOB_STATUS_UI[jobStatus].message(currentStep)}
           </p>
         </div>
       )}
+
       <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
         <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
           <FormHeader
@@ -409,10 +439,11 @@ const CreateJobForm = () => {
             }
           </form>
 
-          <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
-            isEditMode && jobStatus !== 'DRAFT' && 'justify-end!'
+          <div className={clsx(
+            "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
+            (!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? '' : 'justify-end!'
           )}>
-            {!isEditMode || jobStatus === 'DRAFT' ? <Button
+            {(!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? <Button
               type="button"
               variant="ghost"
               onClick={handleDraftSave}
@@ -427,8 +458,7 @@ const CreateJobForm = () => {
                 : 'Save as Draft'}
             </Button> : null
             }
-
-            <div className="flex gap-3 items-center">
+            <div className={clsx("flex gap-3 items-center max-md:flex-col max-md:w-full",)}>
               {currentStep > 0 && (
                 <Button
                   onClick={handlePrev}
@@ -463,33 +493,71 @@ const CreateJobForm = () => {
                   {isEditMode && jobStatus === 'CLOSED' && (
                     <Button
                       disabled={isAnyActionInProgress}
-                      onClick={handleReopenJob}
+                      onClick={handleSubmit(handleFormSubmit(false))}
                       variant="primary"
                       className="max-md:w-1/2"
                     >
                       Reopen Job
                     </Button>
-                  )
-                  }
+                  )}
                 </>
               ) : (
                 <>
+                  {isEditMode && jobStatus === 'DRAFT' ? (
+                    <>
+                      <Button
+                        disabled={isAnyActionInProgress}
+                        onClick={handleSubmit(handleFormSubmit(true))}
+                        variant="outline"
+                        className="max-md:w-1/2"
+                      >
+                        {isSavingDraft ? (
+                          <span className="flex items-center gap-2">
+                            <Spinner className="h-4 w-4" />
+                            Saving...
+                          </span>
+                        ) : (
+                          'Update Draft'
+                        )}
+                      </Button>
 
-                  <Button
-                    disabled={isAnyActionInProgress}
-                    onClick={handleSubmit(handleFormSubmit(false))}
-                    variant="primary"
-                    className="max-md:w-1/2"
-                  >
-                    {isSubmitting ? (
-                      <span className="flex items-center gap-2">
-                        <Spinner className="h-4 w-4" />
-                        {isEditMode ? 'Saving...' : 'Publishing...'}
-                      </span>
-                    ) : (
-                      isEditMode ? 'Save Changes' : 'Publish Job'
-                    )}
-                  </Button>
+                      <Button
+                        disabled={isAnyActionInProgress}
+                        onClick={handleSubmit(handleFormSubmit(false))}
+                        variant="primary"
+                        className="max-md:w-1/2"
+                      >
+                        {isSubmitting ? (
+                          <span className="flex items-center gap-2">
+                            <Spinner className="h-4 w-4" />
+                            Publishing...
+                          </span>
+                        ) : (
+                          'Publish Job'
+                        )}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      disabled={isAnyActionInProgress}
+                      onClick={handleSubmit(handleFormSubmit(false))}
+                      variant="primary"
+                      className="max-md:w-1/2"
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center gap-2">
+                          <Spinner className="h-4 w-4" />
+                          {isEditMode ? 'Saving...' : 'Publishing...'}
+                        </span>
+                      ) : (
+                        isEditMode
+                          ? jobStatus === 'CLOSED'
+                            ? 'Reopen Job'
+                            : 'Save Changes'
+                          : 'Publish Job'
+                      )}
+                    </Button>
+                  )}
                 </>
               )}
 
