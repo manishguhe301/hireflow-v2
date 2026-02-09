@@ -43,7 +43,7 @@ const JobDetails = () => {
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string | undefined
-
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [job, setJob] = useState<JobDetails | null>(null)
 
@@ -66,6 +66,72 @@ const JobDetails = () => {
     if (!slug) return
     fetchJobDetails()
   }, [slug])
+
+  const handleStatusChange = async (newStatus: 'ACTIVE' | 'CLOSED') => {
+    if (!job) return
+
+    setLoadingAction(`status-${job.id}`)
+
+    try {
+      const res = await fetch(`/api/company/jobs/${job.slug}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to update job status')
+        return
+      }
+
+      toast.success(data.message)
+      await fetchJobDetails()
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong')
+    } finally {
+      setLoadingAction(null)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!job) return
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this job? This action cannot be undone.'
+    )
+    if (!confirmed) return
+
+    setLoadingAction(`delete-${job.id}`)
+
+    try {
+      const res = await fetch(`/api/company/jobs/${job.slug}`, {
+        method: 'DELETE'
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to delete job')
+        return
+      }
+
+      if (data.action === 'closed') {
+        toast.warning(data.message)
+        await fetchJobDetails()
+      } else {
+        toast.success(data.message)
+        router.push('/company/jobs')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Something went wrong')
+    } finally {
+      setLoadingAction(null)
+    }
+  }
 
   const applicationStats = useMemo(() => {
     if (!job?.applications) return {}
@@ -188,6 +254,7 @@ const JobDetails = () => {
         <Button
           variant="outline"
           onClick={() => router.push(`/company/jobs/edit/${job.slug}`)}
+          disabled={!!loadingAction}
           className='flex items-center justify-center gap-1 text-success border-success '
 
         >
@@ -198,26 +265,60 @@ const JobDetails = () => {
         {job.status === 'ACTIVE' && (
           <Button variant="outline"
             className='flex items-center justify-center gap-1 border-red-600 text-red-500'
+            onClick={() => handleStatusChange('CLOSED')}
+            disabled={loadingAction === `status-${job.id}`}
           >
-            <XCircle className="h-4 w-4 mr-1" />
-            Close Job
+            {loadingAction === `status-${job.id}` ? (
+              <span className='flex justify-center items-center gap-1'>
+                <Spinner className="h-4 w-4 mr-1" />
+                Closing...
+              </span>
+            ) : (
+              <span className='flex items-center justify-center gap-1'>
+                <XCircle className="h-4 w-4 mr-1" />
+                Close Job
+              </span>
+            )}
+
           </Button>
         )}
         {job.status === 'CLOSED' && (
           <Button
             variant="primary"
             className='flex items-center justify-center gap-1'
+            onClick={() => handleStatusChange('ACTIVE')}
+            disabled={loadingAction === `status-${job.id}`}
           >
-            <RefreshCcwDot className="h-4 w-4 mr-1" />
-            Reopen
+            {loadingAction === `status-${job.id}` ? (
+              <span className='flex justify-center items-center gap-1'>
+                <Spinner className="h-4 w-4 mr-1" />
+                Reopening...
+              </span>
+            ) : (
+              <span className='flex items-center justify-center gap-1'>
+                <RefreshCcwDot className="h-4 w-4 mr-1" />
+                Reopen
+              </span>
+            )}
           </Button>
         )}
 
         <Button variant="danger"
           className='flex items-center justify-center gap-1'
+          onClick={handleDelete}
+          disabled={loadingAction === `delete-${job.id}`}
         >
-          <Trash2 className="h-4 w-4 mr-1" />
-          Delete
+          {loadingAction === `delete-${job.id}` ? (
+            <span className='flex justify-center items-center gap-1'>
+              <Spinner className="h-4 w-4 mr-1" />
+              Deleting...
+            </span>
+          ) : (
+            <span className='flex items-center justify-center gap-1'>
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete
+            </span>
+          )}
         </Button>
       </div>
     </div >

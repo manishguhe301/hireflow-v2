@@ -82,7 +82,7 @@ export async function PATCH(
     });
   } catch (error) {
     console.log(error);
-    NextResponse.json(
+    return NextResponse.json(
       {
         error: 'Internal Server Error',
       },
