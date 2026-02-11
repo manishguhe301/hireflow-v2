@@ -43,7 +43,7 @@ enum Role {
 model Profile {
   id                   String   @id @default(auto()) @map("_id") @db.ObjectId
   userId               String   @unique @db.ObjectId
-  photo                String?
+  avatar               String?
   phone                String?
   country              String?
   city                 String?
@@ -55,8 +55,7 @@ model Profile {
   currentEmployment    String?
   
   // Resume
-  resumeUrl            String?
-  resumeName           String?
+  resumeUrl            String
   
   // Skills
   skills               String[]
