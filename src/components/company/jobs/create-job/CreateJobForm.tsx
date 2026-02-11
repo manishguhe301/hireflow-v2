@@ -397,147 +397,130 @@ const CreateJobForm = () => {
             disabled={isAnyActionInProgress}
             steps={jobFormSteps}
           />
+        </div>
+        <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+          {currentStep === 0 &&
+            <Step1BasicJobDetails
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 1 &&
+            <Step2JobRequirements
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 2 &&
+            <Step3JobLocation
+              register={register}
+              errors={errors}
+              watch={watch}
+            />
+          }
+          {
+            currentStep === 3 &&
+            <Step4JobSalary
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 4 &&
+            <Step5JobReview
+              setCurrentStep={setCurrentStep}
+              watch={watch}
+            />
+          }
+        </form>
 
-          <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 &&
-              <Step1BasicJobDetails
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 1 &&
-              <Step2JobRequirements
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 2 &&
-              <Step3JobLocation
-                register={register}
-                errors={errors}
-                watch={watch}
-              />
-            }
-            {
-              currentStep === 3 &&
-              <Step4JobSalary
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 4 &&
-              <Step5JobReview
-                setCurrentStep={setCurrentStep}
-                watch={watch}
-              />
-            }
-          </form>
-
-          <div className={clsx(
-            "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
-            (!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? '' : 'justify-end!'
-          )}>
-            {(!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? <Button
-              type="button"
-              variant="ghost"
-              onClick={handleDraftSave}
-              disabled={isAnyActionInProgress}
-              className="max-md:w-full"
-            >
-              {isSavingDraft ?
-                <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" />
-                  Saving...
-                </span>
-                : 'Save as Draft'}
-            </Button> : null
-            }
-            <div className={clsx("flex gap-3 items-center max-md:flex-col max-md:w-full",)}>
-              {currentStep > 0 && (
+        <div className={clsx(
+          "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
+          (!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? '' : 'justify-end!'
+        )}>
+          {(!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? <Button
+            type="button"
+            variant="ghost"
+            onClick={handleDraftSave}
+            disabled={isAnyActionInProgress}
+            className="max-md:w-full"
+          >
+            {isSavingDraft ?
+              <span className="flex items-center gap-2">
+                <Spinner className="h-4 w-4" />
+                Saving...
+              </span>
+              : 'Save as Draft'}
+          </Button> : null
+          }
+          <div className={clsx("flex gap-3 items-center max-md:flex-col max-md:w-full",)}>
+            {currentStep > 0 && (
+              <Button
+                onClick={handlePrev}
+                variant="outline"
+                disabled={isAnyActionInProgress}
+                className="max-md:w-1/2"
+              >
+                Previous
+              </Button>
+            )}
+            {currentStep < 4 ? (
+              <>
                 <Button
-                  onClick={handlePrev}
-                  variant="outline"
                   disabled={isAnyActionInProgress}
+                  onClick={handleNext}
                   className="max-md:w-1/2"
                 >
-                  Previous
+                  Next
                 </Button>
-              )}
-              {currentStep < 4 ? (
-                <>
+
+                {isEditMode && jobStatus === 'ACTIVE' && (
                   <Button
                     disabled={isAnyActionInProgress}
-                    onClick={handleNext}
+                    onClick={handleSubmit(handleFormSubmit(false))}
+                    variant="primary"
                     className="max-md:w-1/2"
                   >
-                    Next
+                    Save Changes
                   </Button>
+                )}
 
-                  {isEditMode && jobStatus === 'ACTIVE' && (
+                {isEditMode && jobStatus === 'CLOSED' && (
+                  <Button
+                    disabled={isAnyActionInProgress}
+                    onClick={handleSubmit(handleFormSubmit(false))}
+                    variant="primary"
+                    className="max-md:w-1/2"
+                  >
+                    Reopen Job
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                {isEditMode && jobStatus === 'DRAFT' ? (
+                  <>
                     <Button
                       disabled={isAnyActionInProgress}
-                      onClick={handleSubmit(handleFormSubmit(false))}
-                      variant="primary"
+                      onClick={handleSubmit(handleFormSubmit(true))}
+                      variant="outline"
                       className="max-md:w-1/2"
                     >
-                      Save Changes
+                      {isSavingDraft ? (
+                        <span className="flex items-center gap-2">
+                          <Spinner className="h-4 w-4" />
+                          Saving...
+                        </span>
+                      ) : (
+                        'Update Draft'
+                      )}
                     </Button>
-                  )}
 
-                  {isEditMode && jobStatus === 'CLOSED' && (
-                    <Button
-                      disabled={isAnyActionInProgress}
-                      onClick={handleSubmit(handleFormSubmit(false))}
-                      variant="primary"
-                      className="max-md:w-1/2"
-                    >
-                      Reopen Job
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  {isEditMode && jobStatus === 'DRAFT' ? (
-                    <>
-                      <Button
-                        disabled={isAnyActionInProgress}
-                        onClick={handleSubmit(handleFormSubmit(true))}
-                        variant="outline"
-                        className="max-md:w-1/2"
-                      >
-                        {isSavingDraft ? (
-                          <span className="flex items-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Saving...
-                          </span>
-                        ) : (
-                          'Update Draft'
-                        )}
-                      </Button>
-
-                      <Button
-                        disabled={isAnyActionInProgress}
-                        onClick={handleSubmit(handleFormSubmit(false))}
-                        variant="primary"
-                        className="max-md:w-1/2"
-                      >
-                        {isSubmitting ? (
-                          <span className="flex items-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Publishing...
-                          </span>
-                        ) : (
-                          'Publish Job'
-                        )}
-                      </Button>
-                    </>
-                  ) : (
                     <Button
                       disabled={isAnyActionInProgress}
                       onClick={handleSubmit(handleFormSubmit(false))}
@@ -547,21 +530,37 @@ const CreateJobForm = () => {
                       {isSubmitting ? (
                         <span className="flex items-center gap-2">
                           <Spinner className="h-4 w-4" />
-                          {isEditMode ? 'Saving...' : 'Publishing...'}
+                          Publishing...
                         </span>
                       ) : (
-                        isEditMode
-                          ? jobStatus === 'CLOSED'
-                            ? 'Reopen Job'
-                            : 'Save Changes'
-                          : 'Publish Job'
+                        'Publish Job'
                       )}
                     </Button>
-                  )}
-                </>
-              )}
+                  </>
+                ) : (
+                  <Button
+                    disabled={isAnyActionInProgress}
+                    onClick={handleSubmit(handleFormSubmit(false))}
+                    variant="primary"
+                    className="max-md:w-1/2"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <Spinner className="h-4 w-4" />
+                        {isEditMode ? 'Saving...' : 'Publishing...'}
+                      </span>
+                    ) : (
+                      isEditMode
+                        ? jobStatus === 'CLOSED'
+                          ? 'Reopen Job'
+                          : 'Save Changes'
+                        : 'Publish Job'
+                    )}
+                  </Button>
+                )}
+              </>
+            )}
 
-            </div>
           </div>
         </div>
       </div>
