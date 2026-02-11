@@ -45,8 +45,9 @@ model Profile {
   userId               String   @unique @db.ObjectId
   photo                String?
   phone                String?
-  location             String?
-  preferredWorkMode    String[]
+  country              String?
+  city                 String?
+  preferredWorkMode    WorkMode[]
   willingToRelocate    Boolean  @default(false)
   professionalTitle    String?
   bio                  String?
@@ -60,17 +61,14 @@ model Profile {
   // Skills
   skills               String[]
   
-  // Work Experience (JSON array)
-  // [{company, title, startDate, endDate, description, current}]
-  workExperience       Json?
+  // Work Experience 
+  workExperience       WorkExperience[]
   
-  // Education (JSON array)
-  // [{institution, degree, field, startYear, endYear, grade, current}]
-  education            Json?
+  // Education 
+  education            Education[]
   
-  // Certifications (JSON array)
-  // [{name, organization, issueDate, expiryDate, credentialId, credentialUrl}]
-  certifications       Json?
+  // Certifications 
+  certifications       Certification[]
   
   // Links
   portfolioWebsite     String?
@@ -93,6 +91,67 @@ model Profile {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model WorkExperience {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  profileId     String   @db.ObjectId
+
+  company       String
+  title         String
+  location      String?
+  workMode      WorkMode
+  startDate     DateTime
+  endDate       DateTime?
+  description   String?
+  isCurrent     Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model Education {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  profileId     String   @db.ObjectId
+
+  institution   String
+  degree        String
+  fieldOfStudy  String?
+  startYear     Int
+  endYear       Int?
+  grade         String?
+  isCurrent     Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model Certification {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  profileId       String   @db.ObjectId
+
+  name            String
+  organization    String
+  issueDate       DateTime?
+  expiryDate      DateTime?
+  credentialId    String?
+  credentialUrl   String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
 
 // ==================== COMPANY MODEL ====================
 model Company {
