@@ -29,6 +29,8 @@ export type JobSeekerFormInputs = {
   country: string
   countryPhoneCode: string
   city: string
+  contactEmail: string
+  name: string
 
   preferredWorkMode: WorkMode
   willingToRelocate: boolean
@@ -59,7 +61,7 @@ export type JobSeekerFormInputs = {
 
 
 const STEP_FIELDS: Record<number, (keyof JobSeekerFormInputs)[]> = {
-  0: ['phone', 'country', 'countryPhoneCode', 'city'],
+  0: ['phone', 'country', 'countryPhoneCode', 'contactEmail', 'name'],
   1: ['preferredWorkMode', 'willingToRelocate'],
   2: ['workExperience'],
   3: ['education'],
@@ -116,6 +118,8 @@ const ProfileWizard = () => {
       country: '',
       city: '',
       countryPhoneCode: '',
+      contactEmail: session?.user.email || '',
+      name: '',
 
       // STEP 2 – Professional Info
       preferredWorkMode: WorkMode.REMOTE,
@@ -228,6 +232,7 @@ const ProfileWizard = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              selectedCountry={selectedCountry}
             />
           }
           {currentStep === 1 &&
