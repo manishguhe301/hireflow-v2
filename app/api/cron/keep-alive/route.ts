@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await supabaseServer.storage
       .from('company-logos')
-      .list('', { limit: 1 });
+      .list('', { limit: 1, offset: 0 });
 
     if (error) {
       console.error('❌ Supabase ping failed:', error);
