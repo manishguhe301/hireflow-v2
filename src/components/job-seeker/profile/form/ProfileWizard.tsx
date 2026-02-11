@@ -231,28 +231,68 @@ const ProfileWizard = () => {
               />
             }
             {currentStep === 1 &&
-              <Step2Professional />
+              <Step2Professional
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 2 &&
-              <Step3Experience />
+              <Step3Experience
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 3 &&
-              <Step4Education />
+              <Step4Education
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 4 &&
-              <Step5Skills />
+              <Step5Skills
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 5 &&
-              <Step6Resume />
+              <Step6Resume
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 6 &&
-              <Step7Certifications />
+              <Step7Certifications
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 7 &&
-              <Step8AdditionalInfo />
+              <Step8AdditionalInfo
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 8 &&
-              <Step9Review />
+              <Step9Review
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
           </form>
 
