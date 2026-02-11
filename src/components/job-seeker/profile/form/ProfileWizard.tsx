@@ -16,6 +16,7 @@ export type JobSeekerFormInputs = {
   avatar: string
   phone: string
   country: string
+  countryPhoneCode: string
   city: string
 
   preferredWorkMode: WorkMode
@@ -26,7 +27,6 @@ export type JobSeekerFormInputs = {
   currentEmployment: string
 
   resume: FileList
-  resumeName: string
 
   skills: string[]
   workExperience: WorkExperience[]
@@ -48,28 +48,14 @@ export type JobSeekerFormInputs = {
 
 
 const STEP_FIELDS: Record<number, (keyof JobSeekerFormInputs)[]> = {
-  0: [],
-  1: [
-    'preferredWorkMode',
-    'willingToRelocate',
-  ],
-  2: [
-    'workExperience',
-  ],
-  3: [
-    'education',
-  ],
-  4: [
-    'skills',
-  ],
-  5: [
-    'resume',
-  ],
+  0: ['phone', 'country', 'countryPhoneCode', 'city'],
+  1: ['preferredWorkMode', 'willingToRelocate'],
+  2: ['workExperience'],
+  3: ['education'],
+  4: ['skills'],
+  5: ['resume'],
   6: [],
-  7: [
-    'jobCategories',
-    'preferredLocations',
-  ]
+  7: ['jobCategories', 'preferredLocations'],
 }
 
 
@@ -115,16 +101,17 @@ const ProfileWizard = () => {
       // STEP 1 – Basic Info
       userId: session?.user.id || '',
       avatar: '', // Optional
-      phone: '', //Optional
-      country: '', //optional
-      city: '', //optional
+      phone: '',
+      country: '',
+      city: '',
+      countryPhoneCode: '',
 
       // STEP 2 – Professional Info
       preferredWorkMode: WorkMode.REMOTE,
       willingToRelocate: false,
       professionalTitle: '', //optional
       bio: '', //optional;
-      yearsOfExperience: 0, //optional
+      yearsOfExperience: undefined, //optional
       currentEmployment: '', //optional
 
       // STEP 3 – Experience
@@ -137,7 +124,7 @@ const ProfileWizard = () => {
       skills: [],
 
       // STEP 6 – Resume
-      resume: undefined as unknown as FileList,
+      // resume: undefined as unknown as FileList,
 
       //step 7
       certifications: [],
@@ -150,8 +137,8 @@ const ProfileWizard = () => {
       otherLinks: [], //optional
       jobCategories: [],
       preferredLocations: [],
-      expectedSalaryMin: 0, //optional
-      expectedSalaryMax: 0, //optional
+      expectedSalaryMin: undefined, //optional
+      expectedSalaryMax: undefined, //optional
       noticePeriod: '', //optional
     }
 
@@ -185,7 +172,7 @@ const ProfileWizard = () => {
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep]
 
-    if (!fields) {
+    if (!fields || fields.length === 0) {
       setCurrentStep((prev) => prev + 1)
       return
     }
