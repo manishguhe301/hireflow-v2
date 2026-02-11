@@ -83,11 +83,11 @@ const Step1BasicFormInfo = ({
             toolTipContent=''
           />
           <FormInput
-            label="Email"
+            label="Contact Email"
             register={register('contactEmail', { required: 'Email is required' })}
             placeholder="for example, 0a8wF@example.com"
             error={errors.contactEmail}
-            disabled
+            // disabled
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
