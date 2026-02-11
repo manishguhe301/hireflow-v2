@@ -23,7 +23,7 @@ function NoProfileUI() {
         You need to create your profile before applying to jobs and getting discovered by companies.
       </p>
 
-      <Link href="/dashboard/profile/setup">
+      <Link href="/dashboard/profile/form">
         <Button className="mt-6 w-full bg-warning text-warning-foreground">
           Create Profile
         </Button>
@@ -54,7 +54,7 @@ function IncompleteProfileUI({ completion }: { completion: number }) {
         />
       </div>
 
-      <Link href="/dashboard/profile/edit">
+      <Link href="/dashboard/profile/form">
         <Button className="mt-6 w-full">
           Complete Profile
         </Button>
