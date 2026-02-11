@@ -220,143 +220,143 @@ const ProfileWizard = () => {
             disabled={isSubmitting}
             steps={steps}
           />
+        </div>
+        <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+          {currentStep === 0 &&
+            <Step1BasicFormInfo
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 1 &&
+            <Step2Professional
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 2 &&
+            <Step3Experience
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 3 &&
+            <Step4Education
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 4 &&
+            <Step5Skills
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 5 &&
+            <Step6Resume
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 6 &&
+            <Step7Certifications
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 7 &&
+            <Step8AdditionalInfo
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+          {currentStep === 8 &&
+            <Step9Review
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+            />
+          }
+        </form>
 
-          <form >
-            {currentStep === 0 &&
-              <Step1BasicFormInfo
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 1 &&
-              <Step2Professional
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 2 &&
-              <Step3Experience
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 3 &&
-              <Step4Education
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 4 &&
-              <Step5Skills
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 5 &&
-              <Step6Resume
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 6 &&
-              <Step7Certifications
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 7 &&
-              <Step8AdditionalInfo
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 8 &&
-              <Step9Review
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
-            }
-          </form>
 
-          <div
-            className={clsx(
-              "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
-              currentStep === 0 && "justify-end"
-            )}
-          >
-            {currentStep > 0 && (
+        <div
+          className={clsx(
+            "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
+            currentStep === 0 && "justify-end"
+          )}
+        >
+          {currentStep > 0 && (
+            <Button
+              type="button"
+              onClick={handlePrev}
+              variant="outline"
+              disabled={isSubmitting}
+              className="max-md:w-full"
+            >
+              Previous
+            </Button>
+          )}
+
+          <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+            {currentStep !== 8 && < Button
+              type="button"
+              disabled={isSubmitting}
+              // onClick={handleSubmit(handleSaveDraft)}  <-- your draft handler
+              variant="outline"
+              className="max-md:w-full"
+            >
+              {isSubmitting ? "Saving..." : "Save Changes"}
+            </Button>}
+
+            {currentStep < 8 && (
               <Button
                 type="button"
-                onClick={handlePrev}
-                variant="outline"
                 disabled={isSubmitting}
+                onClick={handleNext}
                 className="max-md:w-full"
               >
-                Previous
+                Next
               </Button>
             )}
 
-            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
-              {currentStep !== 8 && < Button
+            {currentStep === 8 && (
+              <Button
                 type="button"
                 disabled={isSubmitting}
-                // onClick={handleSubmit(handleSaveDraft)}  <-- your draft handler
-                variant="outline"
+                // onClick={handleSubmit(handleFinalSubmit)}
+                variant="primary"
                 className="max-md:w-full"
               >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </Button>}
-
-              {currentStep < 8 && (
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={handleNext}
-                  className="max-md:w-full"
-                >
-                  Next
-                </Button>
-              )}
-
-              {currentStep === 8 && (
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  // onClick={handleSubmit(handleFinalSubmit)}
-                  variant="primary"
-                  className="max-md:w-full"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <Spinner className="h-4 w-4" />
-                      {isEditMode ? "Updating..." : "Publishing..."}
-                    </span>
-                  ) : isEditMode ? (
-                    "Update Profile"
-                  ) : (
-                    "Publish Profile"
-                  )}
-                </Button>
-              )}
-            </div>
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <Spinner className="h-4 w-4" />
+                    {isEditMode ? "Updating..." : "Publishing..."}
+                  </span>
+                ) : isEditMode ? (
+                  "Update Profile"
+                ) : (
+                  "Publish Profile"
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
