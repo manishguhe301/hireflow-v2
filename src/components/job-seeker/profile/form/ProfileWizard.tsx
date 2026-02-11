@@ -19,6 +19,8 @@ import Step6Resume from './Step6Resume'
 import Step7Certifications from './Step7Certifications'
 import Step8AdditionalInfo from './Step8AdditionalInfo'
 import Step9Review from './Step9Review'
+import clsx from 'clsx'
+import { Button } from '@/src/components/ui/Button'
 
 export type JobSeekerFormInputs = {
   userId: string
@@ -154,7 +156,8 @@ const ProfileWizard = () => {
   })
   const router = useRouter()
   const dispatch = useDispatch()
-  const mode = jobSeekerProfile ? 'edit' : 'create'
+  const isEditMode = jobSeekerProfile ? true : false
+  console.log(isEditMode);
   const selectedCountry = watch('country')
 
   if (isLoading) {
@@ -219,7 +222,6 @@ const ProfileWizard = () => {
           />
 
           <form >
-
             {currentStep === 0 &&
               <Step1BasicFormInfo />
             }
@@ -248,9 +250,72 @@ const ProfileWizard = () => {
               <Step9Review />
             }
           </form>
+
+          <div
+            className={clsx(
+              "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
+              currentStep === 0 && "justify-end"
+            )}
+          >
+            {currentStep > 0 && (
+              <Button
+                type="button"
+                onClick={handlePrev}
+                variant="outline"
+                disabled={isSubmitting}
+                className="max-md:w-full"
+              >
+                Previous
+              </Button>
+            )}
+
+            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+              {currentStep !== 8 && < Button
+                type="button"
+                disabled={isSubmitting}
+                // onClick={handleSubmit(handleSaveDraft)}  <-- your draft handler
+                variant="outline"
+                className="max-md:w-full"
+              >
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>}
+
+              {currentStep < 8 && (
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleNext}
+                  className="max-md:w-full"
+                >
+                  Next
+                </Button>
+              )}
+
+              {currentStep === 8 && (
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  // onClick={handleSubmit(handleFinalSubmit)}
+                  variant="primary"
+                  className="max-md:w-full"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <Spinner className="h-4 w-4" />
+                      {isEditMode ? "Updating..." : "Publishing..."}
+                    </span>
+                  ) : isEditMode ? (
+                    "Update Profile"
+                  ) : (
+                    "Publish Profile"
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
