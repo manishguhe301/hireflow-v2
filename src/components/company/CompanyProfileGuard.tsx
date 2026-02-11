@@ -6,7 +6,7 @@ import { useCompany } from '@/src/store/hooks/useCompany'
 import { Button } from '../ui/Button'
 import { Company } from '@prisma/client'
 
-function StateWrapper({ children }: { children: React.ReactNode }) {
+export function StateWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl border border-border/40 bg-card p-8 text-center shadow-sm">
