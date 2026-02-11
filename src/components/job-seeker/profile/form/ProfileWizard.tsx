@@ -223,7 +223,12 @@ const ProfileWizard = () => {
 
           <form >
             {currentStep === 0 &&
-              <Step1BasicFormInfo />
+              <Step1BasicFormInfo
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+              />
             }
             {currentStep === 1 &&
               <Step2Professional />
