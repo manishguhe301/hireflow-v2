@@ -1,8 +1,9 @@
+import DashboardProfileGuard from '@/src/components/job-seeker/DashboardProfileGuard'
 import React from 'react'
 
 const ProfilePage = () => {
   return (
-    <div>ProfilePage</div>
+    <DashboardProfileGuard>ProfilePage</DashboardProfileGuard>
   )
 }
 
