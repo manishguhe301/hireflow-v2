@@ -76,7 +76,7 @@ export function FileUpload<T extends FieldValues>({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">
+      <label className="text-sm text-muted-foreground">
         {label}
         {required && <span className="ml-1 text-destructive">*</span>}
       </label>

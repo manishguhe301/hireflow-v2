@@ -47,7 +47,10 @@ model Profile {
   phone                String
   country              String
   countryPhoneCode     String
-  city                 String
+  city                 String?
+  contactEmail         String
+  name                 String
+
   preferredWorkMode    WorkMode[]
   willingToRelocate    Boolean  @default(false)
   professionalTitle    String?
