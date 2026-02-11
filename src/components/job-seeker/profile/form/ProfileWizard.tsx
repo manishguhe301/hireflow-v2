@@ -10,6 +10,15 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
+import Step1BasicFormInfo from './Step1BasicFormInfo'
+import Step2Professional from './Step2Professional'
+import Step3Experience from './Step3Experience'
+import Step4Education from './Step4Education'
+import Step5Skills from './Step5Skills'
+import Step6Resume from './Step6Resume'
+import Step7Certifications from './Step7Certifications'
+import Step8AdditionalInfo from './Step8AdditionalInfo'
+import Step9Review from './Step9Review'
 
 export type JobSeekerFormInputs = {
   userId: string
@@ -208,6 +217,37 @@ const ProfileWizard = () => {
             disabled={isSubmitting}
             steps={steps}
           />
+
+          <form >
+
+            {currentStep === 0 &&
+              <Step1BasicFormInfo />
+            }
+            {currentStep === 1 &&
+              <Step2Professional />
+            }
+            {currentStep === 2 &&
+              <Step3Experience />
+            }
+            {currentStep === 3 &&
+              <Step4Education />
+            }
+            {currentStep === 4 &&
+              <Step5Skills />
+            }
+            {currentStep === 5 &&
+              <Step6Resume />
+            }
+            {currentStep === 6 &&
+              <Step7Certifications />
+            }
+            {currentStep === 7 &&
+              <Step8AdditionalInfo />
+            }
+            {currentStep === 8 &&
+              <Step9Review />
+            }
+          </form>
         </div>
       </div>
     </div>
