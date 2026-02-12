@@ -22,6 +22,18 @@ import Step9Review from './Step9Review'
 import clsx from 'clsx'
 import { Button } from '@/src/components/ui/Button'
 
+type WorkExperienceInput = {
+  company: string
+  title: string
+  location?: string | null
+  workMode: WorkMode
+  startDate: Date
+  endDate?: Date | null
+  description?: string | null
+  isCurrent: boolean
+}
+
+
 export type JobSeekerFormInputs = {
   userId: string
   avatar: string
@@ -42,7 +54,7 @@ export type JobSeekerFormInputs = {
   resume: FileList
 
   skills: string[]
-  workExperience: WorkExperience[]
+  workExperience: WorkExperienceInput[]
   education: Education[]
   certifications: Certification[]
 

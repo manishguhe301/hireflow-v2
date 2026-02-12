@@ -111,14 +111,11 @@ const Step3Experience = ({
 
     const newExperience = {
       ...data,
-      id: editingIndex !== null ? workExperiences[editingIndex].id : `temp-${Date.now()}`,
-      profileId: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
       location: data.location || null,
       description: data.description || null,
-      endDate: data.isCurrent ? null : (data.endDate || null),
+      endDate: data.isCurrent ? null : data.endDate || null,
     }
+
 
     if (editingIndex !== null) {
       const updated = [...workExperiences]
@@ -140,7 +137,7 @@ const Step3Experience = ({
     <div className="space-y-8">
       <div className="flex justify-between items-center gap-4 max-sm:flex-col max-sm:items-start max-sm:w-screen">
         <StepHeader
-          heading="Your Work Experience"
+          heading="Your Work Experience (Optional)"
           description="Add your professional work experience to help employers understand your background."
         />
 
