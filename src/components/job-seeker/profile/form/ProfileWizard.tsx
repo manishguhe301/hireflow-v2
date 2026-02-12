@@ -98,7 +98,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(2)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {
@@ -234,7 +234,7 @@ const ProfileWizard = () => {
             steps={steps}
           />
         </div>
-        <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+        <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">
           {currentStep === 0 &&
             <Step1BasicFormInfo
               register={register}
@@ -308,7 +308,7 @@ const ProfileWizard = () => {
               setValue={setValue}
             />
           }
-        </form>
+        </div>
 
 
         <div

@@ -124,10 +124,8 @@ const Step3Experience = ({
       const updated = [...workExperiences]
       updated[editingIndex] = newExperience
       setValue('workExperience', updated, { shouldValidate: true })
-      toast.success('Work experience updated')
     } else {
       setValue('workExperience', [...workExperiences, newExperience], { shouldValidate: true })
-      toast.success('Work experience added')
     }
 
     handleCloseModal()
@@ -136,12 +134,11 @@ const Step3Experience = ({
   const handleDelete = (index: number) => {
     const updated = workExperiences.filter((_, i) => i !== index)
     setValue('workExperience', updated, { shouldValidate: true })
-    toast.success('Work experience deleted')
   }
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center gap-4 max-sm:flex-col">
+      <div className="flex justify-between items-center gap-4 max-sm:flex-col max-sm:items-start max-sm:w-screen">
         <StepHeader
           heading="Your Work Experience"
           description="Add your professional work experience to help employers understand your background."
@@ -168,13 +165,13 @@ const Step3Experience = ({
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 max-sm:w-screen">
           {workExperiences.map((exp, index) => (
             <div
               key={index}
               className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60 max-sm:w-full"
             >
-              {/* <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold break-words">{exp.title}</h3>
                   <p className="mt-1 text-sm text-muted-foreground break-words">
@@ -219,7 +216,7 @@ const Step3Experience = ({
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
-              </div> */}
+              </div>
             </div>
           ))}
         </div>
