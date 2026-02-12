@@ -183,7 +183,7 @@ export const currentEmploymentStatuses = [
   { label: 'Student', value: CurrentEmployment.STUDENT },
 ];
 
-export const yearsOfExperiences = [
+export const yearsOfExperiences: { label: string; value: ExperienceLevel }[] = [
   { label: '0 - 1 years (Entry Level)', value: ExperienceLevel.ENTRY },
   { label: '1 - 3 years (Mid Level)', value: ExperienceLevel.MID },
   { label: '3 - 5 years (Senior Level)', value: ExperienceLevel.SENIOR },
