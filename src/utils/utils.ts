@@ -1,4 +1,4 @@
-import { ExperienceLevel } from '@prisma/client';
+import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -158,9 +158,9 @@ export const jobSkills: SelectOption[] = [
 ];
 
 export const workModes = [
-  { label: 'Remote', value: 'REMOTE' },
-  { label: 'Hybrid', value: 'HYBRID' },
-  { label: 'Onsite', value: 'ON_SITE' },
+  { label: 'Remote', value: WorkMode.REMOTE },
+  { label: 'Hybrid', value: WorkMode.HYBRID },
+  { label: 'Onsite', value: WorkMode.ON_SITE },
 ];
 
 export const currencyOptions = [
@@ -172,4 +172,20 @@ export const currencyOptions = [
   { label: 'Canadian Dollar (C$)', value: 'CAD' },
   { label: 'Singapore Dollar (S$)', value: 'SGD' },
   { label: 'UAE Dirham (د.إ)', value: 'AED' },
+];
+
+export const currentEmploymentStatuses = [
+  { label: 'Employed', value: CurrentEmployment.EMPLOYED },
+  { label: 'Unemployed', value: CurrentEmployment.UNEMPLOYED },
+  { label: 'Self-employed', value: CurrentEmployment.SELF_EMPLOYED },
+  { label: 'Freelancer', value: CurrentEmployment.FREELANCER },
+  { label: 'Retired', value: CurrentEmployment.RETIRED },
+  { label: 'Student', value: CurrentEmployment.STUDENT },
+];
+
+export const yearsOfExperiences = [
+  { label: '0 - 1 years (Entry Level)', value: ExperienceLevel.ENTRY },
+  { label: '1 - 3 years (Mid Level)', value: ExperienceLevel.MID },
+  { label: '3 - 5 years (Senior Level)', value: ExperienceLevel.SENIOR },
+  { label: '5+ years (Lead Level)', value: ExperienceLevel.LEAD },
 ];

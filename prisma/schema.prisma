@@ -55,8 +55,8 @@ model Profile {
   willingToRelocate    Boolean  @default(false)
   professionalTitle    String?
   bio                  String?
-  yearsOfExperience    Int?
-  currentEmployment    String?
+  yearsOfExperience    ExperienceLevel?
+  currentEmployment    CurrentEmployment?
   
   // Resume
   resumeUrl            String
@@ -93,6 +93,15 @@ model Profile {
   updatedAt            DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CurrentEmployment{
+  EMPLOYED
+  SELF_EMPLOYED
+  UNEMPLOYED
+  FREELANCER
+  RETIRED
+  STUDENT
 }
 
 model WorkExperience {
