@@ -4,10 +4,10 @@ import { StateWrapper } from '@/src/components/company/CompanyProfileGuard'
 import { Spinner } from '@/src/components/elements/Loader'
 import FormHeader from '@/src/components/ui/FormHeader'
 import { useProfile } from '@/src/store/hooks/useProfile'
-import { Certification, Education, WorkExperience, WorkMode } from '@prisma/client'
+import { Certification, CurrentEmployment, Education, ExperienceLevel, WorkExperience, WorkMode } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import Step1BasicFormInfo from './Step1BasicFormInfo'
@@ -32,12 +32,12 @@ export type JobSeekerFormInputs = {
   contactEmail: string
   name: string
 
-  preferredWorkMode: WorkMode
+  preferredWorkMode: WorkMode[]
   willingToRelocate: boolean
   professionalTitle: string
   bio: string
-  yearsOfExperience: number
-  currentEmployment: string
+  yearsOfExperience?: ExperienceLevel | null
+  currentEmployment?: CurrentEmployment | null
 
   resume: FileList
 
@@ -108,7 +108,8 @@ const ProfileWizard = () => {
     watch,
     trigger,
     reset,
-    setValue
+    setValue,
+    getValues
   } = useForm<JobSeekerFormInputs>({
     defaultValues: {
       // STEP 1 – Basic Info
@@ -122,12 +123,12 @@ const ProfileWizard = () => {
       name: session?.user?.name || '',
 
       // STEP 2 – Professional Info
-      preferredWorkMode: WorkMode.REMOTE,
-      willingToRelocate: false,
+      preferredWorkMode: [],
+      willingToRelocate: true,
       professionalTitle: '', //optional
       bio: '', //optional;
-      yearsOfExperience: undefined, //optional
-      currentEmployment: '', //optional
+      yearsOfExperience: null, //optional
+      currentEmployment: null, //optional
 
       // STEP 3 – Experience
       workExperience: [],
@@ -161,8 +162,15 @@ const ProfileWizard = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const isEditMode = jobSeekerProfile ? true : false
-  console.log(isEditMode);
   const selectedCountry = watch('country')
+
+  useEffect(() => {
+    register('preferredWorkMode', {
+      validate: (value) =>
+        value.length > 0 || 'At least one work mode is required',
+    })
+  }, [register])
+
 
   if (isLoading) {
     return (
@@ -197,6 +205,7 @@ const ProfileWizard = () => {
 
     if (isValid) {
       setCurrentStep((prev) => prev + 1)
+      console.log(getValues());
     }
   }
 
