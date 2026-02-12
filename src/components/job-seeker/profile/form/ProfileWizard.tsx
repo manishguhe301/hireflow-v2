@@ -119,7 +119,7 @@ const ProfileWizard = () => {
       city: '',
       countryPhoneCode: '',
       contactEmail: session?.user.email || '',
-      name: '',
+      name: session?.user?.name || '',
 
       // STEP 2 – Professional Info
       preferredWorkMode: WorkMode.REMOTE,

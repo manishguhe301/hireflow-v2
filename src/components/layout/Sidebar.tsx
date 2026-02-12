@@ -77,9 +77,9 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
       )}
     >
       <div className="mb-8 px-2 flex items-center justify-between">
-        <span className="text-lg font-semibold">
+        <Link href="/" className="text-lg font-semibold">
           HireFlow<span className="text-primary">.</span>
-        </span>
+        </Link>
 
         {mobile && (
           <Button
