@@ -5,11 +5,12 @@ import { FieldError } from 'react-hook-form'
 
 type FormDatePickerProps = {
   label: string
-  value?: Date
+  value?: Date | null
   onChange: (date?: Date) => void
   error?: FieldError
   minDate?: Date
   disabled?: boolean
+  maxDate?: Date | null
 }
 
 const FormDatePicker = ({
@@ -19,6 +20,7 @@ const FormDatePicker = ({
   error,
   minDate,
   disabled,
+  maxDate
 }: FormDatePickerProps) => {
   return (
     <div className="space-y-1 w-full">
@@ -30,6 +32,7 @@ const FormDatePicker = ({
         type="date"
         value={value ? value.toISOString().split('T')[0] : ''}
         min={minDate ? minDate.toISOString().split('T')[0] : undefined}
+        max={maxDate ? maxDate.toISOString().split('T')[0] : undefined}
         onChange={(e) =>
           onChange(e.target.value ? new Date(e.target.value) : undefined)
         }
