@@ -25,6 +25,16 @@ const Step6Resume = ({
         heading="Resume"
         description={existingResumeUrl ? 'Update your resume if needed' : 'Upload your resume,'}
       />
+      {!existingResumeUrl && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-600">
+          <p className="font-medium">Important</p>
+          <p className="mt-1">
+            If you navigate to another step and return here, your selected file may
+            appear cleared due to browser security behavior. Please re-check your
+            resume before publishing your profile.
+          </p>
+        </div>
+      )}
 
       <FileUpload<JobSeekerFormInputs>
         label="Resume"
