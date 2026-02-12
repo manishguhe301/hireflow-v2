@@ -22,7 +22,7 @@ import Step9Review from './Step9Review'
 import clsx from 'clsx'
 import { Button } from '@/src/components/ui/Button'
 
-type WorkExperienceInput = {
+export type WorkExperienceInput = {
   company: string
   title: string
   location?: string | null
@@ -31,6 +31,17 @@ type WorkExperienceInput = {
   endDate?: Date | null
   description?: string | null
   isCurrent: boolean
+}
+
+export type EducationInput= {
+  institution: string
+  degree: string
+  fieldOfStudy: string | null
+  startYear: number
+  endYear: number | null
+  grade: string | null
+  isCurrent: boolean
+  profileId: string
 }
 
 
@@ -55,7 +66,7 @@ export type JobSeekerFormInputs = {
 
   skills: string[]
   workExperience: WorkExperienceInput[]
-  education: Education[]
+  education: EducationInput[]
   certifications: Certification[]
 
   portfolioWebsite: string
@@ -110,7 +121,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(2)
+  const [currentStep, setCurrentStep] = useState(3)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {

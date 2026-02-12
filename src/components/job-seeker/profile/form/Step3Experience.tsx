@@ -216,7 +216,9 @@ const Step3Experience = ({
           ))}
         </div>
       )}
-      <Modal open={isModalOpen} onClose={handleCloseModal} className="max-w-3xl max-sm:max-h-[70%] max-sm:overflow-y-scroll ">
+      <Modal open={isModalOpen} onClose={handleCloseModal}
+        className="max-w-3xl max-sm:max-h-[70%] max-sm:overflow-y-scroll "
+      >
         <h2 className="text-xl font-semibold mb-6">
           {editingIndex !== null ? 'Edit Work Experience' : 'Add Work Experience'}
         </h2>

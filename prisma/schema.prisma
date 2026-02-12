@@ -131,7 +131,7 @@ model Education {
 
   institution   String
   degree        String
-  fieldOfStudy  String?
+  fieldOfStudy  String
   startYear     Int
   endYear       Int?
   grade         String?
