@@ -134,13 +134,12 @@ const Step3Experience = ({
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center gap-4 max-sm:flex-col max-sm:items-start max-sm:w-screen">
-        <StepHeader
-          heading="Your Work Experience (Optional)"
-          description="Add your professional work experience to help employers understand your background."
-        />
-
+    <div className="space-y-8 ">
+      <StepHeader
+        heading="Your Work Experience (Optional)"
+        description="Add your professional work experience to help employers understand your background."
+      />
+      <div className="flex justify-between items-start gap-4 flex-col sm:flex-row sm:items-center">
         <Button
           type="button"
           onClick={() => handleOpenModal()}
@@ -150,7 +149,6 @@ const Step3Experience = ({
           Add Experience
         </Button>
       </div>
-
       {workExperiences.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/60 bg-muted/20 py-16 text-center">
           <Briefcase className="h-12 w-12 text-muted-foreground" />
@@ -162,13 +160,13 @@ const Step3Experience = ({
           </p>
         </div>
       ) : (
-        <div className="space-y-4 max-sm:w-screen">
+        <div className="space-y-4">
           {workExperiences.map((exp, index) => (
             <div
               key={index}
               className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60 max-sm:w-full"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold break-words">{exp.title}</h3>
                   <p className="mt-1 text-sm text-muted-foreground break-words">
@@ -195,7 +193,7 @@ const Step3Experience = ({
                   )}
                 </div>
 
-                <div className="flex gap-2 shrink-0">
+                <div className="flex gap-2 self-start sm:self-auto">
                   <Button
                     type="button"
                     variant="ghost"
@@ -218,7 +216,6 @@ const Step3Experience = ({
           ))}
         </div>
       )}
-
       <Modal open={isModalOpen} onClose={handleCloseModal} className="max-w-3xl max-sm:max-h-[70%] max-sm:overflow-y-scroll ">
         <h2 className="text-xl font-semibold mb-6">
           {editingIndex !== null ? 'Edit Work Experience' : 'Add Work Experience'}
