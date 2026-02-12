@@ -12,11 +12,13 @@ import StepHeader from '@/src/components/ui/StepHeader'
 const Step3JobLocation = ({
   register,
   errors,
-  watch
+  watch,
+  isEditMode
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
+  isEditMode?: boolean
 }) => {
   const { countries, loading } = useCountries()
   const workMode = watch('workMode')
@@ -29,7 +31,7 @@ const Step3JobLocation = ({
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <FormSelect
-          label='Work Mode (by default Remote)'
+          label={isEditMode ? 'Work Mode' : 'Work Mode (by default Remote)'}
           register={register('workMode', { required: 'Work mode is required' })}
           options={
             workModes

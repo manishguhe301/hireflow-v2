@@ -1,5 +1,5 @@
 'use client'
-import { EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client';
+import { EmploymentType, ExperienceLevel, Job, JobStatus, WorkMode } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -147,6 +147,7 @@ const CreateJobForm = () => {
   const slug = params.slug as string | undefined
   const isEditMode = !!slug
   const [jobLoading, setJobLoading] = useState(false)
+  const [job, setJob] = useState<Job | null>(null)
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
 
   const fetchJobDetails = async () => {
@@ -155,6 +156,7 @@ const CreateJobForm = () => {
       const res = await AppSdk.getData(`/api/company/jobs/${slug}`, null)
       const job = res.job
       if (job) {
+        setJob(job)
         reset({
           jobId: job.id,
           title: job.title,
@@ -413,6 +415,7 @@ const CreateJobForm = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              isEditMode={isEditMode}
             />
           }
           {currentStep === 2 &&
@@ -420,6 +423,7 @@ const CreateJobForm = () => {
               register={register}
               errors={errors}
               watch={watch}
+              isEditMode={isEditMode}
             />
           }
           {
@@ -428,6 +432,7 @@ const CreateJobForm = () => {
               register={register}
               errors={errors}
               watch={watch}
+              isEditMode={isEditMode}
               setValue={setValue}
             />
           }

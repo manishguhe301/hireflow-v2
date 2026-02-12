@@ -12,11 +12,13 @@ const Step4JobSalary = ({
   errors,
   watch,
   setValue,
+  isEditMode
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
   setValue: UseFormSetValue<JobFormInputs>
+  isEditMode?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -100,7 +102,7 @@ const Step4JobSalary = ({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
-            label="Number of Openings (By default 1)"
+            label={isEditMode ? "Number of Openings" : "Number of Openings (By default 1)"}
             register={register('numberOfOpenings', {
               required: "Number of openings is required",
               valueAsNumber: true,
