@@ -47,7 +47,6 @@ const Step4Education = ({
       endYear: null,
       grade: null,
       isCurrent: false,
-      profileId: session?.user.id || '',
     },
   })
 
@@ -240,6 +239,7 @@ const Step4Education = ({
               register={eduRegister('startYear', { required: true })}
               error={eduErrors.startYear}
               minLength={2000}
+              maxLength={currentYear}
             />
 
             {!isCurrent && (

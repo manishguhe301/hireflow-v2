@@ -41,7 +41,6 @@ export type EducationInput = {
   endYear: number | null
   grade: string | null
   isCurrent: boolean
-  profileId: string
 }
 
 
@@ -121,7 +120,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(5)
+  const [currentStep, setCurrentStep] = useState(2)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {
