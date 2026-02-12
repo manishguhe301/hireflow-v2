@@ -8,6 +8,8 @@ import { FormSelect } from '../../ui/FormSelect'
 import { companyIndustries, companySizes } from '@/src/utils/utils'
 import StepHeader from '../../ui/StepHeader'
 
+const currentYear = new Date().getFullYear()
+
 const Step1BasicInfo = ({
   register,
   errors,
@@ -44,6 +46,8 @@ const Step1BasicInfo = ({
             placeholder="2010"
             type="number"
             error={errors.foundedYear}
+            minLength={2000}
+            maxLength={currentYear}
           />
         </div>
 

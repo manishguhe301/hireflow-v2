@@ -121,7 +121,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(4)
+  const [currentStep, setCurrentStep] = useState(5)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {
