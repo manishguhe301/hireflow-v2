@@ -296,7 +296,7 @@ const Step3Experience = ({
               type="checkbox"
               id="isCurrent"
               {...expRegister('isCurrent')}
-              className="h-4 w-4 rounded border-border/40 text-primary focus:ring-primary"
+              className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
             />
             <label htmlFor="isCurrent" className="text-sm font-medium">
               I currently work here
