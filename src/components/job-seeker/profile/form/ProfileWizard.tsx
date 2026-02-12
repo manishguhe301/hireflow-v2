@@ -33,7 +33,7 @@ export type WorkExperienceInput = {
   isCurrent: boolean
 }
 
-export type EducationInput= {
+export type EducationInput = {
   institution: string
   degree: string
   fieldOfStudy: string | null
@@ -121,7 +121,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(3)
+  const [currentStep, setCurrentStep] = useState(4)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {
@@ -180,7 +180,6 @@ const ProfileWizard = () => {
       expectedSalaryMax: undefined, //optional
       noticePeriod: '', //optional
     }
-
   })
   const router = useRouter()
   const dispatch = useDispatch()
@@ -193,6 +192,14 @@ const ProfileWizard = () => {
         value.length > 0 || 'At least one work mode is required',
     })
   }, [register])
+
+  useEffect(() => {
+    register('skills', {
+      validate: (value) =>
+        value.length > 0 || 'Please add at least one skill',
+    })
+  }, [register])
+
 
 
   if (isLoading) {
