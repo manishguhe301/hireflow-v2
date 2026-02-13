@@ -23,6 +23,7 @@ import clsx from 'clsx'
 import { Button } from '@/src/components/ui/Button'
 import { toast } from 'sonner'
 import { buildProfileFormData } from '@/src/utils/helper'
+import { setProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
 
 export type WorkExperienceInput = {
   company: string
@@ -196,6 +197,44 @@ const ProfileWizard = () => {
   const selectedCountry = watch('country')
 
   useEffect(() => {
+    if (jobSeekerProfile && isEditMode) {
+      setValue('userId', jobSeekerProfile.userId)
+      //eslint-disable-next-line
+      // setValue('avatar', jobSeekerProfile.avatar as any)
+      setValue('name', jobSeekerProfile.name)
+      setValue('contactEmail', jobSeekerProfile.contactEmail)
+      setValue('countryPhoneCode', jobSeekerProfile.countryPhoneCode)
+      setValue('phone', jobSeekerProfile.phone)
+      setValue('country', jobSeekerProfile.country)
+      setValue('city', jobSeekerProfile.city as string)
+
+      setValue('preferredWorkMode', jobSeekerProfile.preferredWorkMode)
+      setValue('willingToRelocate', jobSeekerProfile.willingToRelocate)
+      setValue('professionalTitle', jobSeekerProfile.professionalTitle as string)
+      setValue('bio', jobSeekerProfile.bio as string)
+      setValue('currentEmployment', jobSeekerProfile.currentEmployment)
+      setValue('yearsOfExperience', jobSeekerProfile.yearsOfExperience)
+
+      setValue('workExperience', jobSeekerProfile.workExperience)
+      setValue('education', jobSeekerProfile.education)
+      setValue('skills', jobSeekerProfile.skills)
+      setValue('certifications', jobSeekerProfile.certifications)
+
+      setValue('portfolioWebsite', jobSeekerProfile.portfolioWebsite as string)
+      setValue('githubUrl', jobSeekerProfile.githubUrl as string)
+      setValue('linkedinUrl', jobSeekerProfile.linkedinUrl as string)
+      setValue('twitterUrl', jobSeekerProfile.twitterUrl as string)
+      setValue('otherLinks', jobSeekerProfile.otherLinks)
+      setValue('jobCategories', jobSeekerProfile.jobCategories)
+      setValue('preferredLocations', jobSeekerProfile.preferredLocations)
+      setValue('expectedSalaryMin', jobSeekerProfile.expectedSalaryMin as number)
+      setValue('expectedSalaryMax', jobSeekerProfile.expectedSalaryMax as number)
+      setValue('noticePeriod', jobSeekerProfile.noticePeriod as string)
+    }
+  }, [jobSeekerProfile, setValue])
+
+
+  useEffect(() => {
     register('preferredWorkMode', {
       validate: (value) =>
         value.length > 0 || 'At least one work mode is required',
@@ -257,7 +296,6 @@ const ProfileWizard = () => {
 
     if (isValid) {
       setCurrentStep((prev) => prev + 1)
-      console.log(getValues());
     }
   }
 
@@ -289,7 +327,12 @@ const ProfileWizard = () => {
         return;
       }
 
-      toast.success('Draft saved successfully');
+      dispatch(setProfile({ profile: result.profile }))
+
+      if (!isEditMode) { toast.success('Draft saved successfully') }else{
+        toast.success('Profile updated successfully')
+      }
+      router.push('/dashboard/profile')
     } catch (err) {
       console.log(err);
       toast.error('Something went wrong');
@@ -342,6 +385,7 @@ const ProfileWizard = () => {
         : 'Profile created successfully';
 
       toast.success(successMessage);
+      dispatch(setProfile({ profile: result.profile }))
       reset();
       setTimeout(() => router.push('/dashboard/profile'), 100);
     } catch (error) {
@@ -357,7 +401,7 @@ const ProfileWizard = () => {
       {jobSeekerProfile && (
         <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
           <p className="text-sm text-primary font-medium">
-            Editing an profile
+            Editing a profile
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             Please review all steps before saving changes to ensure your profile
