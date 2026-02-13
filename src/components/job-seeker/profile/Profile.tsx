@@ -18,9 +18,10 @@ import {
   Award,
   Link2,
   Twitter,
+  ExternalLink,
 } from 'lucide-react'
-import { getLabel } from '@/src/utils/helper'
-import { jobSkills, yearsOfExperiences } from '@/src/utils/utils'
+import { formatSalary, getLabel } from '@/src/utils/helper'
+import { currentEmploymentStatuses, degrees, employmentTypes, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
@@ -127,7 +128,7 @@ const Profile = () => {
             {profile.portfolioWebsite && (
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4" />
-                <Link href={profile.portfolioWebsite} target="_blank" className="underline">
+                <Link href={profile.portfolioWebsite} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300">
                   Portfolio
                 </Link>
               </div>
@@ -136,7 +137,7 @@ const Profile = () => {
             {profile.githubUrl && (
               <div className="flex items-center gap-2">
                 <Github className="h-4 w-4" />
-                <Link href={profile.githubUrl} target="_blank" className="underline">
+                <Link href={profile.githubUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                   GitHub
                 </Link>
               </div>
@@ -145,7 +146,7 @@ const Profile = () => {
             {profile.linkedinUrl && (
               <div className="flex items-center gap-2">
                 <Linkedin className="h-4 w-4" />
-                <Link href={profile.linkedinUrl} target="_blank" className="underline">
+                <Link href={profile.linkedinUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                   LinkedIn
                 </Link>
               </div>
@@ -154,7 +155,7 @@ const Profile = () => {
             {profile.twitterUrl && (
               <div className="flex items-center gap-2">
                 <Twitter className="h-4 w-4" />
-                <Link href={profile.twitterUrl} target="_blank" className="underline">
+                <Link href={profile.twitterUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                   LinkedIn
                 </Link>
               </div>
@@ -164,7 +165,7 @@ const Profile = () => {
               profile.otherLinks.map((link, index) => {
                 return <div key={`${link}-${index}`} className="flex items-center gap-2">
                   <Link2 className="h-4 w-4" />
-                  <Link href={link} target="_blank" className="underline">
+                  <Link href={link} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                     {link}
                   </Link>
                 </div>
@@ -200,6 +201,100 @@ const Profile = () => {
       </div>
 
       <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <h2 className="text-lg font-semibold mb-6">Professional Preferences</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
+          <div>
+            <p className="font-medium text-foreground mb-1">Preferred Work Mode</p>
+            {profile.preferredWorkMode.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.preferredWorkMode.map((mode) => (
+                  <span
+                    key={mode}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    {getLabel(workModes, mode)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              '—'
+            )}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Willing to Relocate</p>
+            {profile.willingToRelocate ? 'Yes' : 'No'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Current Employment</p>
+            {profile.currentEmployment
+              ? getLabel(currentEmploymentStatuses, profile.currentEmployment)
+              : '—'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Notice Period</p>
+            {profile.noticePeriod
+              ? getLabel(noticePeriods, profile.noticePeriod)
+              : '—'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Expected Salary</p>
+            {profile.expectedSalaryMin || profile.expectedSalaryMax
+              ? formatSalary(profile.expectedSalaryMin, profile.expectedSalaryMax)
+              : '—'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Profile Visibility</p>
+            {profile.isPublic ? 'Public' : 'Private'} (You can&apos;t change this)
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <h2 className="text-lg font-semibold mb-6">Job Categories</h2>
+
+        {profile.jobCategories.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {profile.jobCategories.map((category) => (
+              <span
+                key={category}
+                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+              >
+                {getLabel(jobCategories, category)}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">—</p>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
+
+        {profile.preferredLocations.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {profile.preferredLocations.map((location) => (
+              <span
+                key={location}
+                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+              >
+                {location}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">—</p>
+        )}
+      </div>
+
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6">
         <h2 className="text-lg font-semibold mb-6">Work Experience</h2>
 
         <div className="space-y-6">
@@ -231,7 +326,7 @@ const Profile = () => {
         <div className="space-y-4">
           {profile.education.map((edu) => (
             <div key={edu.id}>
-              <h3 className="font-semibold">{edu.degree}</h3>
+              <h3 className="font-semibold">{getLabel(degrees, edu.degree)}</h3>
               <p className="text-sm text-muted-foreground">
                 {edu.institution}
               </p>
@@ -258,8 +353,8 @@ const Profile = () => {
                   </p>
                   {cert?.credentialUrl && (
                     <Link href={cert.credentialUrl}
-                      target='_blank' className='text-sm text-muted-foreground hover:underline'>
-                      Link
+                      target='_blank' className='text-sm text-muted-foreground hover:underline flex items-center gap-1 transition ease-in-out duration-300 hover:text-primary'>
+                      Link <ExternalLink className='h-3 w-3' />
                     </Link>
                   )}
                 </div>
