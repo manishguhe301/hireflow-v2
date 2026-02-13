@@ -52,7 +52,7 @@ const Profile = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 max-sm:flex-col">
             <div className="h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -68,7 +68,7 @@ const Profile = () => {
               )}
             </div>
 
-            <div>
+            <div className='max-sm:flex max-sm:flex-col max-sm:items-center'>
               <h1 className="text-2xl font-bold">{profile.name}</h1>
               <p className="text-sm text-muted-foreground">
                 {profile.professionalTitle || '—'}
@@ -88,13 +88,13 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Link href="/dashboard/profile/form">
-              <Button variant="outline">Edit Profile</Button>
+          <div className="flex gap-3 max-sm:w-full">
+            <Link href="/dashboard/profile/form" className='max-sm:w-full'>
+              <Button className='max-sm:w-full' variant="outline">Edit Profile</Button>
             </Link>
 
-            <Link href={`/profile/${profile.userId}`} target="_blank">
-              <Button>View Public Profile</Button>
+            <Link href={`/profile/${profile.userId}`} target="_blank" className='max-sm:w-full'>
+              <Button className='max-sm:w-full'>View Public Profile</Button>
             </Link>
           </div>
         </div>
