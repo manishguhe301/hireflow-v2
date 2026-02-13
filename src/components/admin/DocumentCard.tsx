@@ -7,34 +7,50 @@ import { Button } from "../ui/Button"
 
 const DocumentCard = ({
   label,
-  companyId,
   hasDocument,
-  type
-
+  apiUrl,
+  onReveal
 }: {
   label: string
-  companyId: string
   hasDocument: boolean
-  type: 'business' | 'tax'
+  apiUrl?: string
+  onReveal?: () => Promise<string>
 }) => {
 
   const [loading, setLoading] = useState(false)
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
 
   const handleReveal = async () => {
+    if (!hasDocument) return
+
     setLoading(true)
     try {
-      const res = await AppSdk.getData(
-        `/api/company/${companyId}/document?type=${type}`,
-        null
-      );
+      let url: string | null = null
 
-      if (!res?.url) {
+      // const res = await AppSdk.getData(
+      //   `/api/company/${companyId}/document?type=${type}`,
+      //   null
+      // );
+
+      // if (!res?.url) {
+      //   toast.error('Failed to retrieve document')
+      //   return
+      // }
+
+      // setSignedUrl(res.url)
+      if (onReveal) {
+        url = await onReveal()
+      } else if (apiUrl) {
+        const res = await AppSdk.getData(apiUrl, null)
+        console.log(res);
+        url = res?.url ?? null
+      }
+      if (!url) {
         toast.error('Failed to retrieve document')
         return
       }
 
-      setSignedUrl(res.url)
+      setSignedUrl(url)
     } catch {
       toast.error('Unable to access document')
     } finally {
