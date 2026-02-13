@@ -302,11 +302,12 @@ export async function POST(req: NextRequest) {
     if (resume) {
       resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
     }
-    const avatarResult = avatar
-      ? await uploadFileToSupabase(avatar, 'user-avatars')
-      : null;
 
-    // Create profile with nested creates
+    let avatarResult = null;
+    if (avatar && avatar instanceof File) {
+      avatarResult = await uploadFileToSupabase(avatar, 'user-avatars');
+    }
+
     const profile = await prisma.profile.create({
       data: {
         userId: guard.session.user.id,
@@ -366,8 +367,8 @@ export async function POST(req: NextRequest) {
             institution: edu.institution,
             degree: edu.degree,
             fieldOfStudy: edu.fieldOfStudy || null,
-            startYear: edu.startYear,
-            endYear: edu.endYear || null,
+            startYear: Number(edu.startYear),
+            endYear: Number(edu.endYear) || null,
             grade: edu.grade || null,
             isCurrent: edu.isCurrent,
           })),
@@ -459,6 +460,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const formData = await req.formData();
+    const isDraft = formData.get('isDraft') === 'true';
 
     const avatar = formData.get('avatar') as File | null;
     const resume = formData.get('resume') as File | null;
@@ -475,7 +477,7 @@ export async function PATCH(req: NextRequest) {
       willingToRelocate: formData.get('willingToRelocate') as string,
       professionalTitle: formData.get('professionalTitle') as string,
       bio: formData.get('bio') as string,
-      yearsOfExperience: formData.get('yearsOfExperience') as string,
+      yearsOfExperience: formData.get('yearsOfExperience') as ExperienceLevel,
       currentEmployment: formData.get('currentEmployment') as string,
 
       workExperience: formData.get('workExperience') as string,
@@ -495,55 +497,126 @@ export async function PATCH(req: NextRequest) {
       noticePeriod: formData.get('noticePeriod') as string,
     };
 
-    // if (
-    //   !data.name ||
-    //   !data.contactEmail ||
-    //   !data.phone ||
-    //   !data.country ||
-    //   !data.countryPhoneCode
-    // ) {
-    //   return NextResponse.json(
-    //     { error: 'Missing required fields' },
-    //     { status: 400 },
-    //   );
-    // }
+    if (!data.name || !data.contactEmail) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 },
+      );
+    }
 
-    const preferredWorkModeArray = data.preferredWorkMode
-      ? JSON.parse(data.preferredWorkMode)
-      : existingProfile.preferredWorkMode;
+    let preferredWorkModeArray = existingProfile.preferredWorkMode;
+    if (data.preferredWorkMode) {
+      try {
+        preferredWorkModeArray = JSON.parse(data.preferredWorkMode);
+      } catch (error) {
+        console.error('Error parsing preferredWorkMode:', error);
+        return NextResponse.json(
+          { error: 'Invalid preferredWorkMode format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const skillsArray = data.skills
-      ? JSON.parse(data.skills)
-      : existingProfile.skills;
+    let skillsArray = existingProfile.skills;
+    if (data.skills) {
+      try {
+        skillsArray = JSON.parse(data.skills);
+      } catch (error) {
+        console.error('Error parsing skills:', error);
+        return NextResponse.json(
+          { error: 'Invalid skills format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const workExperienceArray = data.workExperience
-      ? JSON.parse(data.workExperience)
-      : [];
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let workExperienceArray: any[] = [];
+    if (data.workExperience) {
+      try {
+        workExperienceArray = JSON.parse(data.workExperience);
+      } catch (error) {
+        console.error('Error parsing workExperience:', error);
+        return NextResponse.json(
+          { error: 'Invalid workExperience format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const educationArray = data.education ? JSON.parse(data.education) : [];
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let educationArray: any[] = [];
+    if (data.education) {
+      try {
+        educationArray = JSON.parse(data.education);
+      } catch (error) {
+        console.error('Error parsing education:', error);
+        return NextResponse.json(
+          { error: 'Invalid education format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const certificationsArray = data.certifications
-      ? JSON.parse(data.certifications)
-      : [];
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let certificationsArray: any[] = [];
+    if (data.certifications) {
+      try {
+        certificationsArray = JSON.parse(data.certifications);
+      } catch (error) {
+        console.error('Error parsing certifications:', error);
+        return NextResponse.json(
+          { error: 'Invalid certifications format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const jobCategoriesArray = data.jobCategories
-      ? JSON.parse(data.jobCategories)
-      : existingProfile.jobCategories;
+    let jobCategoriesArray: string[] = [];
+    if (data.jobCategories) {
+      try {
+        jobCategoriesArray = JSON.parse(data.jobCategories);
+      } catch (error) {
+        console.error('Error parsing jobCategories:', error);
+        return NextResponse.json(
+          { error: 'Invalid jobCategories format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const preferredLocationsArray = data.preferredLocations
-      ? JSON.parse(data.preferredLocations)
-      : existingProfile.preferredLocations;
+    let preferredLocationsArray: string[] = [];
+    if (data.preferredLocations) {
+      try {
+        preferredLocationsArray = JSON.parse(data.preferredLocations);
+      } catch (error) {
+        console.error('Error parsing preferredLocations:', error);
+        return NextResponse.json(
+          { error: 'Invalid preferredLocations format' },
+          { status: 400 },
+        );
+      }
+    }
 
-    const otherLinksArray = data.otherLinks
-      ? JSON.parse(data.otherLinks)
-      : existingProfile.otherLinks;
+    let otherLinksArray: string[] = [];
+    if (data.otherLinks) {
+      try {
+        otherLinksArray = JSON.parse(data.otherLinks);
+      } catch (error) {
+        console.error('Error parsing otherLinks:', error);
+        return NextResponse.json(
+          { error: 'Invalid otherLinks format' },
+          { status: 400 },
+        );
+      }
+    }
 
     let avatarUrl = existingProfile.avatar;
     let avatarPath = existingProfile.avatarPath;
     let resumeUrl = existingProfile.resumeUrl;
     let resumePath = existingProfile.resumePath;
 
-    if (avatar) {
+    if (avatar && avatar instanceof File) {
       if (existingProfile.avatarPath) {
         await deleteFileFromSupabase(
           existingProfile.avatarPath,
@@ -555,7 +628,7 @@ export async function PATCH(req: NextRequest) {
       avatarPath = avatarResult.path;
     }
 
-    if (resume) {
+    if (resume && resume instanceof File) {
       if (existingProfile.resumePath) {
         await deleteFileFromSupabase(
           existingProfile.resumePath,
@@ -567,66 +640,41 @@ export async function PATCH(req: NextRequest) {
       resumePath = resumeResult.path;
     }
 
-    await prisma.workExperience.deleteMany({
-      where: { profileId: existingProfile.id },
-    });
+    if (!isDraft && !resume && !existingProfile.resumeUrl) {
+      return NextResponse.json(
+        { error: 'Resume is required to publish profile' },
+        { status: 400 },
+      );
+    }
 
-    await prisma.education.deleteMany({
-      where: { profileId: existingProfile.id },
-    });
+    const updatedProfile = await prisma.$transaction(async (tx) => {
+      await tx.workExperience.deleteMany({
+        where: { profileId: existingProfile.id },
+      });
 
-    await prisma.certification.deleteMany({
-      where: { profileId: existingProfile.id },
-    });
+      await tx.education.deleteMany({
+        where: { profileId: existingProfile.id },
+      });
 
-    const updatedProfile = await prisma.profile.update({
-      where: { id: existingProfile.id },
-      data: {
-        name: data.name,
-        contactEmail: data.contactEmail,
-        countryPhoneCode: data.countryPhoneCode,
-        phone: data.phone,
-        country: data.country,
-        city: data.city || null,
+      await tx.certification.deleteMany({
+        where: { profileId: existingProfile.id },
+      });
 
-        avatar: avatarUrl,
-        avatarPath,
-        resumeUrl,
-        resumePath,
-
-        preferredWorkMode: preferredWorkModeArray,
-        willingToRelocate: data.willingToRelocate === 'true',
-        professionalTitle: data.professionalTitle || null,
-        bio: data.bio || null,
-        yearsOfExperience: (data.yearsOfExperience as ExperienceLevel) || null,
-        currentEmployment:
-          (data.currentEmployment as CurrentEmployment) || null,
-
-        skills: skillsArray,
-
-        portfolioWebsite: data.portfolioWebsite || null,
-        githubUrl: data.githubUrl || null,
-        linkedinUrl: data.linkedinUrl || null,
-        twitterUrl: data.twitterUrl || null,
-        otherLinks: otherLinksArray,
-
-        jobCategories: jobCategoriesArray,
-        preferredLocations: preferredLocationsArray,
-        expectedSalaryMin: data.expectedSalaryMin
-          ? parseInt(data.expectedSalaryMin)
-          : null,
-        expectedSalaryMax: data.expectedSalaryMax
-          ? parseInt(data.expectedSalaryMax)
-          : null,
-        noticePeriod: data.noticePeriod || null,
-        profileCompleted: calculateProfileCompletion({
+      return await tx.profile.update({
+        where: { id: existingProfile.id },
+        data: {
           name: data.name,
           contactEmail: data.contactEmail,
+          countryPhoneCode: data.countryPhoneCode,
           phone: data.phone,
           country: data.country,
           city: data.city || null,
+
           avatar: avatarUrl,
-          resumeUrl: resumeUrl || '',
+          avatarPath,
+          resumeUrl,
+          resumePath,
+
           preferredWorkMode: preferredWorkModeArray,
           willingToRelocate: data.willingToRelocate === 'true',
           professionalTitle: data.professionalTitle || null,
@@ -635,15 +683,15 @@ export async function PATCH(req: NextRequest) {
             (data.yearsOfExperience as ExperienceLevel) || null,
           currentEmployment:
             (data.currentEmployment as CurrentEmployment) || null,
+
           skills: skillsArray,
-          workExperience: workExperienceArray,
-          education: educationArray,
-          certifications: certificationsArray,
+
           portfolioWebsite: data.portfolioWebsite || null,
           githubUrl: data.githubUrl || null,
           linkedinUrl: data.linkedinUrl || null,
           twitterUrl: data.twitterUrl || null,
           otherLinks: otherLinksArray,
+
           jobCategories: jobCategoriesArray,
           preferredLocations: preferredLocationsArray,
           expectedSalaryMin: data.expectedSalaryMin
@@ -653,52 +701,87 @@ export async function PATCH(req: NextRequest) {
             ? parseInt(data.expectedSalaryMax)
             : null,
           noticePeriod: data.noticePeriod || null,
-        }),
+          profileCompleted: calculateProfileCompletion({
+            name: data.name,
+            contactEmail: data.contactEmail,
+            phone: data.phone,
+            country: data.country,
+            city: data.city || null,
+            avatar: avatarUrl,
+            resumeUrl: resumeUrl || '',
+            preferredWorkMode: preferredWorkModeArray,
+            willingToRelocate: data.willingToRelocate === 'true',
+            professionalTitle: data.professionalTitle || null,
+            bio: data.bio || null,
+            yearsOfExperience:
+              (data.yearsOfExperience as ExperienceLevel) || null,
+            currentEmployment:
+              (data.currentEmployment as CurrentEmployment) || null,
+            skills: skillsArray,
+            workExperience: workExperienceArray,
+            education: educationArray,
+            certifications: certificationsArray,
+            portfolioWebsite: data.portfolioWebsite || null,
+            githubUrl: data.githubUrl || null,
+            linkedinUrl: data.linkedinUrl || null,
+            twitterUrl: data.twitterUrl || null,
+            otherLinks: otherLinksArray,
+            jobCategories: jobCategoriesArray,
+            preferredLocations: preferredLocationsArray,
+            expectedSalaryMin: data.expectedSalaryMin
+              ? parseInt(data.expectedSalaryMin)
+              : null,
+            expectedSalaryMax: data.expectedSalaryMax
+              ? parseInt(data.expectedSalaryMax)
+              : null,
+            noticePeriod: data.noticePeriod || null,
+          }),
 
-        workExperience: {
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          create: workExperienceArray.map((exp: any) => ({
-            company: exp.company,
-            title: exp.title,
-            location: exp.location || null,
-            workMode: exp.workMode,
-            startDate: new Date(exp.startDate),
-            endDate: exp.endDate ? new Date(exp.endDate) : null,
-            description: exp.description || null,
-            isCurrent: exp.isCurrent,
-          })),
-        },
+          workExperience: {
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
+            create: workExperienceArray.map((exp: any) => ({
+              company: exp.company,
+              title: exp.title,
+              location: exp.location || null,
+              workMode: exp.workMode,
+              startDate: new Date(exp.startDate),
+              endDate: exp.endDate ? new Date(exp.endDate) : null,
+              description: exp.description || null,
+              isCurrent: exp.isCurrent,
+            })),
+          },
 
-        education: {
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          create: educationArray.map((edu: any) => ({
-            institution: edu.institution,
-            degree: edu.degree,
-            fieldOfStudy: edu.fieldOfStudy || null,
-            startYear: edu.startYear,
-            endYear: edu.endYear || null,
-            grade: edu.grade || null,
-            isCurrent: edu.isCurrent,
-          })),
-        },
+          education: {
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
+            create: educationArray.map((edu: any) => ({
+              institution: edu.institution,
+              degree: edu.degree,
+              fieldOfStudy: edu.fieldOfStudy || null,
+              startYear: Number(edu.startYear),
+              endYear: Number(edu.endYear) || null,
+              grade: edu.grade || null,
+              isCurrent: edu.isCurrent,
+            })),
+          },
 
-        certifications: {
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          create: certificationsArray.map((cert: any) => ({
-            name: cert.name,
-            organization: cert.organization,
-            issueDate: new Date(cert.issueDate),
-            expiryDate: cert.expiryDate ? new Date(cert.expiryDate) : null,
-            credentialUrl: cert.credentialUrl || null,
-            credentialId: cert.credentialId || null,
-          })),
+          certifications: {
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
+            create: certificationsArray.map((cert: any) => ({
+              name: cert.name,
+              organization: cert.organization,
+              issueDate: new Date(cert.issueDate),
+              expiryDate: cert.expiryDate ? new Date(cert.expiryDate) : null,
+              credentialUrl: cert.credentialUrl || null,
+              credentialId: cert.credentialId || null,
+            })),
+          },
         },
-      },
-      include: {
-        workExperience: true,
-        education: true,
-        certifications: true,
-      },
+        include: {
+          workExperience: true,
+          education: true,
+          certifications: true,
+        },
+      });
     });
 
     return NextResponse.json({ success: true, profile: updatedProfile });
