@@ -55,7 +55,7 @@ export type CertificationInput = {
 
 export type JobSeekerFormInputs = {
   userId: string
-  avatar: string
+  avatar: FileList
   phone: string
   country: string
   countryPhoneCode: string
@@ -144,7 +144,7 @@ const ProfileWizard = () => {
     defaultValues: {
       // STEP 1 – Basic Info
       userId: session?.user.id || '',
-      avatar: '', // Optional
+      // avatar: '', // Optional
       name: session?.user?.name || '',
       contactEmail: session?.user.email || '',
       countryPhoneCode: '',

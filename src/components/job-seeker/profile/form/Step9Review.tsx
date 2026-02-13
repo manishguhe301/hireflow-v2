@@ -125,29 +125,12 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         description="Review your profile carefully before publishing. You can edit any section."
       />
       <Section title="Profile Photo" onEdit={() => setCurrentStep(0)}>
-        <div className="sm:col-span-2 flex items-center gap-4">
-          {data.avatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={data.avatar}
-              alt="Profile Avatar"
-              className="h-20 w-20 rounded-full object-cover border border-border/40"
-            />
-          ) : (
-            <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center text-xl font-semibold text-muted-foreground border border-border/40">
-              {data.name?.charAt(0)?.toUpperCase() || '?'}
-            </div>
-          )}
-
-          <div>
-            <p className="text-sm font-medium">
-              {data.avatar ? 'Profile photo uploaded' : 'No profile photo uploaded'}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              A profile photo increases recruiter engagement.
-            </p>
-          </div>
-        </div>
+        <FileItem
+          label="Profile Photo"
+          file={data.avatar}
+          existingFileUrl={jobSeekerProfile?.avatar}
+          required
+        />
       </Section>
 
 
