@@ -171,7 +171,7 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         <div className="sm:col-span-2 space-y-3">
           {data.workExperience?.length ? (
             data.workExperience.map((exp, i) => (
-              <div key={i} className="border rounded-lg p-3">
+              <div key={i} className="border border-border/40 rounded-lg p-3">
                 <p className="font-medium">{exp.title} — {exp.company}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatDate(exp.startDate)} -{' '}
@@ -193,7 +193,7 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         <div className="sm:col-span-2 space-y-3">
           {data.education?.length ? (
             data.education.map((edu, i) => (
-              <div key={i} className="border rounded-lg p-3">
+              <div key={i} className="border border-border/40 rounded-lg p-3">
                 <p className="font-medium">{getLabel(degrees, edu.degree)}</p>
                 <p className="text-xs text-muted-foreground">
                   {edu.institution} ({edu.startYear} -{' '}
@@ -229,7 +229,7 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         <div className="sm:col-span-2 space-y-3">
           {data.certifications?.length ? (
             data.certifications.map((cert, i) => (
-              <div key={i} className="border rounded-lg p-3">
+              <div key={i} className="border border-border/40 rounded-lg p-3">
                 <p className="font-medium">{cert.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {cert.organization}

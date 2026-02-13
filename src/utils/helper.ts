@@ -1,4 +1,4 @@
-import { CompanyStatus, Role, Job, JobStatus } from '@prisma/client';
+import { CompanyStatus, Role, Job, JobStatus, ExperienceLevel } from '@prisma/client';
 import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
 
 export function formatDate(date: Date | string): string {
@@ -230,7 +230,7 @@ export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
     formData.append('professionalTitle', data.professionalTitle);
   if (data.bio) formData.append('bio', data.bio);
   if (data.yearsOfExperience)
-    formData.append('yearsOfExperience', data.yearsOfExperience);
+    formData.append('yearsOfExperience', data.yearsOfExperience as ExperienceLevel);
   if (data.currentEmployment)
     formData.append('currentEmployment', data.currentEmployment);
   if (data.portfolioWebsite)
