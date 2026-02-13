@@ -232,3 +232,11 @@ export const fieldOfStudies: SelectOption[] = [
   { label: 'Psychology', value: 'PSYCHOLOGY' },
   { label: 'Other', value: 'OTHER' },
 ];
+
+export const noticePeriods: SelectOption[] = [
+  { label: 'Immediate', value: 'IMMEDIATE' },
+  { label: '15 days', value: '15_DAYS' },
+  { label: '1 month', value: '1_MONTH' },
+  { label: '2 months', value: '2_MONTHS' },
+  { label: '3 months', value: '3_MONTHS' },
+];

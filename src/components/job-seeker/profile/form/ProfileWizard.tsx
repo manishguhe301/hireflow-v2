@@ -82,7 +82,6 @@ export type JobSeekerFormInputs = {
   linkedinUrl: string
   twitterUrl: string
   otherLinks: string[]
-
   jobCategories: string[]
   preferredLocations: string[]
   expectedSalaryMin: number
@@ -129,7 +128,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(6)
+  const [currentStep, setCurrentStep] = useState(7)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {
@@ -208,6 +207,13 @@ const ProfileWizard = () => {
     })
   }, [register])
 
+
+  useEffect(() => {
+    register('jobCategories', {
+      validate: (value) =>
+        value.length > 0 || 'Please add at least one job category',
+    })
+  }, [register])
 
 
   if (isLoading) {
