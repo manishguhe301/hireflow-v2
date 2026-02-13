@@ -10,7 +10,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { X } from 'lucide-react'
 
-const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
+const regex =
+  /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/
 
 const Step8AdditionalInfo = ({
   register,
