@@ -12,6 +12,93 @@ import {
 } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
+function calculateProfileCompletion(data: {
+  name: string;
+  contactEmail: string;
+  phone: string;
+  country: string;
+  city: string | null;
+  avatar: string | null;
+  resumeUrl: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  preferredWorkMode: any[];
+  willingToRelocate: boolean;
+  professionalTitle: string | null;
+  bio: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  yearsOfExperience: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentEmployment: any;
+  skills: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  workExperience: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  education: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  certifications: any[];
+  portfolioWebsite: string | null;
+  githubUrl: string | null;
+  linkedinUrl: string | null;
+  twitterUrl: string | null;
+  otherLinks: string[];
+  jobCategories: string[];
+  preferredLocations: string[];
+  expectedSalaryMin: number | null;
+  expectedSalaryMax: number | null;
+  noticePeriod: string | null;
+}): number {
+  let score = 0;
+  const weights = {
+    name: 5,
+    contactEmail: 5,
+    phone: 5,
+    country: 5,
+    resumeUrl: 10,
+
+    preferredWorkMode: 5,
+    skills: 10,
+    workExperience: 15,
+    jobCategories: 5,
+    preferredLocations: 5,
+
+    city: 2,
+    avatar: 3,
+    willingToRelocate: 2,
+    professionalTitle: 3,
+    bio: 5,
+    yearsOfExperience: 3,
+    currentEmployment: 2,
+    education: 5,
+    certifications: 3,
+    portfolioWebsite: 2,
+  };
+
+  if (data.name) score += weights.name;
+  if (data.contactEmail) score += weights.contactEmail;
+  if (data.phone) score += weights.phone;
+  if (data.country) score += weights.country;
+  if (data.resumeUrl) score += weights.resumeUrl;
+
+  if (data.preferredWorkMode.length > 0) score += weights.preferredWorkMode;
+  if (data.skills.length > 0) score += weights.skills;
+  if (data.workExperience.length > 0) score += weights.workExperience;
+  if (data.jobCategories.length > 0) score += weights.jobCategories;
+  if (data.preferredLocations.length > 0) score += weights.preferredLocations;
+
+  if (data.city) score += weights.city;
+  if (data.avatar) score += weights.avatar;
+  if (data.willingToRelocate !== undefined) score += weights.willingToRelocate;
+  if (data.professionalTitle) score += weights.professionalTitle;
+  if (data.bio) score += weights.bio;
+  if (data.yearsOfExperience) score += weights.yearsOfExperience;
+  if (data.currentEmployment) score += weights.currentEmployment;
+  if (data.education.length > 0) score += weights.education;
+  if (data.certifications.length > 0) score += weights.certifications;
+  if (data.portfolioWebsite) score += weights.portfolioWebsite;
+
+  return Math.min(score, 100);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const guard = await apiAuthGuard([Role.JOB_SEEKER]);
@@ -282,7 +369,41 @@ export async function POST(req: NextRequest) {
           })),
         },
 
-        profileCompleted: 100,
+        profileCompleted: calculateProfileCompletion({
+          name: data.name,
+          contactEmail: data.contactEmail,
+          phone: data.phone,
+          country: data.country,
+          city: data.city || null,
+          avatar: avatarResult?.url || null,
+          resumeUrl: resumeResult.url,
+          preferredWorkMode: preferredWorkModeArray,
+          willingToRelocate: data.willingToRelocate === 'true',
+          professionalTitle: data.professionalTitle || null,
+          bio: data.bio || null,
+          yearsOfExperience:
+            (data.yearsOfExperience as ExperienceLevel) || null,
+          currentEmployment:
+            (data.currentEmployment as CurrentEmployment) || null,
+          skills: skillsArray,
+          workExperience: workExperienceArray,
+          education: educationArray,
+          certifications: certificationsArray,
+          portfolioWebsite: data.portfolioWebsite || null,
+          githubUrl: data.githubUrl || null,
+          linkedinUrl: data.linkedinUrl || null,
+          twitterUrl: data.twitterUrl || null,
+          otherLinks: otherLinksArray,
+          jobCategories: jobCategoriesArray,
+          preferredLocations: preferredLocationsArray,
+          expectedSalaryMin: data.expectedSalaryMin
+            ? parseInt(data.expectedSalaryMin)
+            : null,
+          expectedSalaryMax: data.expectedSalaryMax
+            ? parseInt(data.expectedSalaryMax)
+            : null,
+          noticePeriod: data.noticePeriod || null,
+        }),
         isPublic: true,
       },
       include: {
@@ -483,6 +604,41 @@ export async function PATCH(req: NextRequest) {
           ? parseInt(data.expectedSalaryMax)
           : null,
         noticePeriod: data.noticePeriod || null,
+        profileCompleted: calculateProfileCompletion({
+          name: data.name,
+          contactEmail: data.contactEmail,
+          phone: data.phone,
+          country: data.country,
+          city: data.city || null,
+          avatar: avatarUrl,
+          resumeUrl,
+          preferredWorkMode: preferredWorkModeArray,
+          willingToRelocate: data.willingToRelocate === 'true',
+          professionalTitle: data.professionalTitle || null,
+          bio: data.bio || null,
+          yearsOfExperience:
+            (data.yearsOfExperience as ExperienceLevel) || null,
+          currentEmployment:
+            (data.currentEmployment as CurrentEmployment) || null,
+          skills: skillsArray,
+          workExperience: workExperienceArray,
+          education: educationArray,
+          certifications: certificationsArray,
+          portfolioWebsite: data.portfolioWebsite || null,
+          githubUrl: data.githubUrl || null,
+          linkedinUrl: data.linkedinUrl || null,
+          twitterUrl: data.twitterUrl || null,
+          otherLinks: otherLinksArray,
+          jobCategories: jobCategoriesArray,
+          preferredLocations: preferredLocationsArray,
+          expectedSalaryMin: data.expectedSalaryMin
+            ? parseInt(data.expectedSalaryMin)
+            : null,
+          expectedSalaryMax: data.expectedSalaryMax
+            ? parseInt(data.expectedSalaryMax)
+            : null,
+          noticePeriod: data.noticePeriod || null,
+        }),
 
         workExperience: {
           //eslint-disable-next-line @typescript-eslint/no-explicit-any
