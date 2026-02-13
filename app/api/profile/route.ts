@@ -159,22 +159,33 @@ export async function POST(req: NextRequest) {
       noticePeriod: formData.get('noticePeriod') as string,
     };
 
-    if (
-      !data.name ||
-      !data.contactEmail ||
-      !data.phone ||
-      !data.country ||
-      !data.countryPhoneCode
-    ) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 },
-      );
+    const isDraft = formData.get('isDraft') === 'true';
+
+    if (isDraft) {
+      if (!data.name || !data.contactEmail) {
+        return NextResponse.json(
+          { error: 'Name and Email are required to save profile' },
+          { status: 400 },
+        );
+      }
+    } else {
+      if (
+        !data.name ||
+        !data.contactEmail ||
+        !data.phone ||
+        !data.country ||
+        !data.countryPhoneCode
+      ) {
+        return NextResponse.json(
+          { error: 'Missing required fields' },
+          { status: 400 },
+        );
+      }
     }
 
-    if (!resume) {
+    if (!isDraft && !resume) {
       return NextResponse.json(
-        { error: 'Resume is required' },
+        { error: 'Resume is required to publish profile' },
         { status: 400 },
       );
     }
@@ -286,7 +297,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
+    let resumeResult = null;
+
+    if (resume) {
+      resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
+    }
     const avatarResult = avatar
       ? await uploadFileToSupabase(avatar, 'user-avatars')
       : null;
@@ -304,8 +319,8 @@ export async function POST(req: NextRequest) {
 
         avatar: avatarResult?.url || null,
         avatarPath: avatarResult?.path || null,
-        resumeUrl: resumeResult.url,
-        resumePath: resumeResult.path,
+        resumeUrl: resumeResult?.url || '',
+        resumePath: resumeResult?.path || '',
 
         preferredWorkMode: preferredWorkModeArray,
         willingToRelocate: data.willingToRelocate === 'true',
@@ -376,7 +391,7 @@ export async function POST(req: NextRequest) {
           country: data.country,
           city: data.city || null,
           avatar: avatarResult?.url || null,
-          resumeUrl: resumeResult.url,
+          resumeUrl: resumeResult?.url || '',
           preferredWorkMode: preferredWorkModeArray,
           willingToRelocate: data.willingToRelocate === 'true',
           professionalTitle: data.professionalTitle || null,
@@ -480,18 +495,18 @@ export async function PATCH(req: NextRequest) {
       noticePeriod: formData.get('noticePeriod') as string,
     };
 
-    if (
-      !data.name ||
-      !data.contactEmail ||
-      !data.phone ||
-      !data.country ||
-      !data.countryPhoneCode
-    ) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 },
-      );
-    }
+    // if (
+    //   !data.name ||
+    //   !data.contactEmail ||
+    //   !data.phone ||
+    //   !data.country ||
+    //   !data.countryPhoneCode
+    // ) {
+    //   return NextResponse.json(
+    //     { error: 'Missing required fields' },
+    //     { status: 400 },
+    //   );
+    // }
 
     const preferredWorkModeArray = data.preferredWorkMode
       ? JSON.parse(data.preferredWorkMode)
@@ -611,7 +626,7 @@ export async function PATCH(req: NextRequest) {
           country: data.country,
           city: data.city || null,
           avatar: avatarUrl,
-          resumeUrl,
+          resumeUrl: resumeUrl || '',
           preferredWorkMode: preferredWorkModeArray,
           willingToRelocate: data.willingToRelocate === 'true',
           professionalTitle: data.professionalTitle || null,

@@ -1,4 +1,5 @@
 import { CompanyStatus, Role, Job, JobStatus } from '@prisma/client';
+import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -190,3 +191,58 @@ export const getLabel = (
   options: { label: string; value: string }[],
   value?: string,
 ) => options.find((o) => o.value === value)?.label || value;
+
+export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
+  const formData = new FormData();
+
+  formData.append('name', data.name);
+  formData.append('contactEmail', data.contactEmail);
+  formData.append('countryPhoneCode', data.countryPhoneCode || '');
+  formData.append('phone', data.phone || '');
+  formData.append('country', data.country || '');
+  if (data.city) formData.append('city', data.city);
+
+  if (data.avatar?.length > 0) {
+    formData.append('avatar', data.avatar[0]);
+  }
+
+  formData.append(
+    'preferredWorkMode',
+    JSON.stringify(data.preferredWorkMode || []),
+  );
+  formData.append('willingToRelocate', String(data.willingToRelocate));
+  formData.append('workExperience', JSON.stringify(data.workExperience || []));
+  formData.append('education', JSON.stringify(data.education || []));
+  formData.append('skills', JSON.stringify(data.skills || []));
+  formData.append('certifications', JSON.stringify(data.certifications || []));
+  formData.append('jobCategories', JSON.stringify(data.jobCategories || []));
+  formData.append(
+    'preferredLocations',
+    JSON.stringify(data.preferredLocations || []),
+  );
+  formData.append('otherLinks', JSON.stringify(data.otherLinks || []));
+
+  if (data.resume?.length > 0) {
+    formData.append('resume', data.resume[0]);
+  }
+
+  if (data.professionalTitle)
+    formData.append('professionalTitle', data.professionalTitle);
+  if (data.bio) formData.append('bio', data.bio);
+  if (data.yearsOfExperience)
+    formData.append('yearsOfExperience', data.yearsOfExperience);
+  if (data.currentEmployment)
+    formData.append('currentEmployment', data.currentEmployment);
+  if (data.portfolioWebsite)
+    formData.append('portfolioWebsite', data.portfolioWebsite);
+  if (data.githubUrl) formData.append('githubUrl', data.githubUrl);
+  if (data.linkedinUrl) formData.append('linkedinUrl', data.linkedinUrl);
+  if (data.twitterUrl) formData.append('twitterUrl', data.twitterUrl);
+  if (data.expectedSalaryMin)
+    formData.append('expectedSalaryMin', String(data.expectedSalaryMin));
+  if (data.expectedSalaryMax)
+    formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
+  if (data.noticePeriod) formData.append('noticePeriod', data.noticePeriod);
+
+  return formData;
+};

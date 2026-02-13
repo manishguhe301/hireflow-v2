@@ -60,8 +60,8 @@ model Profile {
   currentEmployment    CurrentEmployment?
   
   // Resume
-  resumeUrl            String
-  resumePath           String
+  resumeUrl            String?
+  resumePath           String?
   
   // Skills
   skills               String[]
