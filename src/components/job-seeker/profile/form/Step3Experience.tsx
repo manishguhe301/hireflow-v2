@@ -12,7 +12,7 @@ import { Briefcase, Edit, Plus, Trash2 } from 'lucide-react'
 import { WorkMode } from '@prisma/client'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { formatDate } from '@/src/utils/helper'
+import { formatDate, getLabel } from '@/src/utils/helper'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormTextarea } from '@/src/components/ui/FormTextarea'
@@ -174,7 +174,7 @@ const Step3Experience = ({
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
-                      {exp.workMode}
+                      {getLabel(workModes, exp.workMode)}
                     </span>
                     {exp.location && (
                       <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
