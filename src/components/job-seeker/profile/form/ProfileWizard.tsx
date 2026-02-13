@@ -4,7 +4,7 @@ import { StateWrapper } from '@/src/components/company/CompanyProfileGuard'
 import { Spinner } from '@/src/components/elements/Loader'
 import FormHeader from '@/src/components/ui/FormHeader'
 import { useProfile } from '@/src/store/hooks/useProfile'
-import { Certification, CurrentEmployment, Education, ExperienceLevel, WorkExperience, WorkMode } from '@prisma/client'
+import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -43,6 +43,15 @@ export type EducationInput = {
   isCurrent: boolean
 }
 
+export type CertificationInput = {
+  name: string
+  organization: string
+  issueDate: Date
+  expiryDate: Date | null
+  credentialUrl: string | null
+  credentialId: string | null
+}
+
 
 export type JobSeekerFormInputs = {
   userId: string
@@ -66,7 +75,7 @@ export type JobSeekerFormInputs = {
   skills: string[]
   workExperience: WorkExperienceInput[]
   education: EducationInput[]
-  certifications: Certification[]
+  certifications: CertificationInput[]
 
   portfolioWebsite: string
   githubUrl: string
@@ -120,7 +129,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(2)
+  const [currentStep, setCurrentStep] = useState(6)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {

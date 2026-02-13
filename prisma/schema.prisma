@@ -151,7 +151,7 @@ model Certification {
 
   name            String
   organization    String
-  issueDate       DateTime?
+  issueDate       DateTime
   expiryDate      DateTime?
   credentialId    String?
   credentialUrl   String?
