@@ -8,7 +8,7 @@ import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import Step1BasicFormInfo from './Step1BasicFormInfo'
 import Step2Professional from './Step2Professional'
@@ -21,6 +21,7 @@ import Step8AdditionalInfo from './Step8AdditionalInfo'
 import Step9Review from './Step9Review'
 import clsx from 'clsx'
 import { Button } from '@/src/components/ui/Button'
+import { toast } from 'sonner'
 
 export type WorkExperienceInput = {
   company: string
@@ -261,6 +262,102 @@ const ProfileWizard = () => {
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
+  const handleFormSubmit: SubmitHandler<JobSeekerFormInputs> = async (data) => {
+    const hasAnyData =
+      data.name ||
+      data.contactEmail ||
+      data.phone ||
+      data.country ||
+      data.preferredWorkMode.length > 0 ||
+      data.workExperience.length > 0 ||
+      data.education.length > 0 ||
+      data.skills.length > 0 ||
+      data.certifications.length > 0 ||
+      data.jobCategories.length > 0 ||
+      data.preferredLocations.length > 0;
+
+    if (!hasAnyData && !isEditMode) {
+      toast.error('Please fill at least one field before saving');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+
+      formData.append('name', data.name);
+      formData.append('contactEmail', data.contactEmail);
+      formData.append('countryPhoneCode', data.countryPhoneCode);
+      formData.append('phone', data.phone);
+      formData.append('country', data.country);
+      if (data.city) formData.append('city', data.city);
+
+      if (data.avatar && data.avatar.length > 0) {
+        formData.append('avatar', data.avatar[0]);
+      }
+
+      formData.append('preferredWorkMode', JSON.stringify(data.preferredWorkMode));
+      formData.append('willingToRelocate', String(data.willingToRelocate));
+      if (data.professionalTitle) formData.append('professionalTitle', data.professionalTitle);
+      if (data.bio) formData.append('bio', data.bio);
+      if (data.yearsOfExperience) formData.append('yearsOfExperience', data.yearsOfExperience);
+      if (data.currentEmployment) formData.append('currentEmployment', data.currentEmployment);
+
+      formData.append('workExperience', JSON.stringify(data.workExperience));
+
+      formData.append('education', JSON.stringify(data.education));
+
+      formData.append('skills', JSON.stringify(data.skills));
+
+      if (data.resume && data.resume.length > 0) {
+        formData.append('resume', data.resume[0]);
+      } else if (!isEditMode) {
+        toast.error('Resume is required');
+        return;
+      }
+
+      formData.append('certifications', JSON.stringify(data.certifications));
+
+      if (data.portfolioWebsite) formData.append('portfolioWebsite', data.portfolioWebsite);
+      if (data.githubUrl) formData.append('githubUrl', data.githubUrl);
+      if (data.linkedinUrl) formData.append('linkedinUrl', data.linkedinUrl);
+      if (data.twitterUrl) formData.append('twitterUrl', data.twitterUrl);
+      formData.append('otherLinks', JSON.stringify(data.otherLinks));
+      formData.append('jobCategories', JSON.stringify(data.jobCategories));
+      formData.append('preferredLocations', JSON.stringify(data.preferredLocations));
+      if (data.expectedSalaryMin) formData.append('expectedSalaryMin', String(data.expectedSalaryMin));
+      if (data.expectedSalaryMax) formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
+      if (data.noticePeriod) formData.append('noticePeriod', data.noticePeriod);
+
+      const method = isEditMode ? 'PATCH' : 'POST';
+
+      const response = await fetch('/api/profile', {
+        method,
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || 'Failed to save profile');
+        return;
+      }
+
+      const successMessage = isEditMode
+        ? 'Profile updated successfully'
+        : 'Profile created successfully';
+
+      toast.success(successMessage);
+      reset();
+      setTimeout(() => router.push('/dashboard/profile'), 100);
+    } catch (error) {
+      console.error('Submit error:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
       {jobSeekerProfile && (
@@ -384,7 +481,7 @@ const ProfileWizard = () => {
             {currentStep !== 8 && < Button
               type="button"
               disabled={isSubmitting}
-              // onClick={handleSubmit(handleSaveDraft)}  <-- your draft handler
+              onClick={handleSubmit(handleFormSubmit)}
               variant="outline"
               className="max-md:w-full"
             >
@@ -406,7 +503,7 @@ const ProfileWizard = () => {
               <Button
                 type="button"
                 disabled={isSubmitting}
-                // onClick={handleSubmit(handleFinalSubmit)}
+                onClick={handleSubmit(handleFormSubmit)}
                 variant="primary"
                 className="max-md:w-full"
               >
