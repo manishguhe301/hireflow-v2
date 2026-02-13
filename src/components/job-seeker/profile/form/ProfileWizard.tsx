@@ -128,7 +128,7 @@ const steps = [
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
-  const [currentStep, setCurrentStep] = useState(7)
+  const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: session } = useSession()
   const {
@@ -145,12 +145,12 @@ const ProfileWizard = () => {
       // STEP 1 – Basic Info
       userId: session?.user.id || '',
       avatar: '', // Optional
+      name: session?.user?.name || '',
+      contactEmail: session?.user.email || '',
+      countryPhoneCode: '',
       phone: '',
       country: '',
       city: '',
-      countryPhoneCode: '',
-      contactEmail: session?.user.email || '',
-      name: session?.user?.name || '',
 
       // STEP 2 – Professional Info
       preferredWorkMode: [],
@@ -352,10 +352,11 @@ const ProfileWizard = () => {
           }
           {currentStep === 8 &&
             <Step9Review
-              register={register}
-              errors={errors}
+              // register={register}
+              // errors={errors}
               watch={watch}
-              setValue={setValue}
+              setCurrentStep={setCurrentStep}
+            // setValue={setValue}
             />
           }
         </div>

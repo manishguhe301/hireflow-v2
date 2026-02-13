@@ -132,3 +132,92 @@ export const companies = [
   { id: 6, name: 'NextZen' },
 ];
 
+export const defaultValues = {
+  // STEP 1 – Basic Info
+  userId: 'mock-user-id-123',
+  phone: '9876543210',
+  country: 'India',
+  countryPhoneCode: '+91',
+  city: 'Pune',
+  contactEmail: 'manish@example.com',
+  name: 'Manish Guhe',
+
+  // STEP 2 – Professional Info
+  preferredWorkMode: ['REMOTE', 'HYBRID'],
+  willingToRelocate: true,
+  professionalTitle: 'Frontend Developer',
+  bio: 'Passionate frontend developer specializing in Next.js, TypeScript, and modern UI systems.',
+  yearsOfExperience: 'MID',
+  currentEmployment: 'EMPLOYED',
+
+  // STEP 3 – Experience
+  workExperience: [
+    {
+      company: 'TechNova Solutions',
+      title: 'Frontend Developer',
+      location: 'Mumbai',
+      workMode: 'HYBRID',
+      startDate: new Date('2022-01-01'),
+      endDate: null,
+      description:
+        'Worked on scalable SaaS dashboard using Next.js and Tailwind.',
+      isCurrent: true,
+    },
+    {
+      company: 'WebCraft Pvt Ltd',
+      title: 'Junior Developer',
+      location: 'Pune',
+      workMode: 'ON_SITE',
+      startDate: new Date('2020-06-01'),
+      endDate: new Date('2021-12-31'),
+      description:
+        'Built responsive UI components and improved performance by 25%.',
+      isCurrent: false,
+    },
+  ],
+
+  // STEP 4 – Education
+  education: [
+    {
+      institution: 'Savitribai Phule Pune University',
+      degree: 'BTECH_BE',
+      fieldOfStudy: 'COMPUTER_SCIENCE',
+      startYear: 2016,
+      endYear: 2020,
+      grade: '8.5 CGPA',
+      isCurrent: false,
+    },
+  ],
+
+  // STEP 5 – Skills
+  skills: ['Next.js', 'TypeScript', 'React', 'Tailwind CSS', 'Prisma'],
+
+  // STEP 7 – Certifications
+  certifications: [
+    {
+      name: 'React Developer Certification',
+      organization: 'Meta',
+      issueDate: new Date('2023-03-01'),
+      expiryDate: null,
+      credentialUrl: 'https://example.com/certificate',
+      credentialId: 'META-REACT-12345',
+    },
+  ],
+
+  // STEP 8 – Additional Info
+  portfolioWebsite: 'https://manishdev.com',
+  githubUrl: 'https://github.com/manish',
+  linkedinUrl: 'https://www.linkedin.com/in/manish-guhe-4860711b3/',
+  twitterUrl: 'https://x.com/manishdev',
+  otherLinks: ['https://medium.com/@manish', 'https://dev.to/manish'],
+
+  jobCategories: [
+    'SOFTWARE_DEVELOPMENT',
+    'BACKEND_DEVELOPMENT',
+    'FRONTEND_DEVELOPMENT',
+  ],
+  preferredLocations: ['India', 'United States'],
+  expectedSalaryMin: 12,
+  expectedSalaryMax: 18,
+  noticePeriod: '15_DAYS',
+};
