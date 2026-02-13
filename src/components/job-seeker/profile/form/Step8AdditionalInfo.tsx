@@ -6,6 +6,11 @@ import { FormSelect } from '@/src/components/ui/FormSelect'
 import MultiSelect from '@/src/components/ui/MultiSelect'
 import { jobCategories, noticePeriods } from '@/src/utils/utils'
 import { useCountries } from '@/src/store/hooks/useCountries'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { X } from 'lucide-react'
+
+const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
 
 const Step8AdditionalInfo = ({
   register,
@@ -18,7 +23,38 @@ const Step8AdditionalInfo = ({
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
 }) => {
+  const [otherLinkInput, setOtherLinkInput] = useState('')
   const { countries } = useCountries()
+  const otherLinks = watch('otherLinks') || []
+
+  const handleAddOtherLink = () => {
+    if (!otherLinkInput) return
+
+    if (!regex.test(otherLinkInput)) {
+      toast.error('Please enter a valid URL')
+      return
+    }
+
+    if (otherLinks.includes(otherLinkInput)) {
+      toast.error('Link already added')
+      return
+    }
+
+    setValue('otherLinks', [...otherLinks, otherLinkInput], {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+
+    setOtherLinkInput('')
+  }
+
+  const handleRemoveOtherLink = (index: number) => {
+    const updated = otherLinks.filter((_, i) => i !== index)
+    setValue('otherLinks', updated, {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+  }
   return (
     <div className="space-y-8">
       <StepHeader
@@ -32,7 +68,6 @@ const Step8AdditionalInfo = ({
             register={register('portfolioWebsite',
               {
                 validate: (value) => {
-                  const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
                   return regex.test(value) || 'Please enter a valid URL'
                 }
               })}
@@ -44,7 +79,6 @@ const Step8AdditionalInfo = ({
             label="Github URL (Optional)"
             register={register('githubUrl', {
               validate: (value) => {
-                const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
                 return regex.test(value) || 'Please enter a valid URL'
               }
             })}
@@ -59,7 +93,6 @@ const Step8AdditionalInfo = ({
             register={register('linkedinUrl',
               {
                 validate: (value) => {
-                  const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
                   return regex.test(value) || 'Please enter a valid URL'
                 }
               })}
@@ -71,7 +104,6 @@ const Step8AdditionalInfo = ({
             label="X Formarily Twitter URL (Optional)"
             register={register('twitterUrl', {
               validate: (value) => {
-                const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
                 return regex.test(value) || 'Please enter a valid URL'
               }
             })}
@@ -80,7 +112,49 @@ const Step8AdditionalInfo = ({
           // disabled
           />
         </div>
-        {/* //Other links remaining */}
+        <div className="space-y-3">
+          <label className="text-sm text-muted-foreground font-medium">
+            Other Links (Optional)
+          </label>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={otherLinkInput}
+              onChange={(e) => setOtherLinkInput(e.target.value)}
+              placeholder="https://example.com"
+              className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+            <button
+              type="button"
+              onClick={handleAddOtherLink}
+              className="rounded-lg bg-primary px-4 py-2 text-sm text-white hover:opacity-90"
+            >
+              Add
+            </button>
+          </div>
+
+          {otherLinks.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {otherLinks.map((link, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 rounded-full border border-border/40 bg-muted/30 px-3 py-1 text-xs"
+                >
+                  <span className="truncate max-w-[200px]">{link}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveOtherLink(index)}
+                    className="text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormSelect
             label="Notice Period(Optional)"
@@ -102,7 +176,20 @@ const Step8AdditionalInfo = ({
             error={errors.jobCategories?.message}
           />
         </div>
-        {/* Preffered locations remaining */}
+        <MultiSelect
+          label="Preferred Locations (Countries)"
+          options={countries}
+          value={watch('preferredLocations')}
+          onChange={(val) =>
+            setValue('preferredLocations', val, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          placeholder="Select preferred countries..."
+          error={errors.preferredLocations?.message}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             label="Minimum Expected Salary in Lakhs(Optional)"

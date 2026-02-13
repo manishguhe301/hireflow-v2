@@ -215,6 +215,12 @@ const ProfileWizard = () => {
     })
   }, [register])
 
+  useEffect(() => {
+    register('preferredLocations', {
+      validate: (value) =>
+        value.length > 0 || 'Please add at least one preferred location',
+    })
+  }, [register])
 
   if (isLoading) {
     return (
