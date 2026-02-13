@@ -42,7 +42,7 @@ const DocumentCard = ({
         url = await onReveal()
       } else if (apiUrl) {
         const res = await AppSdk.getData(apiUrl, null)
-        console.log(res);
+        // console.log(res);
         url = res?.url ?? null
       }
       if (!url) {
@@ -52,6 +52,7 @@ const DocumentCard = ({
 
       setSignedUrl(url)
     } catch {
+      // console.log(apiUrl);
       toast.error('Unable to access document')
     } finally {
       setLoading(false)

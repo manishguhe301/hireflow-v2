@@ -76,7 +76,7 @@ export async function deleteFileFromSupabase(
 
 export async function getSignedUrl(
   filePath: string,
-  bucket: 'company-logos' | 'company-documents',
+  bucket: 'company-logos' | 'company-documents' | 'user-resumes',
   expiresInSeconds: number = 300,
 ): Promise<string> {
   try {
