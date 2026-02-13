@@ -7,7 +7,11 @@ type UploadResult = {
 
 export async function uploadFileToSupabase(
   file: File,
-  bucket: 'company-logos' | 'company-documents',
+  bucket:
+    | 'company-logos'
+    | 'company-documents'
+    | 'user-resumes'
+    | 'user-avatars',
 ): Promise<UploadResult> {
   try {
     const timestamp = Date.now();
@@ -49,7 +53,11 @@ export async function uploadFileToSupabase(
 
 export async function deleteFileFromSupabase(
   filePath: string,
-  bucket: 'company-logos' | 'company-documents',
+  bucket:
+    | 'company-logos'
+    | 'company-documents'
+    | 'user-resumes'
+    | 'user-avatars',
 ): Promise<void> {
   try {
     const { error } = await supabaseServer.storage

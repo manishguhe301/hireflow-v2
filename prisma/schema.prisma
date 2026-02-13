@@ -44,6 +44,7 @@ model Profile {
   id                   String   @id @default(auto()) @map("_id") @db.ObjectId
   userId               String   @unique @db.ObjectId
   avatar               String?
+  avatarPath           String?
   phone                String
   country              String
   countryPhoneCode     String
@@ -60,6 +61,7 @@ model Profile {
   
   // Resume
   resumeUrl            String
+  resumePath           String
   
   // Skills
   skills               String[]
