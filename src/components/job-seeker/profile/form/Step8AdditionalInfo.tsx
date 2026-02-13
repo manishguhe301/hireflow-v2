@@ -61,7 +61,7 @@ const Step8AdditionalInfo = ({
     <div className="space-y-8">
       <StepHeader
         heading="Your Additional Information"
-        description=""
+        description="Additional information to help recruiters find you."
       />
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
