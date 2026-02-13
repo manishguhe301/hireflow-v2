@@ -22,6 +22,7 @@ import Step9Review from './Step9Review'
 import clsx from 'clsx'
 import { Button } from '@/src/components/ui/Button'
 import { toast } from 'sonner'
+import { buildProfileFormData } from '@/src/utils/helper'
 
 export type WorkExperienceInput = {
   company: string
@@ -262,6 +263,42 @@ const ProfileWizard = () => {
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
+  const handleDraftSave = async () => {
+    const data = getValues();
+
+    if (!data.name || !data.contactEmail) {
+      toast.error('Name and Email are required to save profile');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const formData = buildProfileFormData(data);
+      formData.append('isDraft', 'true');
+
+      const response = await fetch('/api/profile', {
+        method: isEditMode ? 'PATCH' : 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || 'Failed to save profile');
+        return;
+      }
+
+      toast.success('Draft saved successfully');
+    } catch (err) {
+      console.log(err);
+      toast.error('Something went wrong');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
   const handleFormSubmit: SubmitHandler<JobSeekerFormInputs> = async (data) => {
     const hasAnyData =
       data.name ||
@@ -283,51 +320,8 @@ const ProfileWizard = () => {
 
     setIsSubmitting(true);
     try {
-      const formData = new FormData();
-
-      formData.append('name', data.name);
-      formData.append('contactEmail', data.contactEmail);
-      formData.append('countryPhoneCode', data.countryPhoneCode);
-      formData.append('phone', data.phone);
-      formData.append('country', data.country);
-      if (data.city) formData.append('city', data.city);
-
-      if (data.avatar && data.avatar.length > 0) {
-        formData.append('avatar', data.avatar[0]);
-      }
-
-      formData.append('preferredWorkMode', JSON.stringify(data.preferredWorkMode));
-      formData.append('willingToRelocate', String(data.willingToRelocate));
-      if (data.professionalTitle) formData.append('professionalTitle', data.professionalTitle);
-      if (data.bio) formData.append('bio', data.bio);
-      if (data.yearsOfExperience) formData.append('yearsOfExperience', data.yearsOfExperience);
-      if (data.currentEmployment) formData.append('currentEmployment', data.currentEmployment);
-
-      formData.append('workExperience', JSON.stringify(data.workExperience));
-
-      formData.append('education', JSON.stringify(data.education));
-
-      formData.append('skills', JSON.stringify(data.skills));
-
-      if (data.resume && data.resume.length > 0) {
-        formData.append('resume', data.resume[0]);
-      } else if (!isEditMode) {
-        toast.error('Resume is required');
-        return;
-      }
-
-      formData.append('certifications', JSON.stringify(data.certifications));
-
-      if (data.portfolioWebsite) formData.append('portfolioWebsite', data.portfolioWebsite);
-      if (data.githubUrl) formData.append('githubUrl', data.githubUrl);
-      if (data.linkedinUrl) formData.append('linkedinUrl', data.linkedinUrl);
-      if (data.twitterUrl) formData.append('twitterUrl', data.twitterUrl);
-      formData.append('otherLinks', JSON.stringify(data.otherLinks));
-      formData.append('jobCategories', JSON.stringify(data.jobCategories));
-      formData.append('preferredLocations', JSON.stringify(data.preferredLocations));
-      if (data.expectedSalaryMin) formData.append('expectedSalaryMin', String(data.expectedSalaryMin));
-      if (data.expectedSalaryMax) formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
-      if (data.noticePeriod) formData.append('noticePeriod', data.noticePeriod);
+      const formData = buildProfileFormData(data);
+      formData.append('isDraft', 'false');
 
       const method = isEditMode ? 'PATCH' : 'POST';
 
@@ -481,7 +475,7 @@ const ProfileWizard = () => {
             {currentStep !== 8 && < Button
               type="button"
               disabled={isSubmitting}
-              onClick={handleSubmit(handleFormSubmit)}
+              onClick={handleDraftSave}
               variant="outline"
               className="max-md:w-full"
             >
