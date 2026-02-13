@@ -44,7 +44,7 @@ function IncompleteProfileUI({ completion }: { completion: number }) {
       </h3>
 
       <p className="mt-2 text-sm text-muted-foreground">
-        Your profile is only {completion}% complete. Complete it to increase your chances of getting hired.
+        Your profile is only {completion}% complete. To get discovered by companies, access jobs. Complete the profile to increase your chances of getting hired.
       </p>
 
       <div className="mt-6 w-full rounded-full bg-muted h-2">
@@ -91,7 +91,16 @@ const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
     return <NoProfileUI />
   }
 
-  if (jobSeekerProfile.profileCompleted < 100) {
+  const completion = jobSeekerProfile.profileCompleted
+
+  const isCoreIncomplete =
+    completion < 70 ||
+    !jobSeekerProfile.resumeUrl ||
+    jobSeekerProfile.skills.length === 0
+
+  if (
+    isCoreIncomplete
+  ) {
     return (
       <IncompleteProfileUI
         completion={jobSeekerProfile.profileCompleted}
@@ -99,7 +108,26 @@ const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
     )
   }
 
-  return <>{children}</>
+  return <>
+    {completion < 100 && (
+      <div className="m-6 rounded-2xl border border-warning/40 bg-warning/10 p-4 flex flex-row justify-between items-center max-sm:flex-col gap-2 ">
+        <div>
+          <p className="text-sm font-medium text-warning">
+            Your profile is {completion}% complete.
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Complete your profile to increase visibility and improve hiring chances.
+          </p>
+        </div>
+        <Link href="/dashboard/profile/form" className='max-sm:w-full'>
+          <Button className="max-sm:w-full!" variant='outline'>
+            Complete Profile
+          </Button>
+        </Link>
+      </div>
+    )}
+    {children}
+  </>
 }
 
 export default DashboardProfileGuard
