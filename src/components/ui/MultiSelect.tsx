@@ -4,22 +4,22 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { X } from 'lucide-react'
 
-type Option = {
+type Option<T extends string> = {
   label: string
-  value: string
+  value: T
 }
 
-type MultiSelectProps = {
+type MultiSelectProps<T extends string> = {
   label: string
-  options: Option[]
-  value: string[]
-  onChange: (value: string[]) => void
+  options: Option<T>[]
+  value: T[]
+  onChange: (value: T[]) => void
   placeholder?: string
   error?: string
   disabled?: boolean
 }
 
-const MultiSelect = ({
+const MultiSelect = <T extends string>({
   label,
   options,
   value,
@@ -27,7 +27,7 @@ const MultiSelect = ({
   placeholder = 'Search...',
   error,
   disabled,
-}: MultiSelectProps) => {
+}: MultiSelectProps<T>) => {
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -59,12 +59,12 @@ const MultiSelect = ({
     )
   }, [options, search, selectedSet])
 
-  const addValue = (val: string) => {
+  const addValue = (val: T) => {
     onChange([...value, val])
     setSearch('')
   }
 
-  const removeValue = (val: string) => {
+  const removeValue = (val: T) => {
     onChange(value.filter((v) => v !== val))
   }
 

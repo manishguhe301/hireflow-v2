@@ -36,7 +36,7 @@ export async function middleware(req: NextRequest) {
         ? '/admin'
         : userRole === Role.COMPANY_ADMIN
           ? '/company'
-          : '/jobs';
+          : '/dashboard';
 
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
