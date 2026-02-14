@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
           industry: true,
           country: true,
           companySize: true,
+          city: true,
           _count: {
             select: {
               jobs: {
@@ -70,6 +71,7 @@ export async function GET(req: NextRequest) {
       logo: company.logo,
       industry: company.industry,
       country: company.country,
+      city: company.city,
       companySize: company.companySize,
       jobCount: company._count.jobs,
     }));
