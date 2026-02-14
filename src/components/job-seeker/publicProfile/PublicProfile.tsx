@@ -8,9 +8,25 @@ import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
 import { Ban, CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { getLabel } from '@/src/utils/helper'
-import { degrees, jobSkills } from '@/src/utils/utils'
+import { formatSalary, getLabel } from '@/src/utils/helper'
+import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes } from '@/src/utils/utils'
 import DocumentCard from '../../admin/DocumentCard'
+import Link from 'next/link'
+import {
+  MapPin,
+  Mail,
+  Phone,
+  Globe,
+  Github,
+  Linkedin,
+  Calendar,
+  Briefcase,
+  GraduationCap,
+  Award,
+  Link2,
+  Twitter,
+  ExternalLink,
+} from 'lucide-react'
 
 const PublicProfile = () => {
   const { id } = useParams<{ id: string }>()
@@ -146,6 +162,72 @@ const PublicProfile = () => {
         </div>
       )}
 
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
+          <h2 className="text-lg font-semibold">Contact Information</h2>
+
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              {profile.contactEmail}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              {profile.countryPhoneCode} {profile.phone}
+            </div>
+
+            {profile.portfolioWebsite && (
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                <Link href={profile.portfolioWebsite} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300">
+                  Portfolio
+                </Link>
+              </div>
+            )}
+
+            {profile.githubUrl && (
+              <div className="flex items-center gap-2">
+                <Github className="h-4 w-4" />
+                <Link href={profile.githubUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
+                  GitHub
+                </Link>
+              </div>
+            )}
+
+            {profile.linkedinUrl && (
+              <div className="flex items-center gap-2">
+                <Linkedin className="h-4 w-4" />
+                <Link href={profile.linkedinUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
+                  LinkedIn
+                </Link>
+              </div>
+            )}
+
+            {profile.twitterUrl && (
+              <div className="flex items-center gap-2">
+                <Twitter className="h-4 w-4" />
+                <Link href={profile.twitterUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
+                  Twitter
+                </Link>
+              </div>
+            )}
+
+            {(profile.otherLinks && profile.otherLinks.length > 0) &&
+              profile.otherLinks.map((link, index) => {
+                return <div key={`${link}-${index}`} className="flex items-center gap-2">
+                  <Link2 className="h-4 w-4" />
+                  <Link href={link} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
+                    {link}
+                  </Link>
+                </div>
+              })
+            }
+          </div>
+        </div>
+      </div>
+
       {profile.skills.length > 0 && (
         <div className="rounded-2xl border border-border/40 bg-card p-6">
           <h2 className="text-lg font-semibold mb-4">Skills</h2>
@@ -162,6 +244,94 @@ const PublicProfile = () => {
           </div>
         </div>
       )}
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <h2 className="text-lg font-semibold mb-6">Professional Preferences</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
+          <div>
+            <p className="font-medium text-foreground mb-1">Preferred Work Mode</p>
+            {profile.preferredWorkMode.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.preferredWorkMode.map((mode) => (
+                  <span
+                    key={mode}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    {getLabel(workModes, mode)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              '—'
+            )}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Willing to Relocate</p>
+            {profile.willingToRelocate ? 'Yes' : 'No'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Current Employment</p>
+            {profile.currentEmployment
+              ? getLabel(currentEmploymentStatuses, profile.currentEmployment)
+              : '—'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Notice Period</p>
+            {profile.noticePeriod
+              ? getLabel(noticePeriods, profile.noticePeriod)
+              : '—'}
+          </div>
+
+          <div>
+            <p className="font-medium text-foreground mb-1">Expected Salary</p>
+            {profile.expectedSalaryMin || profile.expectedSalaryMax
+              ? formatSalary(profile.expectedSalaryMin, profile.expectedSalaryMax)
+              : '—'}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <h2 className="text-lg font-semibold mb-6">Preffered Job Categories</h2>
+
+        {profile.jobCategories.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {profile.jobCategories.map((category) => (
+              <span
+                key={category}
+                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+              >
+                {getLabel(jobCategories, category)}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">—</p>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
+
+        {profile.preferredLocations.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {profile.preferredLocations.map((location) => (
+              <span
+                key={location}
+                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+              >
+                {location}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">—</p>
+        )}
+      </div>
 
       {profile.workExperience.length > 0 && (
         <div className="rounded-2xl border border-border/40 bg-card p-6">

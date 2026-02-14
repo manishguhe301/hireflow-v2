@@ -156,7 +156,7 @@ const Profile = () => {
               <div className="flex items-center gap-2">
                 <Twitter className="h-4 w-4" />
                 <Link href={profile.twitterUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
-                  LinkedIn
+                  Twitter
                 </Link>
               </div>
             )}
@@ -256,7 +256,8 @@ const Profile = () => {
       </div>
 
       <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Job Categories</h2>
+        <h2 className="text-lg font-semibold mb-6">Preferred Job Categories
+</h2>
 
         {profile.jobCategories.length > 0 ? (
           <div className="flex flex-wrap gap-2">
