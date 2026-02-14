@@ -647,34 +647,67 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updatedProfile = await prisma.$transaction(async (tx) => {
-      await tx.workExperience.deleteMany({
-        where: { profileId: existingProfile.id },
-      });
+    // const updatedProfile = await prisma.$transaction(async (tx) => {
+    await prisma.workExperience.deleteMany({
+      where: { profileId: existingProfile.id },
+    });
 
-      await tx.education.deleteMany({
-        where: { profileId: existingProfile.id },
-      });
+    await prisma.education.deleteMany({
+      where: { profileId: existingProfile.id },
+    });
 
-      await tx.certification.deleteMany({
-        where: { profileId: existingProfile.id },
-      });
+    await prisma.certification.deleteMany({
+      where: { profileId: existingProfile.id },
+    });
 
-      return await tx.profile.update({
-        where: { id: existingProfile.id },
-        data: {
+    const updatedProfile = await prisma.profile.update({
+      where: { id: existingProfile.id },
+      data: {
+        name: data.name,
+        contactEmail: data.contactEmail,
+        countryPhoneCode: data.countryPhoneCode,
+        phone: data.phone,
+        country: data.country,
+        city: data.city || null,
+
+        avatar: avatarUrl,
+        avatarPath,
+        resumeUrl,
+        resumePath,
+
+        preferredWorkMode: preferredWorkModeArray,
+        willingToRelocate: data.willingToRelocate === 'true',
+        professionalTitle: data.professionalTitle || null,
+        bio: data.bio || null,
+        yearsOfExperience: (data.yearsOfExperience as ExperienceLevel) || null,
+        currentEmployment:
+          (data.currentEmployment as CurrentEmployment) || null,
+
+        skills: skillsArray,
+
+        portfolioWebsite: data.portfolioWebsite || null,
+        githubUrl: data.githubUrl || null,
+        linkedinUrl: data.linkedinUrl || null,
+        twitterUrl: data.twitterUrl || null,
+        otherLinks: otherLinksArray,
+
+        jobCategories: jobCategoriesArray,
+        preferredLocations: preferredLocationsArray,
+        expectedSalaryMin: data.expectedSalaryMin
+          ? parseInt(data.expectedSalaryMin)
+          : null,
+        expectedSalaryMax: data.expectedSalaryMax
+          ? parseInt(data.expectedSalaryMax)
+          : null,
+        noticePeriod: data.noticePeriod || null,
+        profileCompleted: calculateProfileCompletion({
           name: data.name,
           contactEmail: data.contactEmail,
-          countryPhoneCode: data.countryPhoneCode,
           phone: data.phone,
           country: data.country,
           city: data.city || null,
-
           avatar: avatarUrl,
-          avatarPath,
-          resumeUrl,
-          resumePath,
-
+          resumeUrl: resumeUrl || '',
           preferredWorkMode: preferredWorkModeArray,
           willingToRelocate: data.willingToRelocate === 'true',
           professionalTitle: data.professionalTitle || null,
@@ -683,15 +716,15 @@ export async function PATCH(req: NextRequest) {
             (data.yearsOfExperience as ExperienceLevel) || null,
           currentEmployment:
             (data.currentEmployment as CurrentEmployment) || null,
-
           skills: skillsArray,
-
+          workExperience: workExperienceArray,
+          education: educationArray,
+          certifications: certificationsArray,
           portfolioWebsite: data.portfolioWebsite || null,
           githubUrl: data.githubUrl || null,
           linkedinUrl: data.linkedinUrl || null,
           twitterUrl: data.twitterUrl || null,
           otherLinks: otherLinksArray,
-
           jobCategories: jobCategoriesArray,
           preferredLocations: preferredLocationsArray,
           expectedSalaryMin: data.expectedSalaryMin
@@ -701,88 +734,54 @@ export async function PATCH(req: NextRequest) {
             ? parseInt(data.expectedSalaryMax)
             : null,
           noticePeriod: data.noticePeriod || null,
-          profileCompleted: calculateProfileCompletion({
-            name: data.name,
-            contactEmail: data.contactEmail,
-            phone: data.phone,
-            country: data.country,
-            city: data.city || null,
-            avatar: avatarUrl,
-            resumeUrl: resumeUrl || '',
-            preferredWorkMode: preferredWorkModeArray,
-            willingToRelocate: data.willingToRelocate === 'true',
-            professionalTitle: data.professionalTitle || null,
-            bio: data.bio || null,
-            yearsOfExperience:
-              (data.yearsOfExperience as ExperienceLevel) || null,
-            currentEmployment:
-              (data.currentEmployment as CurrentEmployment) || null,
-            skills: skillsArray,
-            workExperience: workExperienceArray,
-            education: educationArray,
-            certifications: certificationsArray,
-            portfolioWebsite: data.portfolioWebsite || null,
-            githubUrl: data.githubUrl || null,
-            linkedinUrl: data.linkedinUrl || null,
-            twitterUrl: data.twitterUrl || null,
-            otherLinks: otherLinksArray,
-            jobCategories: jobCategoriesArray,
-            preferredLocations: preferredLocationsArray,
-            expectedSalaryMin: data.expectedSalaryMin
-              ? parseInt(data.expectedSalaryMin)
-              : null,
-            expectedSalaryMax: data.expectedSalaryMax
-              ? parseInt(data.expectedSalaryMax)
-              : null,
-            noticePeriod: data.noticePeriod || null,
-          }),
+        }),
 
-          workExperience: {
-            //eslint-disable-next-line @typescript-eslint/no-explicit-any
-            create: workExperienceArray.map((exp: any) => ({
-              company: exp.company,
-              title: exp.title,
-              location: exp.location || null,
-              workMode: exp.workMode,
-              startDate: new Date(exp.startDate),
-              endDate: exp.endDate ? new Date(exp.endDate) : null,
-              description: exp.description || null,
-              isCurrent: exp.isCurrent,
-            })),
-          },
-
-          education: {
-            //eslint-disable-next-line @typescript-eslint/no-explicit-any
-            create: educationArray.map((edu: any) => ({
-              institution: edu.institution,
-              degree: edu.degree,
-              fieldOfStudy: edu.fieldOfStudy || null,
-              startYear: Number(edu.startYear),
-              endYear: Number(edu.endYear) || null,
-              grade: edu.grade || null,
-              isCurrent: edu.isCurrent,
-            })),
-          },
-
-          certifications: {
-            //eslint-disable-next-line @typescript-eslint/no-explicit-any
-            create: certificationsArray.map((cert: any) => ({
-              name: cert.name,
-              organization: cert.organization,
-              issueDate: new Date(cert.issueDate),
-              expiryDate: cert.expiryDate ? new Date(cert.expiryDate) : null,
-              credentialUrl: cert.credentialUrl || null,
-              credentialId: cert.credentialId || null,
-            })),
-          },
+        workExperience: {
+          //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          create: workExperienceArray.map((exp: any) => ({
+            company: exp.company,
+            title: exp.title,
+            location: exp.location || null,
+            workMode: exp.workMode,
+            startDate: new Date(exp.startDate),
+            endDate: exp.endDate ? new Date(exp.endDate) : null,
+            description: exp.description || null,
+            isCurrent: exp.isCurrent,
+          })),
         },
-        include: {
-          workExperience: true,
-          education: true,
-          certifications: true,
+
+        education: {
+          //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          create: educationArray.map((edu: any) => ({
+            institution: edu.institution,
+            degree: edu.degree,
+            fieldOfStudy: edu.fieldOfStudy || null,
+            startYear: Number(edu.startYear),
+            endYear: Number(edu.endYear) || null,
+            grade: edu.grade || null,
+            isCurrent: edu.isCurrent,
+          })),
         },
-      });
+
+        certifications: {
+          //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          create: certificationsArray.map((cert: any) => ({
+            name: cert.name,
+            organization: cert.organization,
+            issueDate: new Date(cert.issueDate),
+            expiryDate: cert.expiryDate ? new Date(cert.expiryDate) : null,
+            credentialUrl: cert.credentialUrl || null,
+            credentialId: cert.credentialId || null,
+          })),
+        },
+      },
+      include: {
+        workExperience: true,
+        education: true,
+        certifications: true,
+      },
     });
+    // });
 
     return NextResponse.json({ success: true, profile: updatedProfile });
   } catch (error) {
