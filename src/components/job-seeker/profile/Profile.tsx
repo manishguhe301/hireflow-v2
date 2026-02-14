@@ -93,7 +93,7 @@ const Profile = () => {
               <Button className='max-sm:w-full' variant="outline">Edit Profile</Button>
             </Link>
 
-            <Link href={`/profile/${profile.userId}`} target="_blank" className='max-sm:w-full'>
+            <Link href={`/user-profile/${profile.userId}`} target="_blank" className='max-sm:w-full'>
               <Button className='max-sm:w-full'>View Public Profile</Button>
             </Link>
           </div>
