@@ -47,7 +47,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
         {user && (
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-medium">{user.name}</span>
+              <span className="text-sm font-medium capitalize">{user.name}</span>
               <span className="text-xs text-muted-foreground">
                 {labels[user.role]}
               </span>

@@ -44,11 +44,11 @@ export const jobCategories = [
 export const links = [
   {
     label: 'Jobs',
-    href: '#jobs',
+    href: '/explore/jobs',
   },
   {
     label: 'Companies',
-    href: '#companies',
+    href: '/explore/companies',
   },
   {
     label: 'How it works',
