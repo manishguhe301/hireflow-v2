@@ -88,7 +88,7 @@ const JobsDirectory = () => {
   }, [search, category, location, page, router])
 
   useEffect(() => {
-    const shouldDebounce = search.length > 0
+    const shouldDebounce = search.length > 0 || location.length > 0
     const delay = shouldDebounce ? 500 : 0
 
     const timer = setTimeout(() => {
