@@ -9,12 +9,14 @@ const DocumentCard = ({
   label,
   hasDocument,
   apiUrl,
-  onReveal
+  onReveal,
+  desc
 }: {
   label: string
   hasDocument: boolean
   apiUrl?: string
   onReveal?: () => Promise<string>
+  desc?: string
 }) => {
 
   const [loading, setLoading] = useState(false)
@@ -64,7 +66,14 @@ const DocumentCard = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <FileText className="h-5 w-5 text-muted-foreground" />
-          <span className="text-sm font-medium">{label}</span>
+          <p className="text-sm font-medium flex flex-col gap-1">
+            {label}
+            {desc &&
+              <span className="text-xs text-muted-foreground">
+                {desc}
+              </span>
+            }
+          </p>
         </div>
 
         {!hasDocument && (
