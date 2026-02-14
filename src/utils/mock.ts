@@ -28,6 +28,7 @@ export const mockCompanies: Company[] = [
     logoPath: null,
     businessDocPath: null,
     taxDocPath: null,
+    city: '',
   },
   {
     id: '65f1b2b2b2b2b2b2b2b2b2b2',
@@ -56,6 +57,7 @@ export const mockCompanies: Company[] = [
     logoPath: null,
     businessDocPath: null,
     taxDocPath: null,
+    city: '',
   },
   {
     id: '65f1c3c3c3c3c3c3c3c3c3c3',
@@ -85,6 +87,7 @@ export const mockCompanies: Company[] = [
     logoPath: null,
     businessDocPath: null,
     taxDocPath: null,
+    city: '',
   },
 ] as const;
 

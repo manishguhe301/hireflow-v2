@@ -183,6 +183,7 @@ model Company {
 
   country          String
   countryPhoneCode String?
+  city             String?
 
   // Contact
   contactEmail      String
