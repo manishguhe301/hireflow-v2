@@ -10,7 +10,7 @@ type JobCardProps = {
   companyName?: string
 }
 
-export default function JobCard({ job, companyName }: JobCardProps) {
+export default function CompanyJobCard({ job, companyName }: JobCardProps) {
   return (
     <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-3 hover:shadow-sm transition">
       <div className="space-y-1">

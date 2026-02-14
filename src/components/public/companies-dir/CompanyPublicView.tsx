@@ -1,7 +1,7 @@
 'use client'
 
 import { Company, Job } from '@prisma/client'
-import JobCard from './JobCard'
+import JobCard from './CompanyJobCard'
 import InfoRow from '../../admin/InfoRow'
 import { ArrowLeft, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
 import { Button } from '../../ui/Button'
