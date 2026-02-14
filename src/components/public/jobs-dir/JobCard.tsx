@@ -1,9 +1,10 @@
 'use client'
 
-import { formatDate, formatSalary } from '@/src/utils/helper'
-import { Building2, MapPin, Briefcase, Clock, DollarSign } from 'lucide-react'
+import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { Building2, MapPin, Briefcase, Clock, DollarSign, Hourglass } from 'lucide-react'
 import Link from 'next/link'
 import { DirJobType } from './JobsDirectory'
+import { employmentTypes, experienceLevels, jobCategories, workModes } from '@/src/utils/utils'
 
 
 export default function JobCard({ job }: { job: DirJobType }) {
@@ -46,7 +47,7 @@ export default function JobCard({ job }: { job: DirJobType }) {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Briefcase className="h-4 w-4 shrink-0" />
           <span className="line-clamp-1">
-            {job.workMode} • {job.employmentType.replace('_', ' ')}
+            {getLabel(workModes, job.workMode)} • {getLabel(employmentTypes, job.employmentType)}
           </span>
         </div>
 
@@ -58,25 +59,24 @@ export default function JobCard({ job }: { job: DirJobType }) {
 
       <div className="flex flex-wrap gap-2 mb-4">
         <span className="inline-flex items-center rounded-full border border-border/40 bg-muted/50 px-2.5 py-0.5 text-xs font-medium">
-          {job.experienceLevel}
+          {getLabel(experienceLevels, job.experienceLevel)}
         </span>
         <span className="inline-flex items-center rounded-full border border-border/40 bg-muted/50 px-2.5 py-0.5 text-xs font-medium">
-          {job.category}
+          {getLabel(jobCategories, job.category)}
         </span>
       </div>
-
       <div className="flex items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
-          <Clock className="h-3.5 w-3.5" />
+          <Hourglass className="h-3.5 w-3.5" />
           <span>
-            {formatDate(job.createdAt)}
+            {formatDate(job.applicationDeadline)}
           </span>
         </div>
-        {/* {job.numberOfOpenings > 1 && (
+        {Number(job.numberOfOpenings) > 1 && (
           <span className="font-medium">
             {job.numberOfOpenings} openings
           </span>
-        )} */}
+        )}
       </div>
     </Link>
   )
