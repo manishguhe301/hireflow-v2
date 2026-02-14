@@ -36,9 +36,9 @@ const SIDEBAR_LINKS: Record<
     { label: 'Profile', href: '/company/profile', icon: <Building2 size={18} /> },
   ],
   JOB_SEEKER: [
-    { label: 'Browse Jobs', href: '/jobs', icon: <Briefcase size={18} /> },
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
-    { label: 'Saved Jobs', href: '/dashboard/saved', icon: <Bookmark size={18} /> },
+    { label: 'Browse Jobs', href: '/jobs', icon: <Briefcase size={18} /> },
+    { label: 'Saved Jobs', href: '/dashboard/saved-jobs', icon: <Bookmark size={18} /> },
     { label: 'Profile', href: '/dashboard/profile', icon: <UserCog size={18} /> },
   ],
 }
@@ -77,9 +77,9 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
       )}
     >
       <div className="mb-8 px-2 flex items-center justify-between">
-        <span className="text-lg font-semibold">
+        <Link href="/" className="text-lg font-semibold">
           HireFlow<span className="text-primary">.</span>
-        </span>
+        </Link>
 
         {mobile && (
           <Button

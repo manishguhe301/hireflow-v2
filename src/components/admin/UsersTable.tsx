@@ -1,11 +1,12 @@
 'use client'
 import { formatDate, labels } from '@/src/utils/helper'
-import { User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
 import { Check, Trash2, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import React from 'react'
 import { Button } from '../ui/Button'
 import { Spinner } from '../elements/Loader'
+import Link from 'next/link'
 
 type UsersTableProps = {
   filteredUsers: User[],
@@ -24,7 +25,6 @@ const UsersTable = ({
     <table className="w-full text-sm">
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
-          {/* <th className="px-6 py-4 text-left">Id</th> */}
           <th className="px-6 py-4 text-left">Name</th>
           <th className="px-6 py-4 text-left">Email</th>
           <th className="px-6 py-4 text-left">Role</th>
@@ -39,9 +39,6 @@ const UsersTable = ({
             key={user.id}
             className='w-full hover:bg-muted/30 transition'
           >
-            {/* <td className="px-6 py-4">
-                          {user.id}
-                        </td> */}
             <td className="px-6 py-4">
               {user.name}
             </td>
@@ -63,29 +60,39 @@ const UsersTable = ({
             <td className="px-6 py-4 text-right">
               {formatDate(user.createdAt)}
             </td>
-            <td className="px-6 py-4 text-right">
-              {
-                user.id !== session?.user?.id ? (
-                  <Button
-                    variant='danger'
-                    className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed bg-transparent! "
-                    disabled={
-                      !!loadingAction ||
-                      user.id === session?.user?.id
-                    }
+            <td className="px-6 py-4 text-right flex items-center gap-2 justify-end">
+              <span className='text-xs text-muted-foreground'>
+                {
+                  user.role === Role.JOB_SEEKER && (
+                    <Link href={`/user-profile/${user.id}`}>View Profile</Link>
+                  )
+                }
+              </span>
+              <span>
+                {
+                  user.id !== session?.user?.id ? (
+                    <Button
+                      variant='danger'
+                      className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed bg-transparent! "
+                      disabled={
+                        !!loadingAction ||
+                        user.id === session?.user?.id
+                      }
 
-                    onClick={() => setDeleteUserId(user.id)}
-                  >
-                    {loadingAction === `delete-${user.id}` ? (
-                      <Spinner className="h-4 w-4" />
-                    ) : (
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    )}
-                  </Button>
-                ) : <div>
-                  <span className="text-muted-foreground">You</span>
-                </div>
-              }
+                      onClick={() => setDeleteUserId(user.id)}
+                    >
+                      {loadingAction === `delete-${user.id}` ? (
+                        <Spinner className="h-4 w-4" />
+                      ) : (
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      )}
+                    </Button>
+                  ) : <div>
+                    <span className="text-muted-foreground">You</span>
+                  </div>
+                }
+              </span>
+
             </td>
           </tr>
         ))}

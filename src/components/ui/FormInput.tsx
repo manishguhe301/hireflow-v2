@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form'
 import clsx from 'clsx'
+import Tooltip from './ToolTip'
 
 type FormInputProps = {
   label: string
@@ -15,6 +16,7 @@ type FormInputProps = {
   className?: string
   minLength?: number
   maxLength?: number
+  toolTipContent?: string
 }
 
 export const FormInput = ({
@@ -27,6 +29,7 @@ export const FormInput = ({
   className,
   minLength,
   maxLength,
+  toolTipContent
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -34,7 +37,15 @@ export const FormInput = ({
 
   return (
     <div className="space-y-1 w-full">
-      <label className="text-sm text-muted-foreground">{label}</label>
+      <label className="flex items-center gap-2 text-sm text-muted-foreground">
+        {label}
+
+        {toolTipContent && <Tooltip
+          content={
+            toolTipContent
+          }
+        />}
+      </label>
 
       <div className="relative">
         <input

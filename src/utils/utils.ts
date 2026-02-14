@@ -1,4 +1,4 @@
-import { ExperienceLevel } from '@prisma/client';
+import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -44,11 +44,11 @@ export const jobCategories = [
 export const links = [
   {
     label: 'Jobs',
-    href: '#jobs',
+    href: '/explore/jobs',
   },
   {
     label: 'Companies',
-    href: '#companies',
+    href: '/explore/companies',
   },
   {
     label: 'How it works',
@@ -158,9 +158,9 @@ export const jobSkills: SelectOption[] = [
 ];
 
 export const workModes = [
-  { label: 'Remote', value: 'REMOTE' },
-  { label: 'Hybrid', value: 'HYBRID' },
-  { label: 'Onsite', value: 'ON_SITE' },
+  { label: 'Remote', value: WorkMode.REMOTE },
+  { label: 'Hybrid', value: WorkMode.HYBRID },
+  { label: 'Onsite', value: WorkMode.ON_SITE },
 ];
 
 export const currencyOptions = [
@@ -172,4 +172,71 @@ export const currencyOptions = [
   { label: 'Canadian Dollar (C$)', value: 'CAD' },
   { label: 'Singapore Dollar (S$)', value: 'SGD' },
   { label: 'UAE Dirham (د.إ)', value: 'AED' },
+];
+
+export const currentEmploymentStatuses = [
+  { label: 'Employed', value: CurrentEmployment.EMPLOYED },
+  { label: 'Unemployed', value: CurrentEmployment.UNEMPLOYED },
+  { label: 'Self-employed', value: CurrentEmployment.SELF_EMPLOYED },
+  { label: 'Freelancer', value: CurrentEmployment.FREELANCER },
+  { label: 'Retired', value: CurrentEmployment.RETIRED },
+  { label: 'Student', value: CurrentEmployment.STUDENT },
+];
+
+export const yearsOfExperiences: { label: string; value: ExperienceLevel }[] = [
+  { label: '0 - 1 years (Entry Level)', value: ExperienceLevel.ENTRY },
+  { label: '1 - 3 years (Mid Level)', value: ExperienceLevel.MID },
+  { label: '3 - 5 years (Senior Level)', value: ExperienceLevel.SENIOR },
+  { label: '5+ years (Lead Level)', value: ExperienceLevel.LEAD },
+];
+
+export const degrees: SelectOption[] = [
+  { label: 'High School', value: 'HIGH_SCHOOL' },
+  { label: 'Diploma', value: 'DIPLOMA' },
+  { label: 'Associate Degree', value: 'ASSOCIATE' },
+  { label: "Bachelor's Degree", value: 'BACHELOR' },
+  { label: "Master's Degree", value: 'MASTER' },
+  { label: 'MBA', value: 'MBA' },
+  { label: 'MCA', value: 'MCA' },
+  { label: 'B.Tech / BE', value: 'BTECH_BE' },
+  { label: 'M.Tech / ME', value: 'MTECH_ME' },
+  { label: 'PhD / Doctorate', value: 'PHD' },
+  { label: 'Professional Certification', value: 'CERTIFICATION' },
+  { label: 'Other', value: 'OTHER' },
+];
+
+export const fieldOfStudies: SelectOption[] = [
+  { label: 'Computer Science', value: 'COMPUTER_SCIENCE' },
+  { label: 'Information Technology', value: 'INFORMATION_TECHNOLOGY' },
+  { label: 'Software Engineering', value: 'SOFTWARE_ENGINEERING' },
+  { label: 'Electronics & Communication', value: 'ECE' },
+  { label: 'Electrical Engineering', value: 'ELECTRICAL' },
+  { label: 'Mechanical Engineering', value: 'MECHANICAL' },
+  { label: 'Civil Engineering', value: 'CIVIL' },
+  { label: 'Data Science', value: 'DATA_SCIENCE' },
+  { label: 'Artificial Intelligence', value: 'AI' },
+  { label: 'Cybersecurity', value: 'CYBER_SECURITY' },
+  { label: 'Business Administration', value: 'BUSINESS_ADMIN' },
+  { label: 'Finance', value: 'FINANCE' },
+  { label: 'Marketing', value: 'MARKETING' },
+  { label: 'Human Resources', value: 'HR' },
+  { label: 'Economics', value: 'ECONOMICS' },
+  { label: 'Mathematics', value: 'MATHEMATICS' },
+  { label: 'Physics', value: 'PHYSICS' },
+  { label: 'Chemistry', value: 'CHEMISTRY' },
+  { label: 'Biotechnology', value: 'BIOTECHNOLOGY' },
+  { label: 'Design', value: 'DESIGN' },
+  { label: 'Architecture', value: 'ARCHITECTURE' },
+  { label: 'Law', value: 'LAW' },
+  { label: 'Medicine', value: 'MEDICINE' },
+  { label: 'Psychology', value: 'PSYCHOLOGY' },
+  { label: 'Other', value: 'OTHER' },
+];
+
+export const noticePeriods: SelectOption[] = [
+  { label: 'Immediate', value: 'IMMEDIATE' },
+  { label: '15 days', value: '15_DAYS' },
+  { label: '1 month', value: '1_MONTH' },
+  { label: '2 months', value: '2_MONTHS' },
+  { label: '3 months', value: '3_MONTHS' },
 ];

@@ -7,35 +7,54 @@ import { Button } from "../ui/Button"
 
 const DocumentCard = ({
   label,
-  companyId,
   hasDocument,
-  type
-
+  apiUrl,
+  onReveal,
+  desc
 }: {
   label: string
-  companyId: string
   hasDocument: boolean
-  type: 'business' | 'tax'
+  apiUrl?: string
+  onReveal?: () => Promise<string>
+  desc?: string
 }) => {
 
   const [loading, setLoading] = useState(false)
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
 
   const handleReveal = async () => {
+    if (!hasDocument) return
+
     setLoading(true)
     try {
-      const res = await AppSdk.getData(
-        `/api/company/${companyId}/document?type=${type}`,
-        null
-      );
+      let url: string | null = null
 
-      if (!res?.url) {
+      // const res = await AppSdk.getData(
+      //   `/api/company/${companyId}/document?type=${type}`,
+      //   null
+      // );
+
+      // if (!res?.url) {
+      //   toast.error('Failed to retrieve document')
+      //   return
+      // }
+
+      // setSignedUrl(res.url)
+      if (onReveal) {
+        url = await onReveal()
+      } else if (apiUrl) {
+        const res = await AppSdk.getData(apiUrl, null)
+        // console.log(res);
+        url = res?.url ?? null
+      }
+      if (!url) {
         toast.error('Failed to retrieve document')
         return
       }
 
-      setSignedUrl(res.url)
+      setSignedUrl(url)
     } catch {
+      // console.log(apiUrl);
       toast.error('Unable to access document')
     } finally {
       setLoading(false)
@@ -47,7 +66,14 @@ const DocumentCard = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <FileText className="h-5 w-5 text-muted-foreground" />
-          <span className="text-sm font-medium">{label}</span>
+          <p className="text-sm font-medium flex flex-col gap-1">
+            {label}
+            {desc &&
+              <span className="text-xs text-muted-foreground">
+                {desc}
+              </span>
+            }
+          </p>
         </div>
 
         {!hasDocument && (

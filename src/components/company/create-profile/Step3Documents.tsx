@@ -25,6 +25,16 @@ const Step3Documents = ({
             : "Upload required documents to verify your company."
         }
       />
+      {!existingCompany && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-600">
+          <p className="font-medium">Important</p>
+          <p className="mt-1">
+            If you navigate to another step and return here, your selected file may
+            appear cleared due to browser security behavior. Please re-check your
+            resume before publishing your profile.
+          </p>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <FileUpload<ProfileFormInputs>
