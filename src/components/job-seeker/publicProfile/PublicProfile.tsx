@@ -9,7 +9,7 @@ import { Button } from '../../ui/Button'
 import { Ban, CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
-import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes } from '@/src/utils/utils'
+import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
 import {
@@ -112,7 +112,7 @@ const PublicProfile = () => {
 
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
 
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -136,9 +136,16 @@ const PublicProfile = () => {
               <p className="text-sm text-muted-foreground">
                 {profile.professionalTitle || '—'}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {profile.city}, {profile.country}
-              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {profile.city}, {profile.country}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Briefcase className="h-3 w-3" />
+                  {getLabel(yearsOfExperiences, profile.yearsOfExperience as string) || '—'}
+                </span>
+              </div>
             </div>
           </div>
 
