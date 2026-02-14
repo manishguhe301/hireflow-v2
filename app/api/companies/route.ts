@@ -29,10 +29,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (country) {
-      where.country = {
-        contains: country,
-        mode: 'insensitive',
-      };
+      where.OR = [
+        { country: { contains: country, mode: 'insensitive' } },
+        { city: { contains: country, mode: 'insensitive' } },
+      ];
     }
 
     const [companies, total] = await Promise.all([
