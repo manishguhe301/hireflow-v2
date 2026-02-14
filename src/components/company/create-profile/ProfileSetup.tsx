@@ -27,6 +27,7 @@ export type ProfileFormInputs = {
   contactEmail: string,
   contactPhone: string,
   country: string,
+  city: string,
   countryPhoneCode: string,
   address: string,
 
@@ -87,6 +88,7 @@ const ProfileSetup = () => {
       contactEmail: session?.user?.email || '',
       contactPhone: '', //optional
       country: '',
+      city: '',
       countryPhoneCode: '',
       address: '', //optional
 
@@ -126,6 +128,7 @@ const ProfileSetup = () => {
       setValue('contactEmail', company.contactEmail)
       setValue('contactPhone', company.contactPhone || '')
       setValue('country', company.country)
+      setValue('city', company.city || '')
       setValue('countryPhoneCode', company?.countryPhoneCode || '')
       setValue('address', company.address || '')
     }
@@ -164,6 +167,7 @@ const ProfileSetup = () => {
       formData.append('contactEmail', data.contactEmail)
       formData.append('contactPhone', data.contactPhone || '')
       formData.append('country', data.country)
+      formData.append('city', data.city || '')
       formData.append('countryPhoneCode', data.countryPhoneCode)
       formData.append('address', data.address || '')
 

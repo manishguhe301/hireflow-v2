@@ -78,6 +78,10 @@ const Step2Contact = ({
             error={errors.contactEmail}
             disabled
           />
+
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {loading ? (
             <div className="flex flex-col gap-2">
               <label className="text-sm text-muted-foreground">
@@ -98,6 +102,13 @@ const Step2Contact = ({
               error={errors.country}
             />
           )}
+
+          <FormInput
+            label="City (Optional)"
+            placeholder="for example, New York"
+            register={register('city')}
+            error={errors.city}
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

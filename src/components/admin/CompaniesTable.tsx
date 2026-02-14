@@ -55,7 +55,8 @@ const CompaniesTable = ({
                 </div>
               </td>
               <td className="px-6 py-4 capitalize">{companyIndustry}</td>
-              <td className="px-6 py-4">{company.country}</td>
+              <td className="px-6 py-4">{company.city && ` ${company.city}` + ', '}
+                {company.country} </td>
               <td className="px-6 py-4">
                 <span
                   className={clsx(
