@@ -2,9 +2,9 @@
 
 import { Company, Job } from '@prisma/client'
 import JobCard from './JobCard'
-import InfoRow from '../admin/InfoRow'
+import InfoRow from '../../admin/InfoRow'
 import { ArrowLeft, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
-import { Button } from '../ui/Button'
+import { Button } from '../../ui/Button'
 import { useRouter } from 'next/navigation'
 
 type CompanyPublicViewProps = {

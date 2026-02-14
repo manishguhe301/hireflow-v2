@@ -1,5 +1,5 @@
 import { Spinner } from '@/src/components/elements/Loader'
-import CompaniesDirectory from '@/src/components/public/CompaniesDirectory'
+import CompaniesDirectory from '@/src/components/public/companies-dir/CompaniesDirectory'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 
