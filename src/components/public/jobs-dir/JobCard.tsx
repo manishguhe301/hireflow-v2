@@ -1,36 +1,12 @@
-// src/components/explore/jobs/JobCard.tsx
 'use client'
 
 import { formatDate, formatSalary } from '@/src/utils/helper'
 import { Building2, MapPin, Briefcase, Clock, DollarSign } from 'lucide-react'
 import Link from 'next/link'
+import { DirJobType } from './JobsDirectory'
 
-type JobCardProps = {
-  job: {
-    id: string
-    title: string
-    category: string
-    company: {
-      name: string
-      logo: string | null
-      website: string | null
-      id: string
-    }
-    country: string
-    city: string | null
-    workMode: string
-    employmentType: string
-    applicationDeadline: string | null
-    experienceLevel: string
-    numberOfOpenings: number
-    slug: string
-    salaryMax: number | null
-    salaryMin: number | null
-    createdAt: string
-  }
-}
 
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard({ job }: { job: DirJobType }) {
   const location = job.city ? `${job.city}, ${job.country}` : job.country
 
   return (
@@ -38,7 +14,6 @@ export default function JobCard({ job }: JobCardProps) {
       href={`/jobs/${job.slug}`}
       className="group block rounded-2xl border border-border/40 bg-card p-6 shadow-sm transition hover:border-border/60 hover:shadow-md"
     >
-      {/* Company Logo & Info */}
       <div className="mb-4 flex items-start gap-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
           {job.company.logo ? (
@@ -62,7 +37,6 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
 
-      {/* Job Details */}
       <div className="space-y-2 mb-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 shrink-0" />
@@ -82,7 +56,6 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-2 mb-4">
         <span className="inline-flex items-center rounded-full border border-border/40 bg-muted/50 px-2.5 py-0.5 text-xs font-medium">
           {job.experienceLevel}
@@ -92,7 +65,6 @@ export default function JobCard({ job }: JobCardProps) {
         </span>
       </div>
 
-      {/* Footer */}
       <div className="flex items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <Clock className="h-3.5 w-3.5" />
@@ -100,11 +72,11 @@ export default function JobCard({ job }: JobCardProps) {
             {formatDate(job.createdAt)}
           </span>
         </div>
-        {job.numberOfOpenings > 1 && (
+        {/* {job.numberOfOpenings > 1 && (
           <span className="font-medium">
             {job.numberOfOpenings} openings
           </span>
-        )}
+        )} */}
       </div>
     </Link>
   )
