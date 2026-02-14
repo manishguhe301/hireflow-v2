@@ -7,6 +7,7 @@ import {
   Briefcase,
   DollarSign,
   Hourglass,
+  Banknote,
 } from 'lucide-react'
 import Link from 'next/link'
 import { DirJobType } from './JobsDirectory'
@@ -64,7 +65,7 @@ export default function JobCard({ job }: { job: DirJobType }) {
 
       <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
         <div className="flex items-center gap-1 font-medium text-foreground">
-          <DollarSign className="h-4 w-4 text-primary" />
+          <Banknote className="h-4 w-4 text-primary" />
           {formatSalary(job.salaryMin, job.salaryMax)}
         </div>
 
