@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { setCompany } from '@/src/store/slices/companySlice'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { CompanyStatus } from '@prisma/client'
+import clsx from 'clsx'
 
 export type ProfileFormInputs = {
   name: string,
@@ -274,7 +275,9 @@ const ProfileSetup = () => {
           }
         </form>
 
-        <div className="flex items-center justify-end gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0">
+        <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0 max-md:flex-col max-md:gap-4",
+          currentStep === 0 && 'justify-end'
+        )}>
           {currentStep > 0 && (
             <Button
               onClick={handlePrev}
@@ -285,31 +288,45 @@ const ProfileSetup = () => {
               Previous
             </Button>
           )}
-          {currentStep < 3 ? (
-            <Button
-              disabled={isSubmitting}
-              onClick={handleNext}
-              className="max-md:w-1/2"
-            >
-              Next
-            </Button>
-          ) : (
-            <Button
+          <div className="flex items-center gap-3 max-sm:flex-col max-md:w-full">
+
+            {currentStep !== 3 && < Button
+              type="button"
               disabled={isSubmitting}
               onClick={handleSubmit(handleFormSubmit)}
-              variant="primary"
-              className="max-md:w-1/2"
+              variant="outline"
+              className="max-md:w-full text-primary border border-primary"
             >
-              {isSubmitting
-                ? 'Submitting...'
-                : company?.status === CompanyStatus.REJECTED
-                  ? 'Resubmit for Approval'
-                  : company?.status === CompanyStatus.APPROVED
-                    ? 'Save Changes'
-                    : 'Submit for Approval'
-              }
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
-          )}
+            }
+
+            {currentStep < 3 ? (
+              <Button
+                disabled={isSubmitting}
+                onClick={handleNext}
+                className="max-md:w-1/2"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                disabled={isSubmitting}
+                onClick={handleSubmit(handleFormSubmit)}
+                variant="primary"
+                className="max-md:w-1/2"
+              >
+                {isSubmitting
+                  ? 'Submitting...'
+                  : company?.status === CompanyStatus.REJECTED
+                    ? 'Resubmit for Approval'
+                    : company?.status === CompanyStatus.APPROVED
+                      ? 'Save Changes'
+                      : 'Submit for Approval'
+                }
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
