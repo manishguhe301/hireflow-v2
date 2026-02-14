@@ -270,15 +270,13 @@ const CompanyDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DocumentCard
             label="Business Registration"
-            companyId={company.id}
             hasDocument={Boolean(company.businessDocPath)}
-            type='business'
+            apiUrl={`/api/company/${company.id}/document?type=business`}
           />
           <DocumentCard
             label="Tax Document"
-            companyId={company.id}
             hasDocument={Boolean(company.taxDocPath)}
-            type='tax'
+            apiUrl={`/api/company/${company.id}/document?type=tax`}
           />
         </div>
       </section>

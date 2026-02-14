@@ -13,11 +13,13 @@ const Step2JobRequirements = ({
   errors,
   watch,
   setValue,
+  isEditMode
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
   setValue: UseFormSetValue<JobFormInputs>
+  isEditMode?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -53,7 +55,7 @@ const Step2JobRequirements = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormSelect
-            label='Experience Level (by default entry level)'
+            label={isEditMode ? 'Experience Level' : 'Experience Level (by default entry level)'}
             register={register('experienceLevel', { required: 'Experience Level is required' })}
             options={
               experienceLevels
@@ -61,7 +63,7 @@ const Step2JobRequirements = ({
             error={errors.experienceLevel}
           />
           <FormSelect
-            label='Employment Type (by default full-time)'
+            label={isEditMode ? 'Employment Type' : 'Employment Type (by default full-time)'}
             register={register('employmentType', { required: 'Employment Type is required' })}
             options={
               employmentTypes

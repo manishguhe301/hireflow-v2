@@ -147,16 +147,14 @@ const CompanyProfileView = () => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <DocumentCard
             label="Business Registration"
-            companyId={company.id}
             hasDocument={!!company.businessDocPath}
-            type="business"
+            apiUrl={`/api/company/${company.id}/document?type=business`}
           />
 
           <DocumentCard
             label="Tax Document"
-            companyId={company.id}
             hasDocument={!!company.taxDocPath}
-            type="tax"
+            apiUrl={`/api/company/${company.id}/document?type=tax`}
           />
         </div>
       </div>

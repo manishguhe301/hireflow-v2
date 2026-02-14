@@ -11,6 +11,7 @@ import clsx from 'clsx'
 import { UploadCloud, CheckCircle, X, FileText } from 'lucide-react'
 import Image from 'next/image'
 import { formatFileSize, getFileNameFromPath, validateFileSize, validateFileType } from '@/src/utils/helper'
+import Tooltip from './ToolTip'
 
 type FileUploadProps<T extends FieldValues> = {
   label: string
@@ -23,6 +24,7 @@ type FileUploadProps<T extends FieldValues> = {
   maxSizeMB?: number
   existingFileUrl?: string | null
   isImage?: boolean
+  toolTipContent?: string
 }
 
 export function FileUpload<T extends FieldValues>({
@@ -36,6 +38,7 @@ export function FileUpload<T extends FieldValues>({
   maxSizeMB,
   existingFileUrl,
   isImage = false,
+  toolTipContent
 }: FileUploadProps<T>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -76,9 +79,16 @@ export function FileUpload<T extends FieldValues>({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">
-        {label}
-        {required && <span className="ml-1 text-destructive">*</span>}
+      <label className="text-sm text-muted-foreground flex items-center gap-1">
+        <span className='flex flex-row items-center'>
+          {label}
+          {required && <span className="ml-1 text-destructive">*</span>}
+        </span>
+        <span>
+          {
+            toolTipContent && <Tooltip content={toolTipContent} />
+          }
+        </span>
       </label>
 
       {showExisting && (
