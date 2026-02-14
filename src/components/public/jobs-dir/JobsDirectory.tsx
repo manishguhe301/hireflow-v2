@@ -6,8 +6,9 @@ import { FormSelect } from '../../ui/FormSelect'
 import { jobCategories } from '@/src/utils/utils'
 import { Spinner } from '../../elements/Loader'
 import Pagination from '../../ui/Pagination'
+import JobCard from './JobCard'
 
-type Job = {
+export type DirJobType = {
   id: string,
   title: string,
   category: string,
@@ -48,7 +49,7 @@ const JobsDirectory = () => {
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
   const [isLoading, setIsLoading] = useState(true)
-  const [jobs, setJobs] = useState<Job[]>([])
+  const [jobs, setJobs] = useState<DirJobType[]>([])
 
   const fetchJobs = useCallback(async () => {
     setIsLoading(true)
@@ -164,9 +165,7 @@ const JobsDirectory = () => {
       {!isLoading && jobs.length > 0 && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {jobs.map((job) => (
-            <div key={job.id}>
-              {job.title}
-            </div>
+            <JobCard key={job.id} job={job} />
           ))}
         </div>
       )}
