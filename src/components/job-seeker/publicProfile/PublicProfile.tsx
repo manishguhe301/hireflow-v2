@@ -8,7 +8,7 @@ import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
 import { Ban, CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { formatSalary, getLabel } from '@/src/utils/helper'
+import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes } from '@/src/utils/utils'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
@@ -419,8 +419,8 @@ const PublicProfile = () => {
             <p><span className="font-medium text-foreground">User ID:</span> {profile.userId}</p>
             <p><span className="font-medium text-foreground">Profile Completion:</span> {profile.profileCompleted}%</p>
             <p><span className="font-medium text-foreground">Visibility:</span> {profile.isPublic ? 'Public' : 'Private'}</p>
-            <p><span className="font-medium text-foreground">Created:</span> {new Date(profile.createdAt).toLocaleDateString()}</p>
-            <p><span className="font-medium text-foreground">Updated:</span> {new Date(profile.updatedAt).toLocaleDateString()}</p>
+            <p><span className="font-medium text-foreground">Created:</span> {formatDate(profile.createdAt)}</p>
+            <p><span className="font-medium text-foreground">Updated:</span> {formatDate(profile.updatedAt)}</p>
           </div>
         </div>
       )}
