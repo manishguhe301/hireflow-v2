@@ -7,6 +7,7 @@ import { jobCategories } from '@/src/utils/utils'
 import { Spinner } from '../../elements/Loader'
 import Pagination from '../../ui/Pagination'
 import JobCard from './JobCard'
+import FilterSidebar from './FilterSidebar'
 
 export type DirJobType = {
   id: string,
@@ -40,6 +41,16 @@ type Pagination = {
   totalPages: number
 }
 
+type Filters = {
+  workModes: string[]
+  employmentTypes: string[]
+  experienceLevels: string[]
+  salaryMin: number
+  salaryMax: number
+  datePosted: string
+  sortBy: string
+}
+
 const JobsDirectory = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -51,6 +62,17 @@ const JobsDirectory = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [jobs, setJobs] = useState<DirJobType[]>([])
 
+  const [filters, setFilters] = useState<Filters>({
+    workModes: [],
+    employmentTypes: [],
+    experienceLevels: [],
+    salaryMin: 0,
+    salaryMax: 10000000,
+    datePosted: '',
+    sortBy: 'recent',
+  })
+
+
   const fetchJobs = useCallback(async () => {
     setIsLoading(true)
     try {
@@ -58,6 +80,14 @@ const JobsDirectory = () => {
       if (search) params.set('search', search)
       if (category) params.set('category', category)
       if (location) params.set('country', location)
+      if (filters.workModes.length) params.set('workModes', filters.workModes.join(','))
+      if (filters.employmentTypes.length) params.set('employmentTypes', filters.employmentTypes.join(','))
+      if (filters.experienceLevels.length) params.set('experienceLevels', filters.experienceLevels.join(','))
+      if (filters.salaryMin > 0) params.set('salaryMin', filters.salaryMin.toString())
+      if (filters.salaryMax < 10000000) params.set('salaryMax', filters.salaryMax.toString())
+      if (filters.datePosted) params.set('datePosted', filters.datePosted)
+      if (filters.sortBy) params.set('sortBy', filters.sortBy)
+
       params.set('page', page.toString())
       // params.set('limit', '12')
       params.set('limit', '12')
@@ -75,7 +105,7 @@ const JobsDirectory = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [search, category, location, page])
+  }, [search, category, location, page, filters])
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -88,7 +118,7 @@ const JobsDirectory = () => {
   }, [search, category, location, page, router])
 
   useEffect(() => {
-    const shouldDebounce = search.length > 0 || location.length > 0
+    const shouldDebounce = search.length > 0 || location.length > 0 || filters.workModes.length > 0 || filters.employmentTypes.length > 0 || filters.experienceLevels.length > 0 || filters.salaryMin > 0 || filters.salaryMax < 10000000 || filters.datePosted || filters.sortBy
     const delay = shouldDebounce ? 500 : 0
 
     const timer = setTimeout(() => {
@@ -98,6 +128,23 @@ const JobsDirectory = () => {
     return () => clearTimeout(timer)
   }, [search, category, location, page, fetchJobs])
 
+  const handleClearAllFilters = () => {
+    setFilters({
+      workModes: [],
+      employmentTypes: [],
+      experienceLevels: [],
+      salaryMin: 0,
+      salaryMax: 10000000,
+      datePosted: '',
+      sortBy: 'recent',
+    })
+    setSearch('')
+    setCategory('')
+    setLocation('')
+    setPage(1)
+  }
+
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
       <div className="text-center space-y-2">
@@ -106,6 +153,7 @@ const JobsDirectory = () => {
           Find your next opportunity today
         </p>
       </div>
+
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="relative md:col-span-2">
