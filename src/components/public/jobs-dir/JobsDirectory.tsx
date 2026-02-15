@@ -196,12 +196,12 @@ const JobsDirectory = () => {
         </div>
       </div>
 
-      {!isLoading && pagination && (
+      {!isLoading && pagination ? (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
         </p>
-      )}
+      ) : <p className="text-sm text-muted-foreground">Loading...</p>}
 
       <div className="flex gap-6">
         <FilterSidebar
@@ -218,7 +218,7 @@ const JobsDirectory = () => {
           )}
 
           {!isLoading && jobs.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
