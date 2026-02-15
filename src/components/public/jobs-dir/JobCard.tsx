@@ -25,7 +25,7 @@ export default function JobCard({ job }: { job: DirJobType }) {
 
   return (
     <Link
-      href={`/jobs/${job.slug}`}
+      href={`/explore/jobs/${job.slug}`}
       className="group block rounded-2xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
     >
       <div className="flex items-start gap-4">
