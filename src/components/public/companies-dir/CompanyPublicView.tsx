@@ -1,11 +1,11 @@
 'use client'
 
 import { Company, Job } from '@prisma/client'
-import JobCard from './JobCard'
-import InfoRow from '../admin/InfoRow'
+import InfoRow from '../../admin/InfoRow'
 import { ArrowLeft, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
-import { Button } from '../ui/Button'
+import { Button } from '../../ui/Button'
 import { useRouter } from 'next/navigation'
+import CompanyJobCard from './CompanyJobCard'
 
 type CompanyPublicViewProps = {
   company: Company,
@@ -16,7 +16,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10 px-4 py-6">
+    <div className="mx-auto max-w-7xl space-y-10 px-4 py-6">
       <Button
         variant="ghost"
         onClick={() => router.back()}
@@ -48,7 +48,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
                 {company.name}
               </h1>
               <p className="text-sm text-muted-foreground capitalize">
-                {company.industry} • {company.country}
+                {company.industry} • {company.city && ` ${company.city}` + ', '}  {company.country}
               </p>
             </div>
           </div>
@@ -69,7 +69,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
 
           <div className="space-y-2 text-sm">
             <InfoRow icon={<Building2 />} label="Industry" value={company.industry} />
-            <InfoRow icon={<MapPin />} label="Location" value={company.country} />
+            <InfoRow icon={<MapPin />} label="Location" value={`${company.city && `${company.city}, `}` + company.country} />
             <InfoRow icon={<Users />} label="Company Size" value={company.companySize} />
             <InfoRow
               icon={<Calendar />}
@@ -112,7 +112,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {jobs.map((job) => (
-              <JobCard
+              <CompanyJobCard
                 key={job.id}
                 job={job}
                 companyName={company.name}

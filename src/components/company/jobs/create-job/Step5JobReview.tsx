@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { Pencil } from 'lucide-react'
 import { UseFormWatch } from 'react-hook-form'
 import { JobFormInputs } from './CreateJobForm'
-import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { formatDate, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
 import { employmentTypes, experienceLevels, jobCategories, jobSkills, workModes } from '@/src/utils/utils'
 import StepHeader from '@/src/components/ui/StepHeader'
@@ -91,7 +91,9 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
         {data.responsibilities && (
           <div className="sm:col-span-2">
             <p className="text-xs text-muted-foreground mb-1">Responsibilities</p>
-            <RichTextRenderer content={data.responsibilities} />
+            {!isRichTextEmpty(data.responsibilities) ? <RichTextRenderer content={data.responsibilities} /> : <span>
+              -
+            </span>}
           </div>
         )}
       </Section>

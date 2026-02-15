@@ -29,10 +29,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (country) {
-      where.country = {
-        contains: country,
-        mode: 'insensitive',
-      };
+      where.OR = [
+        { country: { contains: country, mode: 'insensitive' } },
+        { city: { contains: country, mode: 'insensitive' } },
+      ];
     }
 
     const [companies, total] = await Promise.all([
@@ -45,6 +45,7 @@ export async function GET(req: NextRequest) {
           industry: true,
           country: true,
           companySize: true,
+          city: true,
           _count: {
             select: {
               jobs: {
@@ -70,6 +71,7 @@ export async function GET(req: NextRequest) {
       logo: company.logo,
       industry: company.industry,
       country: company.country,
+      city: company.city,
       companySize: company.companySize,
       jobCount: company._count.jobs,
     }));

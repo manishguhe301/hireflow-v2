@@ -11,6 +11,7 @@ type CompanyCardProps = {
     industry: string
     country: string
     companySize: string
+    city?: string
     jobCount: number
   }
 }
@@ -48,7 +49,9 @@ export default function CompanyCard({ company }: CompanyCardProps) {
 
           <div className="flex items-center justify-center gap-1.5">
             <MapPin className="h-4 w-4 shrink-0" />
-            <span className="line-clamp-1">{company.country}</span>
+            <span className="line-clamp-1">
+              {company.city && ` ${company.city}` + ', '}{company.country}
+            </span>
           </div>
         </div>
 
