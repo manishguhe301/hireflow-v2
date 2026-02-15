@@ -16,7 +16,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
 
   return (
-    <div className="mx-auto max-w-7xl space-y-10 px-4 py-6">
+    <div className="mx-auto max-w-5xl space-y-10 px-4 py-6">
       <Button
         variant="ghost"
         onClick={() => router.back()}

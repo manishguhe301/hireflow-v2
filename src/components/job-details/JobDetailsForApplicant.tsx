@@ -127,7 +127,7 @@ const JobDetailsForApplicant = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
+    <div className="mx-auto max-w-5xl px-4 py-10 space-y-10">
       <Button
         variant="ghost"
         onClick={() => router.push('/explore/jobs')}
@@ -219,7 +219,7 @@ const JobDetailsForApplicant = () => {
         </div>
 
         <div className="space-y-6">
-          <div className="sticky top-6 space-y-6">
+          <div className="sticky top-12 space-y-6">
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
               <button
