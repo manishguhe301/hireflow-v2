@@ -92,7 +92,7 @@ const JobsDirectory = () => {
 
       params.set('page', page.toString())
       // params.set('limit', '12')
-      params.set('limit', '1')
+      params.set('limit', '12')
 
       const res = await fetch(
         `/api/jobs?${params.toString()}`
@@ -175,7 +175,7 @@ const JobsDirectory = () => {
 
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
+    <div className="mx-auto max-w-5xl px-4 py-10 space-y-10">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Explore Jobs</h1>
         <p className="text-muted-foreground text-lg">
@@ -290,7 +290,7 @@ const JobsDirectory = () => {
           )}
 
           {!isLoading && jobs.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 ">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}

@@ -28,7 +28,7 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
   }
 
   return (
-    <aside className="w-72 shrink-0 space-y-6 max-md:w-full">
+    <aside className="w-60 shrink-0 space-y-6 max-md:w-full">
       <div className="rounded-2xl border border-border/40 bg-card p-6 sticky top-4">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-semibold text-lg">Filters</h3>
