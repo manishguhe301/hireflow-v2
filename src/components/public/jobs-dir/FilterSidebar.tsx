@@ -94,6 +94,7 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
                   value={filters.salaryMin}
                   onChange={(e) => onFilterChange({ ...filters, salaryMin: parseInt(e.target.value) || 0 })}
                   placeholder="Min"
+                  min={0}
                   className="w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"
                 />
               </div>
@@ -104,6 +105,7 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
                   value={filters.salaryMax}
                   onChange={(e) => onFilterChange({ ...filters, salaryMax: parseInt(e.target.value) || 10000000 })}
                   placeholder="Max"
+                  max={10000000}
                   className="w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"
                 />
               </div>
