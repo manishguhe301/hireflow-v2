@@ -8,6 +8,7 @@ import { Spinner } from '../../elements/Loader'
 import Pagination from '../../ui/Pagination'
 import JobCard from './JobCard'
 import FilterSidebar from './FilterSidebar'
+import { Button } from '../../ui/Button'
 
 export type DirJobType = {
   id: string,
@@ -61,6 +62,7 @@ const JobsDirectory = () => {
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
   const [isLoading, setIsLoading] = useState(true)
   const [jobs, setJobs] = useState<DirJobType[]>([])
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
 
   const [filters, setFilters] = useState<Filters>({
     workModes: [],
@@ -124,6 +126,7 @@ const JobsDirectory = () => {
     const timer = setTimeout(() => {
       fetchJobs()
     }, delay)
+    if (isMobileFilterOpen) setIsMobileFilterOpen(false)
 
     return () => clearTimeout(timer)
   }, [search, category, location, page, fetchJobs])
@@ -144,6 +147,28 @@ const JobsDirectory = () => {
     setPage(1)
   }
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileFilterOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+  }, [isMobileFilterOpen])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
@@ -194,6 +219,15 @@ const JobsDirectory = () => {
             className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
           />
         </div>
+        <div className="md:hidden flex justify-end py-4">
+          <Button
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="flex items-center gap-2 rounded-xl border border-border/40 bg-card px-4 py-2 text-sm"
+          >
+            Filters
+          </Button>
+        </div>
+
       </div>
 
       {!isLoading && pagination ? (
@@ -203,12 +237,46 @@ const JobsDirectory = () => {
         </p>
       ) : <p className="text-sm text-muted-foreground">Loading...</p>}
 
-      <div className="flex gap-6">
-        <FilterSidebar
-          filters={filters}
-          onFilterChange={setFilters}
-          onClearAll={handleClearAllFilters}
-        />
+      <div className="relative flex gap-6">
+        <div className="hidden lg:block">
+          <FilterSidebar
+            filters={filters}
+            onFilterChange={setFilters}
+            onClearAll={handleClearAllFilters}
+          />
+        </div>
+
+        {isMobileFilterOpen && (
+          <div className='md:hidden'>
+            <div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setIsMobileFilterOpen(false)}
+            />
+
+            <div
+              className={`fixed top-0 left-0 h-full w-full max-w-sm bg-background z-50 shadow-xl overflow-y-auto transform transition-transform duration-300 ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}
+            >
+              <div className="p-6 border-b border-border/40 flex justify-between items-center">
+                <h3 className="font-semibold text-lg">Filters</h3>
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="text-sm text-muted-foreground"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="p-6">
+                <FilterSidebar
+                  filters={filters}
+                  onFilterChange={setFilters}
+                  onClearAll={handleClearAllFilters}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         <main className="flex-1 min-w-0">
           {isLoading && (
