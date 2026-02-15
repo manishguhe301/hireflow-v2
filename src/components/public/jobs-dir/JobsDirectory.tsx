@@ -203,51 +203,57 @@ const JobsDirectory = () => {
         </p>
       )}
 
-
-      {isLoading && (
-        <div className="flex justify-center py-24">
-          <Spinner className="h-8 w-8" />
-        </div>
-      )}
-
-      {!isLoading && jobs.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-      )}
-
-      {!isLoading && jobs.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-            <Briefcase className="h-10 w-10 text-muted-foreground" />
-          </div>
-          <h3 className="text-xl font-semibold mb-1">No jobs found</h3>
-          <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-            Try adjusting your search or filters to find what you&apos;re looking for.
-          </p>
-          <button
-            onClick={() => {
-              setSearch('')
-              setCategory('')
-              setLocation('')
-              setPage(1)
-            }}
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            Clear all filters
-          </button>
-        </div>
-      )}
-
-      {!isLoading && pagination && (
-        <Pagination
-          page={page}
-          totalPages={pagination.totalPages}
-          onPageChange={(p) => setPage(p)}
+      <div className="flex gap-6">
+        <FilterSidebar
+          filters={filters}
+          onFilterChange={setFilters}
+          onClearAll={handleClearAllFilters}
         />
-      )}
+
+        <main className="flex-1 min-w-0">
+          {isLoading && (
+            <div className="flex justify-center py-24">
+              <Spinner className="h-8 w-8" />
+            </div>
+          )}
+
+          {!isLoading && jobs.length > 0 && (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+              {jobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+          )}
+
+          {!isLoading && jobs.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-24 text-center w-full">
+              <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+                <Briefcase className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold mb-1">No jobs found</h3>
+              <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+                Try adjusting your search or filters to find what you&apos;re looking for.
+              </p>
+              <button
+                onClick={handleClearAllFilters}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+
+          {!isLoading && pagination && pagination.totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination
+                page={page}
+                totalPages={pagination.totalPages}
+                onPageChange={(p) => setPage(p)}
+              />
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   )
 }
