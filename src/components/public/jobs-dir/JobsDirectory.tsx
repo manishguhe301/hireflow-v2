@@ -218,7 +218,7 @@ const JobsDirectory = () => {
           )}
 
           {!isLoading && jobs.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
