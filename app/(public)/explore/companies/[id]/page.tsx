@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import CompanyPublicView from '@/src/components/public/CompanyPublicView'
+import CompanyPublicView from '@/src/components/public/companies-dir/CompanyPublicView'
 import prisma from '@/src/lib/prisma'
 
 async function getCompany(id: string) {

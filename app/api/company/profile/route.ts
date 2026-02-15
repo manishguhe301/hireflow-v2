@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
       contactPhone: formData.get('contactPhone') as string,
       address: formData.get('address') as string,
       country: formData.get('country') as string,
+      city: formData.get('city') as string,
       countryPhoneCode: formData.get('countryPhoneCode') as string,
     };
 
@@ -116,6 +117,7 @@ export async function POST(req: NextRequest) {
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone || null,
         country: data.country,
+        city: data.city || null,
         countryPhoneCode: data.countryPhoneCode,
         address: data.address || null,
 
@@ -186,6 +188,7 @@ export async function PATCH(req: NextRequest) {
       contactPhone: formData.get('contactPhone') as string,
       address: formData.get('address') as string,
       country: formData.get('country') as string,
+      city: formData.get('city') as string,
       countryPhoneCode: formData.get('countryPhoneCode') as string,
     };
 
@@ -270,6 +273,7 @@ export async function PATCH(req: NextRequest) {
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone || null,
         country: data.country,
+        city: data.city || null,
         countryPhoneCode: data.countryPhoneCode,
         address: data.address || null,
         logo: logoUrl,

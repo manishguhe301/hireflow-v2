@@ -193,7 +193,7 @@ const CompanyDetails = () => {
                 {company.name}
               </h1>
               <p className="text-sm text-muted-foreground capitalize">
-                {companyIndustry} • {company.country}
+                {companyIndustry} •  {company.city && ` ${company.city}` + ', '} {company.country}
               </p>
             </div>
           </div>
@@ -243,7 +243,6 @@ const CompanyDetails = () => {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InfoCard title="Company Information">
           <InfoRow icon={<Building2 />} label="Industry" value={companyIndustry} />
-          <InfoRow icon={<MapPin />} label="Location" value={company.country} />
           <InfoRow label="Company Size" icon={<Users />} value={company.companySize} />
           <InfoRow label="Founded" icon={<Calendar />} value={company.foundedYear?.toString() || '—'} />
         </InfoCard>
