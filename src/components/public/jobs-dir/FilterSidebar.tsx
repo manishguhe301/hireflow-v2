@@ -150,7 +150,7 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
                   name="sortBy"
                   checked={filters.sortBy === option.value}
                   onChange={() => onFilterChange({ ...filters, sortBy: option.value })}
-                  className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30 text-white!" />
+                  className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30 text-white! " />
                 <span className="text-sm">{option.label}</span>
               </label>
             ))}
