@@ -92,7 +92,7 @@ const JobsDirectory = () => {
 
       params.set('page', page.toString())
       // params.set('limit', '12')
-      params.set('limit', '12')
+      params.set('limit', '1')
 
       const res = await fetch(
         `/api/jobs?${params.toString()}`
@@ -101,7 +101,6 @@ const JobsDirectory = () => {
 
       setJobs(data.jobs || [])
       setPagination(data.pagination)
-      console.log(data);
     } catch (error) {
       console.error('Error fetching companies:', error)
     } finally {
@@ -169,6 +168,11 @@ const JobsDirectory = () => {
       document.body.style.overflow = ''
     }
   }, [isMobileFilterOpen])
+
+  useEffect(() => {
+    setPage(1)
+  }, [filters])
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
@@ -286,7 +290,7 @@ const JobsDirectory = () => {
           )}
 
           {!isLoading && jobs.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 ">
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
