@@ -8,6 +8,14 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || '';
     const category = searchParams.get('category') || '';
     const country = searchParams.get('country') || '';
+    const workModes = searchParams.get('workModes') || '';
+    const employmentTypes = searchParams.get('employmentTypes') || '';
+    const experienceLevels = searchParams.get('experienceLevels') || '';
+    const salaryMin = searchParams.get('salaryMin') || '';
+    const salaryMax = searchParams.get('salaryMax') || '';
+    const datePosted = searchParams.get('datePosted') || '';
+    const sortBy = searchParams.get('sortBy') || 'recent';
+
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const skip = (page - 1) * limit;
@@ -39,6 +47,51 @@ export async function GET(req: NextRequest) {
       ];
     }
 
+    if (workModes) {
+      where.workMode = { in: workModes.split(',') };
+    }
+
+    if (employmentTypes) {
+      where.employmentType = { in: employmentTypes.split(',') };
+    }
+
+    if (experienceLevels) {
+      where.experienceLevel = { in: experienceLevels.split(',') };
+    }
+
+    if (salaryMin) {
+      where.salaryMin = { gte: parseInt(salaryMin) };
+    }
+
+    if (salaryMax) {
+      where.salaryMax = { lte: parseInt(salaryMax) };
+    }
+
+    if (datePosted) {
+      const now = new Date();
+      if (datePosted === '24h') {
+        where.createdAt = {
+          gte: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+        };
+      } else if (datePosted === 'week') {
+        where.createdAt = {
+          gte: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+        };
+      } else if (datePosted === 'month') {
+        where.createdAt = {
+          gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+        };
+      }
+    }
+
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let orderBy: any = { createdAt: 'desc' };
+    if (sortBy === 'salary_high') {
+      orderBy = { salaryMax: 'desc' };
+    } else if (sortBy === 'salary_low') {
+      orderBy = { salaryMin: 'asc' };
+    }
+
     const [jobs, total] = await Promise.all([
       prisma.job.findMany({
         where,
@@ -68,9 +121,7 @@ export async function GET(req: NextRequest) {
           updatedAt: true,
           _count: true,
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy,
         skip,
         take: limit,
       }),
