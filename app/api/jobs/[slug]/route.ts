@@ -6,7 +6,10 @@ export async function GET(
   { params }: { params: { slug: string } },
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
+
+    if (!slug)
+      return NextResponse.json({ error: 'Slug not found' }, { status: 404 });
 
     const job = await prisma.job.findUnique({
       where: {
@@ -72,6 +75,48 @@ export async function GET(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
+    prisma.job
+      .update({
+        where: { id: job.id },
+        data: { views: { increment: 1 } },
+      })
+      .catch((err) => console.error('Failed to increment views:', err));
+
+    const similarJobs = await prisma.job.findMany({
+      where: {
+        status: 'ACTIVE',
+        id: { not: job.id },
+        OR: [{ category: job.category }, { companyId: job.company.id }],
+      },
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        slug: true,
+        workMode: true,
+        employmentType: true,
+        experienceLevel: true,
+        country: true,
+        city: true,
+        salaryMin: true,
+        salaryMax: true,
+        numberOfOpenings: true,
+        applicationDeadline: true,
+        createdAt: true,
+        company: {
+          select: {
+            name: true,
+            logo: true,
+            id: true,
+          },
+        },
+      },
+      take: 6,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
     return NextResponse.json({
       job: {
         ...job,
@@ -82,6 +127,7 @@ export async function GET(
           activeJobsCount: job.company._count.jobs,
         },
       },
+      similarJobs,
     });
   } catch (error) {
     console.error('Error fetching job:', error);
