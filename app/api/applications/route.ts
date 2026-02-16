@@ -149,3 +149,106 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const guard = await apiAuthGuard([Role.JOB_SEEKER]);
+    if (!guard.ok) {
+      return guard.response;
+    }
+
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get('status') || '';
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
+
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = {
+      userId: guard.session.user.id,
+    };
+
+    if (status) {
+      where.status = status;
+    }
+
+    const [applications, total] = await Promise.all([
+      prisma.application.findMany({
+        where,
+        select: {
+          id: true,
+          status: true,
+          coverLetter: true,
+          resumeUrl: true,
+          createdAt: true,
+          updatedAt: true,
+          statusHistory: true,
+          job: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              category: true,
+              workMode: true,
+              employmentType: true,
+              experienceLevel: true,
+              salaryMin: true,
+              salaryMax: true,
+              status: true,
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  logo: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.application.count({ where }),
+    ]);
+
+    const stats = await prisma.application.groupBy({
+      by: ['status'],
+      where: {
+        userId: guard.session.user.id,
+      },
+      _count: true,
+    });
+
+    const applicationStats = {
+      total: stats.reduce((sum, s) => sum + s._count, 0),
+      applied: stats.find((s) => s.status === 'APPLIED')?._count || 0,
+      reviewing: stats.find((s) => s.status === 'REVIEWING')?._count || 0,
+      shortlisted: stats.find((s) => s.status === 'SHORTLISTED')?._count || 0,
+      interviewScheduled:
+        stats.find((s) => s.status === 'INTERVIEW_SCHEDULED')?._count || 0,
+      rejected: stats.find((s) => s.status === 'REJECTED')?._count || 0,
+      offered: stats.find((s) => s.status === 'OFFERED')?._count || 0,
+      hired: stats.find((s) => s.status === 'HIRED')?._count || 0,
+    };
+
+    return NextResponse.json({
+      applications,
+      stats: applicationStats,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
