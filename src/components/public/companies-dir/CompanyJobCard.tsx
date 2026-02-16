@@ -4,6 +4,7 @@ import { formatRelativeTime, formatSalary, getLabel } from "@/src/utils/helper"
 import { employmentTypes, experienceLevels, workModes } from "@/src/utils/utils"
 import { Job } from "@prisma/client"
 import { Briefcase, Clock, MapPin } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 type JobCardProps = {
@@ -13,9 +14,12 @@ type JobCardProps = {
 
 export default function CompanyJobCard({ job, companyName }: JobCardProps) {
   const router = useRouter()
+  const { data: session } = useSession()
   return (
     <div
-      onClick={() => router.push(`/explore/jobs/${job.slug}`)}
+      onClick={() => router.push(!session?.user.id ?
+        `/explore/jobs/${job.slug}`
+        : `/jobs/${job.slug}`)}
       className="group cursor-pointer rounded-2xl border border-border/40 bg-card p-5 space-y-3  transition-all duration-200 hover:border-primary/40 hover:shadow-lg">
       <div className="space-y-1">
         <h3 className="text-base font-semibold leading-tight break-words">

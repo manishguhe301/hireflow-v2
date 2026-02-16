@@ -4,8 +4,10 @@ import { Company, Job } from '@prisma/client'
 import InfoRow from '../../admin/InfoRow'
 import { ArrowLeft, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
 import { Button } from '../../ui/Button'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import CompanyJobCard from './CompanyJobCard'
+import { useSession } from 'next-auth/react'
+import clsx from 'clsx'
 
 type CompanyPublicViewProps = {
   company: Company,
@@ -14,16 +16,18 @@ type CompanyPublicViewProps = {
 
 const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
+  const path = usePathname()
+  const { data: session } = useSession()
 
   return (
-    <div className="mx-auto max-w-5xl space-y-10 px-4 py-6">
+    <div className={clsx("mx-auto  space-y-10 px-4 py-6", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
       <Button
         variant="ghost"
         onClick={() => router.back()}
         className="inline-flex items-center gap-2 mb-6 p-0!"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to companies
+        Back
       </Button>
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">

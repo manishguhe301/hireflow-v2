@@ -10,6 +10,7 @@ import { formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
 import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
+import clsx from 'clsx'
 
 interface SimilarJob {
   company: {
@@ -103,6 +104,9 @@ const JobDetailsForApplicant = () => {
     fetchJobDetails()
   }, [slug])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [slug])
 
   if (loading) {
     return (
@@ -127,14 +131,14 @@ const JobDetailsForApplicant = () => {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 space-y-10">
+    <div className={clsx("mx-auto  px-4 py-10 space-y-10", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
       <Button
         variant="ghost"
-        onClick={() => router.push('/explore/jobs')}
+        onClick={() => router.back()}
         className="inline-flex items-center gap-2 mb-6 p-0!"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to jobs
+        Back
       </Button>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
@@ -222,13 +226,14 @@ const JobDetailsForApplicant = () => {
           <div className="sticky top-12 space-y-6">
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-              <button
+              <Button
                 onClick={() => router.push(`/jobs/${job.slug}/apply`)}
-                className="w-full rounded-xl bg-primary text-white py-3 text-sm font-medium hover:opacity-90 transition disabled:opacity-70 disabled:cursor-not-allowed"
+                // className="w-full rounded-xl bg-primary text-white py-3 text-sm font-medium hover:opacity-90 transition disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                className='w-full rounded-xl py-3'
                 disabled={!job.applicationDeadline || !session?.user.id}
               >
                 Apply Now
-              </button>
+              </Button>
 
               {job.applicationDeadline && (
                 <p className="text-xs text-muted-foreground text-center">
@@ -267,7 +272,10 @@ const JobDetailsForApplicant = () => {
               <Button
                 variant='ghost'
                 onClick={() =>
-                  router.push(`/explore/companies/${job.company.id}`)
+                  router.push(
+                    session?.user.id
+                      ? `/company-details/${job.company.id}` :
+                      `/explore/companies/${job.company.id}`)
                 }
                 className="text-sm font-medium text-primary hover:underline"
               >
@@ -288,7 +296,10 @@ const JobDetailsForApplicant = () => {
               <div
                 key={similar.id}
                 className="group rounded-2xl border border-border/40 bg-card p-5 space-y-3   cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
-                onClick={() => router.push(`/explore/jobs/${similar.slug}`)}
+                onClick={() => router.push(
+                  session?.user.id ? `/jobs/${similar.slug}` :
+                    `/explore/jobs/${similar.slug}`
+                )}
               >
                 <div className="space-y-1">
                   <h3 className="text-base font-semibold leading-tight break-words group-hover:text-primary">
