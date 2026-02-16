@@ -189,7 +189,7 @@ const JobsDirectory = () => {
         </div> : <div>
           <h1 className="text-3xl font-bold tracking-tight">Browse Jobs</h1>
           <p className="text-muted-foreground mt-1">
-            Find opportunities that match your skills and preferences
+            Discover opportunities that match your skills and career goals
           </p>
         </div>
       }
@@ -251,7 +251,7 @@ const JobsDirectory = () => {
           Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
         </p>
-      ) : <p className="text-sm text-muted-foreground">...</p>}
+      ) : <p className="text-sm text-muted-foreground ">Loading Results...</p>}
 
       <div className="relative flex gap-6">
         <div className="hidden lg:block">

@@ -17,15 +17,18 @@ import {
   jobCategories,
   workModes,
 } from '@/src/utils/utils'
+import { useSession } from 'next-auth/react'
 
 export default function JobCard({ job }: { job: DirJobType }) {
   const location = job.city
     ? `${job.city}, ${job.country}`
     : job.country
 
+  const { data: session } = useSession()
+
   return (
     <Link
-      href={`/explore/jobs/${job.slug}`}
+      href={session?.user?.id ? `/jobs/${job.slug}` : `/explore/jobs/${job.slug}`}
       className="group block rounded-2xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
     >
       <div className="flex items-start gap-4">
