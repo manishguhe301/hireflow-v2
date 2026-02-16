@@ -9,6 +9,8 @@ import Pagination from '../../ui/Pagination'
 import JobCard from './JobCard'
 import FilterSidebar from './FilterSidebar'
 import { Button } from '../../ui/Button'
+import clsx from 'clsx'
+import { useSession } from 'next-auth/react'
 
 export type DirJobType = {
   id: string,
@@ -63,6 +65,8 @@ const JobsDirectory = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [jobs, setJobs] = useState<DirJobType[]>([])
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const { data: session } = useSession()
+  const isLoggedIn = session?.user?.id
 
   const [filters, setFilters] = useState<Filters>({
     workModes: [],
@@ -91,7 +95,6 @@ const JobsDirectory = () => {
       if (filters.sortBy) params.set('sortBy', filters.sortBy)
 
       params.set('page', page.toString())
-      // params.set('limit', '12')
       params.set('limit', '12')
 
       const res = await fetch(
@@ -175,13 +178,21 @@ const JobsDirectory = () => {
 
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 space-y-10">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">Explore Jobs</h1>
-        <p className="text-muted-foreground text-lg">
-          Find your next opportunity today
-        </p>
-      </div>
+    <div className={clsx(isLoggedIn
+      ? 'space-y-6' : "mx-auto max-w-5xl px-4 py-10 space-y-10")}>
+      {!isLoggedIn ?
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-bold tracking-tight">Explore Jobs</h1>
+          <p className="text-muted-foreground text-lg">
+            Find your next opportunity today
+          </p>
+        </div> : <div>
+          <h1 className="text-3xl font-bold tracking-tight">Browse Jobs</h1>
+          <p className="text-muted-foreground mt-1">
+            Discover opportunities that match your skills and career goals
+          </p>
+        </div>
+      }
 
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -223,10 +234,11 @@ const JobsDirectory = () => {
             className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
           />
         </div>
-        <div className="md:hidden flex justify-end py-4">
+        <div className="lg:hidden flex justify-end py-4">
           <Button
             onClick={() => setIsMobileFilterOpen(true)}
             className="flex items-center gap-2 rounded-xl border border-border/40 bg-card px-4 py-2 text-sm"
+            variant="outline"
           >
             Filters
           </Button>
@@ -239,7 +251,7 @@ const JobsDirectory = () => {
           Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
         </p>
-      ) : <p className="text-sm text-muted-foreground">Loading...</p>}
+      ) : <p className="text-sm text-muted-foreground ">Loading Results...</p>}
 
       <div className="relative flex gap-6">
         <div className="hidden lg:block">
@@ -251,7 +263,7 @@ const JobsDirectory = () => {
         </div>
 
         {isMobileFilterOpen && (
-          <div className='md:hidden'>
+          <div className='lg:hidden'>
             <div
               className="fixed inset-0 bg-black/40 z-40"
               onClick={() => setIsMobileFilterOpen(false)}

@@ -70,15 +70,18 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'w-64 flex-col border-r border-border/60 px-4 py-6 transition',
+        'lg:w-64 md:w-20 w-64 flex-col border-r border-border/60 px-4 py-6 transition',
         'md:fixed md:inset-y-0 md:left-0 md:min-h-screen md:overflow-y-auto',
-        mobile ? 'flex h-full' : 'hidden md:flex',
+        mobile ? 'flex h-full w-64!' : 'hidden md:flex',
         'bg-background'
       )}
     >
       <div className="mb-8 px-2 flex items-center justify-between">
-        <Link href="/" className="text-lg font-semibold">
+        <Link href="/" className="text-lg font-semibold max-lg:hidden max-md:block">
           HireFlow<span className="text-primary">.</span>
+        </Link>
+        <Link href="/" className="text-lg font-semibold lg:hidden max-md:hidden">
+          H<span className="text-primary">.</span>
         </Link>
 
         {mobile && (
@@ -113,7 +116,14 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
               }}
             >
               {link.icon}
-              <span className={isActive ? 'font-semibold' : 'font-normal'}>
+              <span
+                className={clsx(
+                  mobile
+                    ? 'block'
+                    : 'hidden lg:inline',
+                  isActive ? 'font-semibold' : 'font-normal'
+                )}
+              >
                 {link.label}
               </span>
             </Link>
