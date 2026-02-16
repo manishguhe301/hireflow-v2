@@ -71,7 +71,7 @@ export default function ProtectedLayout({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col md:pl-64">
+      <div className="flex flex-1 flex-col lg:pl-64 md:pl-20 pl-0">
         <Navbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1">{children}</main>
       </div>
