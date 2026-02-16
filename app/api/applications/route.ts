@@ -1,5 +1,8 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { uploadFileToSupabase } from '@/src/lib/fileUpload';
+import {
+  deleteFileFromSupabase,
+  uploadFileToSupabase,
+} from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -59,7 +62,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if already applied
     const existingApplication = await prisma.application.findUnique({
       where: {
         userId_jobId: {
@@ -79,15 +81,51 @@ export async function POST(req: NextRequest) {
     }
 
     let finalResumeUrl: string = '';
+    let finalResumePath: string = '';
 
     if (customResume && customResume instanceof File) {
+      const profile = await prisma.profile.findUnique({
+        where: { userId: guard.session.user.id },
+        select: {
+          resumePath: true,
+          resumeUrl: true,
+        },
+      });
+
+      if (profile?.resumePath) {
+        await deleteFileFromSupabase(profile.resumePath, 'user-resumes').catch(
+          (err) => console.error('Failed to delete old resume:', err),
+        );
+      }
+
       const uploadResult = await uploadFileToSupabase(
         customResume,
         'user-resumes',
       );
       finalResumeUrl = uploadResult.url;
+      finalResumePath = uploadResult.path;
+
+      await prisma.profile.update({
+        where: { userId: guard.session.user.id },
+        data: {
+          resumeUrl: finalResumeUrl,
+          resumePath: finalResumePath,
+        },
+      });
     } else if (resumeUrl) {
       finalResumeUrl = resumeUrl;
+
+      //for consistency if any issue happens
+      const profile = await prisma.profile.findUnique({
+        where: { userId: guard.session.user.id },
+        select: {
+          resumePath: true,
+        },
+      });
+
+      if (profile?.resumePath) {
+        finalResumePath = profile.resumePath;
+      }
     } else {
       return NextResponse.json(
         {
