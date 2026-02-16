@@ -81,7 +81,10 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
           HireFlow<span className="text-primary">.</span>
         </Link>
         <Link href="/" className="text-lg font-semibold lg:hidden max-md:hidden">
-          H<span className="text-primary">.</span>
+          <img
+            src='/logo-hireflow.png'
+            alt='logo'
+          />
         </Link>
 
         {mobile && (
