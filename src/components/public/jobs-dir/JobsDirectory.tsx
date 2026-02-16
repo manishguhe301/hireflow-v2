@@ -223,7 +223,7 @@ const JobsDirectory = () => {
             className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
           />
         </div>
-        <div className="md:hidden flex justify-end py-4">
+        <div className="lg:hidden flex justify-end py-4">
           <Button
             onClick={() => setIsMobileFilterOpen(true)}
             className="flex items-center gap-2 rounded-xl border border-border/40 bg-card px-4 py-2 text-sm"
@@ -251,7 +251,7 @@ const JobsDirectory = () => {
         </div>
 
         {isMobileFilterOpen && (
-          <div className='md:hidden'>
+          <div className='lg:hidden'>
             <div
               className="fixed inset-0 bg-black/40 z-40"
               onClick={() => setIsMobileFilterOpen(false)}
