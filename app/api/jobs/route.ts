@@ -27,16 +27,28 @@ export async function GET(req: NextRequest) {
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {
       status: 'ACTIVE',
+      AND: [
+        {
+          OR: [
+            { applicationDeadline: null },
+            { applicationDeadline: { gte: new Date() } },
+          ],
+        },
+      ],
     };
 
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { skills: { has: search } },
-        {
-          company: { is: { name: { contains: search, mode: 'insensitive' } } },
-        },
-      ];
+      where.AND.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { skills: { has: search } },
+          {
+            company: {
+              is: { name: { contains: search, mode: 'insensitive' } },
+            },
+          },
+        ],
+      });
     }
 
     if (category) {
@@ -44,11 +56,12 @@ export async function GET(req: NextRequest) {
     }
 
     if (country) {
-      where.OR = [
-        ...(where.OR || []),
-        { country: { contains: country, mode: 'insensitive' } },
-        { city: { contains: country, mode: 'insensitive' } },
-      ];
+      where.AND.push({
+        OR: [
+          { country: { contains: country, mode: 'insensitive' } },
+          { city: { contains: country, mode: 'insensitive' } },
+        ],
+      });
     }
 
     if (workModes) {
