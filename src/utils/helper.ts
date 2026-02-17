@@ -4,6 +4,7 @@ import {
   Job,
   JobStatus,
   ExperienceLevel,
+  ApplicationStatus,
 } from '@prisma/client';
 import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
 
@@ -265,3 +266,17 @@ export const APPLICATION_STATUS_STYLES = {
   OFFERED: 'bg-green-500/10 text-green-500',
   HIRED: 'bg-emerald-500/10 text-emerald-500',
 };
+
+export const APPLICATIONS_TABS: {
+  label: string;
+  value: ApplicationStatus | 'ALL';
+}[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Applied', value: ApplicationStatus.APPLIED },
+  { label: 'Reviewing', value: ApplicationStatus.REVIEWING },
+  { label: 'Shortlisted', value: ApplicationStatus.SHORTLISTED },
+  { label: 'Interview', value: ApplicationStatus.INTERVIEW_SCHEDULED },
+  { label: 'Offered', value: ApplicationStatus.OFFERED },
+  { label: 'Rejected', value: ApplicationStatus.REJECTED },
+  { label: 'Hired', value: ApplicationStatus.HIRED },
+];

@@ -2,8 +2,6 @@ import JobSeekerDashboard from "@/src/components/job-seeker/profile/JobSeekerDas
 
 export default function MyDashboardPage() {
   return (
-    <div className="p-8">
-      <JobSeekerDashboard />
-    </div>
+    <JobSeekerDashboard />
   )
 }
