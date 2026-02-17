@@ -54,8 +54,10 @@ const ApplicationsPage = () => {
     useState<'ALL' | ApplicationStatus>('ALL')
   const [page, setPage] = useState(1)
 
-  const fetchApplications = async () => {
-    setIsLoading(true)
+  const fetchApplications = async (
+    isLoadingNeeded: boolean = true
+  ) => {
+    if (isLoadingNeeded) { setIsLoading(true) }
     try {
       const params = new URLSearchParams()
       if (activeTab !== 'ALL') params.set('status', activeTab)
@@ -90,7 +92,7 @@ const ApplicationsPage = () => {
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load your applications</p>
           <Button
-            onClick={fetchApplications}
+            onClick={() => fetchApplications()}
             className="mt-4"
           >
             Retry
@@ -125,8 +127,7 @@ const ApplicationsPage = () => {
                 {tab.label}
               </Button>
             )
-          })
-        }
+          })}
       </div>
       {
         isLoading ? (
@@ -136,6 +137,7 @@ const ApplicationsPage = () => {
         ) : (
           <ApplicationsTable
             data={data}
+            fetchApplications={fetchApplications}
           />
         )
       }
