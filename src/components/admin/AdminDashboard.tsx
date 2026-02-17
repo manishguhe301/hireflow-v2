@@ -104,7 +104,7 @@ const AdminDashboard = () => {
             title="Total Companies"
             value={stats.companies.total}
             description="All registered companies"
-            icon={<Building2 className="h-7 w-7 text-blue-600 dark:text-blue-400" />}
+            icon={<Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
             colorClass="bg-info/10"
           />
 
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
             title="Pending Approval"
             value={stats.companies.pending}
             description="Awaiting admin review"
-            icon={<Clock className="h-7 w-7 text-amber-500 dark:text-amber-400" />}
+            icon={<Clock className="h-6 w-6 text-amber-500 dark:text-amber-400" />}
             colorClass="bg-warning/10"
           />
 
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
             title="Approved"
             value={stats.companies.approved}
             description="Active companies"
-            icon={<CheckCircle className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />}
+            icon={<CheckCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
             colorClass="bg-success/10"
           />
 
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
             title="Rejected"
             value={stats.companies.rejected}
             description="Declined companies"
-            icon={<XCircle className="h-7 w-7 text-red-600 dark:text-red-400" />}
+            icon={<XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />}
             colorClass="bg-destructive/10"
           />
 
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
             title="Total Users"
             value={stats.users.total}
             description="All platform users"
-            icon={<Users className="h-7 w-7 text-violet-600 dark:text-violet-400" />}
+            icon={<Users className="h-6 w-6 text-violet-600 dark:text-violet-400" />}
             colorClass="bg-info/10"
           />
 
@@ -159,7 +159,7 @@ const AdminDashboard = () => {
             title="Job Seekers"
             value={stats.users.jobSeekers}
             description="Active job seekers"
-            icon={<Briefcase className="h-7 w-7 text-primary" />}
+            icon={<Briefcase className="h-6 w-6 text-primary" />}
             colorClass="bg-primary/10"
           />
 
@@ -167,7 +167,7 @@ const AdminDashboard = () => {
             title="Platform Admins"
             value={stats.users.admins}
             description="Admin accounts"
-            icon={<UserCog className="h-7 w-7 text-slate-600 dark:text-slate-400" />}
+            icon={<UserCog className="h-6 w-6 text-slate-600 dark:text-slate-400" />}
             colorClass="bg-muted"
           />
 
