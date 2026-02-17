@@ -60,6 +60,8 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
   const handleClose = () => {
     reset()
     onClose()
+    setIsSubmitting(false)
+    toast.dismiss()
   }
 
   const onSubmit = async (data: ApplyFormInputs) => {
@@ -106,7 +108,16 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
   }
 
   return (
-    <Modal open={open} onClose={onClose} className="max-w-2xl max-h-[90%] overflow-y-scroll">
+    <Modal open={open} onClose={
+      () => {
+        if (!isSubmitting) {
+          reset()
+          onClose()
+        }
+      }
+    }
+      className="max-w-2xl max-h-[90%] overflow-y-scroll"
+    >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold">Apply for this position</h2>
@@ -163,9 +174,9 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             name="customResume"
             register={register}
             error={errors.customResume}
-            accept=".pdf,.doc,.docx"
+            accept=".pdf,application/pdf"
             maxSizeMB={5}
-            description="PDF, DOC, or DOCX up to 5MB"
+            description="PDF up to 5MB"
             existingFileUrl={profileResumeUrl}
           />
         </div>
