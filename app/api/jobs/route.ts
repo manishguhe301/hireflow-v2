@@ -1,4 +1,6 @@
+import { authOptions } from '@/src/lib/auth';
 import prisma from '@/src/lib/prisma';
+import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -19,6 +21,8 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const skip = (page - 1) * limit;
+
+    const session = await getServerSession(authOptions);
 
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {
@@ -80,6 +84,19 @@ export async function GET(req: NextRequest) {
       } else if (datePosted === 'month') {
         where.createdAt = {
           gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+        };
+      }
+    }
+
+    if (session?.user?.id) {
+      const appliedJobIds = await prisma.application.findMany({
+        where: { userId: session.user.id },
+        select: { jobId: true },
+      });
+
+      if (appliedJobIds.length > 0) {
+        where.id = {
+          notIn: appliedJobIds.map((a) => a.jobId),
         };
       }
     }
