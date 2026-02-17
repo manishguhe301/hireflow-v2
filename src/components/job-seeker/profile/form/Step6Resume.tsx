@@ -43,7 +43,7 @@ const Step6Resume = ({
         register={register}
         error={errors.resume}
         required
-        accept="application/pdf/*"
+        accept=".pdf,application/pdf"
         maxSizeMB={5}
         existingFileUrl={jobSeekerProfile?.resumeUrl}
       />
