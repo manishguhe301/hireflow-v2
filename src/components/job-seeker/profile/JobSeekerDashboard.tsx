@@ -62,6 +62,35 @@ const DashboardStatCard = ({ title, value, description, icon, colorClass }:
   </div>)
 }
 
+const QuickActionCard = ({ href, icon, colorClass, label, desc }:
+  {
+    href: string
+    icon: React.ReactNode
+    colorClass: string
+    label: string
+    desc: string
+  }
+) => {
+  return (
+    <Link
+      href={href}
+      className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+    >
+      <div className="flex items-center gap-4">
+        <div className={`h-12 w-12 rounded-xl ${colorClass} flex items-center justify-center`}>
+          {icon}
+        </div>
+        <div>
+          <p className="font-semibold">{label}</p>
+          <p className="text-sm text-muted-foreground">
+            {desc}
+          </p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 const JobSeekerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats | null>(null)
@@ -192,75 +221,44 @@ const JobSeekerDashboard = () => {
       </section>
 
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold">Quick Actions</h2>
+        <h2 className="text-xl font-semibold">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-          <Link
-            href="/jobs"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Briefcase className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="font-semibold">Browse Jobs</p>
-                <p className="text-sm text-muted-foreground">
-                  Discover new opportunities
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/dashboard/applications"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <FileText className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="font-semibold">My Applications</p>
-                <p className="text-sm text-muted-foreground">
-                  Track application status
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/dashboard/saved-jobs"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-                <Bookmark className="h-6 w-6 text-yellow-600" />
-              </div>
-              <div>
-                <p className="font-semibold">Saved Jobs</p>
-                <p className="text-sm text-muted-foreground">
-                  View bookmarked jobs
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/dashboard/profile"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
-                <User className="h-6 w-6 text-slate-600 dark:text-slate-400" />
-              </div>
-              <div>
-                <p className="font-semibold">My Profile</p>
-                <p className="text-sm text-muted-foreground">
-                  Update resume & details
-                </p>
-              </div>
-            </div>
-          </Link>
+          <QuickActionCard
+            href='/jobs'
+            label='Browse Jobs'
+            icon={
+              <Briefcase className="h-6 w-6 " />
+            }
+            desc='Discover new opportunities'
+            colorClass='bg-primary/10 text-primary'
+          />
+          <QuickActionCard
+            href='/dashboard/applications'
+            label='My Applications'
+            icon={
+              <FileText className="h-6 w-6 " />
+            }
+            desc='Discover new opportunities'
+            colorClass='bg-blue-500/10 text-blue-600'
+          />
+          <QuickActionCard
+            href='/dashboard/saved-jobs'
+            label='Saved Jobs'
+            icon={
+              <Bookmark className="h-6 w-6 " />
+            }
+            desc='Discover new opportunities'
+            colorClass='bg-yellow-500/10 text-yellow-600'
+          />
+          <QuickActionCard
+            href='/dashboard/profile'
+            label='My Profile'
+            icon={
+              <User className="h-6 w-6 " />
+            }
+            desc='Discover new opportunities'
+            colorClass='bg-muted text-slate-600 dark:text-slate-400'
+          />
         </div>
       </section>
     </div>
