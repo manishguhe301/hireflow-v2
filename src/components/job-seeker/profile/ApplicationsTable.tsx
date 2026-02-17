@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Briefcase } from 'lucide-react'
 import { APPLICATIONS_TABS, formatRelativeTime, formatSalary, getLabel } from '@/src/utils/helper'
 import { employmentTypes, experienceLevels, workModes } from '@/src/utils/utils'
@@ -6,6 +6,8 @@ import clsx from 'clsx'
 import { ApplicationStatus } from '@prisma/client'
 import Link from 'next/link'
 import { ApplicationWithPagination } from './ApplicationsPage'
+import { Button } from '../../ui/Button'
+import WithdrawModal from './WithdrawModal'
 
 const STATUS_STYLE: Record<ApplicationStatus, string> = {
   APPLIED: 'bg-blue-500/10 text-blue-600',
@@ -17,19 +19,25 @@ const STATUS_STYLE: Record<ApplicationStatus, string> = {
   REJECTED: 'bg-red-500/10 text-red-600',
 }
 
-const ApplicationsTable = ({ data }:
-  { data: ApplicationWithPagination | null }) => {
+const ApplicationsTable = ({ data, fetchApplications }:
+  {
+    data: ApplicationWithPagination | null
+    fetchApplications: (isLoadingNeeded?: boolean) => Promise<void>
+  }) => {
+  const [isWithDrawModalOpen, setIsWithDrawModalOpen] = useState(false)
+  const [withdrawApplicationId, setWithdrawApplicationId] = useState<string | null>(null)
 
   if (!data) return null
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm max-sm:w-[1400px]">
         <thead className="bg-muted/40 border-b border-border/60">
           <tr>
             <th className="px-6 py-4 text-left">Job</th>
             <th className="px-6 py-4 text-left">Details</th>
             <th className="px-6 py-4 text-left">Status</th>
             <th className="px-6 py-4 text-left">Applied</th>
+            <th className="px-6 py-4 text-left">Last Updated</th>
             <th className="px-6 py-4 text-right">Actions</th>
           </tr>
         </thead>
@@ -56,9 +64,10 @@ const ApplicationsTable = ({ data }:
                 <div className="font-medium">
                   {app.job.title}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <Link
+                  href={`/company-details/${app.job.company.id}`} className="text-xs text-muted-foreground hover:underline hover:text-primary hover:opacity-90 hover:underline-offset-2 hover:font-medium transition-all duration-300">
                   {app.job.company.name}
-                </div>
+                </Link>
               </td>
 
               <td className="px-6 py-4 text-xs text-muted-foreground">
@@ -68,17 +77,15 @@ const ApplicationsTable = ({ data }:
                   experienceLevels,
                   app.job.experienceLevel,
                 )}
-                {app.job.salaryMin &&
-                  app.job.salaryMax && (
-                    <>
-                      {' '}
-                      •{' '}
-                      {formatSalary(
-                        app.job.salaryMin,
-                        app.job.salaryMax,
-                      )}
-                    </>
+
+                <>
+                  {' '}
+                  •{' '}
+                  {formatSalary(
+                    app.job.salaryMin,
+                    app.job.salaryMax,
                   )}
+                </>
               </td>
 
               <td className="px-6 py-4">
@@ -96,20 +103,46 @@ const ApplicationsTable = ({ data }:
                 {formatRelativeTime(app.createdAt)}
               </td>
 
-              <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-xs text-muted-foreground">
+                {formatRelativeTime(app.updatedAt)}
+              </td>
+
+              <td className="px-6! py-6! text-right flex items-center justify-end gap-2">
                 <Link
                   href={`/jobs/${app.job.slug}`}
-                  className="text-primary text-xs hover:underline"
+                  className="text-primary text-xs hover:underline font-semibold"
                 >
                   View Job
                 </Link>
+                {!['REJECTED', 'HIRED', 'OFFERED'].includes(app.status) &&
+                  <Button
+                    className="text-primary text-xs hover:underline p-0!"
+                    size='sm'
+                    variant='ghost'
+                    onClick={() => {
+                      setWithdrawApplicationId(app.id)
+                      setIsWithDrawModalOpen(true)
+                    }}
+                  >
+                    Withdraw
+                  </Button>}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <WithdrawModal
+        isWithDrawModalOpen={isWithDrawModalOpen}
+        id={withdrawApplicationId}
+        fetchApplications={fetchApplications}
+        onClose={() => {
+          setWithdrawApplicationId(null)
+          setIsWithDrawModalOpen(false)
+        }}
+      />
     </div>
   )
 }
 
 export default ApplicationsTable
+
