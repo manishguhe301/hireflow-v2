@@ -15,7 +15,12 @@ import {
   XCircle,
   Gift,
   CheckCircle,
+  Briefcase,
+  FileText,
+  Bookmark,
+  User,
 } from 'lucide-react'
+import Link from 'next/link'
 
 interface DashboardStats {
   total: number
@@ -117,72 +122,147 @@ const JobSeekerDashboard = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardStatCard
-          title="Total"
-          value={stats.total}
-          description="All your applications"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.total}
-          icon={<Layers className="h-5 w-5" />}
-        />
+      <section className="space-y-6">
+        <h2 className="text-xl font-semibold">Applications Overview</h2>
+        <div className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+          <DashboardStatCard
+            title="Total"
+            value={stats.total}
+            description="All your applications"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.total}
+            icon={<Layers className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Applied"
-          value={stats.applied}
-          description="Submitted applications"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.applied}
-          icon={<Send className="h-5 w-5" />}
-        />
+          <DashboardStatCard
+            title="Applied"
+            value={stats.applied}
+            description="Submitted applications"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.applied}
+            icon={<Send className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Reviewing"
-          value={stats.reviewing}
-          description="Under review"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.reviewing}
-          icon={<Eye className="h-5 w-5" />}
-        />
+          <DashboardStatCard
+            title="Reviewing"
+            value={stats.reviewing}
+            description="Under review"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.reviewing}
+            icon={<Eye className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Shortlisted"
-          value={stats.shortlisted}
-          description="Selected for interview"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.shortlisted}
-          icon={<UserCheck className="h-5 w-5" />}
-        />
+          <DashboardStatCard
+            title="Shortlisted"
+            value={stats.shortlisted}
+            description="Selected for interview"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.shortlisted}
+            icon={<UserCheck className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Interview"
-          value={stats.interviewScheduled}
-          description="Interview scheduled"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.interviewScheduled}
-          icon={<CalendarClock className="h-5 w-5" />}
-        />
+          <DashboardStatCard
+            title="Interview"
+            value={stats.interviewScheduled}
+            description="Interview scheduled"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.interviewScheduled}
+            icon={<CalendarClock className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Rejected"
-          value={stats.rejected}
-          description="Not selected"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.rejected}
-          icon={<XCircle className="h-5 w-5" />}
-        />
+          <DashboardStatCard
+            title="Rejected"
+            value={stats.rejected}
+            description="Not selected"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.rejected}
+            icon={<XCircle className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Offered"
-          value={stats.offered}
-          description="Offer received"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.offered}
-          icon={<Gift className="h-5 w-5" />}
-        />
+          <DashboardStatCard
+            title="Offered"
+            value={stats.offered}
+            description="Offer received"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.offered}
+            icon={<Gift className="h-5 w-5" />}
+          />
 
-        <DashboardStatCard
-          title="Hired"
-          value={stats.hired}
-          description="Successfully hired"
-          colorClass={APPLICTION_TABS_STATUS_COLORS.hired}
-          icon={<CheckCircle className="h-5 w-5" />}
-        />
-      </div>
+          <DashboardStatCard
+            title="Hired"
+            value={stats.hired}
+            description="Successfully hired"
+            colorClass={APPLICTION_TABS_STATUS_COLORS.hired}
+            icon={<CheckCircle className="h-5 w-5" />}
+          />
+        </div>
+      </section>
 
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+          <Link
+            href="/jobs"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Briefcase className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">Browse Jobs</p>
+                <p className="text-sm text-muted-foreground">
+                  Discover new opportunities
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/applications"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <FileText className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-semibold">My Applications</p>
+                <p className="text-sm text-muted-foreground">
+                  Track application status
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/saved-jobs"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                <Bookmark className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <p className="font-semibold">Saved Jobs</p>
+                <p className="text-sm text-muted-foreground">
+                  View bookmarked jobs
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/profile"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
+                <User className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+              </div>
+              <div>
+                <p className="font-semibold">My Profile</p>
+                <p className="text-sm text-muted-foreground">
+                  Update resume & details
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </section>
     </div>
   )
 }
