@@ -11,6 +11,7 @@ import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workMo
 import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
+import ApplyModal from './applications/ApplyModal'
 
 interface SimilarJob {
   company: {
@@ -80,6 +81,8 @@ const JobDetailsForApplicant = () => {
   const [job, setJob] = useState<JobDetails | null>(null)
   const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
   const { data: session } = useSession()
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
+
 
   const fetchJobDetails = async () => {
     try {
@@ -227,7 +230,10 @@ const JobDetailsForApplicant = () => {
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
               <Button
-                onClick={() => router.push(`/jobs/${job.slug}/apply`)}
+                onClick={() => {
+                  if (session?.user.id)
+                    setIsApplyModalOpen(true)
+                }}
                 // className="w-full rounded-xl bg-primary text-white py-3 text-sm font-medium hover:opacity-90 transition disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                 className='w-full rounded-xl py-3'
                 disabled={!job.applicationDeadline || !session?.user.id}
@@ -338,6 +344,24 @@ const JobDetailsForApplicant = () => {
           </div>
         </div>
       )}
+
+      <ApplyModal
+        open={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        job={{
+          id: job.id,
+          title: job.title,
+          slug: job.slug,
+          workMode: job.workMode,
+          employmentType: job.employmentType,
+          company: {
+            name: job.company.name,
+            logo: job.company.logo,
+          },
+          country: job.country,
+          city: job.city || null,
+        }}
+      />
     </div>
   )
 
