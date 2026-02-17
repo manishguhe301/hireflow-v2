@@ -3,7 +3,7 @@ import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function PATCH(
+export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -49,10 +49,13 @@ export async function PATCH(
       where: { id },
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Application withdrawn successfully',
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Application withdrawn successfully',
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Error withdrawing application:', error);
     return NextResponse.json(
