@@ -255,3 +255,13 @@ export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
 
   return formData;
 };
+
+export const APPLICATION_STATUS_STYLES = {
+  REJECTED: 'bg-destructive/10 text-destructive',
+  APPLIED: 'bg-primary/10 text-primary',
+  REVIEWING: 'bg-blue-500/10 text-blue-500',
+  SHORTLISTED: 'bg-yellow-500/10 text-yellow-500',
+  INTERVIEW_SCHEDULED: 'bg-purple-500/10 text-purple-500',
+  OFFERED: 'bg-green-500/10 text-green-500',
+  HIRED: 'bg-emerald-500/10 text-emerald-500',
+};
