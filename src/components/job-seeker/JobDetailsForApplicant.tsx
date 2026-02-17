@@ -82,7 +82,12 @@ const JobDetailsForApplicant = () => {
   const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
   const { data: session } = useSession()
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
-
+  const [hasApplied, setHasApplied] = useState(false)
+  const [existingApplication, setExistingApplication] = useState<{
+    id: string
+    status: string
+    createdAt: string
+  } | null>(null)
 
   const fetchJobDetails = async () => {
     try {
@@ -93,6 +98,8 @@ const JobDetailsForApplicant = () => {
       if (res.job) {
         setJob(res.job)
         setSimilarJobs(res.similarJobs)
+        setHasApplied(res.hasApplied)
+        setExistingApplication(res.application)
       }
     } catch (error) {
       console.error(error)
@@ -229,17 +236,33 @@ const JobDetailsForApplicant = () => {
           <div className="sticky top-12 space-y-6">
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-              <Button
-                onClick={() => {
-                  if (session?.user.id)
-                    setIsApplyModalOpen(true)
-                }}
-                // className="w-full rounded-xl bg-primary text-white py-3 text-sm font-medium hover:opacity-90 transition disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
-                className='w-full rounded-xl py-3'
-                disabled={!job.applicationDeadline || !session?.user.id}
-              >
-                Apply Now
-              </Button>
+              {hasApplied ? (
+                <div className="space-y-3">
+                  <div className="w-full rounded-xl bg-green-500/10 border border-green-500/30 py-3 px-4 text-center">
+                    <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                      ✓ Already Applied
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Applied on {formatDate(existingApplication?.createdAt || '')}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push('/dashboard')}
+                  >
+                    View My Applications
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => setIsApplyModalOpen(true)}
+                  className="w-full rounded-xl py-3"
+                  disabled={!job.applicationDeadline || !session?.user?.id}
+                >
+                  Apply Now
+                </Button>
+              )}
 
               {job.applicationDeadline && (
                 <p className="text-xs text-muted-foreground text-center">
@@ -360,6 +383,14 @@ const JobDetailsForApplicant = () => {
           },
           country: job.country,
           city: job.city || null,
+        }}
+        onSuccess={() => {
+          setHasApplied(true)
+          setExistingApplication({
+            id: '',
+            status: 'APPLIED',
+            createdAt: new Date().toISOString(),
+          })
         }}
       />
     </div>

@@ -31,9 +31,10 @@ type ApplyModalProps = {
     country: string
     city: string | null
   }
+  onSuccess: () => void
 }
 
-export default function ApplyModal({ open, onClose, job }: ApplyModalProps) {
+export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModalProps) {
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
 
