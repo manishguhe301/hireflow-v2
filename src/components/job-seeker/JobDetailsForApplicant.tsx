@@ -140,6 +140,11 @@ const JobDetailsForApplicant = () => {
     )
   }
 
+  const isDeadlinePassed =
+    job.applicationDeadline &&
+    new Date(job.applicationDeadline).getTime() < Date.now()
+
+
   return (
     <div className={clsx("mx-auto  px-4 py-10 space-y-10", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
       <Button
@@ -254,17 +259,24 @@ const JobDetailsForApplicant = () => {
                     View My Applications
                   </Button>
                 </div>
-              ) : (
-                <Button
-                  onClick={() => setIsApplyModalOpen(true)}
-                  className="w-full rounded-xl py-3"
-                  disabled={!job.applicationDeadline || !session?.user?.id}
-                >
-                  Apply Now
-                </Button>
-              )}
+              ) :
+                !isDeadlinePassed ? (
+                  <Button
+                    onClick={() => setIsApplyModalOpen(true)}
+                    className="w-full rounded-xl py-3"
+                    disabled={!session?.user?.id}
+                  >
+                    Apply Now
+                  </Button>
+                ) :
+                  <div className="w-full rounded-xl bg-red-500/10 border border-red-500/30 py-3 px-4 text-center">
+                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                      Application Deadline Passed
+                    </p>
+                  </div>
+              }
 
-              {job.applicationDeadline && (
+              {!hasApplied && job.applicationDeadline && !isDeadlinePassed && (
                 <p className="text-xs text-muted-foreground text-center">
                   Apply before{' '}
                   {formatDate(job.applicationDeadline)}
