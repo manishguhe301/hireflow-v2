@@ -306,7 +306,7 @@ const JobsDirectory = () => {
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
-            </div>
+            </div>  
           )}
 
           {!isLoading && jobs.length === 0 && (
