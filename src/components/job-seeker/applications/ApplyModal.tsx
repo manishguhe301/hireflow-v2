@@ -9,6 +9,9 @@ import { Building2, MapPin, Briefcase } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { getLabel } from '@/src/utils/helper'
 import { workModes, employmentTypes } from '@/src/utils/utils'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Spinner } from '../../elements/Loader'
 
 type ApplyFormInputs = {
   coverLetter: string
@@ -37,10 +40,13 @@ type ApplyModalProps = {
 export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModalProps) {
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
     register,
     watch,
+    handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ApplyFormInputs>({
     defaultValues: {
@@ -51,9 +57,57 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
   const location = job.city ? `${job.city}, ${job.country}` : job.country
   const customResumeFile = watch('customResume')
 
+  const handleClose = () => {
+    reset()
+    onClose()
+  }
+
+  const onSubmit = async (data: ApplyFormInputs) => {
+    setIsSubmitting(true)
+    try {
+      const formData = new FormData()
+      formData.append('jobId', job.id)
+
+      if (data.coverLetter) {
+        formData.append('coverLetter', data.coverLetter)
+      }
+
+      if (data.customResume?.[0]) {
+        formData.append('customResume', data.customResume[0])
+      } else if (profileResumeUrl) {
+        formData.append('resumeUrl', profileResumeUrl)
+      } else {
+        toast.error('Please upload a resume to apply')
+        return
+      }
+
+      const res = await fetch('/api/applications', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await res.json()
+
+      if (!res.ok) {
+        toast.error(result.error || 'Failed to submit application')
+        return
+      }
+
+      toast.success(result.message || 'Application submitted successfully!')
+      reset()
+      onSuccess()
+      handleClose()
+    } catch (error) {
+      console.error('Error submitting application:', error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <Modal open={open} onClose={onClose} className="max-w-2xl max-h-[90%] overflow-y-scroll">
-      <div className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold">Apply for this position</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -134,20 +188,21 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40">
           <Button
             type="button"
-            variant="outline"
+            variant="danger"
             onClick={onClose}
+            className='w-full'
           >
             Cancel
           </Button>
           <Button
-            type="button"
-            disabled={!profileResumeUrl && !customResumeFile?.[0]}
-            onClick={onClose}
+            type="submit"
+            disabled={!profileResumeUrl && !customResumeFile?.[0] || isSubmitting}
+            className='w-full'
           >
-            Submit Application
+            {isSubmitting ? <Spinner className='w-4 h-4' /> : 'Submit Application'}
           </Button>
         </div>
-      </div>
+      </form>
     </Modal >
   )
 }
