@@ -1,6 +1,6 @@
 import React from 'react'
 import { Briefcase } from 'lucide-react'
-import { formatRelativeTime, formatSalary, getLabel } from '@/src/utils/helper'
+import { APPLICATIONS_TABS, formatRelativeTime, formatSalary, getLabel } from '@/src/utils/helper'
 import { employmentTypes, experienceLevels, workModes } from '@/src/utils/utils'
 import clsx from 'clsx'
 import { ApplicationStatus } from '@prisma/client'
@@ -88,7 +88,7 @@ const ApplicationsTable = ({ data }:
                     STATUS_STYLE[app.status],
                   )}
                 >
-                  {app.status}
+                  {getLabel(APPLICATIONS_TABS, app.status)}
                 </span>
               </td>
 
