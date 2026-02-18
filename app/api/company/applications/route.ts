@@ -25,25 +25,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    const companyJobs = await prisma.job.findMany({
-      where: { companyId: company.id },
-      select: { id: true },
-    });
-
-    const jobIds = companyJobs.map((job) => job.id);
-
-    if (jobIds.length === 0) {
-      return NextResponse.json({
-        jobs: [],
-        pagination: {
-          total: 0,
-          page,
-          limit,
-          totalPages: 0,
-        },
-      });
-    }
-
     const [jobs, totalJobs] = await Promise.all([
       prisma.job.findMany({
         where: {
@@ -60,13 +41,6 @@ export async function GET(req: NextRequest) {
               applications: true,
             },
           },
-          applications: {
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-            select: {
-              createdAt: true,
-            },
-          },
         },
         orderBy: {
           createdAt: 'desc',
@@ -79,19 +53,8 @@ export async function GET(req: NextRequest) {
       }),
     ]);
 
-    const formattedJobs = jobs.map((job) => ({
-      id: job.id,
-      title: job.title,
-      slug: job.slug,
-      status: job.status,
-      createdAt: job.createdAt,
-      applicationsCount: job._count.applications,
-      lastApplicationAt:
-        job.applications.length > 0 ? job.applications[0].createdAt : null,
-    }));
-
     return NextResponse.json({
-      jobs: formattedJobs,
+      jobs: jobs,
       pagination: {
         total: totalJobs,
         page,
