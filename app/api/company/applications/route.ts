@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
           slug: true,
           status: true,
           createdAt: true,
+          applicationDeadline: true,
           _count: {
             select: {
               applications: true,

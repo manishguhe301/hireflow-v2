@@ -15,7 +15,7 @@ import {
   CheckCircle,
   FileText,
 } from 'lucide-react'
-import { formatRelativeTime, getLabel, JOB_STATUS_STYLE, JOB_STATUSES, } from '@/src/utils/helper'
+import { formatDate, formatRelativeTime, getLabel, JOB_STATUS_STYLE, JOB_STATUSES, } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
 import clsx from 'clsx'
 import { JobStatus } from '@prisma/client'
@@ -26,6 +26,7 @@ interface JobRow {
   slug: string
   status: string
   createdAt: string
+  applicationDeadline: string
   _count: {
     applications: number
   }
@@ -241,6 +242,13 @@ export default function CompanyApplicationsPage() {
 }
 
 export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsResponse }) => {
+  const [now] = useState(() => Date.now())
+
+  const getIsDeadlinePassed = (deadline: string) => {
+    return deadline && new Date(deadline).getTime() < now
+  }
+
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm">
@@ -248,7 +256,7 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
           <tr>
             <th className="px-6 py-4 text-left">Job Title</th>
             <th className="px-6 py-4 text-left">Created At</th>
-            <th className="px-6 py-4 text-left">Status</th>
+            <th className="px-6 py-4 text-left"> Application Deadline</th>
             <th className="px-6 py-4 text-left">Applications</th>
             <th className="px-6 py-4 text-right">Actions</th>
           </tr>
@@ -266,52 +274,51 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
               </td>
             </tr>
           )}
+          {data.jobs.map((job) => {
+            const isDeadlinePassed = getIsDeadlinePassed(job.applicationDeadline)
+            return (
+              <tr key={job.id} className="hover:bg-muted/30 transition">
+                <td className="px-6 py-4 font-medium">
+                  {job.title}
+                </td>
 
-          {data.jobs.map((job) => (
-            <tr key={job.id} className="hover:bg-muted/30 transition">
-              <td className="px-6 py-4 font-medium">
-                {job.title}
-              </td>
-
-              <td className="px-6 py-4 text-xs text-muted-foreground">
-                {job.createdAt
-                  ? formatRelativeTime(job.createdAt)
-                  : '—'}
-              </td>
+                <td className="px-6 py-4 text-xs text-muted-foreground">
+                  {job.createdAt
+                    ? formatRelativeTime(job.createdAt)
+                    : '—'}
+                </td>
 
 
-              <td className='px-6 py-4 font-semibold'
-              >
-                <span
-                  className={clsx(
-                    'px-3 py-1 rounded-full text-xs font-medium',
-                    JOB_STATUS_STYLE[job.status as JobStatus],
-                  )}
+                <td className='px-6 py-4 font-semibold'
                 >
-                  {getLabel(JOB_STATUSES, job.status)}
-                </span>
-              </td>
+                  <span
+                    className={clsx(
+                      'text-xs font-medium',
+                      isDeadlinePassed ? ' text-red-500' : ' text-primary'
+                    )}
+                  >
+                    {job.applicationDeadline
+                      ? formatDate(job.applicationDeadline)
+                      : '—'}
+                  </span>
+                </td>
 
-              <td className="px-6 py-4 font-semibold">
-                {job._count.applications}
-              </td>
+                <td className="px-6 py-4 font-semibold">
+                  {job._count.applications}
+                </td>
 
-              {/* <td className="px-6 py-4 text-xs text-muted-foreground">
-                {job.lastApplicationAt
-                  ? formatRelativeTime(job.lastApplicationAt)
-                  : '—'}
-              </td> */}
-
-              <td className="px-6 py-4 text-right">
-                <Link
-                  href={`/company/applications/${job.id}`}
-                  className="text-primary text-xs hover:underline font-semibold"
-                >
-                  View →
-                </Link>
-              </td>
-            </tr>
-          ))}
+                <td className="px-6 py-4 text-right">
+                  <Link
+                    href={`/company/applications/${job.id}`}
+                    className="text-primary text-xs hover:underline font-semibold"
+                  >
+                    View →
+                  </Link>
+                </td>
+              </tr>
+            )
+          }
+          )}
         </tbody>
       </table>
     </div>
