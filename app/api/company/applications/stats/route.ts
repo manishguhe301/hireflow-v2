@@ -19,30 +19,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    const companyJobs = await prisma.job.findMany({
-      where: { companyId: company.id },
-      select: { id: true },
-    });
-
-    const jobIds = companyJobs.map((job) => job.id);
-
-    if (jobIds.length === 0) {
-      return NextResponse.json({
-        stats: {
-          total: 0,
-          reviewing: 0,
-          shortlisted: 0,
-          interviewScheduled: 0,
-          rejected: 0,
-          hired: 0,
-        },
-      });
-    }
-
     const groupedStats = await prisma.application.groupBy({
       by: ['status'],
       where: {
-        jobId: { in: jobIds },
+        job: {
+          companyId: company.id,
+        },
       },
       _count: true,
     });
