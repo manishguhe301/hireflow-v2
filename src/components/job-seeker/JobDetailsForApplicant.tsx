@@ -269,7 +269,7 @@ const JobDetailsForApplicant = () => {
                   </div>
 
                   {existingApplication && existingApplication?.statusHistory?.length > 0 && (
-                    <div className="border-t pt-4 space-y-4">
+                    <div className="border-t border-border/60 pt-4 space-y-4">
                       <h4 className="text-sm font-semibold">Application Progress</h4>
                       {existingApplication.status === 'REJECTED' && <p className="text-xs text-red-600 mt-2">
                         This application was closed before moving to the next stage.
