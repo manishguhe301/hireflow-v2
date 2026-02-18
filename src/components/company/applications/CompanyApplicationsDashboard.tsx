@@ -134,7 +134,7 @@ export default function CompanyApplicationsPage() {
     fetchStats()
   }, [])
 
-  if (statsLoading && applicationsLoading) {
+  if (statsLoading || applicationsLoading) {
     return (
       <div className="flex items-center justify-center gap-2 min-h-[500px]">
         Loading...<Spinner className="h-8 w-8" />
@@ -149,7 +149,12 @@ export default function CompanyApplicationsPage() {
           <p className="text-muted-foreground">
             Failed to load applications dashboard
           </p>
-          <Button onClick={fetchApplications} className="mt-4">
+          <Button onClick={
+            () => {
+              fetchApplications()
+              fetchStats()
+            }
+          } className="mt-4">
             Retry
           </Button>
         </div>
