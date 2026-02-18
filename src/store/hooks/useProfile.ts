@@ -34,7 +34,7 @@ export function useProfile() {
           }),
         );
       } catch (error) {
-        dispatch(setError('Failed to load profile'));
+        dispatch(setError('Failed to load profile, please refresh the page'));
       }
     };
 

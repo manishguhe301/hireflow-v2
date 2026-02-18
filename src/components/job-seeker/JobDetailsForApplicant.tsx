@@ -5,12 +5,17 @@ import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
-import { ArrowLeft, Briefcase, Clock, MapPin } from 'lucide-react'
-import { formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
+import {
+  ArrowLeft, Briefcase, Clock, MapPin, CheckCircle,
+  Circle,
+  XCircle,
+} from 'lucide-react'
+import { APPLICATIONS_TABS, formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
 import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
+import ApplyModal from './applications/ApplyModal'
 
 interface SimilarJob {
   company: {
@@ -72,6 +77,17 @@ interface JobDetails {
   }
 }
 
+const STATUS_FLOW = [
+  'APPLIED',
+  'REVIEWING',
+  'SHORTLISTED',
+  'INTERVIEW_SCHEDULED',
+  'OFFERED',
+  'HIRED',
+  'REJECTED',
+]
+
+
 const JobDetailsForApplicant = () => {
   const params = useParams()
   const router = useRouter()
@@ -80,6 +96,14 @@ const JobDetailsForApplicant = () => {
   const [job, setJob] = useState<JobDetails | null>(null)
   const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
   const { data: session } = useSession()
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
+  const [hasApplied, setHasApplied] = useState(false)
+  const [existingApplication, setExistingApplication] = useState<{
+    id: string
+    status: string
+    createdAt: string
+    statusHistory: { status: string; date: string }[]
+  } | null>(null)
 
   const fetchJobDetails = async () => {
     try {
@@ -90,6 +114,8 @@ const JobDetailsForApplicant = () => {
       if (res.job) {
         setJob(res.job)
         setSimilarJobs(res.similarJobs)
+        setHasApplied(res.hasApplied)
+        setExistingApplication(res.application)
       }
     } catch (error) {
       console.error(error)
@@ -129,6 +155,11 @@ const JobDetailsForApplicant = () => {
       </div>
     )
   }
+
+  const isDeadlinePassed =
+    job.applicationDeadline &&
+    new Date(job.applicationDeadline).getTime() < Date.now()
+
 
   return (
     <div className={clsx("mx-auto  px-4 py-10 space-y-10", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
@@ -226,16 +257,107 @@ const JobDetailsForApplicant = () => {
           <div className="sticky top-12 space-y-6">
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-              <Button
-                onClick={() => router.push(`/jobs/${job.slug}/apply`)}
-                // className="w-full rounded-xl bg-primary text-white py-3 text-sm font-medium hover:opacity-90 transition disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
-                className='w-full rounded-xl py-3'
-                disabled={!job.applicationDeadline || !session?.user.id}
-              >
-                Apply Now
-              </Button>
+              {hasApplied ? (
+                <div className="space-y-3">
+                  <div className="w-full rounded-xl bg-green-500/10 border border-green-500/30 py-3 px-4 text-center">
+                    <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                      ✓ Already Applied
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Applied on {formatDate(existingApplication?.createdAt || '')}
+                    </p>
+                  </div>
 
-              {job.applicationDeadline && (
+                  {existingApplication && existingApplication?.statusHistory?.length > 0 && (
+                    <div className="border-t pt-4 space-y-4">
+                      <h4 className="text-sm font-semibold">Application Progress</h4>
+                      {existingApplication.status === 'REJECTED' && <p className="text-xs text-red-600 mt-2">
+                        This application was closed before moving to the next stage.
+                      </p>
+                      }
+                      <div className="relative pl-6">
+                        <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
+
+                        {STATUS_FLOW.map((status) => {
+                          const historyItem = existingApplication.statusHistory.find(
+                            (s) => s.status === status,
+                          )
+
+                          const isCompleted = !!historyItem
+
+                          return (
+                            <div
+                              key={status}
+                              className="relative flex items-start gap-3 pb-6 last:pb-0"
+                            >
+
+                              <div className="absolute -left-[9px] top-1">
+                                {isCompleted ? (
+                                  status === 'REJECTED' ? (
+                                    <XCircle className="h-4 w-4 text-red-600" />
+                                  ) : (
+                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                  )
+                                ) : (
+                                  <Circle className="h-4 w-4 text-muted-foreground" />
+                                )}
+                              </div>
+
+                              <div>
+                                <p
+                                  className={clsx(
+                                    'text-sm font-medium pl-4',
+                                    isCompleted
+                                      ? status === 'REJECTED' ? 'text-red-600' : 'text-primary'
+                                      : 'text-muted-foreground',
+                                  )}
+                                >
+                                  {getLabel(
+                                    APPLICATIONS_TABS,
+                                    status,
+                                  )}
+                                </p>
+
+                                {historyItem && (
+                                  <p className="text-xs text-muted-foreground mt-1 pl-4">
+                                    {formatRelativeTime(historyItem.date)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push('/dashboard')}
+                  >
+                    View My Applications
+                  </Button>
+                </div>
+              ) :
+                !isDeadlinePassed ? (
+                  <Button
+                    onClick={() => setIsApplyModalOpen(true)}
+                    className="w-full rounded-xl py-3"
+                    disabled={!session?.user?.id}
+                  >
+                    Apply Now
+                  </Button>
+                ) :
+                  <div className="w-full rounded-xl bg-red-500/10 border border-red-500/30 py-3 px-4 text-center">
+                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                      Application Deadline Passed
+                    </p>
+                  </div>
+              }
+
+              {!hasApplied && job.applicationDeadline && !isDeadlinePassed && (
                 <p className="text-xs text-muted-foreground text-center">
                   Apply before{' '}
                   {formatDate(job.applicationDeadline)}
@@ -338,6 +460,34 @@ const JobDetailsForApplicant = () => {
           </div>
         </div>
       )}
+
+      <ApplyModal
+        open={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        job={{
+          id: job.id,
+          title: job.title,
+          slug: job.slug,
+          workMode: job.workMode,
+          employmentType: job.employmentType,
+          company: {
+            name: job.company.name,
+            logo: job.company.logo,
+          },
+          country: job.country,
+          city: job.city || null,
+        }}
+        onSuccess={() => {
+          setHasApplied(true)
+          setExistingApplication({
+            id: '',
+            status: 'APPLIED',
+            createdAt: new Date().toISOString(),
+            statusHistory: []
+          })
+          fetchJobDetails()
+        }}
+      />
     </div>
   )
 
