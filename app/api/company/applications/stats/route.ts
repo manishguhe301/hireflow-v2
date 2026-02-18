@@ -26,18 +26,6 @@ export async function GET(req: NextRequest) {
 
     const jobIds = companyJobs.map((job) => job.id);
 
-    const groupedStats = await prisma.application.groupBy({
-      by: ['status'],
-      where: {
-        jobId: { in: jobIds },
-      },
-      _count: true,
-    });
-
-    const totalApplications = groupedStats.reduce(
-      (sum, s) => sum + s._count,
-      0,
-    );
     if (jobIds.length === 0) {
       return NextResponse.json({
         stats: {
@@ -50,6 +38,19 @@ export async function GET(req: NextRequest) {
         },
       });
     }
+
+    const groupedStats = await prisma.application.groupBy({
+      by: ['status'],
+      where: {
+        jobId: { in: jobIds },
+      },
+      _count: true,
+    });
+
+    const totalApplications = groupedStats.reduce(
+      (sum, s) => sum + s._count,
+      0,
+    );
 
     const stats = {
       total: totalApplications,
