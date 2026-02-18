@@ -1,4 +1,6 @@
+import { authOptions } from '@/src/lib/auth';
 import prisma from '@/src/lib/prisma';
+import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -10,6 +12,8 @@ export async function GET(
 
     if (!slug)
       return NextResponse.json({ error: 'Slug not found' }, { status: 404 });
+
+    const session = await getServerSession(authOptions);
 
     const job = await prisma.job.findUnique({
       where: {
@@ -75,6 +79,27 @@ export async function GET(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
+    let hasApplied = false;
+    let existingApplication = null;
+
+    if (session?.user?.id) {
+      existingApplication = await prisma.application.findUnique({
+        where: {
+          userId_jobId: {
+            userId: session.user.id,
+            jobId: job.id,
+          },
+        },
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          statusHistory: true,
+        },
+      });
+      hasApplied = !!existingApplication;
+    }
+
     prisma.job
       .update({
         where: { id: job.id },
@@ -82,10 +107,22 @@ export async function GET(
       })
       .catch((err) => console.error('Failed to increment views:', err));
 
+    let appliedJobIds: string[] = [];
+    if (session?.user?.id) {
+      appliedJobIds = (
+        await prisma.application.findMany({
+          where: { userId: session.user.id },
+          select: { jobId: true },
+        })
+      ).map((a) => a.jobId);
+    }
+
     const similarJobs = await prisma.job.findMany({
       where: {
         status: 'ACTIVE',
-        id: { not: job.id },
+        id: {
+          notIn: [job.id, ...appliedJobIds],
+        },
         OR: [{ category: job.category }, { companyId: job.company.id }],
       },
       select: {
@@ -128,6 +165,8 @@ export async function GET(
         },
       },
       similarJobs,
+      hasApplied,
+      application: existingApplication,
     });
   } catch (error) {
     console.error('Error fetching job:', error);

@@ -1,4 +1,4 @@
-import JobDetailsForApplicant from '@/src/components/job-details/JobDetailsForApplicant'
+import JobDetailsForApplicant from '@/src/components/job-seeker/JobDetailsForApplicant'
 import React from 'react'
 
 const ExploreJobDetailsPage = () => {

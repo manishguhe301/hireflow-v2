@@ -83,6 +83,11 @@ const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
         <p className="mt-2 text-sm text-muted-foreground">
           {error}
         </p>
+        <Button variant='outline' className='mt-2'
+          onClick={() => window.location.reload()}
+        >
+          Refresh
+        </Button>
       </StateWrapper>
     )
   }

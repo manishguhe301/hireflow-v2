@@ -10,6 +10,7 @@ import {
   Bookmark,
   FileText,
   X,
+  Send,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -38,6 +39,7 @@ const SIDEBAR_LINKS: Record<
   JOB_SEEKER: [
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
     { label: 'Browse Jobs', href: '/jobs', icon: <Briefcase size={18} /> },
+    { label: 'Applications', href: '/dashboard/applications', icon: <Send size={18} /> },
     { label: 'Saved Jobs', href: '/dashboard/saved-jobs', icon: <Bookmark size={18} /> },
     { label: 'Profile', href: '/dashboard/profile', icon: <UserCog size={18} /> },
   ],
