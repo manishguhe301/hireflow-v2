@@ -5,8 +5,12 @@ import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
-import { ArrowLeft, Briefcase, Clock, MapPin } from 'lucide-react'
-import { formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
+import {
+  ArrowLeft, Briefcase, Clock, MapPin, CheckCircle,
+  Circle,
+  XCircle,
+} from 'lucide-react'
+import { APPLICATIONS_TABS, formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
 import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
@@ -73,6 +77,17 @@ interface JobDetails {
   }
 }
 
+const STATUS_FLOW = [
+  'APPLIED',
+  'REVIEWING',
+  'SHORTLISTED',
+  'INTERVIEW_SCHEDULED',
+  'OFFERED',
+  'HIRED',
+  'REJECTED',
+]
+
+
 const JobDetailsForApplicant = () => {
   const params = useParams()
   const router = useRouter()
@@ -87,6 +102,7 @@ const JobDetailsForApplicant = () => {
     id: string
     status: string
     createdAt: string
+    statusHistory: { status: string; date: string }[]
   } | null>(null)
 
   const fetchJobDetails = async () => {
@@ -251,6 +267,71 @@ const JobDetailsForApplicant = () => {
                       Applied on {formatDate(existingApplication?.createdAt || '')}
                     </p>
                   </div>
+
+                  {existingApplication && existingApplication?.statusHistory?.length > 0 && (
+                    <div className="border-t pt-4 space-y-4">
+                      <h4 className="text-sm font-semibold">Application Progress</h4>
+                      {existingApplication.status === 'REJECTED' && <p className="text-xs text-red-600 mt-2">
+                        This application was closed before moving to the next stage.
+                      </p>
+                      }
+                      <div className="relative pl-6">
+                        <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
+
+                        {STATUS_FLOW.map((status) => {
+                          const historyItem = existingApplication.statusHistory.find(
+                            (s) => s.status === status,
+                          )
+
+                          const isCompleted = !!historyItem
+
+                          return (
+                            <div
+                              key={status}
+                              className="relative flex items-start gap-3 pb-6 last:pb-0"
+                            >
+
+                              <div className="absolute -left-[9px] top-1">
+                                {isCompleted ? (
+                                  status === 'REJECTED' ? (
+                                    <XCircle className="h-4 w-4 text-red-600" />
+                                  ) : (
+                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                  )
+                                ) : (
+                                  <Circle className="h-4 w-4 text-muted-foreground" />
+                                )}
+                              </div>
+
+                              <div>
+                                <p
+                                  className={clsx(
+                                    'text-sm font-medium pl-4',
+                                    isCompleted
+                                      ? status === 'REJECTED' ? 'text-red-600' : 'text-primary'
+                                      : 'text-muted-foreground',
+                                  )}
+                                >
+                                  {getLabel(
+                                    APPLICATIONS_TABS,
+                                    status,
+                                  )}
+                                </p>
+
+                                {historyItem && (
+                                  <p className="text-xs text-muted-foreground mt-1 pl-4">
+                                    {formatRelativeTime(historyItem.date)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+
                   <Button
                     variant="outline"
                     className="w-full"
@@ -402,7 +483,9 @@ const JobDetailsForApplicant = () => {
             id: '',
             status: 'APPLIED',
             createdAt: new Date().toISOString(),
+            statusHistory: []
           })
+          fetchJobDetails()
         }}
       />
     </div>
