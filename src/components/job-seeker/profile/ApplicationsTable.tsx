@@ -34,7 +34,7 @@ const ApplicationsTable = ({ data, fetchApplications }:
         <thead className="bg-muted/40 border-b border-border/60">
           <tr>
             <th className="px-6 py-4 text-left">Job</th>
-            <th className="px-6 py-4 text-left">Details</th>
+            {/* <th className="px-6 py-4 text-left">Details</th> */}
             <th className="px-6 py-4 text-left">Status</th>
             <th className="px-6 py-4 text-left">Applied</th>
             <th className="px-6 py-4 text-left">Last Updated</th>
@@ -70,9 +70,10 @@ const ApplicationsTable = ({ data, fetchApplications }:
                 </Link>
               </td>
 
-              <td className="px-6 py-4 text-xs text-muted-foreground">
+              {/* <td className="px-6 py-4 text-xs text-muted-foreground">
                 {getLabel(workModes, app.job.workMode)} •{' '}
-                {getLabel(employmentTypes, app.job.employmentType)} •{' '}
+                {getLabel(employmentTypes, app.job.employmentType)} 
+                •{' '}
                 {getLabel(
                   experienceLevels,
                   app.job.experienceLevel,
@@ -86,7 +87,7 @@ const ApplicationsTable = ({ data, fetchApplications }:
                     app.job.salaryMax,
                   )}
                 </>
-              </td>
+              </td> */}
 
               <td className="px-6 py-4">
                 <span
@@ -110,15 +111,15 @@ const ApplicationsTable = ({ data, fetchApplications }:
               <td className="px-6! py-6! text-right flex items-center justify-end gap-2">
                 <Link
                   href={`/jobs/${app.job.slug}`}
-                  className="text-primary text-xs hover:underline font-semibold"
+                  className={clsx("text-primary text-xs hover:underline font-semibold", app.status === 'REJECTED' && 'py-1')}
                 >
-                  View Job
+                  View Job & Status
                 </Link>
                 {!['REJECTED', 'HIRED', 'OFFERED'].includes(app.status) &&
                   <Button
-                    className="text-primary text-xs hover:underline p-0!"
+                    className=" text-xs hover:underline"
                     size='sm'
-                    variant='ghost'
+                    variant='danger'
                     onClick={() => {
                       setWithdrawApplicationId(app.id)
                       setIsWithDrawModalOpen(true)

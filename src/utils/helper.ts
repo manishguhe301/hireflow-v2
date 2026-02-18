@@ -24,16 +24,16 @@ export function formatRelativeTime(date: Date | string): string {
 
   if (diffInSeconds < 60) return 'Just now';
   if (diffInSeconds < 3600)
-    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    return `${Math.floor(diffInSeconds / 60)} minute(s) ago`;
   if (diffInSeconds < 86400)
-    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 3600)} hour(s) ago`;
   if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    return `${Math.floor(diffInSeconds / 86400)} day(s) ago`;
   if (diffInSeconds < 2592000)
-    return `${Math.floor(diffInSeconds / 604800)} weeks ago`;
+    return `${Math.floor(diffInSeconds / 604800)} week(s) ago`;
   if (diffInSeconds < 31536000)
-    return `${Math.floor(diffInSeconds / 2592000)} months ago`;
-  return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+    return `${Math.floor(diffInSeconds / 2592000)} month(s) ago`;
+  return `${Math.floor(diffInSeconds / 31536000)} year(s) ago`;
 }
 
 export function formatSalary(min?: number | null, max?: number | null): string {
@@ -275,7 +275,10 @@ export const APPLICATIONS_TABS: {
   { label: 'Applied', value: ApplicationStatus.APPLIED },
   { label: 'Reviewing', value: ApplicationStatus.REVIEWING },
   { label: 'Shortlisted', value: ApplicationStatus.SHORTLISTED },
-  { label: 'Interview', value: ApplicationStatus.INTERVIEW_SCHEDULED },
+  {
+    label: 'Interview Scheduled',
+    value: ApplicationStatus.INTERVIEW_SCHEDULED,
+  },
   { label: 'Offered', value: ApplicationStatus.OFFERED },
   { label: 'Rejected', value: ApplicationStatus.REJECTED },
   { label: 'Hired', value: ApplicationStatus.HIRED },
