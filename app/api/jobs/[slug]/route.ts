@@ -12,6 +12,7 @@ export async function GET(
 
     if (!slug)
       return NextResponse.json({ error: 'Slug not found' }, { status: 404 });
+
     const session = await getServerSession(authOptions);
 
     const job = await prisma.job.findUnique({
@@ -93,6 +94,7 @@ export async function GET(
           id: true,
           status: true,
           createdAt: true,
+          statusHistory: true,
         },
       });
       hasApplied = !!existingApplication;
@@ -105,10 +107,22 @@ export async function GET(
       })
       .catch((err) => console.error('Failed to increment views:', err));
 
+    let appliedJobIds: string[] = [];
+    if (session?.user?.id) {
+      appliedJobIds = (
+        await prisma.application.findMany({
+          where: { userId: session.user.id },
+          select: { jobId: true },
+        })
+      ).map((a) => a.jobId);
+    }
+
     const similarJobs = await prisma.job.findMany({
       where: {
         status: 'ACTIVE',
-        id: { not: job.id },
+        id: {
+          notIn: [job.id, ...appliedJobIds],
+        },
         OR: [{ category: job.category }, { companyId: job.company.id }],
       },
       select: {
