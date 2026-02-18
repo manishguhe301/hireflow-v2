@@ -124,6 +124,12 @@ export const JOB_STATUS_STYLE: Record<JobStatus, string> = {
   DRAFT: 'bg-yellow-100 text-yellow-700',
 };
 
+export const JOB_STATUSES: { value: JobStatus; label: string }[] = [
+  { value: 'ACTIVE', label: 'Active' },
+  { value: 'CLOSED', label: 'Closed' },
+  { value: 'DRAFT', label: 'Draft' },
+];
+
 export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
   { label: 'All', value: 'ALL' },
   { label: 'Pending', value: 'PENDING' },

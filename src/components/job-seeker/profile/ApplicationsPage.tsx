@@ -103,7 +103,7 @@ const ApplicationsPage = () => {
   }
 
   return (
-    <div className=" p-4 md:p-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto animate-in fade-in duration-500 max-sm:max-w-screen">
+    <div className=" p-4 md:p-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto  max-sm:max-w-screen">
       <div >
         <h1 className="text-3xl font-bold tracking-tight">Applications</h1>
         <p className="mt-2  text-muted-foreground">
