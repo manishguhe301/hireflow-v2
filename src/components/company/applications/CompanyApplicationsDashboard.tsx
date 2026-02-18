@@ -25,9 +25,10 @@ interface JobRow {
   title: string
   slug: string
   status: string
-  applicationsCount: number
-  lastApplicationAt: string | null
   createdAt: string
+  _count: {
+    applications: number
+  }
 }
 
 interface Stats {
@@ -38,6 +39,7 @@ interface Stats {
   rejected: number
   hired: number
 }
+
 interface CompanyApplicationsResponse {
   jobs: JobRow[]
   pagination: {
@@ -76,9 +78,11 @@ export default function CompanyApplicationsPage() {
   const [statsLoading, setStatsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [stats, setStats] = useState<Stats | null>(null)
+  const [pageChangeLoading, setPageChangeLoading] = useState(false)
 
   const fetchApplications = async () => {
-    setApplicationsLoading(true)
+    // setApplicationsLoading(true)
+    setPageChangeLoading(true)
     try {
       const params = new URLSearchParams()
       params.set('page', page.toString())
@@ -100,6 +104,7 @@ export default function CompanyApplicationsPage() {
       toast.error('Failed to load applications')
     } finally {
       setApplicationsLoading(false)
+      setPageChangeLoading(false)
     }
   }
 
@@ -215,7 +220,7 @@ export default function CompanyApplicationsPage() {
       }
 
       {
-        applicationsLoading ? (
+        pageChangeLoading ? (
           <div className="flex items-center justify-center min-h-[200px]">
             <Spinner className="h-8 w-8" />
           </div>
@@ -242,9 +247,9 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
         <thead className="bg-muted/40 border-b border-border/60">
           <tr>
             <th className="px-6 py-4 text-left">Job Title</th>
+            <th className="px-6 py-4 text-left">Created At</th>
             <th className="px-6 py-4 text-left">Status</th>
             <th className="px-6 py-4 text-left">Applications</th>
-            <th className="px-6 py-4 text-left">Last Application</th>
             <th className="px-6 py-4 text-right">Actions</th>
           </tr>
         </thead>
@@ -268,6 +273,13 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
                 {job.title}
               </td>
 
+              <td className="px-6 py-4 text-xs text-muted-foreground">
+                {job.createdAt
+                  ? formatRelativeTime(job.createdAt)
+                  : '—'}
+              </td>
+
+
               <td className='px-6 py-4 font-semibold'
               >
                 <span
@@ -281,14 +293,14 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
               </td>
 
               <td className="px-6 py-4 font-semibold">
-                {job.applicationsCount}
+                {job._count.applications}
               </td>
 
-              <td className="px-6 py-4 text-xs text-muted-foreground">
+              {/* <td className="px-6 py-4 text-xs text-muted-foreground">
                 {job.lastApplicationAt
                   ? formatRelativeTime(job.lastApplicationAt)
                   : '—'}
-              </td>
+              </td> */}
 
               <td className="px-6 py-4 text-right">
                 <Link
