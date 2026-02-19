@@ -8,7 +8,7 @@ import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
 import { ArrowLeft, CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { APPLICATIONS_TABS, formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
@@ -23,7 +23,9 @@ import {
   Link2,
   Twitter,
 } from 'lucide-react'
-import { Application } from '@prisma/client'
+import { Application, ApplicationStatus } from '@prisma/client'
+import Modal from '../../ui/Modal'
+import clsx from 'clsx'
 
 const PublicProfile = () => {
   const { id } = useParams<{ id: string }>()
@@ -31,10 +33,14 @@ const PublicProfile = () => {
   const [profile, setProfile] = useState<FullProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [application, setApplication] = useState<Application | null>(null)
-
   const { data: session } = useSession()
   const isComapnyAdmin = session?.user.role === 'COMPANY_ADMIN'
   const { slug, applicationId } = useParams()
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
+  const [newStatus, setNewStatus] = useState<ApplicationStatus | null>(null)
+  const [internalNotes, setInternalNotes] = useState('')
+  const [updatingStatus, setUpdatingStatus] = useState(false)
+
 
   const fetchProfile = async () => {
     try {
@@ -56,6 +62,36 @@ const PublicProfile = () => {
   useEffect(() => {
     fetchProfile()
   }, [id])
+
+  const handleStatusChange = async (
+    status: ApplicationStatus,
+    notes?: string,
+  ) => {
+    if (!application) return
+
+    try {
+      setUpdatingStatus(true)
+
+      const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
+        status,
+        internalNotes: status === 'REJECTED' ? notes : '',
+      })
+
+      if (res.error) {
+        toast.error(res.error || 'Failed to update status')
+        return
+      }
+
+      toast.success('Application status updated')
+      setApplication(res.application)
+      setIsRejectModalOpen(false)
+      setInternalNotes('')
+    } catch (error) {
+      toast.error('Something went wrong')
+    } finally {
+      setUpdatingStatus(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -433,6 +469,61 @@ const PublicProfile = () => {
         </div>
       )}
 
+      {isComapnyAdmin && application && (
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6">
+          <h2 className="text-lg font-semibold">Application Details</h2>
+
+          {application.coverLetter && (
+            <div>
+              <h4 className="font-medium mb-1">Cover Letter</h4>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {application.coverLetter}
+              </p>
+            </div>
+          )}
+
+          {application.internalNotes && (
+            <div>
+              <h4 className="font-medium mb-1">Internal Notes</h4>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {application.internalNotes}
+              </p>
+            </div>
+          )}
+
+          <div>
+            <h4 className="font-medium mb-2">Status</h4>
+
+            <select
+              value={application.status}
+              disabled={updatingStatus}
+              onChange={(e) => {
+                const selected = e.target.value as ApplicationStatus
+
+                if (selected === 'REJECTED') {
+                  setNewStatus(selected)
+                  setIsRejectModalOpen(true)
+                } else {
+                  handleStatusChange(selected)
+                }
+              }}
+              className={clsx('w-full md:w-80 rounded-xl border px-4 py-3 text-sm outline-none transition',
+                'bg-background text-foreground border-border/60',
+                'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
+                'appearance-none',
+              )}
+            >
+              {Object.values(ApplicationStatus).map((status) => (
+                <option key={status} value={status}>
+                  {APPLICATIONS_TABS.find((tab) => tab.value === status)?.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+
       {isAdmin && (
         <div className="rounded-2xl border border-border/40 bg-card p-6">
           <h2 className="text-lg font-semibold mb-4">Admin Metadata</h2>
@@ -448,6 +539,48 @@ const PublicProfile = () => {
           </div>
         </div>
       )}
+
+      <Modal
+        open={isComapnyAdmin && isRejectModalOpen}
+        onClose={() => {
+          if (!updatingStatus) {
+            setIsRejectModalOpen(false)
+            setInternalNotes('')
+          }
+        }}
+      >
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Reject Application</h3>
+
+          <textarea
+            value={internalNotes}
+            onChange={(e) => setInternalNotes(e.target.value)}
+            placeholder="Add internal notes (optional)..."
+            rows={4}
+            className="w-full rounded-lg border border-border p-3 text-sm bg-background"
+          />
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsRejectModalOpen(false)}
+              disabled={updatingStatus}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="danger"
+              disabled={updatingStatus}
+              onClick={() =>
+                handleStatusChange(newStatus as ApplicationStatus, internalNotes)
+              }
+            >
+              {updatingStatus ? <Spinner className="h-4 w-4" /> : 'Reject'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
     </div>
   )
