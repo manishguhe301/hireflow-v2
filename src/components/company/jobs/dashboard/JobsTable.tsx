@@ -1,12 +1,12 @@
 import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
-import { isRichTextEmpty } from '@/src/utils/helper'
+import { formatDate, isRichTextEmpty } from '@/src/utils/helper'
 import { jobCategories } from '@/src/utils/utils'
 import { Job } from '@prisma/client'
 import clsx from 'clsx'
 import { CheckCircle, Clock, Pencil, Trash2, XCircle } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 
 export const checkIsPublishable = (job: Job) => {
   return Boolean(
@@ -40,12 +40,17 @@ const JobsTable = ({
   loadingAction: string | null,
   handleStatusChange: (slug: string, newStatus: 'ACTIVE' | 'CLOSED') => Promise<void>
 }) => {
+  const [now] = useState(() => Date.now())
+
+  const getIsDeadlinePassed = (deadline: Date | null) => {
+    return deadline && new Date(deadline).getTime() < now
+  }
   return (
     <table className="w-full text-sm">
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
           <th className="px-6 py-4 text-left">Title</th>
-          <th className="px-6 py-4 text-left">Category</th>
+          <th className="px-6 py-4 text-left">Deadline</th>
           <th className="px-6 py-4 text-left">Status</th>
           <th className="px-6 py-4 text-left">Views</th>
           <th className="px-6 py-4 text-left">Applications</th>
@@ -54,7 +59,8 @@ const JobsTable = ({
       </thead>
       <tbody>
         {jobs.map((job: JobWithCount) => {
-          const jobCategory = jobCategories.filter((ind) => ind.value === job.category)[0]?.label
+          // const jobCategory = jobCategories.filter((ind) => ind.value === job.category)[0]?.label
+          const isDeadlinePassed = getIsDeadlinePassed(job.applicationDeadline)
           return (
             <tr
               key={job.id}
@@ -63,7 +69,18 @@ const JobsTable = ({
               <td className="px-6 py-4">
                 <div className="font-medium capitalize">{job.title}</div>
               </td>
-              <td className="px-6 py-4">{jobCategory || 'N/A'}</td>
+              <td className="px-6 py-4">
+                <span
+                  className={clsx(
+                    'text-xs font-medium',
+                    isDeadlinePassed ? ' text-red-500' : ' text-primary'
+                  )}
+                >
+                  {job.applicationDeadline
+                    ? formatDate(job.applicationDeadline)
+                    : '—'}
+                </span>
+              </td>
               <td className="px-6 py-4">
                 <span
                   className={clsx(
