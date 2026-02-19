@@ -2,14 +2,22 @@ import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const guard = await apiAuthGuard([Role.JOB_SEEKER, Role.COMPANY_ADMIN]);
   if (!guard.ok) return guard.response;
 
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+
   const profile = await prisma.profile.findUnique({
-    where: { userId: guard.session.user.id },
+    where: {
+      userId:
+        guard.session.user.role === Role.JOB_SEEKER
+          ? guard.session.user.id
+          : (id as string),
+    },
   });
 
   if (!profile) {
