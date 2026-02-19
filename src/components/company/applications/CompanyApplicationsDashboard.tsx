@@ -15,10 +15,9 @@ import {
   CheckCircle,
   FileText,
 } from 'lucide-react'
-import { formatDate, formatRelativeTime, getLabel, JOB_STATUS_STYLE, JOB_STATUSES, } from '@/src/utils/helper'
+import { formatDate, formatRelativeTime } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
 import clsx from 'clsx'
-import { JobStatus } from '@prisma/client'
 
 interface JobRow {
   id: string
@@ -51,7 +50,7 @@ interface CompanyApplicationsResponse {
   }
 }
 
-const StatCard = ({
+export const StatCard = ({
   title,
   value,
   icon,
@@ -309,7 +308,7 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
 
                 <td className="px-6 py-4 text-right">
                   <Link
-                    href={`/company/applications/${job.id}`}
+                    href={`/company/applications/${job.slug}`}
                     className="text-primary text-xs hover:underline font-semibold"
                   >
                     View →
