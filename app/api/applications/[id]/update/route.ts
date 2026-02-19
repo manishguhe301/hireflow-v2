@@ -1,0 +1,81 @@
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/src/lib/prisma';
+import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
+import { Role, ApplicationStatus } from '@prisma/client';
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const guard = await apiAuthGuard([Role.COMPANY_ADMIN]);
+    if (!guard.ok) return guard.response;
+
+    const { id } = await params;
+    const body = await req.json();
+
+    const { status, internalNotes } = body as {
+      status: ApplicationStatus;
+      internalNotes?: string;
+    };
+
+    if (!status) {
+      return NextResponse.json(
+        { error: 'Status is required' },
+        { status: 400 },
+      );
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id },
+      include: {
+        job: { select: { companyId: true } },
+      },
+    });
+
+    if (!application) {
+      return NextResponse.json(
+        { error: 'Application not found' },
+        { status: 404 },
+      );
+    }
+
+    const company = await prisma.company.findUnique({
+      where: { userId: guard.session.user.id },
+      select: { id: true },
+    });
+
+    if (!company || company.id !== application.job.companyId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    //eslint-disable-next-line
+    const existingHistory = (application.statusHistory as any[]) || [];
+
+    const updatedApplication = await prisma.application.update({
+      where: { id },
+      data: {
+        status,
+        internalNotes: internalNotes || application.internalNotes,
+        statusHistory: [
+          ...existingHistory,
+          {
+            status,
+            date: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      application: updatedApplication,
+    });
+  } catch (error) {
+    console.error('Update Application Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
