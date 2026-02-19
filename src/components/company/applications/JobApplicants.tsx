@@ -83,7 +83,7 @@ const JobApplicants = () => {
       if (activeTab !== 'ALL') params.set('status', activeTab)
       if (sortBy) params.set('sortBy', sortBy)
       params.set('page', page.toString())
-      params.set('limit', '1')
+      params.set('limit', '12')
 
       const res = await AppSdk.getData(
         `/api/company/applications/${slug}?${params.toString()}`,
@@ -208,58 +208,39 @@ const JobApplicants = () => {
         </section>
       }
 
+      <div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <p className="text-muted-foreground text-sm">
+            {applicationsLoading ? 'Loading...' : `Showing ${applications.length} of ${pagination?.total} applicants`}
+          </p>
+        </div>
+      </div>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex gap-2 items-center flex-wrap">
-          {APPLICATIONS_TABS.map(
-            (tab) => {
-              return (
-                <Button
-                  key={tab.value}
-                  variant={activeTab === tab.value ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => {
-                    setActiveTab(tab.value)
-                    setPage(1)
-                  }}
-                  disabled={applicationsLoading}
-                >
-                  {tab.label}
-                </Button>
-              )
-            })}
+        <FormSelect
+          options={APPLICATION_TABS_WITH_SORT}
+          disabled={applicationsLoading}
+          placeholder='Filters'
+          onChange={(value) => {
+            setPage(1)
 
-          <Button
-            variant={sortBy === 'name' ? 'primary' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setSortBy('name')
-            }}
-            disabled={applicationsLoading}
-          >
-            Name
-          </Button>
-          <Button
-            variant={sortBy === 'recent' ? 'primary' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setSortBy('recent')
-            }}
-            disabled={applicationsLoading}
-          >
-            Recent
-          </Button>
-          <Button
-            variant={sortBy === 'oldest' ? 'primary' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setSortBy('oldest')
-            }}
-            disabled={applicationsLoading}
-          >
-            Oldest
-          </Button>
-        </div>
+            if (value === 'name' || value === 'recent' || value === 'oldest') {
+              setSortBy(value)
+              setActiveTab('ALL')
+              return
+            }
+
+            if (value === 'ALL') {
+              setActiveTab('ALL')
+              setSortBy('')
+              return
+            }
+
+            setActiveTab(value as ApplicationStatus)
+            setSortBy('')
+          }}
+          className='py-2! w-full md:w-80'
+        />
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
