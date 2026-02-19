@@ -5,7 +5,7 @@ import { Role } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const guard = await apiAuthGuard([Role.JOB_SEEKER]);
+  const guard = await apiAuthGuard([Role.JOB_SEEKER, Role.COMPANY_ADMIN]);
   if (!guard.ok) return guard.response;
 
   const profile = await prisma.profile.findUnique({
