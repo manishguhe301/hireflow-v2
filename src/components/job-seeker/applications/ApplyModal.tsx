@@ -203,7 +203,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             register={register('coverLetter')}
             error={errors.coverLetter}
             rows={5}
-            maxLength={1000}
+            maxLength={300}
           />
         </div>
 

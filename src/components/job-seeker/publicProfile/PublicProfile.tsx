@@ -474,11 +474,13 @@ const PublicProfile = () => {
           <h2 className="text-lg font-semibold">Application Details</h2>
 
           {application.coverLetter && (
-            <div>
+            <div className='w-full overflow-hidden'>
               <h4 className="font-medium mb-1">Cover Letter</h4>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              <p className="text-sm text-muted-foreground whitespace-pre-line break-all">
                 {application.coverLetter}
               </p>
+
+
             </div>
           )}
 
