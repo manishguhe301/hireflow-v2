@@ -52,18 +52,44 @@ export async function PATCH(
     //eslint-disable-next-line
     const existingHistory = (application.statusHistory as any[]) || [];
 
+    if (application.status === status) {
+      return NextResponse.json({
+        success: true,
+        application,
+      });
+    }
+
+    const now = new Date().toISOString();
+
+    let updatedHistory = [...existingHistory];
+
+    if (application.status === 'REJECTED' && status !== 'REJECTED') {
+      updatedHistory = updatedHistory.filter(
+        (entry) => entry.status !== 'REJECTED',
+      );
+    }
+
+    const existingIndex = updatedHistory.findIndex(
+      (entry) => entry.status === status,
+    );
+
+    if (existingIndex !== -1) {
+      updatedHistory[existingIndex] = {
+        status,
+        date: now,
+      };
+    } else {
+      updatedHistory.push({
+        status,
+        date: now,
+      });
+    }
     const updatedApplication = await prisma.application.update({
       where: { id },
       data: {
         status,
-        internalNotes: internalNotes || application.internalNotes,
-        statusHistory: [
-          ...existingHistory,
-          {
-            status,
-            date: new Date().toISOString(),
-          },
-        ],
+        internalNotes: status === 'REJECTED' ? internalNotes || '' : null,
+        statusHistory: updatedHistory,
       },
     });
 
