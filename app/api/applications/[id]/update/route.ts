@@ -59,15 +59,23 @@ export async function PATCH(
       });
     }
 
+    const STATUS_FLOW: ApplicationStatus[] = [
+      'APPLIED',
+      'REVIEWING',
+      'SHORTLISTED',
+      'INTERVIEW_SCHEDULED',
+      'OFFERED',
+      'HIRED',
+      'REJECTED',
+    ];
+
     const now = new Date().toISOString();
+    const newStatusIndex = STATUS_FLOW.indexOf(status);
 
-    let updatedHistory = [...existingHistory];
-
-    if (application.status === 'REJECTED' && status !== 'REJECTED') {
-      updatedHistory = updatedHistory.filter(
-        (entry) => entry.status !== 'REJECTED',
-      );
-    }
+    const updatedHistory = existingHistory.filter((entry) => {
+      const index = STATUS_FLOW.indexOf(entry.status);
+      return index !== -1 && index <= newStatusIndex;
+    });
 
     const existingIndex = updatedHistory.findIndex(
       (entry) => entry.status === status,
@@ -84,6 +92,11 @@ export async function PATCH(
         date: now,
       });
     }
+
+    updatedHistory.sort(
+      (a, b) => STATUS_FLOW.indexOf(a.status) - STATUS_FLOW.indexOf(b.status),
+    );
+
     const updatedApplication = await prisma.application.update({
       where: { id },
       data: {
