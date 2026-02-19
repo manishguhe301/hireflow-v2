@@ -8,6 +8,7 @@ import { Button } from "../../ui/Button"
 import clsx from "clsx"
 import { ExperienceLevel } from "@prisma/client"
 import { Spinner } from "../../elements/Loader"
+import { useParams } from "next/navigation"
 
 const ApplicationsTableForJob = ({
   applications,
@@ -16,6 +17,7 @@ const ApplicationsTableForJob = ({
   applications: Applications[],
   fetchApplications: () => void
 }) => {
+  const { slug } = useParams()
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1100px]">
@@ -101,7 +103,7 @@ const ApplicationsTableForJob = ({
                 </td>
                 <td className="px-6 py-7 text-right flex items-center justify-end gap-3">
                   <Link
-                    href={`/company/applications/${app.id}`}
+                    href={`/company/applications/${slug}/${app.id}`}
                     className="text-primary text-xs font-semibold hover:underline"
                   >
                     View Resume & Profile

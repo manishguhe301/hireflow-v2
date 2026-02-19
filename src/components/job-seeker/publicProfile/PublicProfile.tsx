@@ -38,7 +38,7 @@ const PublicProfile = () => {
       const res = await AppSdk.getData(`/api/profile/${id}`, null)
       setProfile(res.profile)
     } catch (error) {
-      toast.error('Failed to load company')
+      toast.error('Failed to load profile')
     } finally {
       setIsLoading(false)
     }
