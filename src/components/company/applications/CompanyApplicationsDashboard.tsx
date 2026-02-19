@@ -142,7 +142,7 @@ export default function CompanyApplicationsPage() {
   if (statsLoading || applicationsLoading) {
     return (
       <div className="flex items-center justify-center gap-2 min-h-[500px]">
-        Loading...<Spinner className="h-8 w-8" />
+        Loading...<Spinner className="h-4 w-4" />
       </div>
     )
   }
