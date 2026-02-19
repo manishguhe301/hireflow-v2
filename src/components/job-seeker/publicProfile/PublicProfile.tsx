@@ -2,7 +2,7 @@
 import { FullProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useParams, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
@@ -23,19 +23,28 @@ import {
   Link2,
   Twitter,
 } from 'lucide-react'
+import { Application } from '@prisma/client'
 
 const PublicProfile = () => {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const [profile, setProfile] = useState<FullProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [application, setApplication] = useState<Application | null>(null)
 
   const { data: session } = useSession()
   const isComapnyAdmin = session?.user.role === 'COMPANY_ADMIN'
+  const { slug, applicationId } = useParams()
 
   const fetchProfile = async () => {
     try {
-      const res = await AppSdk.getData(`/api/profile/${id}`, null)
+      const api = isComapnyAdmin ? `/api/company/applications/${slug}/${applicationId}` : `/api/profile/${id}`;
+      const res = await AppSdk.getData(api, null)
+
+      if (isComapnyAdmin) {
+        setApplication(res.application)
+      }
+
       setProfile(res.profile)
     } catch (error) {
       toast.error('Failed to load profile')
@@ -418,7 +427,7 @@ const PublicProfile = () => {
           <DocumentCard
             label="Resume"
             hasDocument={!!profile.resumePath}
-            apiUrl={`/api/profile/resume`}
+            apiUrl={`/api/profile/resume?id=${application?.userId || profile.userId}`}
             desc='You have to click on the &quot;Reveal&quot; button to access the document'
           />
         </div>
