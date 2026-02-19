@@ -71,6 +71,7 @@ const PublicProfile = () => {
 
     try {
       setUpdatingStatus(true)
+      toast.loading('Updating status...')
 
       const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
         status,
@@ -82,6 +83,7 @@ const PublicProfile = () => {
         return
       }
 
+      toast.dismiss()
       toast.success('Application status updated')
       setApplication(res.application)
       setIsRejectModalOpen(false)
@@ -90,6 +92,7 @@ const PublicProfile = () => {
       toast.error('Something went wrong')
     } finally {
       setUpdatingStatus(false)
+      // toast.dismiss()
     }
   }
 
