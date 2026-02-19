@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
-import { Ban, CircleUser, ShieldUser } from 'lucide-react'
+import { ArrowLeft, CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
@@ -19,13 +19,9 @@ import {
   Globe,
   Github,
   Linkedin,
-  Calendar,
   Briefcase,
-  GraduationCap,
-  Award,
   Link2,
   Twitter,
-  ExternalLink,
 } from 'lucide-react'
 
 const PublicProfile = () => {
@@ -35,8 +31,7 @@ const PublicProfile = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const { data: session } = useSession()
-
-
+  const isComapnyAdmin = session?.user.role === 'COMPANY_ADMIN'
 
   const fetchProfile = async () => {
     try {
@@ -113,7 +108,14 @@ const PublicProfile = () => {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
-
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="inline-flex items-center gap-2 mb-6 p-0!"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
@@ -169,7 +171,7 @@ const PublicProfile = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6  lg:grid-cols-2 ">
 
         <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold">Contact Information</h2>
@@ -231,6 +233,44 @@ const PublicProfile = () => {
                 </div>
               })
             }
+          </div>
+        </div>
+        <div className='flex flex-col gap-6'>
+          <div className="rounded-2xl border border-border/40 bg-card p-6">
+            <h2 className="text-lg font-semibold mb-6">Preffered Job Categories</h2>
+
+            {profile.jobCategories.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.jobCategories.map((category) => (
+                  <span
+                    key={category}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    {getLabel(jobCategories, category)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
+          </div>
+          <div className="rounded-2xl border border-border/40 bg-card p-6">
+            <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
+
+            {profile.preferredLocations.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.preferredLocations.map((location) => (
+                  <span
+                    key={location}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    {location}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
           </div>
         </div>
       </div>
@@ -302,43 +342,9 @@ const PublicProfile = () => {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Preffered Job Categories</h2>
 
-        {profile.jobCategories.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.jobCategories.map((category) => (
-              <span
-                key={category}
-                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-              >
-                {getLabel(jobCategories, category)}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">—</p>
-        )}
-      </div>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
 
-        {profile.preferredLocations.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.preferredLocations.map((location) => (
-              <span
-                key={location}
-                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-              >
-                {location}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">—</p>
-        )}
-      </div>
 
       {profile.workExperience.length > 0 && (
         <div className="rounded-2xl border border-border/40 bg-card p-6">
@@ -423,9 +429,11 @@ const PublicProfile = () => {
           <h2 className="text-lg font-semibold mb-4">Admin Metadata</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
-            <p><span className="font-medium text-foreground">User ID:</span> {profile.userId}</p>
-            <p><span className="font-medium text-foreground">Profile Completion:</span> {profile.profileCompleted}%</p>
-            <p><span className="font-medium text-foreground">Visibility:</span> {profile.isPublic ? 'Public' : 'Private'}</p>
+            {session.user.role === 'PLATFORM_ADMIN' && <>
+              <p><span className="font-medium text-foreground">User ID:</span> {profile.userId}</p>
+              <p><span className="font-medium text-foreground">Profile Completion:</span> {profile.profileCompleted}%</p>
+              <p><span className="font-medium text-foreground">Visibility:</span> {profile.isPublic ? 'Public' : 'Private'}</p>
+            </>}
             <p><span className="font-medium text-foreground">Created:</span> {formatDate(profile.createdAt)}</p>
             <p><span className="font-medium text-foreground">Updated:</span> {formatDate(profile.updatedAt)}</p>
           </div>
