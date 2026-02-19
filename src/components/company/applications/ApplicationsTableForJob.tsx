@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "../../ui/Button"
 import clsx from "clsx"
 import { ExperienceLevel } from "@prisma/client"
+import { Spinner } from "../../elements/Loader"
 
 const ApplicationsTableForJob = ({
   applications,
@@ -106,11 +107,17 @@ const ApplicationsTableForJob = ({
                     View Resume & Profile
                   </Link>
                   <Button
-                    variant='danger'
-                    className='p-1!'
-                    onClick={() => { }}
+                    className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80",
+                      // loadingAction && 'pointer-events-none opacity-50'
+                    )}
+                  // disabled={loadingAction === `delete-${job.id}`}
+                  // onClick={() => setDeleteJobId(job.id)}
                   >
-                    <Trash2 size={16} />
+                    {false ? (
+                      <Spinner className="h-4 w-4" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                   </Button>
                 </td>
               </tr>

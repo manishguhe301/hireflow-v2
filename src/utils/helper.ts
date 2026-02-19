@@ -289,3 +289,13 @@ export const APPLICATIONS_TABS: {
   { label: 'Rejected', value: ApplicationStatus.REJECTED },
   { label: 'Hired', value: ApplicationStatus.HIRED },
 ];
+
+export const APPLICATION_TABS_WITH_SORT: {
+  label: string;
+  value: string;
+}[] = [
+  ...APPLICATIONS_TABS.map((tab) => ({ label: tab.label, value: tab.value })),
+  { label: 'Sort by Name ', value: 'name' },
+  { label: 'Sort by Newest', value: 'recent' },
+  { label: 'Sort by Oldest', value: 'oldest' },
+];
