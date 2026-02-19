@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Spinner } from '../../elements/Loader';
 import { Button } from '../../ui/Button';
 import { StatCard } from './CompanyApplicationsDashboard';
-import { CalendarClock, CheckCircle, Eye, Layers, UserCheck, XCircle } from 'lucide-react';
+import { CalendarClock, CheckCircle, Eye, Layers, Search, UserCheck, XCircle } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
 import { APPLICATIONS_TABS } from '@/src/utils/helper';
 
@@ -86,7 +86,6 @@ const JobApplicants = () => {
   } | null>(null)
   const [stats, setStats] = useState<Stats | null>(null)
   const router = useRouter()
-
 
   const fetchApplicationsAndStats = async () => {
     try {
@@ -219,25 +218,48 @@ const JobApplicants = () => {
         </section>
       }
 
-      <div className="flex flex-wrap gap-2">
-        {APPLICATIONS_TABS.map(
-          (tab) => {
-            return (
-              <Button
-                key={tab.value}
-                variant={activeTab === tab.value ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => {
-                  setActiveTab(tab.value)
-                  setPage(1)
-                }}
-                disabled={applicationsLoading}
-              >
-                {tab.label}
-              </Button>
-            )
-          })}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex gap-2 items-center flex-wrap">
+          {APPLICATIONS_TABS.map(
+            (tab) => {
+              return (
+                <Button
+                  key={tab.value}
+                  variant={activeTab === tab.value ? 'primary' : 'outline'}
+                  size="sm"
+                  onClick={() => {
+                    setActiveTab(tab.value)
+                    setPage(1)
+                  }}
+                  disabled={applicationsLoading}
+                >
+                  {tab.label}
+                </Button>
+              )
+            })}
+        </div>
+        <div className="relative w-full md:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search applicants..."
+            className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
+          />
+        </div>
       </div>
+      {
+        applicationsLoading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <Spinner className="h-8 w-8" />
+          </div>
+        ) : (
+          <ApplicationsTableForJob
+            applications={applications}
+            fetchApplications={fetchApplicationsAndStats}
+          />
+        )
+      }
 
       {
         !applicationsLoading && pagination && pagination.totalPages > 1 && (
@@ -255,3 +277,14 @@ const JobApplicants = () => {
 }
 
 export default JobApplicants
+
+const ApplicationsTableForJob = ({ applications, fetchApplications }: {
+  applications: Applications[]
+  fetchApplications: () => void
+}) => {
+  return (
+    <div>
+
+    </div>
+  )
+}
