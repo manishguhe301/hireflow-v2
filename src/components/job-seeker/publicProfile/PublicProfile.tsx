@@ -92,7 +92,6 @@ const PublicProfile = () => {
       toast.error('Something went wrong')
     } finally {
       setUpdatingStatus(false)
-      // toast.dismiss()
     }
   }
 
@@ -482,8 +481,6 @@ const PublicProfile = () => {
               <p className="text-sm text-muted-foreground whitespace-pre-line break-all">
                 {application.coverLetter}
               </p>
-
-
             </div>
           )}
 
