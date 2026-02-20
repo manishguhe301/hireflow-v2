@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { formatDate, formatSalary, getLabel, formatRelativeTime } from '@/src/utils/helper'
 import {
   Building2,
   MapPin,
@@ -27,12 +27,14 @@ type JobCardProps = {
   isSaved?: boolean
   onSaveToggle?: () => void
   disabled?: boolean
+  savedAt?: string
 }
 
 export default function JobCard({ job,
   isSaved = false,
   onSaveToggle,
-  disabled
+  disabled,
+  savedAt
 }: JobCardProps) {
   const location = job.city
     ? `${job.city}, ${job.country}`
@@ -46,7 +48,7 @@ export default function JobCard({ job,
       className="group block rounded-2xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
     >
       <div className="flex items-start gap-4 relative">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
           {job.company.logo ? (
             <img
               src={job.company.logo}
@@ -59,7 +61,7 @@ export default function JobCard({ job,
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold leading-snug group-hover:text-primary transition line-clamp-1">
+          <h3 className="text-base font-semibold leading-snug group-hover:text-primary transition line-clamp-2">
             {job.title}
           </h3>
           <p className="text-sm text-muted-foreground line-clamp-1">
@@ -119,16 +121,25 @@ export default function JobCard({ job,
       </div>
 
       <div className="mt-5 flex items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Hourglass className="h-3.5 w-3.5" />
-          <span>Apply by {formatDate(job.applicationDeadline)}</span>
-        </div>
+        {savedAt ? (
+          <div className="flex items-center gap-1">
+            <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
+            <span>Saved {formatRelativeTime(savedAt)}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1">
+            <Hourglass className="h-3.5 w-3.5" />
+            <span>Apply by {formatDate(job.applicationDeadline)}</span>
+          </div>
+        )}
 
         {Number(job.numberOfOpenings) > 1 && (
           <span className="font-medium text-foreground">
             {job.numberOfOpenings} openings
           </span>
         )}
+
+
       </div>
 
     </Link>

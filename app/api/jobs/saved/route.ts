@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       savedJobs: savedJobs.map((s) => ({
         // savedId: s.id,
-        // savedAt: s.createdAt,
+        savedAt: s.createdAt,
         ...s.job,
         isSaved: true,
       })),

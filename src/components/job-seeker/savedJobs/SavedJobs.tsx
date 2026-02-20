@@ -33,7 +33,7 @@ export interface SavedJobs {
   applicationDeadline: string;
   category: string;
   // savedId: string;
-  // savedAt: string;
+  savedAt: string;
   isSaved: boolean;
 }
 
@@ -150,6 +150,7 @@ const SavedJobs = () => {
                 isSaved={job.isSaved}
                 onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
                 disabled={saving}
+                savedAt={job.savedAt}
               />
             ))}
           </div>
