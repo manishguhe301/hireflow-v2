@@ -154,6 +154,19 @@ export async function GET(
       },
     });
 
+    let isSaved = false;
+    if (session?.user?.id) {
+      const savedJob = await prisma.savedJob.findUnique({
+        where: {
+          userId_jobId: {
+            userId: session.user.id,
+            jobId: job.id,
+          },
+        },
+      });
+      isSaved = !!savedJob;
+    }
+
     return NextResponse.json({
       job: {
         ...job,
@@ -167,6 +180,7 @@ export async function GET(
       similarJobs,
       hasApplied,
       application: existingApplication,
+      isSaved,
     });
   } catch (error) {
     console.error('Error fetching job:', error);
