@@ -1,29 +1,32 @@
-import { FileText, Trash2 } from "lucide-react"
+import {
+  FileText,
+  // Trash2
+} from "lucide-react"
 import { Applications } from "./JobApplicants"
 import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from "@/src/utils/helper"
-import { yearsOfExperiences } from "@/src/utils/utils"
+// import { yearsOfExperiences } from "@/src/utils/utils"
 import { STATUS_STYLE } from "../../job-seeker/profile/ApplicationsTable"
 import Link from "next/link"
-import { Button } from "../../ui/Button"
+// import { Button } from "../../ui/Button"
 import clsx from "clsx"
-import { ExperienceLevel } from "@prisma/client"
-import { Spinner } from "../../elements/Loader"
+// import { ExperienceLevel } from "@prisma/client"
+// import { Spinner } from "../../elements/Loader"
 import { useParams } from "next/navigation"
 
 const ApplicationsTableForJob = ({
   applications,
-  fetchApplications,
   selectAllApplicants,
   selectedApplicants,
   applicationsLength,
-  checkBoxHandler
+  checkBoxHandler,
+  isBulkProcessing
 }: {
   applications: Applications[],
-  fetchApplications: () => void,
   selectAllApplicants: () => void,
   selectedApplicants: string[]
   applicationsLength: number
   checkBoxHandler: (appId: string) => void
+  isBulkProcessing?: boolean
 }) => {
   const { slug } = useParams()
   const lengthSelected = selectedApplicants.length
@@ -39,11 +42,12 @@ const ApplicationsTableForJob = ({
                 className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
                 onChange={selectAllApplicants}
                 checked={lengthSelected === applicationsLength}
+                disabled={applicationsLength === 0 || isBulkProcessing}
               />
             </th>
 
             <th className="px-6 py-4 text-left">Applicant</th>
-            <th className="px-6 py-4 text-left">Experience</th>
+            {/* <th className="px-6 py-4 text-left">Experience</th> */}
             <th className="px-6 py-4 text-left">Location</th>
             <th className="px-6 py-4 text-left">Status</th>
             <th className="px-6 py-4 text-left">Applied</th>
@@ -71,7 +75,13 @@ const ApplicationsTableForJob = ({
             return (
               <tr
                 key={app.id}
-                className="hover:bg-muted/30 transition"
+                className={clsx("hover:bg-muted/30 transition",
+                  (isBulkProcessing) && "pointer-events-none opacity-50",
+                  selectedApplicants.includes(app.id) && "bg-muted"
+                )}
+                onClick={() => checkBoxHandler
+                  (app.id)
+                }
               >
                 <td className="px-6 py-4">
                   <input
@@ -80,6 +90,7 @@ const ApplicationsTableForJob = ({
                     className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
                     onChange={() => checkBoxHandler(app.id)}
                     checked={selectedApplicants.includes(app.id)}
+                    disabled={isBulkProcessing}
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -105,9 +116,9 @@ const ApplicationsTableForJob = ({
                   </div>
                 </td>
 
-                <td className="px-6 py-4 text-xs text-muted-foreground">
+                {/* <td className="px-6 py-4 text-xs text-muted-foreground">
                   {getLabel(yearsOfExperiences, profile?.yearsOfExperience as ExperienceLevel) || '—'}
-                </td>
+                </td> */}
 
                 <td className="px-6 py-4 text-xs text-muted-foreground">
                   {profile?.city
@@ -132,7 +143,9 @@ const ApplicationsTableForJob = ({
                 <td className="px-6 py-7 text-right flex items-center justify-end gap-3">
                   <Link
                     href={`/company/applications/${slug}/${app.id}`}
-                    className="text-primary text-xs font-semibold hover:underline"
+                    className={clsx("text-primary text-xs font-semibold hover:underline",
+                      (isBulkProcessing) && "pointer-events-none opacity-50"
+                    )}
                   >
                     View Resume & Profile
                   </Link>

@@ -12,6 +12,7 @@ import Pagination from '../../ui/Pagination';
 import { APPLICATION_TABS_WITH_SORT, APPLICATIONS_TABS, getLabel } from '@/src/utils/helper';
 import { FormSelect } from '../../ui/FormSelect';
 import ApplicationsTableForJob from './ApplicationsTableForJob';
+import Modal from '../../ui/Modal';
 
 interface Stats {
   total: number,
@@ -75,9 +76,16 @@ const JobApplicants = () => {
   const [fetchingApplicationsforFilter, setFetchingApplicationsforFilter] = useState(false)
   const router = useRouter()
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
+  const [bulkAction, setBulkAction] = useState<'update_status' | 'reject' | null>(null)
+  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus>('REVIEWING')
+  const [bulkRejectReason, setBulkRejectReason] = useState('')
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false)
 
-  const fetchApplicationsAndStats = async () => {
-    setFetchingApplicationsforFilter(true)
+  const fetchApplicationsAndStats = async (isNeededSpinner: boolean = true) => {
+    if (isNeededSpinner) {
+      setFetchingApplicationsforFilter(true)
+    }
     try {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
@@ -130,10 +138,6 @@ const JobApplicants = () => {
     return () => clearTimeout(timer)
   }, [search, activeTab, page, sortBy])
 
-  useEffect(() => {
-    console.log(selectedApplicants);
-  }, [selectedApplicants])
-
 
   if (applicationsLoading) {
     return (
@@ -179,6 +183,46 @@ const JobApplicants = () => {
       return [...prev, appId]
     })
   }
+
+  const handleBulkAction = async () => {
+    if (selectedApplicants.length === 0) {
+      toast.error('No applicants selected')
+      return
+    }
+
+    if (!bulkAction) return
+
+    setIsBulkProcessing(true)
+    toast.loading('Processing bulk action...')
+
+    try {
+      const res = await AppSdk.patchData('/api/company/applications/bulk', {
+        applicationIds: selectedApplicants,
+        action: bulkAction,
+        status: bulkStatus,
+        rejectReason: bulkRejectReason,
+      })
+
+      if (res.error) {
+        toast.dismiss()
+        toast.error(res.error || 'Failed to process bulk action')
+        return
+      }
+
+      toast.dismiss()
+      toast.success(res.message || 'Bulk action completed successfully')
+      setSelectedApplicants([])
+      setIsBulkModalOpen(false)
+      setBulkRejectReason('')
+      fetchApplicationsAndStats(false)
+    } catch (error) {
+      toast.dismiss()
+      toast.error('Something went wrong')
+    } finally {
+      setIsBulkProcessing(false)
+    }
+  }
+
 
   return (
     <div className="p-4 md:p-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto max-sm:max-w-screen">
@@ -271,10 +315,50 @@ const JobApplicants = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search applicants..."
-            className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
+            className="w-full md:w-64 rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
           />
         </div>
+
       </div>
+      {selectedApplicants.length > 0 && (
+        <div className="flex items-center gap-3 rounded-xl border border-primary/40 bg-primary/5 p-4 max-sm:flex-col max-sm:items-start">
+          <p className="text-sm font-medium">
+            {selectedApplicants.length} applicant{selectedApplicants.length > 1 ? 's' : ''} selected
+          </p>
+
+          <div className="flex gap-2 ml-auto max-sm:items-start max-sm:ml-0">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setBulkAction('update_status')
+                setIsBulkModalOpen(true)
+              }}
+            >
+              Update Status
+            </Button>
+
+            <Button
+              size="sm"
+              variant="danger"
+              onClick={() => {
+                setBulkAction('reject')
+                setIsBulkModalOpen(true)
+              }}
+            >
+              Reject All
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setSelectedApplicants([])}
+            >
+              Clear Selection
+            </Button>
+          </div>
+        </div>
+      )}
       {
         applicationsLoading || fetchingApplicationsforFilter ? (
           <div className="flex items-center justify-center min-h-[200px]">
@@ -284,11 +368,11 @@ const JobApplicants = () => {
           applications.length > 0 ?
             <ApplicationsTableForJob
               applications={applications}
-              fetchApplications={fetchApplicationsAndStats}
               selectAllApplicants={selectAllApplicants}
               selectedApplicants={selectedApplicants}
               applicationsLength={applications.length}
               checkBoxHandler={checkBoxHandler}
+              isBulkProcessing={isBulkProcessing}
             /> : (
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
                 <FileText className="h-10 w-10 text-muted-foreground" />
@@ -342,6 +426,76 @@ const JobApplicants = () => {
           </div>
         )
       }
+
+      <Modal
+        open={isBulkModalOpen}
+        onClose={() => {
+          if (!isBulkProcessing) {
+            setIsBulkModalOpen(false)
+            setBulkRejectReason('')
+          }
+        }}
+      >
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">
+            {bulkAction === 'reject' ? 'Bulk Reject Applications' : 'Bulk Update Status'}
+          </h3>
+
+          <p className="text-sm text-muted-foreground">
+            This will affect {selectedApplicants.length} application{selectedApplicants.length > 1 ? 's' : ''}
+          </p>
+
+          {bulkAction === 'update_status' && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">New Status</label>
+              <select
+                value={bulkStatus}
+                onChange={(e) => setBulkStatus(e.target.value as ApplicationStatus)}
+                disabled={isBulkProcessing}
+                className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
+              >
+                {Object.values(ApplicationStatus).filter(s => s !== 'REJECTED').map((status) => (
+                  <option key={status} value={status}>
+                    {getLabel(APPLICATIONS_TABS, status)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {bulkAction === 'reject' && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Rejection Reason (Optional)</label>
+              <textarea
+                value={bulkRejectReason}
+                onChange={(e) => setBulkRejectReason(e.target.value)}
+                placeholder="Add internal notes..."
+                rows={4}
+                disabled={isBulkProcessing}
+                className="w-full rounded-lg border border-border p-3 text-sm bg-background"
+              />
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsBulkModalOpen(false)}
+              disabled={isBulkProcessing}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant={bulkAction === 'reject' ? 'danger' : 'primary'}
+              onClick={handleBulkAction}
+              disabled={isBulkProcessing}
+            >
+              {isBulkProcessing ? <Spinner className="h-4 w-4" /> : 'Confirm'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
