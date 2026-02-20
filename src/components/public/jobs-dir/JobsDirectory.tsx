@@ -1,6 +1,6 @@
 'use client'
 import { Briefcase, Search } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FormSelect } from '../../ui/FormSelect'
 import { jobCategories } from '@/src/utils/utils'
@@ -67,6 +67,7 @@ const JobsDirectory = () => {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const { data: session } = useSession()
   const isLoggedIn = session?.user?.id
+  const pathName = usePathname()
 
   const [filters, setFilters] = useState<Filters>({
     workModes: [],
@@ -118,8 +119,22 @@ const JobsDirectory = () => {
     if (location) params.set('location', location)
     if (page > 1) params.set('page', page.toString())
 
-    router.push(`/explore/jobs?${params.toString()}`, { scroll: false })
-  }, [search, category, location, page, router])
+    let basePath = ''
+    if (session && session.user && session.user.role === 'JOB_SEEKER') {
+      basePath = '/jobs'
+    } else {
+      basePath = '/explore/jobs'
+    }
+
+    const queryString = params.toString()
+    const newUrl = queryString
+      ? `${basePath}?${queryString}`
+      : basePath
+
+    if (newUrl !== `${pathName}?${searchParams.toString()}`) {
+      router.push(newUrl, { scroll: false })
+    }
+  }, [search, category, location, page, session, pathName])
 
   useEffect(() => {
     const shouldDebounce = search.length > 0 || location.length > 0 || filters.workModes.length > 0 || filters.employmentTypes.length > 0 || filters.experienceLevels.length > 0 || filters.salaryMin > 0 || filters.salaryMax < 10000000 || filters.datePosted || filters.sortBy
@@ -306,7 +321,7 @@ const JobsDirectory = () => {
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
-            </div>  
+            </div>
           )}
 
           {!isLoading && jobs.length === 0 && (

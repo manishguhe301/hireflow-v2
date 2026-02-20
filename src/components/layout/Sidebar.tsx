@@ -9,7 +9,7 @@ import {
   Briefcase,
   Bookmark,
   FileText,
-  X,
+  X, LogOut, Moon, Sun,
   Send,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -19,6 +19,9 @@ import clsx from 'clsx'
 import { Spinner } from '../elements/Loader'
 import { useTheme } from 'next-themes'
 import { Button } from '../ui/Button'
+import { signOut } from 'next-auth/react'
+import { toast } from 'sonner'
+import { flushSync } from 'react-dom'
 
 const SIDEBAR_LINKS: Record<
   Role,
@@ -53,8 +56,9 @@ interface SidebarProps {
 const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   const { data: session, status } = useSession()
   const pathname = usePathname()
-  const { theme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const isDark = theme === 'dark'
+
 
   if (status === 'loading') {
     return (
@@ -68,6 +72,41 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   if (!role) return null
 
   const links = SIDEBAR_LINKS[role]
+
+  const handleLogout = async () => {
+    const toastId = toast.loading('Logging out...')
+    await signOut({ callbackUrl: '/' })
+    toast.dismiss(toastId)
+  }
+
+  const toggleTheme = async () => {
+    if (!document.startViewTransition) {
+      setTheme(isDark ? 'light' : 'dark')
+      return
+    }
+
+    const transition = document.startViewTransition(() => {
+      flushSync(() => {
+        setTheme(isDark ? 'light' : 'dark')
+      })
+    })
+
+    await transition.ready
+
+    document.documentElement.animate(
+      {
+        clipPath: [
+          'polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%)',
+          'polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)',
+        ],
+      },
+      {
+        duration: 600,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        pseudoElement: '::view-transition-new(root)',
+      }
+    )
+  }
 
   return (
     <aside
@@ -135,6 +174,35 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
           )
         })}
       </nav>
+      <div className="mt-auto pt-6 border-t border-border/40 flex flex-col gap-2">
+        <Button
+          onClick={toggleTheme}
+          variant='outline'
+          className={clsx(
+            'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition cursor-pointer',
+            'text-muted-foreground hover:bg-muted/40 hover:text-foreground w-full'
+          )}
+        >
+          {isDark ? <Sun size={18} className='text-warning' />
+            : <Moon size={18} className='text-primary' />}
+          <span className={clsx(isDark ? 'text-warning' : 'text-primary', mobile ? 'block' : 'hidden lg:inline')}>
+            {isDark ? 'Light Mode' : 'Dark Mode'}
+          </span>
+        </Button>
+
+        <Button
+          onClick={handleLogout}
+          variant='danger'
+          className={clsx(
+            'flex items-center gap-3 w-full',
+          )}
+        >
+          <LogOut size={18} />
+          <span className={mobile ? 'block' : 'hidden lg:inline'}>
+            Logout
+          </span>
+        </Button>
+      </div>
     </aside>
   )
 }
