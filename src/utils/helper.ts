@@ -124,6 +124,12 @@ export const JOB_STATUS_STYLE: Record<JobStatus, string> = {
   DRAFT: 'bg-yellow-100 text-yellow-700',
 };
 
+export const JOB_STATUSES: { value: JobStatus; label: string }[] = [
+  { value: 'ACTIVE', label: 'Active' },
+  { value: 'CLOSED', label: 'Closed' },
+  { value: 'DRAFT', label: 'Draft' },
+];
+
 export const TABS: { label: string; value: CompanyStatus | 'ALL' }[] = [
   { label: 'All', value: 'ALL' },
   { label: 'Pending', value: 'PENDING' },
@@ -282,4 +288,14 @@ export const APPLICATIONS_TABS: {
   { label: 'Offered', value: ApplicationStatus.OFFERED },
   { label: 'Rejected', value: ApplicationStatus.REJECTED },
   { label: 'Hired', value: ApplicationStatus.HIRED },
+];
+
+export const APPLICATION_TABS_WITH_SORT: {
+  label: string;
+  value: string;
+}[] = [
+  ...APPLICATIONS_TABS.map((tab) => ({ label: tab.label, value: tab.value })),
+  { label: 'Sort by Name ', value: 'name' },
+  { label: 'Sort by Newest', value: 'recent' },
+  { label: 'Sort by Oldest', value: 'oldest' },
 ];

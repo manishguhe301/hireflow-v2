@@ -169,6 +169,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             </div>
           )}
 
+
           <FileUpload
             label="Upload Resume or Use Existing One"
             name="customResume"
@@ -179,6 +180,16 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             description="PDF up to 5MB"
             existingFileUrl={profileResumeUrl}
           />
+          {profileResumeUrl && (
+            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-3">
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                ⚠️ You can only maintain one resume in your profile.
+                Updating it will affect all your past and future job applications.
+              </p>
+
+            </div>
+          )}
+
         </div>
 
         <div className="space-y-3">
@@ -192,7 +203,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             register={register('coverLetter')}
             error={errors.coverLetter}
             rows={5}
-            maxLength={1000}
+            maxLength={300}
           />
         </div>
 

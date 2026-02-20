@@ -72,7 +72,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   return (
     <aside
       className={clsx(
-        'lg:w-64 md:w-20 w-64 flex-col border-r border-border/60 px-4 py-6 transition',
+        'lg:w-64! md:w-20! w-64! flex-col border-r border-border/60 px-4 py-6 transition',
         'md:fixed md:inset-y-0 md:left-0 md:min-h-screen md:overflow-y-auto',
         mobile ? 'flex h-full w-64!' : 'hidden md:flex',
         'bg-background'
