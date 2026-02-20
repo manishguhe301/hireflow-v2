@@ -26,7 +26,7 @@ export default function RootLayout({
           <ThemeProvider>
             <ReduxProvider>
               {children}
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
               <ToasterProvider />
             </ReduxProvider>
           </ThemeProvider>

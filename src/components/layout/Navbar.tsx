@@ -1,28 +1,26 @@
 'use client'
 
 import { Menu, } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { toast } from 'sonner'
 import { Button } from '../ui/Button'
 import { labels } from '@/src/utils/helper'
 import { Breadcrumb } from '../ui/Breadcrumb'
-import { useAppDispatch } from '@/src/store/hooks'
-import { clearCompany } from '@/src/store/slices/companySlice'
+
 
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const { data: session } = useSession()
   const user = session?.user
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
 
-  const handleLogout = async () => {
-    const toastId = toast.loading('Logging out...')
-    await signOut({
-      callbackUrl: '/',
-    })
-    dispatch(clearCompany())
-    toast.dismiss(toastId)
-  }
+  // const handleLogout = async () => {
+  //   const toastId = toast.loading('Logging out...')
+  //   await signOut({
+  //     callbackUrl: '/',
+  //   })
+  //   dispatch(clearCompany())
+  //   toast.dismiss(toastId)
+  // }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
@@ -46,24 +44,36 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
 
         {user && (
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-medium capitalize">{user.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {labels[user.role]}
-              </span>
-            </div>
+            <Link href={user.role === 'JOB_SEEKER'
+              ? "/dashboard/profile" : user.role === 'COMPANY_ADMIN'
+                ? '/company/profile' : '/admin'} className="flex flex-row gap-1 items-center">
+              <div className="h-10 w-10 flex items-center justify-center rounded-full overflow-hidden border border-border/40 bg-muted">
+                <span className="text-sm font-semibold text-primary">
+                  {user.name?.charAt(0)?.toUpperCase()}
+                </span>
+              </div>
+              <div className="hidden sm:flex flex-col items-start text-center gap-1">
+                <span className="text-sm font-medium capitalize leading-tight">
+                  {user.name}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {labels[user.role]}
+                </span>
+              </div>
 
-            <Button
+              {/* <Button
               onClick={handleLogout}
               variant="danger"
               className="rounded-full px-4 py-1.5 text-sm border-border/60"
             >
               Logout
-            </Button>
+            </Button> */}
+            </Link>
           </div>
+
         )}
       </div>
-    </header>
+    </header >
   )
 }
 

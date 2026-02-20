@@ -30,6 +30,9 @@ const ApplicationsTableForJob = ({
 }) => {
   const { slug } = useParams()
   const lengthSelected = selectedApplicants.length
+
+  const isIndeterminate =
+    lengthSelected > 0 && lengthSelected < applicationsLength
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1100px]">
@@ -39,6 +42,11 @@ const ApplicationsTableForJob = ({
               <input
                 type="checkbox"
                 id="isCurrent"
+                ref={(el) => {
+                  if (el) {
+                    el.indeterminate = isIndeterminate
+                  }
+                }}
                 className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
                 onChange={selectAllApplicants}
                 checked={lengthSelected === applicationsLength}
@@ -79,15 +87,17 @@ const ApplicationsTableForJob = ({
                   (isBulkProcessing) && "pointer-events-none opacity-50",
                   selectedApplicants.includes(app.id) && "bg-muted"
                 )}
-                onClick={() => checkBoxHandler
-                  (app.id)
-                }
+              // onClick={(e) => {
+              //   e.stopPropagation()
+              //   checkBoxHandler(app.id)
+              // }
+              // }
               >
                 <td className="px-6 py-4">
                   <input
                     type="checkbox"
-                    id="isCurrent"
                     className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
+                    // onClick={(e) => e.stopPropagation()}
                     onChange={() => checkBoxHandler(app.id)}
                     checked={selectedApplicants.includes(app.id)}
                     disabled={isBulkProcessing}
@@ -146,6 +156,7 @@ const ApplicationsTableForJob = ({
                     className={clsx("text-primary text-xs font-semibold hover:underline",
                       (isBulkProcessing) && "pointer-events-none opacity-50"
                     )}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     View Resume & Profile
                   </Link>
