@@ -71,6 +71,7 @@ const JobsDirectory = () => {
   const { data: session } = useSession()
   const isLoggedIn = session?.user?.id
   const pathName = usePathname()
+  const [saving, setSaving] = useState(false)
 
   const [filters, setFilters] = useState<Filters>({
     workModes: [],
@@ -155,6 +156,7 @@ const JobsDirectory = () => {
 
 
   const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    setSaving(true)
     try {
       if (currentlySaved) {
         const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
@@ -178,6 +180,8 @@ const JobsDirectory = () => {
       fetchJobs(false)
     } catch (error) {
       toast.error('Something went wrong')
+    }finally {
+      setSaving(false)
     }
   }
 
@@ -356,7 +360,9 @@ const JobsDirectory = () => {
                   key={job.id}
                   job={job}
                   isSaved={job.isSaved}
-                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)} />
+                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
+                  disabled={saving}
+                />
               ))}
             </div>
           )}
