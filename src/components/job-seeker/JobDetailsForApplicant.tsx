@@ -9,6 +9,8 @@ import {
   ArrowLeft, Briefcase, Clock, MapPin, CheckCircle,
   Circle,
   XCircle,
+  BookmarkCheck,
+  Bookmark,
 } from 'lucide-react'
 import { APPLICATIONS_TABS, formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
@@ -104,6 +106,8 @@ const JobDetailsForApplicant = () => {
     createdAt: string
     statusHistory: { status: string; date: string }[]
   } | null>(null)
+  const [isSaved, setIsSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   const fetchJobDetails = async () => {
     try {
@@ -116,6 +120,7 @@ const JobDetailsForApplicant = () => {
         setSimilarJobs(res.similarJobs)
         setHasApplied(res.hasApplied)
         setExistingApplication(res.application)
+        setIsSaved(res.isSaved)
       }
     } catch (error) {
       console.error(error)
@@ -160,6 +165,37 @@ const JobDetailsForApplicant = () => {
     job.applicationDeadline &&
     new Date(job.applicationDeadline).getTime() < Date.now()
 
+
+  const onSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    setSaving(true)
+    try {
+      if (currentlySaved) {
+        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+        if (res.error) {
+          toast.error(res.error || 'Failed to remove saved job')
+          return
+        }
+        toast.success('Job removed from saved')
+      } else {
+        const res = await AppSdk.postData(`/api/jobs/saved`, {
+          jobId
+        })
+
+        if (res.error) {
+          toast.error(res.error || 'Failed to save job')
+          return
+        }
+
+        toast.success('Job saved successfully')
+      }
+      fetchJobDetails()
+    } catch (error) {
+      toast.error('Something went wrong')
+    }
+    finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className={clsx("mx-auto  px-4 py-10 space-y-10", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
@@ -257,105 +293,125 @@ const JobDetailsForApplicant = () => {
           <div className="sticky top-12 space-y-6">
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-              {hasApplied ? (
-                <div className="space-y-3">
-                  <div className="w-full rounded-xl bg-green-500/10 border border-green-500/30 py-3 px-4 text-center">
-                    <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                      ✓ Already Applied
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Applied on {formatDate(existingApplication?.createdAt || '')}
-                    </p>
-                  </div>
-
-                  {existingApplication && existingApplication?.statusHistory?.length > 0 && (
-                    <div className="border-t border-border/60 pt-4 space-y-4">
-                      <h4 className="text-sm font-semibold">Application Progress</h4>
-                      {existingApplication.status === 'REJECTED' && <p className="text-xs text-red-600 mt-2">
-                        This application was closed before moving to the next stage.
+              <div className='flex flex-row items-center gap-4'>
+                {hasApplied ? (
+                  <div className="space-y-3">
+                    <div className="w-full rounded-xl bg-green-500/10 border border-green-500/30 py-3 px-4 text-center">
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                        ✓ Already Applied
                       </p>
-                      }
-                      <div className="relative pl-6">
-                        <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
-
-                        {STATUS_FLOW.map((status) => {
-                          const historyItem = existingApplication.statusHistory.find(
-                            (s) => s.status === status,
-                          )
-
-                          const isCompleted = !!historyItem
-
-                          return (
-                            <div
-                              key={status}
-                              className="relative flex items-start gap-3 pb-6 last:pb-0"
-                            >
-
-                              <div className="absolute -left-[9px] top-1">
-                                {isCompleted ? (
-                                  status === 'REJECTED' ? (
-                                    <XCircle className="h-4 w-4 text-red-600" />
-                                  ) : (
-                                    <CheckCircle className="h-4 w-4 text-green-600" />
-                                  )
-                                ) : (
-                                  <Circle className="h-4 w-4 text-muted-foreground" />
-                                )}
-                              </div>
-
-                              <div>
-                                <p
-                                  className={clsx(
-                                    'text-sm font-medium pl-4',
-                                    isCompleted
-                                      ? status === 'REJECTED' ? 'text-red-600' : 'text-primary'
-                                      : 'text-muted-foreground',
-                                  )}
-                                >
-                                  {getLabel(
-                                    APPLICATIONS_TABS,
-                                    status,
-                                  )}
-                                </p>
-
-                                {historyItem && (
-                                  <p className="text-xs text-muted-foreground mt-1 pl-4">
-                                    {formatRelativeTime(historyItem.date)}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Applied on {formatDate(existingApplication?.createdAt || '')}
+                      </p>
                     </div>
-                  )}
+
+                    {existingApplication && existingApplication?.statusHistory?.length > 0 && (
+                      <div className="border-t border-border/60 pt-4 space-y-4">
+                        <h4 className="text-sm font-semibold">Application Progress</h4>
+                        {existingApplication.status === 'REJECTED' && <p className="text-xs text-red-600 mt-2">
+                          This application was closed before moving to the next stage.
+                        </p>
+                        }
+                        <div className="relative pl-6">
+                          <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
+
+                          {STATUS_FLOW.map((status) => {
+                            const historyItem = existingApplication.statusHistory.find(
+                              (s) => s.status === status,
+                            )
+
+                            const isCompleted = !!historyItem
+
+                            return (
+                              <div
+                                key={status}
+                                className="relative flex items-start gap-3 pb-6 last:pb-0"
+                              >
+
+                                <div className="absolute -left-[9px] top-1">
+                                  {isCompleted ? (
+                                    status === 'REJECTED' ? (
+                                      <XCircle className="h-4 w-4 text-red-600" />
+                                    ) : (
+                                      <CheckCircle className="h-4 w-4 text-green-600" />
+                                    )
+                                  ) : (
+                                    <Circle className="h-4 w-4 text-muted-foreground" />
+                                  )}
+                                </div>
+
+                                <div>
+                                  <p
+                                    className={clsx(
+                                      'text-sm font-medium pl-4',
+                                      isCompleted
+                                        ? status === 'REJECTED' ? 'text-red-600' : 'text-primary'
+                                        : 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {getLabel(
+                                      APPLICATIONS_TABS,
+                                      status,
+                                    )}
+                                  </p>
+
+                                  {historyItem && (
+                                    <p className="text-xs text-muted-foreground mt-1 pl-4">
+                                      {formatRelativeTime(historyItem.date)}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
 
 
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => router.push('/dashboard')}
-                  >
-                    View My Applications
-                  </Button>
-                </div>
-              ) :
-                !isDeadlinePassed ? (
-                  <Button
-                    onClick={() => setIsApplyModalOpen(true)}
-                    className="w-full rounded-xl py-3"
-                    disabled={!session?.user?.id}
-                  >
-                    Apply Now
-                  </Button>
-                ) :
-                  <div className="w-full rounded-xl bg-red-500/10 border border-red-500/30 py-3 px-4 text-center">
-                    <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                      Application Deadline Passed
-                    </p>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => router.push('/dashboard')}
+                    >
+                      View My Applications
+                    </Button>
                   </div>
-              }
+                ) :
+                  !isDeadlinePassed ? (
+                    <Button
+                      onClick={() => setIsApplyModalOpen(true)}
+                      className="w-full rounded-xl py-3"
+                      disabled={!session?.user?.id}
+                    >
+                      Apply Now
+                    </Button>
+                  ) :
+                    <div className="w-full rounded-xl bg-red-500/10 border border-red-500/30 py-3 px-4 text-center">
+                      <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                        Application Deadline Passed
+                      </p>
+                    </div>
+                }
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onSaveToggle(job.id, isSaved)
+                  }}
+                  variant='outline'
+                  className={clsx("p-2! h-full!  bg-background/80 hover:bg-background",
+                    !session && "hidden"
+                  )}
+                  disabled={saving}
+                >
+                  {isSaved ? (
+                    <BookmarkCheck className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Bookmark className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
+
 
               {!hasApplied && job.applicationDeadline && !isDeadlinePassed && (
                 <p className="text-xs text-muted-foreground text-center">
