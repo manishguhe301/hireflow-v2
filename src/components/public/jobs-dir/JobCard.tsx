@@ -5,9 +5,10 @@ import {
   Building2,
   MapPin,
   Briefcase,
-  DollarSign,
   Hourglass,
   Banknote,
+  BookmarkCheck,
+  Bookmark,
 } from 'lucide-react'
 import Link from 'next/link'
 import { DirJobType } from './JobsDirectory'
@@ -18,8 +19,19 @@ import {
   workModes,
 } from '@/src/utils/utils'
 import { useSession } from 'next-auth/react'
+import { Button } from '../../ui/Button'
+import clsx from 'clsx'
 
-export default function JobCard({ job }: { job: DirJobType }) {
+type JobCardProps = {
+  job: DirJobType,
+  isSaved?: boolean
+  onSaveToggle?: () => void
+}
+
+export default function JobCard({ job,
+  isSaved = false,
+  onSaveToggle,
+}: JobCardProps) {
   const location = job.city
     ? `${job.city}, ${job.country}`
     : job.country
@@ -31,7 +43,7 @@ export default function JobCard({ job }: { job: DirJobType }) {
       href={session?.user?.id ? `/jobs/${job.slug}` : `/explore/jobs/${job.slug}`}
       className="group block rounded-2xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-4 relative">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
           {job.company.logo ? (
             <img
@@ -63,6 +75,20 @@ export default function JobCard({ job }: { job: DirJobType }) {
           </div>
         </div>
 
+        <Button
+          onClick={(e) => {
+            e.preventDefault()
+            onSaveToggle?.()
+          }}
+          variant='outline'
+          className={clsx("absolute top-0 right-0 p-2! rounded-full! bg-background/80 hover:bg-background")}
+        >
+          {isSaved ? (
+            <BookmarkCheck className="h-5 w-5 text-primary" />
+          ) : (
+            <Bookmark className="h-5 w-5 text-muted-foreground" />
+          )}
+        </Button>
 
       </div>
 
@@ -99,6 +125,7 @@ export default function JobCard({ job }: { job: DirJobType }) {
           </span>
         )}
       </div>
+
     </Link>
   )
 }
