@@ -117,7 +117,7 @@ const ManageJobs = () => {
 
 
   return (
-    <div className="space-y-8 w-full md:max-w-[1400px] md:mx-auto animate-in fade-in duration-500 max-sm:max-w-screen">
+    <div className="space-y-8 w-full md:max-w-[1400px] md:mx-auto max-sm:max-w-screen">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex gap-2 items-center flex-wrap">
           {JOB_TABS.map((tab) => (

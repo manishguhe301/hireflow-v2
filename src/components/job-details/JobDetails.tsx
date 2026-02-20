@@ -23,7 +23,7 @@ import { Button } from '../ui/Button'
 import { Company, Job } from '@prisma/client'
 import InfoCard from '../admin/InfoCard'
 import InfoRow from '../admin/InfoRow'
-import { formatDate, getLabel, JOB_STATUS_STYLE } from '@/src/utils/helper'
+import { formatDate, getLabel, isRichTextEmpty, JOB_STATUS_STYLE } from '@/src/utils/helper'
 import { jobCategories } from '@/src/utils/utils'
 import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
 
@@ -224,11 +224,11 @@ const JobDetails = () => {
           </div>
         </div>
 
-        {job.responsibilities && (
+        {!isRichTextEmpty(job.responsibilities as string) && (
           <div className="rounded-2xl border border-border/40 bg-card p-6">
             <h2 className="text-base font-semibold">Responsibilities</h2>
             <div className="mt-4">
-              <RichTextRenderer content={job.responsibilities} />
+              <RichTextRenderer content={job.responsibilities as string} />
             </div>
           </div>
         )}

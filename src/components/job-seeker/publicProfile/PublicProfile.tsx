@@ -2,13 +2,13 @@
 import { FullProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useParams, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
-import { Ban, CircleUser, ShieldUser } from 'lucide-react'
+import { ArrowLeft, CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { APPLICATIONS_TABS, formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
@@ -19,31 +19,41 @@ import {
   Globe,
   Github,
   Linkedin,
-  Calendar,
   Briefcase,
-  GraduationCap,
-  Award,
   Link2,
   Twitter,
-  ExternalLink,
 } from 'lucide-react'
+import { Application, ApplicationStatus } from '@prisma/client'
+import Modal from '../../ui/Modal'
+import clsx from 'clsx'
 
 const PublicProfile = () => {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const [profile, setProfile] = useState<FullProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-
+  const [application, setApplication] = useState<Application | null>(null)
   const { data: session } = useSession()
-
+  const isComapnyAdmin = session?.user.role === 'COMPANY_ADMIN'
+  const { slug, applicationId } = useParams()
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
+  const [newStatus, setNewStatus] = useState<ApplicationStatus | null>(null)
+  const [internalNotes, setInternalNotes] = useState('')
+  const [updatingStatus, setUpdatingStatus] = useState(false)
 
 
   const fetchProfile = async () => {
     try {
-      const res = await AppSdk.getData(`/api/profile/${id}`, null)
+      const api = isComapnyAdmin ? `/api/company/applications/${slug}/${applicationId}` : `/api/profile/${id}`;
+      const res = await AppSdk.getData(api, null)
+
+      if (isComapnyAdmin) {
+        setApplication(res.application)
+      }
+
       setProfile(res.profile)
     } catch (error) {
-      toast.error('Failed to load company')
+      toast.error('Failed to load profile')
     } finally {
       setIsLoading(false)
     }
@@ -52,6 +62,38 @@ const PublicProfile = () => {
   useEffect(() => {
     fetchProfile()
   }, [id])
+
+  const handleStatusChange = async (
+    status: ApplicationStatus,
+    notes?: string,
+  ) => {
+    if (!application) return
+
+    try {
+      setUpdatingStatus(true)
+      toast.loading('Updating status...')
+
+      const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
+        status,
+        internalNotes: status === 'REJECTED' ? notes : '',
+      })
+
+      if (res.error) {
+        toast.error(res.error || 'Failed to update status')
+        return
+      }
+
+      toast.dismiss()
+      toast.success('Application status updated')
+      setApplication(res.application)
+      setIsRejectModalOpen(false)
+      setInternalNotes('')
+    } catch (error) {
+      toast.error('Something went wrong')
+    } finally {
+      setUpdatingStatus(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -113,7 +155,14 @@ const PublicProfile = () => {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
-
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="inline-flex items-center gap-2 mb-6 p-0!"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
@@ -169,7 +218,7 @@ const PublicProfile = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6  lg:grid-cols-2 ">
 
         <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold">Contact Information</h2>
@@ -231,6 +280,44 @@ const PublicProfile = () => {
                 </div>
               })
             }
+          </div>
+        </div>
+        <div className='flex flex-col gap-6'>
+          <div className="rounded-2xl border border-border/40 bg-card p-6">
+            <h2 className="text-lg font-semibold mb-6">Preffered Job Categories</h2>
+
+            {profile.jobCategories.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.jobCategories.map((category) => (
+                  <span
+                    key={category}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    {getLabel(jobCategories, category)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
+          </div>
+          <div className="rounded-2xl border border-border/40 bg-card p-6">
+            <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
+
+            {profile.preferredLocations.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.preferredLocations.map((location) => (
+                  <span
+                    key={location}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    {location}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
           </div>
         </div>
       </div>
@@ -302,43 +389,9 @@ const PublicProfile = () => {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Preffered Job Categories</h2>
 
-        {profile.jobCategories.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.jobCategories.map((category) => (
-              <span
-                key={category}
-                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-              >
-                {getLabel(jobCategories, category)}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">—</p>
-        )}
-      </div>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
 
-        {profile.preferredLocations.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {profile.preferredLocations.map((location) => (
-              <span
-                key={location}
-                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-              >
-                {location}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">—</p>
-        )}
-      </div>
 
       {profile.workExperience.length > 0 && (
         <div className="rounded-2xl border border-border/40 bg-card p-6">
@@ -412,25 +465,124 @@ const PublicProfile = () => {
           <DocumentCard
             label="Resume"
             hasDocument={!!profile.resumePath}
-            apiUrl={`/api/profile/resume`}
+            apiUrl={`/api/profile/resume?id=${application?.userId || profile.userId}`}
             desc='You have to click on the &quot;Reveal&quot; button to access the document'
           />
         </div>
       )}
+
+      {isComapnyAdmin && application && (
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6">
+          <h2 className="text-lg font-semibold">Application Details</h2>
+
+          {application.coverLetter && (
+            <div className='w-full overflow-hidden'>
+              <h4 className="font-medium mb-1">Cover Letter</h4>
+              <p className="text-sm text-muted-foreground whitespace-pre-line break-all">
+                {application.coverLetter}
+              </p>
+            </div>
+          )}
+
+          {application.internalNotes && (
+            <div>
+              <h4 className="font-medium mb-1">Internal Notes</h4>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {application.internalNotes}
+              </p>
+            </div>
+          )}
+
+          <div>
+            <h4 className="font-medium mb-2">Status</h4>
+
+            <select
+              value={application.status}
+              disabled={updatingStatus}
+              onChange={(e) => {
+                const selected = e.target.value as ApplicationStatus
+
+                if (selected === 'REJECTED') {
+                  setNewStatus(selected)
+                  setIsRejectModalOpen(true)
+                } else {
+                  handleStatusChange(selected)
+                }
+              }}
+              className={clsx('w-full md:w-80 rounded-xl border px-4 py-3 text-sm outline-none transition',
+                'bg-background text-foreground border-border/60',
+                'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
+                'appearance-none',
+              )}
+            >
+              {Object.values(ApplicationStatus).map((status) => (
+                <option key={status} value={status}>
+                  {APPLICATIONS_TABS.find((tab) => tab.value === status)?.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
 
       {isAdmin && (
         <div className="rounded-2xl border border-border/40 bg-card p-6">
           <h2 className="text-lg font-semibold mb-4">Admin Metadata</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
-            <p><span className="font-medium text-foreground">User ID:</span> {profile.userId}</p>
-            <p><span className="font-medium text-foreground">Profile Completion:</span> {profile.profileCompleted}%</p>
-            <p><span className="font-medium text-foreground">Visibility:</span> {profile.isPublic ? 'Public' : 'Private'}</p>
+            {session.user.role === 'PLATFORM_ADMIN' && <>
+              <p><span className="font-medium text-foreground">User ID:</span> {profile.userId}</p>
+              <p><span className="font-medium text-foreground">Profile Completion:</span> {profile.profileCompleted}%</p>
+              <p><span className="font-medium text-foreground">Visibility:</span> {profile.isPublic ? 'Public' : 'Private'}</p>
+            </>}
             <p><span className="font-medium text-foreground">Created:</span> {formatDate(profile.createdAt)}</p>
             <p><span className="font-medium text-foreground">Updated:</span> {formatDate(profile.updatedAt)}</p>
           </div>
         </div>
       )}
+
+      <Modal
+        open={isComapnyAdmin && isRejectModalOpen}
+        onClose={() => {
+          if (!updatingStatus) {
+            setIsRejectModalOpen(false)
+            setInternalNotes('')
+          }
+        }}
+      >
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Reject Application</h3>
+
+          <textarea
+            value={internalNotes}
+            onChange={(e) => setInternalNotes(e.target.value)}
+            placeholder="Add internal notes (optional)..."
+            rows={4}
+            className="w-full rounded-lg border border-border p-3 text-sm bg-background"
+          />
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsRejectModalOpen(false)}
+              disabled={updatingStatus}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="danger"
+              disabled={updatingStatus}
+              onClick={() =>
+                handleStatusChange(newStatus as ApplicationStatus, internalNotes)
+              }
+            >
+              {updatingStatus ? <Spinner className="h-4 w-4" /> : 'Reject'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
     </div>
   )

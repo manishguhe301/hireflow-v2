@@ -9,7 +9,7 @@ import { ApplicationWithPagination } from './ApplicationsPage'
 import { Button } from '../../ui/Button'
 import WithdrawModal from './WithdrawModal'
 
-const STATUS_STYLE: Record<ApplicationStatus, string> = {
+export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   APPLIED: 'bg-blue-500/10 text-blue-600',
   REVIEWING: 'bg-yellow-500/10 text-yellow-600',
   SHORTLISTED: 'bg-purple-500/10 text-purple-600',
