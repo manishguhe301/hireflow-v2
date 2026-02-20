@@ -12,17 +12,36 @@ import { useParams } from "next/navigation"
 
 const ApplicationsTableForJob = ({
   applications,
-  fetchApplications
+  fetchApplications,
+  selectAllApplicants,
+  selectedApplicants,
+  applicationsLength,
+  checkBoxHandler
 }: {
   applications: Applications[],
-  fetchApplications: () => void
+  fetchApplications: () => void,
+  selectAllApplicants: () => void,
+  selectedApplicants: string[]
+  applicationsLength: number
+  checkBoxHandler: (appId: string) => void
 }) => {
   const { slug } = useParams()
+  const lengthSelected = selectedApplicants.length
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1100px]">
         <thead className="bg-muted/40 border-b border-border/60">
           <tr>
+            <th className="px-6 py-4 text-left">
+              <input
+                type="checkbox"
+                id="isCurrent"
+                className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
+                onChange={selectAllApplicants}
+                checked={lengthSelected === applicationsLength}
+              />
+            </th>
+
             <th className="px-6 py-4 text-left">Applicant</th>
             <th className="px-6 py-4 text-left">Experience</th>
             <th className="px-6 py-4 text-left">Location</th>
@@ -54,6 +73,15 @@ const ApplicationsTableForJob = ({
                 key={app.id}
                 className="hover:bg-muted/30 transition"
               >
+                <td className="px-6 py-4">
+                  <input
+                    type="checkbox"
+                    id="isCurrent"
+                    className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
+                    onChange={() => checkBoxHandler(app.id)}
+                    checked={selectedApplicants.includes(app.id)}
+                  />
+                </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     {profile?.avatar ? (
@@ -108,7 +136,7 @@ const ApplicationsTableForJob = ({
                   >
                     View Resume & Profile
                   </Link>
-                  <Button
+                  {/* <Button
                     className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80",
                       // loadingAction && 'pointer-events-none opacity-50'
                     )}
@@ -120,7 +148,7 @@ const ApplicationsTableForJob = ({
                     ) : (
                       <Trash2 className="h-4 w-4" />
                     )}
-                  </Button>
+                  </Button> */}
                 </td>
               </tr>
             )

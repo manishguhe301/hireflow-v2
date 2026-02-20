@@ -74,6 +74,7 @@ const JobApplicants = () => {
   const [stats, setStats] = useState<Stats | null>(null)
   const [fetchingApplicationsforFilter, setFetchingApplicationsforFilter] = useState(false)
   const router = useRouter()
+  const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
 
   const fetchApplicationsAndStats = async () => {
     setFetchingApplicationsforFilter(true)
@@ -129,6 +130,11 @@ const JobApplicants = () => {
     return () => clearTimeout(timer)
   }, [search, activeTab, page, sortBy])
 
+  useEffect(() => {
+    console.log(selectedApplicants);
+  }, [selectedApplicants])
+
+
   if (applicationsLoading) {
     return (
       <div className="flex items-center justify-center gap-2 min-h-[500px]">
@@ -136,6 +142,7 @@ const JobApplicants = () => {
       </div>
     )
   }
+
 
   if (!applications) {
     return (
@@ -154,6 +161,23 @@ const JobApplicants = () => {
         </div>
       </div>
     )
+  }
+
+  const selectAllApplicants = () => {
+    if (selectedApplicants.length === applications.length) {
+      setSelectedApplicants([])
+    } else {
+      setSelectedApplicants(applications.map(app => app.id))
+    }
+  }
+
+  const checkBoxHandler = (appId: string) => {
+    setSelectedApplicants(prev => {
+      if (prev.includes(appId)) {
+        return prev.filter(id => id !== appId)
+      }
+      return [...prev, appId]
+    })
   }
 
   return (
@@ -257,48 +281,53 @@ const JobApplicants = () => {
             <Spinner className="h-8 w-8" />
           </div>
         ) : (
-          applications.length > 0 ? <ApplicationsTableForJob
-            applications={applications}
-            fetchApplications={fetchApplicationsAndStats}
-          /> : (
-            <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-              <FileText className="h-10 w-10 text-muted-foreground" />
+          applications.length > 0 ?
+            <ApplicationsTableForJob
+              applications={applications}
+              fetchApplications={fetchApplicationsAndStats}
+              selectAllApplicants={selectAllApplicants}
+              selectedApplicants={selectedApplicants}
+              applicationsLength={applications.length}
+              checkBoxHandler={checkBoxHandler}
+            /> : (
+              <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+                <FileText className="h-10 w-10 text-muted-foreground" />
 
-              <p className="text-lg font-medium">
-                No applicants found
-              </p>
+                <p className="text-lg font-medium">
+                  No applicants found
+                </p>
 
-              <p className="text-sm text-muted-foreground max-w-md">
-                {activeTab !== 'ALL' && search
-                  ? `No applicants match the "${getLabel(
-                    APPLICATIONS_TABS,
-                    activeTab,
-                  )}" status with search term "${search}". `
-                  : activeTab !== 'ALL'
-                    ? `No applicants found under "${getLabel(
+                <p className="text-sm text-muted-foreground max-w-md">
+                  {activeTab !== 'ALL' && search
+                    ? `No applicants match the "${getLabel(
                       APPLICATIONS_TABS,
                       activeTab,
-                    )}" status. `
-                    : search
-                      ? `No applicants match the search term "${search}". `
-                      : `There are no applicants for this job yet. `}
-                try adjusting your filters to find what you&apos;re looking for.
-              </p>
+                    )}" status with search term "${search}". `
+                    : activeTab !== 'ALL'
+                      ? `No applicants found under "${getLabel(
+                        APPLICATIONS_TABS,
+                        activeTab,
+                      )}" status. `
+                      : search
+                        ? `No applicants match the search term "${search}". `
+                        : `There are no applicants for this job yet. `}
+                  try adjusting your filters to find what you&apos;re looking for.
+                </p>
 
-              {(activeTab !== 'ALL' || search) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setActiveTab('ALL')
-                    setSearch('')
-                  }}
-                >
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-          )
+                {(activeTab !== 'ALL' || search) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setActiveTab('ALL')
+                      setSearch('')
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            )
         )
       }
 
