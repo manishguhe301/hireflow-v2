@@ -6,5 +6,6 @@ export type AppSession = {
     role: Role;
     name?: string | null;
     email?: string | null;
+    image?: string | null;
   };
 };
