@@ -26,11 +26,13 @@ type JobCardProps = {
   job: DirJobType,
   isSaved?: boolean
   onSaveToggle?: () => void
+  disabled?: boolean
 }
 
 export default function JobCard({ job,
   isSaved = false,
   onSaveToggle,
+  disabled
 }: JobCardProps) {
   const location = job.city
     ? `${job.city}, ${job.country}`
@@ -81,7 +83,10 @@ export default function JobCard({ job,
             onSaveToggle?.()
           }}
           variant='outline'
-          className={clsx("absolute top-0 right-0 p-2! rounded-full! bg-background/80 hover:bg-background")}
+          disabled={disabled}
+          className={clsx("absolute top-0 right-0 p-2! rounded-full! bg-background/80 hover:bg-background",
+            !session && "hidden"
+          )}
         >
           {isSaved ? (
             <BookmarkCheck className="h-5 w-5 text-primary" />
