@@ -103,3 +103,76 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const guard = await apiAuthGuard([Role.JOB_SEEKER]);
+    if (!guard.ok) return guard.response;
+
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '12');
+    const skip = (page - 1) * limit;
+
+    const [savedJobs, total] = await Promise.all([
+      prisma.savedJob.findMany({
+        where: { userId: guard.session.user.id },
+        select: {
+          id: true,
+          createdAt: true,
+          job: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              category: true,
+              workMode: true,
+              employmentType: true,
+              experienceLevel: true,
+              country: true,
+              city: true,
+              salaryMin: true,
+              salaryMax: true,
+              applicationDeadline: true,
+              numberOfOpenings: true,
+              createdAt: true,
+              company: {
+                select: {
+                  id: true,
+                  name: true,
+                  logo: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.savedJob.count({
+        where: { userId: guard.session.user.id },
+      }),
+    ]);
+
+    return NextResponse.json({
+      savedJobs: savedJobs.map((s) => ({
+        savedId: s.id,
+        savedAt: s.createdAt,
+        ...s.job,
+      })),
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching saved jobs:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
