@@ -11,6 +11,8 @@ import FilterSidebar from './FilterSidebar'
 import { Button } from '../../ui/Button'
 import clsx from 'clsx'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
+import { AppSdk } from '@/src/utils/AppSdk'
 
 export type DirJobType = {
   id: string,
@@ -33,7 +35,8 @@ export type DirJobType = {
   salaryMax: number,
   salaryMin: number,
   createdAt: string,
-  updatedAt: string
+  updatedAt: string,
+  isSaved: boolean,
 }
 
 
@@ -80,8 +83,10 @@ const JobsDirectory = () => {
   })
 
 
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true)
+  const fetchJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
+    if (isLoadingNeeded) {
+      setIsLoading(true)
+    }
     try {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
@@ -147,6 +152,34 @@ const JobsDirectory = () => {
 
     return () => clearTimeout(timer)
   }, [search, category, location, page, fetchJobs])
+
+
+  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    try {
+      if (currentlySaved) {
+        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+        if (res.error) {
+          toast.error(res.error || 'Failed to remove saved job')
+          return
+        }
+        toast.success('Job removed from saved')
+      } else {
+        const res = await AppSdk.postData(`/api/jobs/saved`, {
+          jobId
+        })
+
+        if (res.error) {
+          toast.error(res.error || 'Failed to save job')
+          return
+        }
+
+        toast.success('Job saved successfully')
+      }
+      fetchJobs(false)
+    } catch (error) {
+      toast.error('Something went wrong')
+    }
+  }
 
   const handleClearAllFilters = () => {
     setFilters({
@@ -319,7 +352,11 @@ const JobsDirectory = () => {
           {!isLoading && jobs.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2">
               {jobs.map((job) => (
-                <JobCard key={job.id} job={job} />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  isSaved={job.isSaved}
+                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)} />
               ))}
             </div>
           )}
