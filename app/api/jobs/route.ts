@@ -122,6 +122,16 @@ export async function GET(req: NextRequest) {
       orderBy = { salaryMin: 'asc' };
     }
 
+    let savedJobIds: string[] = [];
+    if (session?.user?.id) {
+      savedJobIds = (
+        await prisma.savedJob.findMany({
+          where: { userId: session.user.id },
+          select: { jobId: true },
+        })
+      ).map((s) => s.jobId);
+    }
+
     const [jobs, total] = await Promise.all([
       prisma.job.findMany({
         where,
@@ -149,7 +159,7 @@ export async function GET(req: NextRequest) {
           salaryMin: true,
           createdAt: true,
           updatedAt: true,
-          _count: true,
+          // savedJobs: true,
         },
         orderBy,
         skip,
@@ -159,7 +169,10 @@ export async function GET(req: NextRequest) {
     ]);
 
     return NextResponse.json({
-      jobs,
+      jobs: jobs.map((job) => ({
+        ...job,
+        isSaved: savedJobIds.includes(job.id),
+      })),
       pagination: {
         total,
         page,
