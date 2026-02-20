@@ -58,3 +58,48 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const guard = await apiAuthGuard([Role.JOB_SEEKER]);
+    if (!guard.ok) return guard.response;
+
+    const { searchParams } = new URL(req.url);
+    const jobId = searchParams.get('jobId');
+
+    if (!jobId) {
+      return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
+    }
+
+    const savedJob = await prisma.savedJob.findUnique({
+      where: {
+        userId_jobId: {
+          userId: guard.session.user.id,
+          jobId,
+        },
+      },
+    });
+
+    if (!savedJob) {
+      return NextResponse.json(
+        { error: 'Saved job not found' },
+        { status: 404 },
+      );
+    }
+
+    await prisma.savedJob.delete({
+      where: { id: savedJob.id },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Job removed from saved',
+    });
+  } catch (error) {
+    console.error('Error removing saved job:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
