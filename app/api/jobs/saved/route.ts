@@ -1,0 +1,60 @@
+import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
+import prisma from '@/src/lib/prisma';
+import { Role } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(req: NextRequest) {
+  try {
+    const guard = await apiAuthGuard([Role.JOB_SEEKER]);
+    if (!guard.ok) return guard.response;
+
+    const { jobId } = await req.json();
+
+    if (!jobId) {
+      return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
+    }
+
+    const job = await prisma.job.findUnique({
+      where: { id: jobId, status: 'ACTIVE' },
+    });
+
+    if (!job) {
+      return NextResponse.json(
+        { error: 'Job not found or inactive' },
+        { status: 404 },
+      );
+    }
+
+    const existing = await prisma.savedJob.findUnique({
+      where: {
+        userId_jobId: {
+          userId: guard.session.user.id,
+          jobId,
+        },
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json({ error: 'Job already saved' }, { status: 400 });
+    }
+
+    const savedJob = await prisma.savedJob.create({
+      data: {
+        userId: guard.session.user.id,
+        jobId,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Job saved successfully',
+      savedJob,
+    });
+  } catch (error) {
+    console.error('Error saving job:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
