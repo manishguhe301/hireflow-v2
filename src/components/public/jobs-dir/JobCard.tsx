@@ -27,14 +27,12 @@ type JobCardProps = {
   isSaved?: boolean
   onSaveToggle?: () => void
   disabled?: boolean
-  savedAt?: string
 }
 
 export default function JobCard({ job,
   isSaved = false,
   onSaveToggle,
   disabled,
-  savedAt
 }: JobCardProps) {
   const location = job.city
     ? `${job.city}, ${job.country}`
@@ -127,12 +125,7 @@ export default function JobCard({ job,
           <span>Apply by {formatDate(job.applicationDeadline)}</span>
         </div>
 
-        {savedAt ? (
-          <div className="flex items-center gap-1">
-            <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
-            <span>Saved {formatRelativeTime(savedAt)}</span>
-          </div>
-        ) : (
+        {(
           Number(job.numberOfOpenings) > 1 && (
             <span className="font-medium text-foreground">
               {job.numberOfOpenings} openings

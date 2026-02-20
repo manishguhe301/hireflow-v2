@@ -9,6 +9,7 @@ import Pagination from '../../ui/Pagination';
 import JobCard from '../../public/jobs-dir/JobCard';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
+import { formatRelativeTime } from '@/src/utils/helper';
 
 export interface SavedJobs {
   company: {
@@ -62,13 +63,12 @@ const SavedJobs = () => {
       params.set('page', page.toString())
       params.set('limit', '12')
 
-      const res = await fetch(
-        `/api/jobs/saved?${params.toString()}`
+      const res = await AppSdk.getData(
+        `/api/jobs/saved?${params.toString()}`,
+        null
       )
-      const data = await res.json()
-
-      setJobs(data.savedJobs || [])
-      setPagination(data.pagination)
+      setJobs(res.savedJobs || [])
+      setPagination(res.pagination)
     } catch (error) {
       console.error('Error fetching companies:', error)
     } finally {
@@ -80,7 +80,14 @@ const SavedJobs = () => {
     const params = new URLSearchParams()
     if (page > 1) params.set('page', page.toString())
 
-    router.push(`/dashboard/saved-jobs?${params.toString()}`, { scroll: false })
+    const query = params.toString()
+    const newUrl = query
+      ? `/dashboard/saved-jobs?${query}`
+      : `/dashboard/saved-jobs`
+
+    if (newUrl !== window.location.pathname + window.location.search) {
+      router.push(newUrl, { scroll: false })
+    }
   }, [page])
 
   useEffect(() => {
@@ -127,7 +134,7 @@ const SavedJobs = () => {
         </p>
       </div>
 
-      {!isLoading && pagination && jobs ? (
+      {!isLoading && pagination ? (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
@@ -144,14 +151,20 @@ const SavedJobs = () => {
         {!isLoading && jobs?.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2">
             {jobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                isSaved={job.isSaved}
-                onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                disabled={saving}
-                savedAt={job.savedAt}
-              />
+              <div key={job.id} className="space-y-2">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="font-medium">Saved</span>
+                  <span>•</span>
+                  <span>{formatRelativeTime(job.savedAt)}</span>
+                </div>
+
+                <JobCard
+                  job={job}
+                  isSaved={job.isSaved}
+                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
+                  disabled={saving}
+                />
+              </div>
             ))}
           </div>
         )}
