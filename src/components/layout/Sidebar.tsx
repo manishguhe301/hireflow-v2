@@ -78,6 +78,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
     await signOut({ callbackUrl: '/' })
     toast.dismiss(toastId)
   }
+
   const toggleTheme = async () => {
     if (!document.startViewTransition) {
       setTheme(isDark ? 'light' : 'dark')
@@ -182,8 +183,9 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
             'text-muted-foreground hover:bg-muted/40 hover:text-foreground w-full'
           )}
         >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          <span className={mobile ? 'block' : 'hidden lg:inline'}>
+          {isDark ? <Sun size={18} className='text-warning' />
+            : <Moon size={18} className='text-primary' />}
+          <span className={clsx(isDark ? 'text-warning' : 'text-primary', mobile ? 'block' : 'hidden lg:inline')}>
             {isDark ? 'Light Mode' : 'Dark Mode'}
           </span>
         </Button>
