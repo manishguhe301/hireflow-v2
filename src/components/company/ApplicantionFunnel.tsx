@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import { AnalyticsData } from "./CompanyDashboardPage"
 
 const ApplicantionFunnel = ({ analytics }: { analytics: AnalyticsData }) => {
@@ -16,7 +17,7 @@ const ApplicantionFunnel = ({ analytics }: { analytics: AnalyticsData }) => {
               </div>
               <div className="w-full bg-muted rounded-full h-3">
                 <div
-                  className="bg-primary h-3 rounded-full transition-all"
+                  className={clsx("bg-primary h-3 rounded-full transition-all", stage.stage === "Rejected" && "bg-red-500")}
                   style={{ width: `${stage.percentage}%` }}
                 />
               </div>
