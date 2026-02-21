@@ -16,24 +16,28 @@ const TopJobs = ({ analytics }: {
     <div className="bg-card border border-border/60 rounded-2xl p-6">
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={analytics.applicationsPerJob.slice(0, 5)}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="rgb(var(--border))" />
           <XAxis
             dataKey="jobTitle"
-            stroke="hsl(var(--muted-foreground))"
+            stroke="rgb(var(--muted-foreground))"
             tick={{ fontSize: 12 }}
             angle={-15}
             textAnchor="end"
             height={80}
           />
-          <YAxis stroke="hsl(var(--muted-foreground))" />
+          <YAxis stroke="rgb(var(--muted-foreground))"
+          className="hover:bg-none"
+          />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
+              backgroundColor: 'rgb(var(--card))',
+              border: '1px solid rgb(var(--border))',
               borderRadius: '8px',
             }}
           />
-          <Bar dataKey="applications" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="applications" fill="rgb(var(--primary))" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
