@@ -53,9 +53,14 @@ export async function GET(req: NextRequest) {
 
     const funnel = [
       {
-        stage: 'Applied',
+        stage: 'Applied (New Applications)',
         count: funnelData.find((s) => s.status === 'APPLIED')?._count || 0,
-        percentage: 100,
+        percentage:
+          totalApps > 0
+            ? ((funnelData.find((s) => s.status === 'APPLIED')?._count || 0) /
+                totalApps) *
+              100
+            : 0,
       },
       {
         stage: 'Reviewing',
@@ -107,6 +112,16 @@ export async function GET(req: NextRequest) {
         percentage:
           totalApps > 0
             ? ((funnelData.find((s) => s.status === 'HIRED')?._count || 0) /
+                totalApps) *
+              100
+            : 0,
+      },
+      {
+        stage: 'Rejected',
+        count: funnelData.find((s) => s.status === 'REJECTED')?._count || 0,
+        percentage:
+          totalApps > 0
+            ? ((funnelData.find((s) => s.status === 'REJECTED')?._count || 0) /
                 totalApps) *
               100
             : 0,
