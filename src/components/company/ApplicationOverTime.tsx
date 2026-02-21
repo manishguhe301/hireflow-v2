@@ -15,25 +15,30 @@ const ApplicationOverTime = ({ timeSeriesData }: { timeSeriesData: TimeSeriesDat
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={timeSeriesData}>
           <CartesianGrid strokeDasharray="3 3"
-            stroke="hsl(var(--border))"
+            stroke="rgb(var(--border))"
           />
           <XAxis dataKey="date"
-            stroke="hsl(var(--text-muted-foreground))" />
+            stroke="rgb(var(--muted-foreground))"
+            angle={-15}
+          />
           <YAxis
-            stroke="hsl(var(--text-muted-foreground))" />
+            stroke="rgb(var(--muted-foreground))"
+
+          />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
+              backgroundColor: 'rgb(var(--card))',
+              border: '1px solid rgb(var(--border))',
               borderRadius: '8px',
             }}
           />
+
           <Line
             type="monotone"
             dataKey="applications"
-            stroke="hsl(var(--primary))"
+            stroke="rgb(var(--primary))"
             strokeWidth={2}
-            dot={{ fill: 'hsl(var(--primary))' }}
+            dot={{ fill: 'rgb(var(--primary))' }}
           />
         </LineChart>
       </ResponsiveContainer>
