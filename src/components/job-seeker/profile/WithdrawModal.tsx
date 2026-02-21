@@ -38,7 +38,7 @@ const WithdrawModal = ({
       fetchApplications(false)
       onClose()
     } catch (error) {
-      console.error(error)
+      console.log(error)
       toast.error('Failed to withdraw application')
     } finally {
       setIsSubmitting(false)

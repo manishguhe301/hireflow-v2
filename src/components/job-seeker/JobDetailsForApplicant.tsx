@@ -212,9 +212,29 @@ const JobDetailsForApplicant = () => {
         <div className="lg:col-span-2 space-y-8">
 
           <div className="space-y-4">
-            <h1 className="text-3xl font-bold tracking-tight">
-              {job.title}
-            </h1>
+            <div className="flex flex-row items-start justify-between gap-4">
+              <h1 className="text-3xl font-bold tracking-tight">
+                {job.title}
+              </h1>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault()
+                  onSaveToggle(job.id, isSaved)
+                }}
+                variant='outline'
+                className={clsx("p-2! h-full!  bg-background/80 hover:bg-background",
+                  !session && "hidden"
+                )}
+                disabled={saving}
+              >
+                {isSaved ? (
+                  <BookmarkCheck className="h-5 w-5 text-primary" />
+                ) : (
+                  <Bookmark className="h-5 w-5 text-muted-foreground" />
+                )}
+              </Button>
+
+            </div>
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span>{job.company.name}</span>
@@ -289,13 +309,14 @@ const JobDetailsForApplicant = () => {
           )}
         </div>
 
-        <div className="space-y-6">
+
+        <div className="space-y-6 w-full!">
           <div className="sticky top-12 space-y-6">
 
-            <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
+            <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4 w-full">
               <div className='flex flex-row items-center gap-4'>
                 {hasApplied ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3 w-full">
                     <div className="w-full rounded-xl bg-green-500/10 border border-green-500/30 py-3 px-4 text-center">
                       <p className="text-sm font-medium text-green-600 dark:text-green-400">
                         ✓ Already Applied
@@ -393,23 +414,6 @@ const JobDetailsForApplicant = () => {
                       </p>
                     </div>
                 }
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    onSaveToggle(job.id, isSaved)
-                  }}
-                  variant='outline'
-                  className={clsx("p-2! h-full!  bg-background/80 hover:bg-background",
-                    !session && "hidden"
-                  )}
-                  disabled={saving}
-                >
-                  {isSaved ? (
-                    <BookmarkCheck className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Bookmark className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </Button>
               </div>
 
 
