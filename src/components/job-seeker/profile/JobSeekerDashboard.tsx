@@ -21,9 +21,10 @@ import {
   User,
 } from 'lucide-react'
 import Link from 'next/link'
-import { ApplicationStatus } from '@prisma/client'
+import { ApplicationStatus, EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client'
 import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
+import JobCard from '../../public/jobs-dir/JobCard'
 
 interface DashboardStats {
   total: number
@@ -49,6 +50,30 @@ interface Activities {
   };
 }
 
+interface RecommendedJob {
+  id: string;
+  title: string;
+  category: string;
+  company: {
+    name: string;
+    id: string;
+    logo: string;
+    website: string
+  };
+  country: string;
+  city: string;
+  workMode: WorkMode;
+  employmentType: EmploymentType;
+  createdAt: string;
+  updatedAt: string;
+  experienceLevel: ExperienceLevel;
+  salaryMin: number;
+  salaryMax: number;
+  numberOfOpenings: string;
+  applicationDeadline: string;
+  slug: string;
+  isSaved: boolean
+}
 
 const APPLICTION_TABS_STATUS_COLORS = {
   applied: 'bg-blue-500/10 text-blue-600',
@@ -112,6 +137,8 @@ const JobSeekerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentActivity, setRecentActivity] = useState<Activities[]>([])
+  const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
+  const [saving, setSaving] = useState(false)
 
   const fetchStats = async () => {
     try {
@@ -143,10 +170,54 @@ const JobSeekerDashboard = () => {
     }
   }
 
+  const fetchRecommendedJobs = async () => {
+    try {
+      const res = await AppSdk.getData('/api/jobs/recommended', null)
+      if (res.error) {
+        toast.error(res.error)
+        return
+      }
+      setRecommendedJobs(res.jobs)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   useEffect(() => {
     fetchStats()
     fetchRecentActivity()
+    fetchRecommendedJobs()
   }, [])
+
+  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    setSaving(true)
+    try {
+      if (currentlySaved) {
+        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+        if (res.error) {
+          toast.error(res.error || 'Failed to remove saved job')
+          return
+        }
+        toast.success('Job removed from saved')
+      } else {
+        const res = await AppSdk.postData(`/api/jobs/saved`, {
+          jobId
+        })
+
+        if (res.error) {
+          toast.error(res.error || 'Failed to save job')
+          return
+        }
+
+        toast.success('Job saved successfully')
+      }
+      fetchRecommendedJobs() 
+    } catch (error) {
+      toast.error('Something went wrong')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -251,7 +322,34 @@ const JobSeekerDashboard = () => {
           />
         </div>
       </section>
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Recommended For You</h2>
+          <Link href="/jobs" className="text-sm text-primary hover:underline">
+            View All →
+          </Link>
+        </div>
 
+        {recommendedJobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {recommendedJobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                isSaved={job.isSaved}
+                onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
+                disabled={saving}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground border border-border/60 rounded-xl">
+            <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">No recommendations yet</p>
+            <p className="text-xs mt-1">Complete your profile to get personalized job recommendations</p>
+          </div>
+        )}
+      </section>
       <section className="space-y-6">
         <h2 className="text-xl font-semibold">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
