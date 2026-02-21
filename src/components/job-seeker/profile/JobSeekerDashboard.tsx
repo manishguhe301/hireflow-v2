@@ -140,53 +140,42 @@ const JobSeekerDashboard = () => {
   const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
   const [saving, setSaving] = useState(false)
 
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const res = await AppSdk.getData('/api/applications/stats', null)
 
-      if (res.error) {
-        toast.error(res.error)
-        return
+      const [statsRes, activityRes, recommendedRes] = await Promise.all([
+        AppSdk.getData('/api/applications/stats', null),
+        AppSdk.getData('/api/applications/recent-activity', null),
+        AppSdk.getData('/api/jobs/recommended', null),
+      ])
+
+      if (statsRes.error) {
+        toast.error(statsRes.error)
+      } else {
+        setStats(statsRes.stats)
       }
-      setStats(res.stats)
+
+      if (activityRes.error) {
+        toast.error(activityRes.error)
+      } else {
+        setRecentActivity(activityRes.activities)
+      }
+
+      if (recommendedRes.error) {
+        toast.error(recommendedRes.error)
+      } else {
+        setRecommendedJobs(recommendedRes.jobs)
+      }
     } catch (err) {
       console.error(err)
-      toast.error('Failed to load applications')
+      toast.error('Failed to load dashboard data')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const fetchRecentActivity = async () => {
-    try {
-      const res = await AppSdk.getData('/api/applications/recent-activity', null)
-      if (res.error) {
-        toast.error(res.error)
-        return
-      }
-      setRecentActivity(res.activities)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  const fetchRecommendedJobs = async () => {
-    try {
-      const res = await AppSdk.getData('/api/jobs/recommended', null)
-      if (res.error) {
-        toast.error(res.error)
-        return
-      }
-      setRecommendedJobs(res.jobs)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
   useEffect(() => {
-    fetchStats()
-    fetchRecentActivity()
-    fetchRecommendedJobs()
+    fetchDashboardData()
   }, [])
 
   const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
@@ -211,7 +200,7 @@ const JobSeekerDashboard = () => {
 
         toast.success('Job saved successfully')
       }
-      fetchRecommendedJobs() 
+      fetchDashboardData()
     } catch (error) {
       toast.error('Something went wrong')
     } finally {
@@ -233,7 +222,7 @@ const JobSeekerDashboard = () => {
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load dashboard data</p>
           <Button
-            onClick={fetchStats}
+            onClick={fetchDashboardData}
             className="mt-4"
           >
             Retry
