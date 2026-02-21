@@ -21,6 +21,10 @@ import {
   User,
 } from 'lucide-react'
 import Link from 'next/link'
+import { ApplicationStatus, EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client'
+import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
+import clsx from 'clsx'
+import JobCard from '../../public/jobs-dir/JobCard'
 
 interface DashboardStats {
   total: number
@@ -31,6 +35,44 @@ interface DashboardStats {
   rejected: number
   offered: number
   hired: number
+}
+
+interface Activities {
+  id: string;
+  status: ApplicationStatus;
+  updatedAt: string;
+  job: {
+    title: string;
+    company: {
+      name: string;
+    };
+    slug: string;
+  };
+}
+
+interface RecommendedJob {
+  id: string;
+  title: string;
+  category: string;
+  company: {
+    name: string;
+    id: string;
+    logo: string;
+    website: string
+  };
+  country: string;
+  city: string;
+  workMode: WorkMode;
+  employmentType: EmploymentType;
+  createdAt: string;
+  updatedAt: string;
+  experienceLevel: ExperienceLevel;
+  salaryMin: number;
+  salaryMax: number;
+  numberOfOpenings: string;
+  applicationDeadline: string;
+  slug: string;
+  isSaved: boolean
 }
 
 const APPLICTION_TABS_STATUS_COLORS = {
@@ -94,27 +136,77 @@ const QuickActionCard = ({ href, icon, colorClass, label, desc }:
 const JobSeekerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [recentActivity, setRecentActivity] = useState<Activities[]>([])
+  const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
+  const [saving, setSaving] = useState(false)
 
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const res = await AppSdk.getData('/api/applications/stats', null)
 
-      if (res.error) {
-        toast.error(res.error)
-        return
+      const [statsRes, activityRes, recommendedRes] = await Promise.all([
+        AppSdk.getData('/api/applications/stats', null),
+        AppSdk.getData('/api/applications/recent-activity', null),
+        AppSdk.getData('/api/jobs/recommended', null),
+      ])
+
+      if (statsRes.error) {
+        toast.error(statsRes.error)
+      } else {
+        setStats(statsRes.stats)
       }
-      setStats(res.stats)
+
+      if (activityRes.error) {
+        toast.error(activityRes.error)
+      } else {
+        setRecentActivity(activityRes.activities)
+      }
+
+      if (recommendedRes.error) {
+        toast.error(recommendedRes.error)
+      } else {
+        setRecommendedJobs(recommendedRes.jobs)
+      }
     } catch (err) {
       console.error(err)
-      toast.error('Failed to load applications')
+      toast.error('Failed to load dashboard data')
     } finally {
       setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchStats()
+    fetchDashboardData()
   }, [])
+
+  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    setSaving(true)
+    try {
+      if (currentlySaved) {
+        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+        if (res.error) {
+          toast.error(res.error || 'Failed to remove saved job')
+          return
+        }
+        toast.success('Job removed from saved')
+      } else {
+        const res = await AppSdk.postData(`/api/jobs/saved`, {
+          jobId
+        })
+
+        if (res.error) {
+          toast.error(res.error || 'Failed to save job')
+          return
+        }
+
+        toast.success('Job saved successfully')
+      }
+      fetchDashboardData()
+    } catch (error) {
+      toast.error('Something went wrong')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -130,7 +222,7 @@ const JobSeekerDashboard = () => {
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load dashboard data</p>
           <Button
-            onClick={fetchStats}
+            onClick={fetchDashboardData}
             className="mt-4"
           >
             Retry
@@ -219,7 +311,34 @@ const JobSeekerDashboard = () => {
           />
         </div>
       </section>
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Recommended For You</h2>
+          <Link href="/jobs" className="text-sm text-primary hover:underline">
+            View All →
+          </Link>
+        </div>
 
+        {recommendedJobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {recommendedJobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                isSaved={job.isSaved}
+                onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
+                disabled={saving}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground border border-border/60 rounded-xl">
+            <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">No recommendations yet</p>
+            <p className="text-xs mt-1">Complete your profile to get personalized job recommendations</p>
+          </div>
+        )}
+      </section>
       <section className="space-y-6">
         <h2 className="text-xl font-semibold">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -260,6 +379,47 @@ const JobSeekerDashboard = () => {
             colorClass='bg-muted text-slate-600 dark:text-slate-400'
           />
         </div>
+      </section>
+      <section className="space-y-6">
+        <h2 className="text-xl font-semibold">Recent Activity</h2>
+        {recentActivity.length > 0 ? (
+          <div className="space-y-3">
+            {recentActivity.map((activity) => (
+              <Link
+                key={activity.id}
+                href={`/jobs/${activity.job.slug}`}
+                className="block rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 hover:shadow-lg transition"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium line-clamp-1">{activity.job.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {activity.job.company.name}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={clsx(
+                        'inline-block px-3 py-1 rounded-full text-xs font-medium',
+                        APPLICTION_TABS_STATUS_COLORS[activity.status.toLowerCase() as keyof typeof APPLICTION_TABS_STATUS_COLORS],
+                      )}
+                    >
+                      {getLabel(APPLICATIONS_TABS, activity.status)}
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatRelativeTime(activity.updatedAt)}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <FileText className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">It seems you have no recent activity</p>
+          </div>
+        )}
       </section>
     </div>
   )
