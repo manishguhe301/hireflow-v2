@@ -21,6 +21,9 @@ import {
   User,
 } from 'lucide-react'
 import Link from 'next/link'
+import { ApplicationStatus } from '@prisma/client'
+import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
+import clsx from 'clsx'
 
 interface DashboardStats {
   total: number
@@ -32,6 +35,20 @@ interface DashboardStats {
   offered: number
   hired: number
 }
+
+interface Activities {
+  id: string;
+  status: ApplicationStatus;
+  updatedAt: string;
+  job: {
+    title: string;
+    company: {
+      name: string;
+    };
+    slug: string;
+  };
+}
+
 
 const APPLICTION_TABS_STATUS_COLORS = {
   applied: 'bg-blue-500/10 text-blue-600',
@@ -94,6 +111,7 @@ const QuickActionCard = ({ href, icon, colorClass, label, desc }:
 const JobSeekerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [recentActivity, setRecentActivity] = useState<Activities[]>([])
 
   const fetchStats = async () => {
     try {
@@ -112,8 +130,22 @@ const JobSeekerDashboard = () => {
     }
   }
 
+  const fetchRecentActivity = async () => {
+    try {
+      const res = await AppSdk.getData('/api/applications/recent-activity', null)
+      if (res.error) {
+        toast.error(res.error)
+        return
+      }
+      setRecentActivity(res.activities)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   useEffect(() => {
     fetchStats()
+    fetchRecentActivity()
   }, [])
 
   if (isLoading) {
@@ -260,6 +292,47 @@ const JobSeekerDashboard = () => {
             colorClass='bg-muted text-slate-600 dark:text-slate-400'
           />
         </div>
+      </section>
+      <section className="space-y-6">
+        <h2 className="text-xl font-semibold">Recent Activity</h2>
+        {recentActivity.length > 0 ? (
+          <div className="space-y-3">
+            {recentActivity.map((activity) => (
+              <Link
+                key={activity.id}
+                href={`/jobs/${activity.job.slug}`}
+                className="block rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 hover:shadow-lg transition"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium line-clamp-1">{activity.job.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {activity.job.company.name}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={clsx(
+                        'inline-block px-3 py-1 rounded-full text-xs font-medium',
+                        APPLICTION_TABS_STATUS_COLORS[activity.status.toLowerCase() as keyof typeof APPLICTION_TABS_STATUS_COLORS],
+                      )}
+                    >
+                      {getLabel(APPLICATIONS_TABS, activity.status)}
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatRelativeTime(activity.updatedAt)}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <FileText className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">It seems you have no recent activity</p>
+          </div>
+        )}
       </section>
     </div>
   )
