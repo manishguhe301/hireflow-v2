@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from '../ui/Button'
 import { labels } from '@/src/utils/helper'
 import { Breadcrumb } from '../ui/Breadcrumb'
+import NotificationBell from './NotificationBell'
 
 
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
@@ -43,7 +44,8 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
         </div>
 
         {user && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 max-sm:relative">
+            <NotificationBell />
             <Link href={user.role === 'JOB_SEEKER'
               ? "/dashboard/profile" : user.role === 'COMPANY_ADMIN'
                 ? '/company/profile' : '/admin'} className="flex flex-row gap-1 items-center">
