@@ -343,6 +343,7 @@ model Notification {
   message   String
   link      String?
   isRead    Boolean          @default(false)
+  metadata  Json?
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -355,4 +356,8 @@ enum NotificationType {
   COMPANY_REJECTED
   NEW_JOB_POSTED
   JOB_CLOSED
+  NEW_USER_REGISTERED
+  NEW_COMPANY_REGISTERED
+  JOB_DEADLINE_APPROACHING    
+  JOB_CLOSING_SOON           
 }

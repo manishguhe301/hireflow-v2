@@ -78,7 +78,7 @@ const JobApplicants = () => {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
   const [bulkAction, setBulkAction] = useState<'update_status' | 'reject' | null>(null)
-  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus>('REVIEWING')
+  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus | ''>('')
   const [bulkRejectReason, setBulkRejectReason] = useState('')
   const [isBulkProcessing, setIsBulkProcessing] = useState(false)
 
