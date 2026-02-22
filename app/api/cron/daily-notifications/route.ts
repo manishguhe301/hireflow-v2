@@ -16,8 +16,6 @@ export async function GET(request: NextRequest) {
     const today = new Date();
     const threeDaysFromNow = new Date();
     threeDaysFromNow.setDate(today.getDate() + 3);
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 7);
 
     const savedJobsExpiring = await prisma.savedJob.findMany({
       where: {
@@ -42,9 +40,31 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    let savedJobNotificationsCreated = 0;
+
     await Promise.all(
-      savedJobsExpiring.map((saved) => {
-        return notifyUser({
+      savedJobsExpiring.map(async (saved) => {
+        const existingNotifications = await prisma.notification.findMany({
+          where: {
+            userId: saved.userId,
+            type: 'JOB_DEADLINE_APPROACHING',
+          },
+        });
+
+        const alreadyNotified = existingNotifications.some((notif) => {
+          if (!notif.metadata) return false;
+          const meta = notif.metadata as { jobId?: string };
+          return meta.jobId === saved.job.id;
+        });
+
+        if (alreadyNotified) {
+          console.log(
+            `⏭️ Skipping: Notification already exists for job ${saved.job.id}`,
+          );
+          return;
+        }
+
+        await notifyUser({
           userId: saved.userId,
           type: 'JOB_DEADLINE_APPROACHING',
           title: 'Job Deadline Approaching',
@@ -55,6 +75,8 @@ export async function GET(request: NextRequest) {
             deadline: saved.job.applicationDeadline,
           },
         });
+
+        savedJobNotificationsCreated++;
       }),
     );
 
@@ -71,9 +93,31 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    let jobClosingNotificationsCreated = 0;
+
     await Promise.all(
-      jobsClosingSoon.map((job) => {
-        return notifyUser({
+      jobsClosingSoon.map(async (job) => {
+        const existingNotifications = await prisma.notification.findMany({
+          where: {
+            userId: job.company.userId,
+            type: 'JOB_CLOSING_SOON',
+          },
+        });
+
+        const alreadyNotified = existingNotifications.some((notif) => {
+          if (!notif.metadata) return false;
+          const meta = notif.metadata as { jobId?: string };
+          return meta.jobId === job.id;
+        });
+
+        if (alreadyNotified) {
+          console.log(
+            `⏭️ Skipping: Notification already exists for job ${job.id}`,
+          );
+          return;
+        }
+
+        await notifyUser({
           userId: job.company.userId,
           type: 'JOB_CLOSING_SOON',
           title: 'Job Closing Soon',
@@ -84,14 +128,18 @@ export async function GET(request: NextRequest) {
             deadline: job.applicationDeadline,
           },
         });
+
+        jobClosingNotificationsCreated++;
       }),
     );
 
     return NextResponse.json({
       success: true,
       processed: {
-        jobDeadlines: savedJobsExpiring.length,
-        jobsClosing: jobsClosingSoon.length,
+        savedJobsExpiring: savedJobsExpiring.length,
+        savedJobNotificationsCreated,
+        jobsClosingSoon: jobsClosingSoon.length,
+        jobClosingNotificationsCreated,
       },
     });
   } catch (error) {
