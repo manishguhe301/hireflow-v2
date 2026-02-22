@@ -343,6 +343,7 @@ model Notification {
   message   String
   link      String?
   isRead    Boolean          @default(false)
+  metadata  Json?
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
