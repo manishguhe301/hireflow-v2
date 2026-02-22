@@ -112,6 +112,36 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const guard = await apiAuthGuard([
+      'COMPANY_ADMIN',
+      'JOB_SEEKER',
+      'PLATFORM_ADMIN',
+    ]);
+
+    if (!guard.ok) {
+      return guard.response;
+    }
+
+    const { notificationIds } = await req.json();
+
+    if (!notificationIds || !Array.isArray(notificationIds)) {
+      return NextResponse.json(
+        { error: 'notificationIds array required' },
+        { status: 400 },
+      );
+    }
+
+    await prisma.notification.deleteMany({
+      where: {
+        id: { in: notificationIds },
+        userId: guard.session.user.id,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Notifications deleted',
+    });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
