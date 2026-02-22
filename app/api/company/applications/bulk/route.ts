@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { Role, ApplicationStatus } from '@prisma/client';
+import { notifyUser } from '@/src/lib/notificationService';
+import { APPLICATIONS_TABS, getLabel } from '@/src/utils/helper';
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -60,6 +62,8 @@ export async function PATCH(req: NextRequest) {
         status: true,
         statusHistory: true,
         internalNotes: true,
+        userId: true,
+        job: { select: { title: true } },
       },
     });
 
@@ -144,6 +148,21 @@ export async function PATCH(req: NextRequest) {
         }),
       );
     }
+
+    await Promise.all(
+      applications.map((app) => {
+        return notifyUser({
+          title: 'Application Status Updated',
+          message:
+            action === 'update_status'
+              ? `Application status updated to ${getLabel(APPLICATIONS_TABS, status)} for job ${app.job.title}`
+              : ` Sorry, your application for job ${app.job.title} has been rejected.`,
+          type: 'APPLICATION_STATUS_CHANGED',
+          userId: app.userId,
+          link: `/dashboard/applications`,
+        });
+      }),
+    );
 
     return NextResponse.json({
       success: true,
