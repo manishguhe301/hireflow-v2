@@ -71,12 +71,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isCompanyAdmin: boolean = user.role === Role.COMPANY_ADMIN;
-
     await notifyRoleUser({
       role: Role.PLATFORM_ADMIN,
-      type: isCompanyAdmin ? 'NEW_COMPANY_REGISTERED' : 'NEW_USER_REGISTERED',
-      title: isCompanyAdmin ? 'New Company Registered' : 'New User Registered',
+      type: 'NEW_USER_REGISTERED',
+      title: 'New User Registered',
       message: `${user.name} (${user.role}) just signed up.`,
       link: `/admin/users`,
       metadata: {
