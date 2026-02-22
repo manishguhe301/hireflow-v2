@@ -49,7 +49,7 @@ const NotificationDropdown = ({
       ref={dropdownRef}
       className="absolute right-0 top-12 w-96 max-h-[500px] overflow-y-auto bg-background border border-border rounded-2xl shadow-lg z-50"
     >
-      <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
+      <div className="sticky top-0 bg-background border-b border-border p-4 flex items-center justify-between">
         <h3 className="font-semibold">Notifications</h3>
         <div className="flex items-center gap-2">
           {notifications.some((n) => !n.isRead) && (
@@ -93,9 +93,6 @@ const NotificationDropdown = ({
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0 flex items-start gap-2">
-                  {!notification.isRead &&
-                    <div className="h-2 w-2 mt-1 bg-primary rounded-full animate-pulse"></div>
-                  }
                   {notification.link ? (
                     <Link
                       href={notification.link}
@@ -107,6 +104,9 @@ const NotificationDropdown = ({
                       }}
                     >
                       <div className='flex flex-row items-center gap-1'>
+                        {!notification.isRead &&
+                          <div className="h-1 w-1  bg-primary rounded-full animate-pulse"></div>
+                        }
                         <p className="font-medium text-sm">{notification.title}</p>
                         <SquareArrowOutUpRight className='text-muted-foreground h-3 w-3' />
                       </div>
@@ -118,15 +118,20 @@ const NotificationDropdown = ({
                       </p>
                     </Link>
                   ) : (
-                    <>
-                      <p className="font-medium text-sm">{notification.title}</p>
+                    <div>
+                      <div className='flex flex-row items-center gap-1'>
+                        {!notification.isRead &&
+                          <div className="h-1 w-1  bg-primary rounded-full animate-pulse"></div>
+                        }
+                        <p className="font-medium text-sm">{notification.title}</p>
+                      </div>
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                         {notification.message}
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
                         {formatRelativeTime(notification.createdAt)}
                       </p>
-                    </>
+                    </div>
                   )}
                 </div>
                 {notification.isRead && (
