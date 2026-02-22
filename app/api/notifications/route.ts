@@ -1,13 +1,14 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import { Role } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
     const guard = await apiAuthGuard([
-      'COMPANY_ADMIN',
-      'JOB_SEEKER',
-      'PLATFORM_ADMIN',
+      Role.JOB_SEEKER,
+      Role.COMPANY_ADMIN,
+      Role.PLATFORM_ADMIN,
     ]);
 
     if (!guard.ok) {
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    const notifiactions = await prisma.notification.findMany({
+    const notifications = await prisma.notification.findMany({
       where: {
         userId: guard.session.user.id,
         ...(unreadOnly && { isRead: false }),
@@ -37,15 +38,13 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({
-      notifiactions,
+      notifications,
       unreadCount,
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching notifications:', error);
     return NextResponse.json(
-      {
-        error: 'Internal Server Error',
-      },
+      { error: 'Internal Server Error' },
       { status: 500 },
     );
   }
@@ -54,9 +53,9 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const guard = await apiAuthGuard([
-      'COMPANY_ADMIN',
-      'JOB_SEEKER',
-      'PLATFORM_ADMIN',
+      Role.JOB_SEEKER,
+      Role.COMPANY_ADMIN,
+      Role.PLATFORM_ADMIN,
     ]);
 
     if (!guard.ok) {
@@ -100,11 +99,9 @@ export async function PATCH(req: NextRequest) {
       message: 'Notifications marked as read',
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error updating notifications:', error);
     return NextResponse.json(
-      {
-        error: 'Internal Server Error',
-      },
+      { error: 'Internal Server Error' },
       { status: 500 },
     );
   }
@@ -113,9 +110,9 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const guard = await apiAuthGuard([
-      'COMPANY_ADMIN',
-      'JOB_SEEKER',
-      'PLATFORM_ADMIN',
+      Role.JOB_SEEKER,
+      Role.COMPANY_ADMIN,
+      Role.PLATFORM_ADMIN,
     ]);
 
     if (!guard.ok) {
@@ -143,11 +140,9 @@ export async function DELETE(req: NextRequest) {
       message: 'Notifications deleted',
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error deleting notifications:', error);
     return NextResponse.json(
-      {
-        error: 'Internal Server Error',
-      },
+      { error: 'Internal Server Error' },
       { status: 500 },
     );
   }
