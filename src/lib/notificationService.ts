@@ -1,4 +1,9 @@
-import { NotificationType, Role } from '@prisma/client';
+import {
+  ExperienceLevel,
+  NotificationType,
+  Role,
+  WorkMode,
+} from '@prisma/client';
 import prisma from './prisma';
 
 interface NotifyUserParams {
@@ -79,5 +84,61 @@ export async function notifyRoleUser({
     });
   } catch (error) {
     console.error('❌ Failed to send notification to role:', error);
+  }
+}
+
+export async function notifyMatchingJobSeekers({
+  jobId,
+  jobTitle,
+  companyName,
+  category,
+  skills,
+  experienceLevel,
+  workMode,
+  jobSlug,
+}: {
+  jobId: string;
+  jobTitle: string;
+  companyName: string;
+  category: string;
+  skills: string[];
+  experienceLevel: string;
+  workMode: string;
+  jobSlug: string;
+}) {
+  try {
+    const matchingProfiles = await prisma.profile.findMany({
+      where: {
+        OR: [
+          { jobCategories: { has: category } },
+          { skills: { hasSome: skills } },
+          { yearsOfExperience: experienceLevel as ExperienceLevel },
+          { preferredWorkMode: { has: workMode as WorkMode } },
+        ],
+        profileCompleted: { gte: 70 },
+      },
+      select: { userId: true },
+    });
+
+    if (matchingProfiles.length === 0) return;
+
+    await prisma.notification.createMany({
+      data: matchingProfiles.map((profile) => ({
+        userId: profile.userId,
+        type: 'NEW_JOB_POSTED',
+        title: 'New Job Matches Your Profile',
+        message: `${companyName} posted a new ${jobTitle} position that matches your skills!`,
+        link: `/jobs/${jobSlug}`,
+        metadata: {
+          jobId,
+          jobTitle,
+          companyName,
+        },
+      })),
+    });
+
+    console.log(`✅ Notified ${matchingProfiles.length} matching job seekers`);
+  } catch (error) {
+    console.error('❌ Failed to notify job seekers:', error);
   }
 }
