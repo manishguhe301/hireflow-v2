@@ -1,3 +1,4 @@
+import { notifyRoleUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { isPasswordValid, isValidEmail } from '@/src/utils/helper';
 import { Role } from '@prisma/client';
@@ -16,14 +17,14 @@ export async function POST(req: NextRequest) {
     if (!isValidEmail(email)) {
       return NextResponse.json(
         { error: 'Invalid email format' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!isPasswordValid(password)) {
       return NextResponse.json(
         { error: 'Password must be at least 8 characters' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
         },
         {
           status: 400,
-        }
+        },
       );
     }
 
@@ -59,21 +60,44 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // const { password: _, ...safeUser } = user;
+    if (!user) {
+      return NextResponse.json(
+        {
+          error: 'Failed to create user',
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const isCompanyAdmin: boolean = user.role === Role.COMPANY_ADMIN;
+
+    await notifyRoleUser({
+      role: Role.PLATFORM_ADMIN,
+      type: isCompanyAdmin ? 'NEW_COMPANY_REGISTERED' : 'NEW_USER_REGISTERED',
+      title: isCompanyAdmin ? 'New Company Registered' : 'New User Registered',
+      message: `${user.name} (${user.role}) just signed up.`,
+      link: `/admin/users`,
+      metadata: {
+        userId: user.id,
+        userRole: user.role,
+        userEmail: user.email,
+      },
+    });
 
     return NextResponse.json(
       {
         success: true,
         message: 'User created successfully',
-        // user: safeUser,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
