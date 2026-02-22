@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { Role, ApplicationStatus } from '@prisma/client';
+import { notifyUser } from '@/src/lib/notificationService';
+import { APPLICATIONS_TABS, getLabel } from '@/src/utils/helper';
 
 export async function PATCH(
   req: NextRequest,
@@ -29,7 +31,7 @@ export async function PATCH(
     const application = await prisma.application.findUnique({
       where: { id },
       include: {
-        job: { select: { companyId: true } },
+        job: { select: { companyId: true, title: true } },
       },
     });
 
@@ -103,6 +105,23 @@ export async function PATCH(
         status,
         internalNotes: status === 'REJECTED' ? internalNotes || '' : null,
         statusHistory: updatedHistory,
+      },
+    });
+
+    await notifyUser({
+      title: 'Application Status Updated',
+      message:
+        status === 'REJECTED'
+          ? ` Sorry, your application for job ${application.job.title} has been rejected.`
+          : `Application status updated to ${getLabel(APPLICATIONS_TABS, status)} for job ${application.job.title}`,
+      type: 'APPLICATION_STATUS_CHANGED',
+      userId: application.userId,
+      link: `/dashboard/applications`,
+      metadata: {
+        applicationId: application.id,
+        jobId: application.jobId,
+        jobTitle: application.job.title,
+        applicantId: guard.session.user.id,
       },
     });
 
