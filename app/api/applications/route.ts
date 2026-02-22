@@ -3,8 +3,10 @@ import {
   deleteFileFromSupabase,
   uploadFileToSupabase,
 } from '@/src/lib/fileUpload';
+import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
+import { profile } from 'console';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -157,10 +159,25 @@ export async function POST(req: NextRequest) {
             company: {
               select: {
                 name: true,
+                userId: true,
               },
             },
           },
         },
+      },
+    });
+
+    await notifyUser({
+      title: 'Application Received',
+      message: `New Application Received for ${application.job.title} from ${guard.session.user.name} - ${guard.session.user.email}`,
+      type: 'APPLICATION_RECEIVED',
+      userId: application.job.company.userId,
+      link: `/company/applications/${application.job.slug}`,
+      metadata: {
+        applicationId: application.id,
+        jobId: application.jobId,
+        jobTitle: application.job.title,
+        applicantId: guard.session.user.id,
       },
     });
 

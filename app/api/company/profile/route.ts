@@ -3,6 +3,7 @@ import {
   deleteFileFromSupabase,
   uploadFileToSupabase,
 } from '@/src/lib/fileUpload';
+import { notifyRoleUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -131,6 +132,18 @@ export async function POST(req: NextRequest) {
         taxDocPath: taxDocResult?.path || null,
 
         status: 'PENDING',
+      },
+    });
+
+    await notifyRoleUser({
+      role: Role.PLATFORM_ADMIN,
+      type: 'NEW_COMPANY_REGISTERED',
+      title: 'New Company Registered',
+      message: `${company.name} is pending approval.`,
+      link: `/admin/companies/${company.id}`,
+      metadata: {
+        companyId: company.id,
+        companyName: company.name,
       },
     });
 

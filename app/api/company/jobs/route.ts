@@ -1,4 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
+import { notifyMatchingJobSeekers } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { generateSlug } from '@/src/utils/helper';
 import {
@@ -216,6 +217,17 @@ export async function POST(req: NextRequest) {
           },
         },
       },
+    });
+
+    await notifyMatchingJobSeekers({
+      jobId: job.id,
+      jobSlug: job.slug,
+      jobTitle: job.title,
+      companyName: company.name,
+      category: job.category,
+      skills: job.skills,
+      experienceLevel: job.experienceLevel,
+      workMode: job.workMode,
     });
 
     return NextResponse.json(

@@ -1,6 +1,7 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { authOptions } from '@/src/lib/auth';
 import { deleteFileFromSupabase } from '@/src/lib/fileUpload';
+import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
 import { getServerSession } from 'next-auth';
@@ -114,6 +115,18 @@ export async function PATCH(
             email: true,
           },
         },
+      },
+    });
+
+    await notifyUser({
+      title: 'Company Profile Status Updated',
+      message: `Your company profile status has been ${status === CompanyStatus.APPROVED ? 'approved' : 'rejected'} by the admin. please refresh the page for see the changes.`,
+      type: status === 'APPROVED' ? 'COMPANY_APPROVED' : 'COMPANY_REJECTED',
+      userId: updatedCompany.user.id,
+      link: status === 'REJECTED' ? '/company/profile-setup' : null,
+      metadata: {
+        companyId: updatedCompany.id,
+        companyName: updatedCompany.name,
       },
     });
 
