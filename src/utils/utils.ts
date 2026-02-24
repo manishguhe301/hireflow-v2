@@ -50,10 +50,10 @@ export const links = [
     label: 'Companies',
     href: '/explore/companies',
   },
-  {
-    label: 'How it works',
-    href: '#how-it-works',
-  },
+  // {
+  //   label: 'How it works',
+  //   href: '#how-it-works',
+  // },
 ];
 
 export const companySizes = [

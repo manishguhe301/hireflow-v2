@@ -17,7 +17,7 @@ export default function PublicFooter() {
           <h5 className="text-sm font-semibold mb-3">Platform</h5>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link href="/explore/jobs" className="hover:text-primary">Browse Jobs</Link></li>
-            <li><Link href="/companies" className="hover:text-primary">Companies</Link></li>
+            <li><Link href="/explore/companies" className="hover:text-primary">Companies</Link></li>
             <li><Link href="/signup" className="hover:text-primary">Sign Up</Link></li>
           </ul>
         </div>

@@ -20,7 +20,7 @@ export default function PublicHeader() {
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
           <Link href="/explore/jobs" className="hover:text-primary transition">Jobs</Link>
           <Link href="/explore/companies" className="hover:text-primary transition">Companies</Link>
-          <Link href="/#how-it-works" className="hover:text-primary transition">How it works</Link>
+          {/* <Link href="/#how-it-works" className="hover:text-primary transition">How it works</Link> */}
           <Link
             href="/login"
             className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-primary hover:bg-primary/20 transition"
