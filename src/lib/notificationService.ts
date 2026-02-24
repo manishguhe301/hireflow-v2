@@ -5,6 +5,7 @@ import {
   WorkMode,
 } from '@prisma/client';
 import prisma from './prisma';
+import { pusherServer } from './pusher';
 
 interface NotifyUserParams {
   userId: string;
@@ -35,7 +36,7 @@ export async function notifyUser({
   metadata,
 }: NotifyUserParams) {
   try {
-    await prisma.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         type,
         title,
@@ -45,6 +46,11 @@ export async function notifyUser({
         userId,
       },
     });
+
+    await pusherServer.trigger(`user-${userId}`, 'new-notification', {
+      notification,
+    });
+
     console.log('Notification sent successfully!', { userId, type, title });
   } catch (error) {
     console.error('Error sending notification:', error);
@@ -72,7 +78,7 @@ export async function notifyRoleUser({
       return;
     }
 
-    await prisma.notification.createMany({
+    const notifications = await prisma.notification.createMany({
       data: users.map((user) => ({
         userId: user.id,
         type,
@@ -82,6 +88,17 @@ export async function notifyRoleUser({
         metadata,
       })),
     });
+
+    await Promise.all(
+      users.map((user) =>
+        pusherServer.trigger(`user-${user.id}`, 'new-notification', {
+          type,
+          title,
+          message,
+          link,
+        }),
+      ),
+    );
   } catch (error) {
     console.error('❌ Failed to send notification to role:', error);
   }
