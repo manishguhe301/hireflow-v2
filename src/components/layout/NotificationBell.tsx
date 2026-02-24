@@ -1,9 +1,10 @@
 'use client'
 import { Bell, BellRing } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
 import NotificationDropdown from './NotificationDropdown'
+import { usePusherNotifications } from '@/src/store/hooks/usePusherNotifications'
 
 interface Notification {
   id: string
@@ -21,8 +22,8 @@ const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const fetchNotifications = async (isNeeaedLoading: boolean = true) => {
-    if (isNeeaedLoading) {
+  const fetchNotifications = useCallback(async (isLoaderNeeded: boolean = true) => {
+    if (isLoaderNeeded) {
       setIsLoading(true)
     }
     try {
@@ -38,13 +39,40 @@ const NotificationBell = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  const handleNewNotification = useCallback((newNotification: Notification) => {
+    setNotifications((prev) => [newNotification, ...prev.slice(0, 9)])
+
+    setUnreadCount((prev) => prev + 1)
+
+    if (typeof window !== 'undefined' && 'Audio' in window) {
+      const audio = new Audio('/notification.mp3')
+      audio.play().catch(() => { })
+    }
+  }, [])
+
+  usePusherNotifications(handleNewNotification)
+
+  useEffect(() => {
+    const originalTitle = document.title.replace(/^\(\d+\)\s*/, '')
+
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) ${originalTitle}`
+    } else {
+      document.title = originalTitle
+    }
+
+    return () => {
+      document.title = originalTitle
+    }
+  }, [unreadCount])
 
   useEffect(() => {
     fetchNotifications()
-    const interval = setInterval(() => fetchNotifications(false), 30000)
-    return () => clearInterval(interval)
-  }, [])
+    // const interval = setInterval(() => fetchNotifications(false), 30000)
+    // return () => clearInterval(interval)
+  }, [fetchNotifications])
 
   const markAsRead = async (notificationIds: string[]) => {
     try {
