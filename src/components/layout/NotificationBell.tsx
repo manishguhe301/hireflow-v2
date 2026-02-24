@@ -55,6 +55,20 @@ const NotificationBell = () => {
   usePusherNotifications(handleNewNotification)
 
   useEffect(() => {
+    const originalTitle = document.title.replace(/^\(\d+\)\s*/, '')
+
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) ${originalTitle}`
+    } else {
+      document.title = originalTitle
+    }
+
+    return () => {
+      document.title = originalTitle
+    }
+  }, [unreadCount])
+
+  useEffect(() => {
     fetchNotifications()
     // const interval = setInterval(() => fetchNotifications(false), 30000)
     // return () => clearInterval(interval)
