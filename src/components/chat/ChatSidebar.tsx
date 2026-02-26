@@ -1,9 +1,12 @@
 'use client';
 import { formatRelativeTime } from '@/src/utils/helper';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '../ui/Button';
+import { AppSdk } from '@/src/utils/AppSdk';
 
 interface ChatSidebarProps {
   conversations: ConversationListItem[];
@@ -18,8 +21,10 @@ export default function ChatSidebar({
   selectedConversation,
   onSelectConversation,
   userType,
+  onConversationUpdate
 }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null)
 
   const filteredConversations = conversations.filter((conv) => {
     const otherUser = userType === 'company' ? conv.jobSeeker : conv.company;
@@ -32,6 +37,25 @@ export default function ChatSidebar({
       (conv.job?.title.toLowerCase().includes(searchLower))
     );
   });
+
+  const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    // setIsDeletingId(id)
+    // try {
+    //   const res = await AppSdk.deleteData(`/api/chat/conversations/${id}`, null)
+    //   if (res.error) {
+    //     toast.error(res.error)
+    //     return
+    //   }
+    //   toast.success('Conversation deleted successfully')
+    //   onConversationUpdate()
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setIsDeletingId(null)
+    // }
+  }
 
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col max-sm:w-full">
@@ -93,8 +117,8 @@ export default function ChatSidebar({
                 key={conv.id}
                 onClick={() => onSelectConversation(conv.id)}
                 className={clsx(
-                  'w-full p-4 border-b border-border hover:bg-muted transition text-left',
-                  selectedConversation === conv.id && 'bg-muted',
+                  'w-full p-4 border-b border-border hover:bg-muted/30 transition text-left',
+                  selectedConversation === conv.id && 'bg-muted/50',
                 )}
               >
                 <div className="flex items-start gap-3">
@@ -132,18 +156,29 @@ export default function ChatSidebar({
                       </p>
                     )}
 
-                    {lastMessage && (
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs text-muted-foreground truncate flex-1">
-                          {lastMessage.content}
-                        </p>
-                        {unreadCount > 0 && (
-                          <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                            {unreadCount}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    <div className='flex flex-row items-center gap-2 justify-between'>
+                      {lastMessage && (
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs text-muted-foreground truncate flex-1">
+                            {lastMessage.content}
+                          </p>
+                          {unreadCount > 0 && (
+                            <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <Button
+                        disabled={isDeletingId === conv.id}
+                        variant='ghost'
+                        onClick={(e) => handleDeleteConversation
+                          (e, conv.id)
+                        }
+                        className='p-0!'>
+                        <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </button>
