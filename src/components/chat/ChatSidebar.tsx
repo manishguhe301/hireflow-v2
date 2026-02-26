@@ -113,11 +113,11 @@ export default function ChatSidebar({
             const name = (otherUser as ConversationUser)?.profile?.name || otherUser.name;
 
             return (
-              <button
+              <div
                 key={conv.id}
                 onClick={() => onSelectConversation(conv.id)}
                 className={clsx(
-                  'w-full p-4 border-b border-border hover:bg-muted/30 transition text-left',
+                  'w-full p-4 border-b border-border hover:bg-muted/30 transition text-left cursor-pointer',
                   selectedConversation === conv.id && 'bg-muted/50',
                 )}
               >
@@ -162,26 +162,30 @@ export default function ChatSidebar({
                           <p className="text-xs text-muted-foreground truncate flex-1">
                             {lastMessage.content}
                           </p>
-                          {unreadCount > 0 && (
-                            <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                              {unreadCount}
-                            </span>
-                          )}
+
                         </div>
                       )}
-                      <Button
-                        disabled={isDeletingId === conv.id}
-                        variant='ghost'
-                        onClick={(e) => handleDeleteConversation
-                          (e, conv.id)
+                      <div className="flex items-center justify-between gap-2">
+                        {unreadCount > 0 ? (
+                          <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                            {unreadCount}
+                          </span>
+                        ) :
+                          <Button
+                            disabled={isDeletingId === conv.id}
+                            variant='ghost'
+                            onClick={(e) => handleDeleteConversation
+                              (e, conv.id)
+                            }
+                            className='p-0!'>
+                            <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
+                          </Button>
                         }
-                        className='p-0!'>
-                        <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </button>
+              </div>
             );
           })
         )}

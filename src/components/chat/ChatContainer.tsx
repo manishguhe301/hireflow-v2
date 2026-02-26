@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
@@ -9,7 +9,6 @@ import { ConversationCompany, ConversationListItem, ConversationUser } from '@/s
 import { useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
 
-
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -18,7 +17,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   const searchParams = useSearchParams();
   const conversationFromUrl = searchParams.get('conversation');
 
-  const fetchConversations = async () => {
+  const fetchConversations = useCallback(async () => {
     try {
       const res = await AppSdk.getData('/api/chat/conversations', null);
       if (res.error) {
@@ -31,7 +30,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [])
 
   useEffect(() => {
     fetchConversations();
