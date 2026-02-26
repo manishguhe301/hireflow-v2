@@ -120,13 +120,13 @@ export default function ChatWindow({
     <div className="flex-1 flex flex-col bg-background">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => {
+        {messages.map((message, index) => {
           const isOwnMessage =
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
           return (
             <div
-              key={message.id}
+              key={`${message.id}-${message.createdAt}-${index}`}
               className={clsx(
                 'flex gap-3 max-w-[80%]',
                 isOwnMessage ? 'ml-auto justify-end' : 'mr-auto justify-start',
