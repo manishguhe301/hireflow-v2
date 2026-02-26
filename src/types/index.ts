@@ -4,6 +4,7 @@ export interface ConversationUser {
   email: string;
   profile: {
     avatar: string | null;
+    name: string;
   } | null;
 }
 
@@ -52,6 +53,7 @@ export interface MessageWithSender {
     name: string;
     profile: {
       avatar: string | null;
+      name: string;
     } | null;
   };
 }

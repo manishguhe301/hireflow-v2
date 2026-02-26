@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { useChatPusher } from '@/src/store/hooks/useChatPusher';
 import { MessageWithSender } from '@/src/types';
 
+
 interface ChatWindowProps {
   conversationId: string | null;
   userType: 'company' | 'jobseeker';
@@ -155,7 +156,7 @@ export default function ChatWindow({
               >
                 {
                   <p className="text-xs font-medium mb-1 opacity-70">
-                    {isOwnMessage ? 'You' : message.sender.name}
+                    {isOwnMessage ? 'You' : message.sender.profile && message.sender.profile.name ? message.sender?.profile?.name : message.sender?.name}
                   </p>
                 }
                 <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
@@ -178,7 +179,9 @@ export default function ChatWindow({
         <div className="flex gap-2">
           <textarea
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => {
+              setNewMessage(e.target.value)
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();

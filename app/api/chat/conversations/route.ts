@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
               profile: {
                 select: {
                   avatar: true,
+                  name: true,
                 },
               },
             },
