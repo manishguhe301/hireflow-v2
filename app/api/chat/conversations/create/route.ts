@@ -11,9 +11,9 @@ export async function POST(req: NextRequest) {
 
     const { jobSeekerId, jobId, initialMessage } = await req.json();
 
-    if (!jobSeekerId || !initialMessage) {
+    if (!jobSeekerId) {
       return NextResponse.json(
-        { error: 'Job seeker ID and message required' },
+        { error: 'Job seeker ID required' },
         { status: 400 },
       );
     }
@@ -34,12 +34,13 @@ export async function POST(req: NextRequest) {
           jobSeekerId,
         },
       },
+      select: { id: true },
     });
 
     if (existing) {
       return NextResponse.json(
-        { error: 'Conversation already exists', conversationId: existing.id },
-        { status: 400 },
+        { conversationId: existing.id, existed: true },
+        { status: 200 },
       );
     }
 
@@ -48,49 +49,32 @@ export async function POST(req: NextRequest) {
         companyId: company.id,
         jobSeekerId,
         jobId: jobId || null,
-        messages: {
-          create: {
-            senderId: guard.session.user.id,
-            senderType: 'COMPANY',
-            content: initialMessage,
-          },
-        },
-      },
-      include: {
-        jobSeeker: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            profile: {
-              select: {
-                avatar: true,
-              },
+        ...(initialMessage && {
+          messages: {
+            create: {
+              senderId: guard.session.user.id,
+              senderType: 'COMPANY',
+              content: initialMessage,
             },
           },
-        },
-        job: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-          },
-        },
-        messages: true,
+        }),
       },
+      select: { id: true },
     });
 
-    await pusherServer.trigger(
-      `user-${jobSeekerId}`,
-      'new-conversation',
-      {
-        conversation,
-      }
-    );
+    await pusherServer.trigger(`user-${jobSeekerId}`, 'new-conversation', {
+      conversationId: conversation.id,
+    });
 
-    return NextResponse.json({ conversation }, { status: 201 });
+    return NextResponse.json(
+      { conversationId: conversation.id, existed: false },
+      { status: 201 },
+    );
   } catch (error) {
     console.error('Error creating conversation:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
   }
 }
