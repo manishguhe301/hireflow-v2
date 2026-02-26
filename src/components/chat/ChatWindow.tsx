@@ -3,12 +3,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
-import { Send, MessageSquare, CheckCheck, MoveLeft } from 'lucide-react';
+import { Send, MessageSquare, MoveLeft } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { formatRelativeTime } from '@/src/utils/helper';
 import clsx from 'clsx';
 import { useChatPusher } from '@/src/store/hooks/useChatPusher';
 import { MessageWithSender } from '@/src/types';
+import ChatMessage from './ChatMessage';
 
 
 interface ChatWindowProps {
@@ -45,7 +45,7 @@ export default function ChatWindow({
 
   useChatPusher(conversationId, handleNewMessage);
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     if (!conversationId) return;
 
     setIsLoading(true);
@@ -60,7 +60,10 @@ export default function ChatWindow({
       }
       setMessages(res.messages);
 
-      await AppSdk.patchData(`/api/chat/conversations/${conversationId}/read`, {});
+      await AppSdk.patchData(
+        `/api/chat/conversations/${conversationId}/read`,
+        {}
+      );
 
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,7 +73,7 @@ export default function ChatWindow({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [conversationId]);
 
   useEffect(() => {
     if (conversationId) {
@@ -78,7 +81,7 @@ export default function ChatWindow({
     } else {
       setMessages([]);
     }
-  }, [conversationId]);
+  }, [conversationId, fetchMessages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId) return;
@@ -157,46 +160,11 @@ export default function ChatWindow({
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
           return (
-            <div
+            <ChatMessage
               key={`${message.id}-${message.createdAt}-${index}`}
-              className={clsx(
-                'flex gap-3 max-w-[80%]',
-                isOwnMessage ? 'ml-auto justify-end' : 'mr-auto justify-start',
-              )}
-            >
-              {!isOwnMessage && message.sender.profile?.avatar && (
-                <img
-                  src={message.sender.profile.avatar}
-                  alt={message.sender.name}
-                  className="h-8 w-8 rounded-full object-cover flex-shrink-0"
-                />
-              )}
-
-              <div
-                className={clsx(
-                  'rounded-2xl px-4 py-2 flex flex-col',
-                  isOwnMessage
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground',
-                )}
-              >
-                {
-                  <p className="text-xs font-medium mb-1 opacity-70">
-                    {isOwnMessage ? 'You' : message.sender.profile && message.sender.profile.name ? message.sender?.profile?.name : message.sender?.name}
-                  </p>
-                }
-                <p className="text-sm break-all whitespace-pre-wrap wrap-break-word">{message.content}</p>
-                <p
-                  className={clsx(
-                    'self-end',
-                    'text-xs mt-1 flex flex-row items-center gap-1',
-                    isOwnMessage ? 'text-primary-foreground/70' : 'text-muted-foreground',
-                  )}
-                >
-                  <CheckCheck size={12} /> {formatRelativeTime(message.createdAt)}
-                </p>
-              </div>
-            </div>
+              message={message}
+              isOwnMessage={isOwnMessage}
+            />
           );
         })}
         <div ref={messagesEndRef} />
