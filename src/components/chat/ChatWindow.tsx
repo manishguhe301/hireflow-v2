@@ -28,7 +28,11 @@ export default function ChatWindow({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleNewMessage = useCallback((message: MessageWithSender) => {
-    setMessages((prev) => [...prev, message]);
+    setMessages((prev) => {
+      const exists = prev.some((m) => m.id === message.id);
+      if (exists) return prev;
+      return [...prev, message];
+    });
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
@@ -49,10 +53,8 @@ export default function ChatWindow({
       }
       setMessages(res.messages);
 
-      // Mark as read
       await AppSdk.patchData(`/api/chat/conversations/${conversationId}/read`, {});
 
-      // Scroll to bottom
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
@@ -74,25 +76,29 @@ export default function ChatWindow({
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId) return;
 
+    const tempMessage = newMessage;
+    setNewMessage('');
     setIsSending(true);
+
     try {
       const res = await AppSdk.postData('/api/chat/messages/send', {
         conversationId,
-        content: newMessage,
+        content: tempMessage,
       });
 
       if (res.error) {
         toast.error(res.error);
+        setNewMessage(tempMessage);
         return;
       }
 
-      setNewMessage('');
-      setMessages((prev) => [...prev, res.message]);
       onMessageSent();
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to send message');
+      //eslint-disable-next-line
+    } catch (error: any) {
+      console.error(error, 'asdsad');
+      toast.error(error.error as string || 'Failed to send message');
+      setNewMessage(tempMessage);
     } finally {
       setIsSending(false);
     }
@@ -118,7 +124,6 @@ export default function ChatWindow({
 
   return (
     <div className="flex-1 flex flex-col bg-background">
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => {
           const isOwnMessage =
@@ -148,11 +153,11 @@ export default function ChatWindow({
                     : 'bg-muted text-foreground',
                 )}
               >
-                {!isOwnMessage && (
+                {
                   <p className="text-xs font-medium mb-1 opacity-70">
-                    {message.sender.name}
+                    {isOwnMessage ? 'You' : message.sender.name}
                   </p>
-                )}
+                }
                 <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
                 <p
                   className={clsx(
@@ -169,7 +174,6 @@ export default function ChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="p-4 border-t border-border bg-card">
         <div className="flex gap-2">
           <textarea
