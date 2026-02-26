@@ -5,8 +5,10 @@ import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
 import ChatSidebar from './ChatSidebar';
 import ChatWindow from './ChatWindow';
-import { ConversationListItem } from '@/src/types';
+import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
 import { useSearchParams } from 'next/navigation';
+import clsx from 'clsx';
+
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
@@ -52,20 +54,44 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     );
   }
 
+  const selectedConversationData = conversations.find
+    (c => c.id === selectedConversation);
+
   return (
-    <div className="flex h-[calc(100vh-8rem)]  border border-border rounded-2xl overflow-hidden m-4">
-      <ChatSidebar
-        conversations={conversations}
-        selectedConversation={selectedConversation}
-        onSelectConversation={setSelectedConversation}
-        userType={userType}
-        onConversationUpdate={fetchConversations}
-      />
-      <ChatWindow
-        conversationId={selectedConversation}
-        userType={userType}
-        onMessageSent={fetchConversations}
-      />
+    <div>
+      <div className="flex h-[calc(100vh-8rem)] border border-border rounded-2xl overflow-hidden m-4 relative">
+        <div className={clsx(
+          "w-full sm:w-80 h-full border-r border-border",
+          selectedConversation ? "hidden sm:flex" : "flex"
+        )}>
+          <ChatSidebar
+            conversations={conversations}
+            selectedConversation={selectedConversation}
+            onSelectConversation={setSelectedConversation}
+            userType={userType}
+            onConversationUpdate={fetchConversations}
+          />
+        </div>
+        <div className={clsx(
+          "flex-1 h-full",
+          !selectedConversation ? "hidden sm:flex" : "flex"
+        )}>
+          <ChatWindow
+            conversationId={selectedConversation}
+            userType={userType}
+            onMessageSent={fetchConversations}
+            onBack={() => setSelectedConversation(null)}
+            chatPartnerName={
+              selectedConversationData
+                ? (userType === 'company'
+                  ? (selectedConversationData.jobSeeker as ConversationUser)?.profile?.name || selectedConversationData.jobSeeker?.name
+                  : (selectedConversationData.company as ConversationCompany)?.name)
+                : ''
+            }
+            jobTitle={selectedConversationData?.job?.title}
+          />
+        </div>
+      </div>
     </div>
   );
 }

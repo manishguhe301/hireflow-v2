@@ -34,7 +34,7 @@ export default function ChatSidebar({
   });
 
   return (
-    <div className="w-80 border-r border-border bg-card flex flex-col">
+    <div className="w-80 border-r border-border bg-card flex flex-col max-sm:w-full">
       <div className="p-4 border-b border-border">
         <div className='flex flex-row items-center justify-between gap-2'>
           <h2 className="text-lg font-semibold">Messages</h2>

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
-import { Send, MessageSquare, CheckCheck } from 'lucide-react';
+import { Send, MessageSquare, CheckCheck, MoveLeft } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { formatRelativeTime } from '@/src/utils/helper';
 import clsx from 'clsx';
@@ -15,12 +15,18 @@ interface ChatWindowProps {
   conversationId: string | null;
   userType: 'company' | 'jobseeker';
   onMessageSent: () => void;
+  chatPartnerName?: string;
+  jobTitle?: string;
+  onBack?: () => void;
 }
 
 export default function ChatWindow({
   conversationId,
   userType,
   onMessageSent,
+  chatPartnerName,
+  jobTitle,
+  onBack
 }: ChatWindowProps) {
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -125,6 +131,26 @@ export default function ChatWindow({
 
   return (
     <div className="flex-1 flex flex-col bg-background w-full">
+      {conversationId && (
+        <div className="p-3 border-b flex items-center gap-3 sm:hidden bg-card">
+          <Button
+            variant="ghost"
+            size='sm'
+            onClick={onBack}
+            className="p-2!"
+          >
+            <MoveLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm truncate">{chatPartnerName}</p>
+            {jobTitle && (
+              <p className="text-[10px] text-muted-foreground truncate line-clamp-1">
+                {jobTitle}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => {
           const isOwnMessage =
