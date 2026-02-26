@@ -73,7 +73,12 @@ export async function GET(req: NextRequest) {
       });
     } else {
       conversations = await prisma.conversation.findMany({
-        where: { jobSeekerId: guard.session.user.id },
+        where: {
+          jobSeekerId: guard.session.user.id,
+          messages: {
+            some: {},
+          },
+        },
         include: {
           company: {
             select: {

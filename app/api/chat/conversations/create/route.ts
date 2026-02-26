@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const guard = await apiAuthGuard([Role.COMPANY_ADMIN]);
     if (!guard.ok) return guard.response;
 
-    const { jobSeekerId, jobId, initialMessage } = await req.json();
+    const { jobSeekerId, jobId } = await req.json();
 
     if (!jobSeekerId) {
       return NextResponse.json(
@@ -49,15 +49,6 @@ export async function POST(req: NextRequest) {
         companyId: company.id,
         jobSeekerId,
         jobId: jobId || null,
-        ...(initialMessage && {
-          messages: {
-            create: {
-              senderId: guard.session.user.id,
-              senderType: 'COMPANY',
-              content: initialMessage,
-            },
-          },
-        }),
       },
       select: { id: true },
     });
