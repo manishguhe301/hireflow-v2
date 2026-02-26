@@ -53,7 +53,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] max-w-[1400px] border border-border rounded-2xl overflow-hidden m-4">
+    <div className="flex h-[calc(100vh-8rem)]  border border-border rounded-2xl overflow-hidden m-4">
       <ChatSidebar
         conversations={conversations}
         selectedConversation={selectedConversation}

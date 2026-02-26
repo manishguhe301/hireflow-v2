@@ -36,18 +36,25 @@ export default function ChatSidebar({
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col">
       <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-semibold">Messages</h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          {filteredConversations.length} conversation
-          {filteredConversations.length !== 1 ? 's' : ''}
-        </p>
+        <div className='flex flex-row items-center justify-between gap-2'>
+          <h2 className="text-lg font-semibold">Messages</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            {filteredConversations.length} conversation
+            {filteredConversations.length !== 1 ? 's' : ''}
+          </p>
+        </div>
 
         <input
           type="text"
           placeholder="Search conversations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="mt-2 w-full px-3 py-1.5 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          className={
+            clsx(
+              ' mt-2 w-full rounded-xl border px-2 py-2 text-sm outline-none transition',
+              'bg-background text-foreground border-border/60 focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
+              'appearance-none',)
+          }
         />
       </div>
 
@@ -127,7 +134,7 @@ export default function ChatSidebar({
 
                     {lastMessage && (
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm text-muted-foreground truncate flex-1">
+                        <p className="text-xs text-muted-foreground truncate flex-1">
                           {lastMessage.content}
                         </p>
                         {unreadCount > 0 && (

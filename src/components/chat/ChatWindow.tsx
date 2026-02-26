@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, CheckCheck } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { formatRelativeTime } from '@/src/utils/helper';
 import clsx from 'clsx';
@@ -107,7 +107,7 @@ export default function ChatWindow({
 
   if (!conversationId) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground bg-muted/20">
+      <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground bg-muted/20 w-full">
         <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
         <p className="text-lg font-medium">No conversation selected</p>
         <p className="text-sm mt-2">Select a conversation to start messaging</p>
@@ -124,7 +124,7 @@ export default function ChatWindow({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-background">
+    <div className="flex-1 flex flex-col bg-background w-full">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => {
           const isOwnMessage =
@@ -148,7 +148,7 @@ export default function ChatWindow({
 
               <div
                 className={clsx(
-                  'rounded-2xl px-4 py-2',
+                  'rounded-2xl px-4 py-2 flex flex-col',
                   isOwnMessage
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-foreground',
@@ -159,14 +159,15 @@ export default function ChatWindow({
                     {isOwnMessage ? 'You' : message.sender.profile && message.sender.profile.name ? message.sender?.profile?.name : message.sender?.name}
                   </p>
                 }
-                <p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
+                <p className="text-sm break-all whitespace-pre-wrap wrap-break-word">{message.content}</p>
                 <p
                   className={clsx(
-                    'text-xs mt-1',
+                    'self-end',
+                    'text-xs mt-1 flex flex-row items-center gap-1',
                     isOwnMessage ? 'text-primary-foreground/70' : 'text-muted-foreground',
                   )}
                 >
-                  {formatRelativeTime(message.createdAt)}
+                  <CheckCheck size={12} /> {formatRelativeTime(message.createdAt)}
                 </p>
               </div>
             </div>
@@ -176,7 +177,7 @@ export default function ChatWindow({
       </div>
 
       <div className="p-4 border-t border-border bg-card">
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <textarea
             value={newMessage}
             onChange={(e) => {
@@ -189,7 +190,11 @@ export default function ChatWindow({
               }
             }}
             placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-            className="flex-1 px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            className={clsx(
+              'w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition',
+              'bg-background text-foreground border-border/60',
+              'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
+            )}
             rows={2}
             disabled={isSending}
           />
