@@ -25,7 +25,7 @@ export function useChatPusher(
     );
 
     channel.bind('new-message', (data: { message: MessageWithSender }) => {
-      console.log('🔔 New message:', data.message);
+      // console.log('🔔 New message:', data.message);
       onNewMessage(data.message);
     });
 
