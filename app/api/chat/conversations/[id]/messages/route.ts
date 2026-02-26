@@ -50,6 +50,7 @@ export async function GET(
             profile: {
               select: {
                 avatar: true,
+                name: true,
               },
             },
           },
@@ -61,6 +62,41 @@ export async function GET(
     return NextResponse.json({ messages });
   } catch (error) {
     console.error('Error fetching messages:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const guard = await apiAuthGuard([Role.COMPANY_ADMIN, Role.JOB_SEEKER]);
+    if (!guard.ok) return guard.response;
+
+    const { id } = await params;
+
+    const message = await prisma.message.findUnique({
+      where: { id },
+      select: { senderId: true },
+    });
+
+    if (!message) {
+      return NextResponse.json({ error: 'Message not found' }, { status: 404 });
+    }
+
+    if (message.senderId !== guard.session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    await prisma.message.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete message error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 },
