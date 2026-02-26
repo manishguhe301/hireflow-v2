@@ -6,11 +6,15 @@ import { Spinner } from '../elements/Loader';
 import ChatSidebar from './ChatSidebar';
 import ChatWindow from './ChatWindow';
 import { ConversationListItem } from '@/src/types';
+import { useSearchParams } from 'next/navigation';
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const searchParams = useSearchParams();
+  const conversationFromUrl = searchParams.get('conversation');
 
   const fetchConversations = async () => {
     try {
@@ -29,9 +33,16 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
 
   useEffect(() => {
     fetchConversations();
-    const interval = setInterval(fetchConversations, 30000);
-    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (conversationFromUrl && conversations.length > 0) {
+      const exists = conversations.find((c) => c.id === conversationFromUrl);
+      if (exists) {
+        setSelectedConversation(conversationFromUrl);
+      }
+    }
+  }, [conversationFromUrl, conversations]);
 
   if (isLoading) {
     return (
@@ -42,7 +53,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] max-w-[1400px]  border border-border rounded-2xl overflow-hidden m-4">
+    <div className="flex h-[calc(100vh-8rem)] max-w-[1400px] border border-border rounded-2xl overflow-hidden m-4">
       <ChatSidebar
         conversations={conversations}
         selectedConversation={selectedConversation}
