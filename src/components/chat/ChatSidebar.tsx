@@ -2,7 +2,8 @@
 import { formatRelativeTime } from '@/src/utils/helper';
 import { MessageCircle } from 'lucide-react';
 import clsx from 'clsx';
-import { ConversationListItem } from '@/src/types';
+import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
+import { useState } from 'react';
 
 interface ChatSidebarProps {
   conversations: ConversationListItem[];
@@ -18,18 +19,40 @@ export default function ChatSidebar({
   onSelectConversation,
   userType,
 }: ChatSidebarProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredConversations = conversations.filter((conv) => {
+    const otherUser = userType === 'company' ? conv.jobSeeker : conv.company;
+    if (!otherUser) return false;
+
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      otherUser.name.toLowerCase().includes(searchLower) ||
+      (otherUser as ConversationUser)?.profile?.name.toLowerCase().includes(searchLower) ||
+      (conv.job?.title.toLowerCase().includes(searchLower))
+    );
+  });
+
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col">
       <div className="p-4 border-b border-border">
         <h2 className="text-lg font-semibold">Messages</h2>
         <p className="text-xs text-muted-foreground mt-1">
-          {conversations.length} conversation
-          {conversations.length !== 1 ? 's' : ''}
+          {filteredConversations.length} conversation
+          {filteredConversations.length !== 1 ? 's' : ''}
         </p>
+
+        <input
+          type="text"
+          placeholder="Search conversations..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="mt-2 w-full px-3 py-1.5 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+        />
       </div>
 
       <div className="overflow-y-auto flex-1">
-        {conversations.length === 0 ? (
+        {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground px-4">
             <MessageCircle className="h-12 w-12 mb-4 opacity-50" />
             <p className="text-sm text-center">No conversations yet</p>
@@ -40,9 +63,9 @@ export default function ChatSidebar({
             )}
           </div>
         ) : (
-          conversations.map((conv) => {
+          filteredConversations.map((conv) => {
             const otherUser =
-              userType === 'company' ? conv.jobSeeker : conv.company;
+              userType === 'company' ? conv.jobSeeker as ConversationUser : conv.company as ConversationCompany;
             const lastMessage = conv.messages[0];
             const unreadCount = conv._count.messages;
 
@@ -55,6 +78,8 @@ export default function ChatSidebar({
             } else {
               src = otherUser.profile?.avatar || '';
             }
+
+            const name = (otherUser as ConversationUser)?.profile?.name || otherUser.name;
 
             return (
               <button
@@ -86,7 +111,7 @@ export default function ChatSidebar({
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="font-medium truncate">{otherUser.name}</p>
+                      <p className="font-medium truncate">{name}</p>
                       {lastMessage && (
                         <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
                           {formatRelativeTime(lastMessage.createdAt)}
