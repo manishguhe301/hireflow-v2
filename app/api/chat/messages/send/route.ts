@@ -4,6 +4,8 @@ import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { pusherServer } from '@/src/lib/pusher';
 
+const MAX_MESSAGE_LENGTH = 5000;
+
 export async function POST(req: NextRequest) {
   try {
     const guard = await apiAuthGuard([Role.COMPANY_ADMIN, Role.JOB_SEEKER]);
@@ -14,6 +16,13 @@ export async function POST(req: NextRequest) {
     if (!conversationId || !content?.trim()) {
       return NextResponse.json(
         { error: 'Conversation ID and content required' },
+        { status: 400 },
+      );
+    }
+
+    if (content.trim().length > MAX_MESSAGE_LENGTH) {
+      return NextResponse.json(
+        { error: `Message too long (max ${MAX_MESSAGE_LENGTH} characters)` },
         { status: 400 },
       );
     }
@@ -69,7 +78,7 @@ export async function POST(req: NextRequest) {
 
     await prisma.conversation.update({
       where: { id: conversationId },
-      data: { lastMessageAt: new Date() },
+      data: { lastMessageAt: message.createdAt },
     });
 
     await pusherServer.trigger(
