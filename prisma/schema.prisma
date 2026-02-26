@@ -382,6 +382,7 @@ model Conversation {
   @@unique([companyId, jobSeekerId])
   @@index([companyId])
   @@index([jobSeekerId])
+  @@index([lastMessageAt])
 }
 
 model Message {
@@ -396,7 +397,7 @@ model Message {
   conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender          User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
-  @@index([conversationId])
+  @@index([conversationId, isRead])
   @@index([senderId])
 }
 
