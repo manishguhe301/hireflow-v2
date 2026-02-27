@@ -55,28 +55,34 @@ export default function ChatWindow({
     setIsLoadingMore(true);
     try {
       const res = await AppSdk.getData(
-        `/api/chat/conversations/${conversationId}/messages?page=${pageNum}&limit=6`,
+        `/api/chat/conversations/${conversationId}/messages?page=${pageNum}&limit=8`,
         null,
       );
+
       if (res.error) {
         toast.error(res.error);
         return;
       }
 
+      const scrollContainer = scrollContainerRef.current;
+      const oldScrollHeight = scrollContainer?.scrollHeight || 0;
+
       if (pageNum === 1) {
         setMessages(res.messages);
         setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      } else {
-        const oldHeight = scrollContainerRef.current?.scrollHeight || 0;
-        setMessages((prev) => [...res.messages, ...prev]);
-        setTimeout(() => {
           if (scrollContainerRef.current) {
-            const newHeight = scrollContainerRef.current.scrollHeight;
-            scrollContainerRef.current.scrollTop = newHeight - oldHeight;
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
           }
         }, 0);
+      } else {
+        setMessages((prev) => [...res.messages, ...prev]);
+
+        requestAnimationFrame(() => {
+          if (scrollContainerRef.current) {
+            const newScrollHeight = scrollContainerRef.current.scrollHeight;
+            scrollContainerRef.current.scrollTop = newScrollHeight - oldScrollHeight;
+          }
+        });
       }
 
       setHasMore(res.pagination.hasMore);
@@ -88,6 +94,20 @@ export default function ChatWindow({
     }
   }, [conversationId]);
 
+  useEffect(() => {
+    if (!conversationId) return;
+
+    setMessages([]);
+    setPage(1);
+    setHasMore(true);
+    setIsLoading(true);
+
+    fetchMessages(1).then(() => {
+      setIsLoading(false);
+    });
+
+  }, [conversationId, fetchMessages]);
+
   const handleScroll = async () => {
     if (!scrollContainerRef.current || isLoadingMore || !hasMore) return;
 
@@ -97,20 +117,6 @@ export default function ChatWindow({
       await fetchMessages(nextPage);
     }
   };
-
-  useEffect(() => {
-    if (!conversationId) return;
-
-    setMessages([]);
-    setPage(1);
-    setHasMore(true);
-    setIsLoading(true);
-
-    fetchMessages(1).finally(() => {
-      setIsLoading(false);
-    });
-
-  }, [conversationId, fetchMessages]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId) return;
@@ -160,6 +166,8 @@ export default function ChatWindow({
       </div>
     );
   }
+
+
 
   return (
     <div className="flex-1 flex flex-col bg-background w-full">
