@@ -3,7 +3,7 @@ import { formatRelativeTime } from '@/src/utils/helper';
 import { MessageCircle, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
@@ -15,6 +15,12 @@ interface ChatSidebarProps {
   onSelectConversation: (id: string) => void;
   userType: 'company' | 'jobseeker';
   onConversationUpdate: () => void;
+  searchQuery: string;
+  hasMore: boolean
+  observerTarget: RefObject<HTMLDivElement | null>
+  isLoadingMore: boolean
+  setSearchQuery: Dispatch<SetStateAction<string>>
+  setConversations: Dispatch<SetStateAction<ConversationListItem[]>>
 }
 
 export function useDebounce<T>(value: T, delay: number): T {
@@ -29,73 +35,20 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 
 export default function ChatSidebar({
-  conversations: initialConversations,
+  conversations,
   selectedConversation,
   onSelectConversation,
   userType,
-  onConversationUpdate
+  onConversationUpdate,
+  searchQuery,
+  hasMore,
+  observerTarget,
+  isLoadingMore,
+  setSearchQuery,
+  setConversations
 }: ChatSidebarProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [conversations, setConversations] = useState(initialConversations);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
+
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
-  const observerTarget = useRef<HTMLDivElement>(null);
-  const debouncedSearch = useDebounce(searchQuery, 500);
-
-  const fetchConversations = useCallback(async (pageNum: number, search: string) => {
-    try {
-      setIsLoadingMore(true);
-      const res = await AppSdk.getData(
-        `/api/chat/conversations?page=${pageNum}&limit=20${search ? `&search=${search}` : ''}`,
-        null,
-      );
-      if (res.error) {
-        toast.error(res.error);
-        return;
-      }
-
-      if (pageNum === 1) {
-        setConversations(res.conversations);
-      } else {
-        setConversations((prev) => [...prev, ...res.conversations]);
-      }
-      setHasMore(res.pagination.hasMore);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    setPage(1);
-    fetchConversations(1, debouncedSearch);
-  }, [debouncedSearch, fetchConversations]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 1.0 },
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasMore, isLoadingMore]);
-
-  useEffect(() => {
-    if (page > 1) {
-      fetchConversations(page, debouncedSearch);
-    }
-  }, [page, debouncedSearch, fetchConversations]);
 
   const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -224,7 +177,7 @@ export default function ChatSidebar({
                         lastMessage ? 'justify-between' : 'justify-end'
                       )}>
                         {lastMessage && (
-                          <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center justify-between gap-2 w-1/2">
                             <p className="text-xs text-muted-foreground truncate flex-1">
                               {lastMessage.content}
                             </p>
