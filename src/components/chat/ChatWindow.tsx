@@ -33,6 +33,10 @@ export default function ChatWindow({
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleNewMessage = useCallback((message: MessageWithSender) => {
     setMessages((prev) => {
@@ -45,42 +49,67 @@ export default function ChatWindow({
 
   useChatPusher(conversationId, handleNewMessage);
 
-  const fetchMessages = useCallback(async () => {
+  const fetchMessages = useCallback(async (pageNum: number) => {
     if (!conversationId) return;
 
-    setIsLoading(true);
+    setIsLoadingMore(true);
     try {
       const res = await AppSdk.getData(
-        `/api/chat/conversations/${conversationId}/messages`,
+        `/api/chat/conversations/${conversationId}/messages?page=${pageNum}&limit=6`,
         null,
       );
       if (res.error) {
         toast.error(res.error);
         return;
       }
-      setMessages(res.messages);
 
-      await AppSdk.patchData(
-        `/api/chat/conversations/${conversationId}/read`,
-        {}
-      );
+      if (pageNum === 1) {
+        setMessages(res.messages);
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else {
+        const oldHeight = scrollContainerRef.current?.scrollHeight || 0;
+        setMessages((prev) => [...res.messages, ...prev]);
+        setTimeout(() => {
+          if (scrollContainerRef.current) {
+            const newHeight = scrollContainerRef.current.scrollHeight;
+            scrollContainerRef.current.scrollTop = newHeight - oldHeight;
+          }
+        }, 0);
+      }
 
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      setHasMore(res.pagination.hasMore);
+      await AppSdk.patchData(`/api/chat/conversations/${conversationId}/read`, {});
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingMore(false);
     }
   }, [conversationId]);
 
-  useEffect(() => {
-    if (conversationId) {
-      fetchMessages();
-    } else {
-      setMessages([]);
+  const handleScroll = async () => {
+    if (!scrollContainerRef.current || isLoadingMore || !hasMore) return;
+
+    if (scrollContainerRef.current.scrollTop === 0) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      await fetchMessages(nextPage);
     }
+  };
+
+  useEffect(() => {
+    if (!conversationId) return;
+
+    setMessages([]);
+    setPage(1);
+    setHasMore(true);
+    setIsLoading(true);
+
+    fetchMessages(1).finally(() => {
+      setIsLoading(false);
+    });
+
   }, [conversationId, fetchMessages]);
 
   const handleSendMessage = async () => {
@@ -154,7 +183,14 @@ export default function ChatWindow({
           </div>
         </div>
       )}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto p-4 space-y-4">
+        {isLoadingMore && page > 1 && (
+          <div className="text-center py-2">
+            <Spinner className="h-6 w-6 mx-auto" />
+          </div>
+        )}
         {messages.map((message, index) => {
           const isOwnMessage =
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
