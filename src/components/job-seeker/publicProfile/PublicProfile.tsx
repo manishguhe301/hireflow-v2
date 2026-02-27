@@ -6,7 +6,7 @@ import React, { use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
-import { ArrowLeft, CircleUser, ShieldUser } from 'lucide-react'
+import { ArrowLeft, CircleUser, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { APPLICATIONS_TABS, formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
@@ -40,6 +40,7 @@ const PublicProfile = () => {
   const [newStatus, setNewStatus] = useState<ApplicationStatus | null>(null)
   const [internalNotes, setInternalNotes] = useState('')
   const [updatingStatus, setUpdatingStatus] = useState(false)
+  const [creatingChat, setCreatingChat] = useState(false)
 
 
   const fetchProfile = async () => {
@@ -94,6 +95,28 @@ const PublicProfile = () => {
       setUpdatingStatus(false)
     }
   }
+
+  const handleMessageClick = async () => {
+    setCreatingChat(true);
+    try {
+      const res = await AppSdk.postData('/api/chat/conversations/create', {
+        jobSeekerId: application?.userId,
+        jobId: application?.jobId,
+      });
+
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
+
+      router.push(`/company/chat?conversation=${res.conversationId}`);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to start conversation');
+    } finally {
+      setCreatingChat(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -204,6 +227,25 @@ const PublicProfile = () => {
               onClick={() => router.push('/dashboard/profile/form')}
             >
               Edit Profile
+            </Button>
+          )}
+
+          {!isOwner && (
+            <Button
+              variant="outline"
+              className='flex flex-row items-center gap-1 border-primary text-primary'
+              onClick={handleMessageClick}
+              disabled={creatingChat}
+            >
+              {creatingChat ? <span className='flex flex-row items-center gap-1'>
+                <Spinner className="w-4 h-4" /> Intializing Chat
+              </span>
+                :
+                <span className='flex flex-row items-center gap-1'>
+                  <MessageCircle className="h-4 w-4" />
+                  Message {profile.name}
+                </span>
+              }
             </Button>
           )}
         </div>

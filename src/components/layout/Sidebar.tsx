@@ -11,6 +11,7 @@ import {
   FileText,
   X, LogOut, Moon, Sun,
   Send,
+  MessageCircle,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
@@ -36,12 +37,14 @@ const SIDEBAR_LINKS: Record<
   COMPANY_ADMIN: [
     { label: 'Dashboard', href: '/company', icon: <LayoutDashboard size={18} /> },
     { label: 'Jobs', href: '/company/jobs', icon: <Briefcase size={18} /> },
+    { label: 'Chat', href: '/company/chat', icon: <MessageCircle size={18} /> },
     { label: 'Applications', href: '/company/applications', icon: <FileText size={18} /> },
     { label: 'Profile', href: '/company/profile', icon: <Building2 size={18} /> },
   ],
   JOB_SEEKER: [
     { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard size={18} /> },
     { label: 'Browse Jobs', href: '/jobs', icon: <Briefcase size={18} /> },
+    { label: 'Chat', href: '/dashboard/chat', icon: <MessageCircle size={18} /> },
     { label: 'Applications', href: '/dashboard/applications', icon: <Send size={18} /> },
     { label: 'Saved Jobs', href: '/dashboard/saved-jobs', icon: <Bookmark size={18} /> },
     { label: 'Profile', href: '/dashboard/profile', icon: <UserCog size={18} /> },

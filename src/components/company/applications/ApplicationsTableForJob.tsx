@@ -1,5 +1,6 @@
 import {
   FileText,
+  MessageCircle,
   // Trash2
 } from "lucide-react"
 import { Applications } from "./JobApplicants"
@@ -11,7 +12,12 @@ import Link from "next/link"
 import clsx from "clsx"
 // import { ExperienceLevel } from "@prisma/client"
 // import { Spinner } from "../../elements/Loader"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+import { Button } from "../../ui/Button"
+import { Spinner } from "../../elements/Loader"
+import { useState } from "react"
+import { AppSdk } from "@/src/utils/AppSdk"
+import { toast } from "sonner"
 
 const ApplicationsTableForJob = ({
   applications,
@@ -19,7 +25,8 @@ const ApplicationsTableForJob = ({
   selectedApplicants,
   applicationsLength,
   checkBoxHandler,
-  isBulkProcessing
+  isBulkProcessing,
+  jobId
 }: {
   applications: Applications[],
   selectAllApplicants: () => void,
@@ -27,12 +34,38 @@ const ApplicationsTableForJob = ({
   applicationsLength: number
   checkBoxHandler: (appId: string) => void
   isBulkProcessing?: boolean
+  jobId?: string
 }) => {
   const { slug } = useParams()
   const lengthSelected = selectedApplicants.length
+  const [creatingFor, setCreatingFor] = useState<string | null>(null);
+  const router = useRouter()
 
   const isIndeterminate =
     lengthSelected > 0 && lengthSelected < applicationsLength
+
+  const handleMessageClick = async (jobSeekerId: string) => {
+    setCreatingFor(jobSeekerId);
+    try {
+      const res = await AppSdk.postData('/api/chat/conversations/create', {
+        jobSeekerId,
+        jobId,
+      });
+
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
+
+      router.push(`/company/chat?conversation=${res.conversationId}`);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to start conversation');
+    } finally {
+      setCreatingFor(null);
+    }
+  };
+  
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1100px]">
@@ -160,6 +193,17 @@ const ApplicationsTableForJob = ({
                   >
                     View Resume & Profile
                   </Link>
+                  <Button
+                    onClick={() => handleMessageClick(app.user.id)}
+                    disabled={creatingFor === app.user.id}
+                    variant="outline"
+                    size="sm"
+                    className="p-2!"
+                  >
+                    {creatingFor === app.user.id ? <Spinner className="w-4 h-4" /> :
+                      <MessageCircle className="h-4 w-4" />
+                    }
+                  </Button>
                   {/* <Button
                     className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80",
                       // loadingAction && 'pointer-events-none opacity-50'
