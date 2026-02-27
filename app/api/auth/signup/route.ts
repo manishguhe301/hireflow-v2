@@ -1,9 +1,12 @@
+import NewUserEmail from '@/src/emails/NewUserEmail';
+import { sendEmail } from '@/src/lib/emailService';
 import { notifyRoleUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { isPasswordValid, isValidEmail } from '@/src/utils/helper';
 import { Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
+import React from 'react';
 
 export async function POST(req: NextRequest) {
   try {
@@ -82,6 +85,19 @@ export async function POST(req: NextRequest) {
         userRole: user.role,
         userEmail: user.email,
       },
+    });
+
+    const { name: userName, email: userEmail, role: userRole } = user;
+
+    await sendEmail({
+      to: 'manishguhe301@gmail.com',
+      subject: `🚀 New User Signup - ${user.name}`,
+      react: React.createElement(NewUserEmail, {
+        name: userName,
+        email: userEmail,
+        role: userRole,
+        link: `${process.env.NEXT_PUBLIC_APP_URL}/admin/users`,
+      }),
     });
 
     return NextResponse.json(
