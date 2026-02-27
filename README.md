@@ -2,7 +2,7 @@
 
 A comprehensive job portal platform built with Next.js, featuring role-based access control for Platform Admins, Company Admins, and Job Seekers.
 
-**Status:** 🚧 In Development | **Version:** 1.0.0
+**Status:** 🚧 In Development | **Version:** 2.0.0
 ## 🚀 Features
 
 ### For Platform Admins
