@@ -379,7 +379,7 @@ model Conversation {
   job             Job?      @relation(fields: [jobId], references: [id], onDelete: SetNull)
   messages        Message[]
 
-  @@unique([companyId, jobSeekerId])
+  @@unique([companyId, jobSeekerId, jobId])
   @@index([companyId])
   @@index([jobSeekerId])
   @@index([lastMessageAt])

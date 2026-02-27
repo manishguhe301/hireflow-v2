@@ -27,12 +27,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    const existing = await prisma.conversation.findUnique({
+    const existing = await prisma.conversation.findFirst({
       where: {
-        companyId_jobSeekerId: {
-          companyId: company.id,
-          jobSeekerId,
-        },
+        companyId: company.id,
+        jobSeekerId,
+        jobId: jobId || null,
       },
       select: { id: true },
     });
