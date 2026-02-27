@@ -14,15 +14,18 @@ export async function sendEmail({ to, subject, react }: SendEmailParams) {
   try {
     const html = await render(react);
 
-    console.log(html, to, subject, react);
-    await resend.emails.send({
+    const emailRes = await resend.emails.send({
       from: `HireFlow <${process.env.RESEND_FROM_EMAIL}>`,
       to,
       subject,
       html,
     });
 
-    console.log('✅ Email sent:', subject);
+    if (emailRes.error) {
+      console.error('❌ Email error:', emailRes.error);
+    } else {
+      console.log('✅ Email sent');
+    }
   } catch (error) {
     console.error('❌ Email failed:', error);
   }
