@@ -12,15 +12,17 @@ export async function GET(
     if (!guard.ok) return guard.response;
 
     const { id } = await params;
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const skip = (page - 1) * limit;
 
     const conversation = await prisma.conversation.findUnique({
       where: { id },
       select: {
         companyId: true,
         jobSeekerId: true,
-        company: {
-          select: { userId: true },
-        },
+        company: { select: { userId: true } },
       },
     });
 
@@ -40,26 +42,34 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const messages = await prisma.message.findMany({
-      where: { conversationId: id },
-      include: {
-        sender: {
-          select: {
-            id: true,
-            name: true,
-            profile: {
-              select: {
-                avatar: true,
-                name: true,
-              },
+    const [messages, total] = await Promise.all([
+      prisma.message.findMany({
+        where: { conversationId: id },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              name: true,
+              profile: { select: { avatar: true, name: true } },
             },
           },
         },
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.message.count({ where: { conversationId: id } }),
+    ]);
 
-    return NextResponse.json({ messages });
+    return NextResponse.json({
+      messages: messages.reverse(),
+      pagination: {
+        total,
+        page,
+        limit,
+        hasMore: skip + messages.length < total,
+      },
+    });
   } catch (error) {
     console.error('Error fetching messages:', error);
     return NextResponse.json(
@@ -68,4 +78,3 @@ export async function GET(
     );
   }
 }
-
