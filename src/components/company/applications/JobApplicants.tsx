@@ -373,6 +373,7 @@ const JobApplicants = () => {
               applicationsLength={applications.length}
               checkBoxHandler={checkBoxHandler}
               isBulkProcessing={isBulkProcessing}
+              jobId={job?.id || ''}
             /> : (
               <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
                 <FileText className="h-10 w-10 text-muted-foreground" />
