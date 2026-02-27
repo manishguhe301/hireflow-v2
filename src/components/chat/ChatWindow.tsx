@@ -44,6 +44,18 @@ export default function ChatWindow({
       if (exists) return prev;
       return [...prev, message];
     });
+
+    const isOwnMessage =
+      message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
+
+    if (!isOwnMessage) {
+      if (typeof window !== 'undefined' && 'Audio' in window) {
+        const audio = new Audio('/notification.mp3');
+        audio.volume = 0.6;
+        audio.play().catch(() => { });
+      }
+    }
+
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
