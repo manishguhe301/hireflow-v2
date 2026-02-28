@@ -26,6 +26,7 @@ export default function HomePage() {
   const [jobs, setJobs] = useState<DirJobType[]>([])
 
   const fetchData = async () => {
+    setIsLoading(true)
     try {
       const [jobsRes, companiesRes] = await Promise.all([
         AppSdk.getData(`/api/jobs?limit=4`, null),
@@ -65,6 +66,14 @@ export default function HomePage() {
 
   const handleMenuClose = (e: React.MouseEvent) => {
     e.currentTarget.closest('details')?.removeAttribute('open')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen" >
+        <Spinner className="h-8 w-8" />
+      </div>
+    )
   }
 
   return (
@@ -279,11 +288,7 @@ export default function HomePage() {
 
           <div className="grid gap-4">
             {
-              isLoading ? (
-                <div className="flex justify-center py-24" >
-                  <Spinner className="h-8 w-8" />
-                </div>
-              ) : jobs.length === 0 ?
+              jobs.length === 0 ?
                 <div>
                   <div className="flex justify-center py-24" >
                     <span className="text-sm text-muted-foreground">No jobs found</span>
