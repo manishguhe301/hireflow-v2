@@ -7,14 +7,46 @@ import {
   UserCircle,
   MapPin,
   ArrowRight,
+  Building2,
 } from 'lucide-react';
 // import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { companies, featuredJobs } from '@/src/utils/mock';
+import { useCallback, useEffect, useState } from 'react';
+import { companies } from '@/src/utils/mock';
+import { DirJobType } from '../public/jobs-dir/JobsDirectory';
+import { getLabel } from '@/src/utils/helper';
+import { employmentTypes, jobCategories } from '@/src/utils/utils';
+import { Spinner } from '../elements/Loader';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [jobs, setJobs] = useState<DirJobType[]>([])
+
   // const { theme } = useTheme()
+
+  const fetchJobs = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const params = new URLSearchParams()
+      params.set('page', String(1))
+      params.set('limit', '4')
+
+      const res = await fetch(
+        `/api/jobs?${params.toString()}`
+      )
+      const data = await res.json()
+
+      setJobs(data.jobs || [])
+    } catch (error) {
+      console.error('Error fetching companies:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchJobs()
+  }, [])
 
   useEffect(() => {
     //eslint-disable-next-line
@@ -227,46 +259,69 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-4">
-            {featuredJobs.map(job => (
-              <Link
-                key={job.id}
-                href="/login"
-                className="group rounded-2xl border border-border/60 bg-card p-6 transition hover:border-primary/30 hover:shadow-lg"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start gap-5">
-                    <div className="relative">
-                      <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
-                      <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
-                        {job.company[0]}
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{job.title}</h3>
-                      <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                        <span>{job.company}</span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" /> {job.location}
-                        </span>
-                        <span className="rounded bg-muted px-2 py-0.5 uppercase tracking-wide max-sm:hidden">
-                          {job.type}
-                        </span>
-                      </div>
-                    </div>
+            {
+              isLoading ? (
+                <div className="flex justify-center py-24" >
+                  <Spinner className="h-8 w-8" />
+                </div>
+              ) : jobs.length === 0 ?
+                <div>
+                  <div className="flex justify-center py-24" >
+                    <span className="text-sm text-muted-foreground">No jobs found</span>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <span className="hidden md:inline-block text-[11px] font-semibold uppercase tracking-widest text-primary/70">
-                      {job.tag}
-                    </span>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition" />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </div> : jobs.map((job: DirJobType) => (
+                  <Link
+                    key={job.id}
+                    href="/login"
+                    className="group rounded-2xl border border-border/60 bg-card p-6 transition hover:border-primary/30 hover:shadow-lg"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-start gap-5">
+                        <div className="relative">
+                          <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
+                          {/* <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
+                            {job.company.name[0]}
+                          </div> */}
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+                            {job.company.logo ? (
+                              <img
+                                src={job.company.logo}
+                                alt={job.company.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <Building2 className="h-6 w-6 text-muted-foreground" />
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{job.title}</h3>
+                          <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                            <span>{job.company.name}</span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {job.city ? `${job.city}, ${job.country}` : job.country}
+                            </span>
+                            <span className="rounded bg-muted px-2 py-0.5 uppercase tracking-wide max-sm:hidden">
+                              {getLabel(jobCategories, job.category)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <span className="hidden md:inline-block text-[11px] font-semibold uppercase tracking-widest text-primary/70">
+                          {getLabel(employmentTypes, job.employmentType)}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
           </div>
         </div>
       </section>
-    </main>
+    </main >
   );
 }
