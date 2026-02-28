@@ -9,43 +9,51 @@ import {
   ArrowRight,
   Building2,
 } from 'lucide-react';
-// import { useTheme } from 'next-themes';
-import { useCallback, useEffect, useState } from 'react';
-import { companies } from '@/src/utils/mock';
+import { useEffect, useState } from 'react';
 import { DirJobType } from '../public/jobs-dir/JobsDirectory';
 import { getLabel } from '@/src/utils/helper';
 import { employmentTypes, jobCategories } from '@/src/utils/utils';
 import { Spinner } from '../elements/Loader';
+import { Company } from '../public/companies-dir/CompaniesDirectory';
+import { AppSdk } from '@/src/utils/AppSdk';
+import { toast } from 'sonner';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [companies, setCompanies] = useState<Company[]>([])
+
   const [jobs, setJobs] = useState<DirJobType[]>([])
 
-  // const { theme } = useTheme()
-
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true)
+  const fetchData = async () => {
     try {
-      const params = new URLSearchParams()
-      params.set('page', String(1))
-      params.set('limit', '4')
+      const [jobsRes, companiesRes] = await Promise.all([
+        AppSdk.getData(`/api/jobs?limit=4`, null),
+        AppSdk.getData(`/api/companies?limit=6`, null),
+      ])
 
-      const res = await fetch(
-        `/api/jobs?${params.toString()}`
-      )
-      const data = await res.json()
+      if (jobsRes.error) {
+        toast.error(jobsRes.error || 'Failed to fetch jobs')
+      } else {
+        setJobs(jobsRes.jobs)
+      }
 
-      setJobs(data.jobs || [])
+      if (companiesRes.error) {
+        toast.error(companiesRes.error || 'Failed to fetch companies')
+      } else {
+        setCompanies(companiesRes.companies)
+      }
     } catch (error) {
-      console.error('Error fetching companies:', error)
-    } finally {
+      console.error(error)
+      toast.error('Failed to load data')
+    }
+    finally {
       setIsLoading(false)
     }
-  }, [])
+  }
 
   useEffect(() => {
-    fetchJobs()
+    fetchData()
   }, [])
 
   useEffect(() => {
@@ -131,8 +139,19 @@ export default function HomePage() {
               >
                 <div className="relative mb-4">
                   <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
-                  <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
+                  {/* <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
                     {company.name[0]}
+                  </div> */}
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+                    {company.logo ? (
+                      <img
+                        src={company.logo}
+                        alt={company.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Building2 className="h-6 w-6 text-muted-foreground" />
+                    )}
                   </div>
                 </div>
 
