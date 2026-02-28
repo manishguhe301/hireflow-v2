@@ -8,6 +8,7 @@ import ChatWindow from './ChatWindow';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
 import { useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
+import { useChatSidebarUpdate } from '@/src/store/hooks/useChatSidebarUpdate';
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
@@ -55,6 +56,12 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     setHasMore(true);
     fetchConversations(1, debouncedSearch);
   }, [debouncedSearch, fetchConversations]);
+
+  const handleSidebarUpdate = useCallback(() => {
+    fetchConversations(1, debouncedSearch);
+  }, [fetchConversations, debouncedSearch]);
+
+  useChatSidebarUpdate(handleSidebarUpdate);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

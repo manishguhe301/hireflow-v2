@@ -189,7 +189,7 @@ export default function ChatSidebar({
                               {unreadCount}
                             </span>
                           )}
-                          <Button
+                          {userType === 'company' && <Button
                             disabled={isDeletingId === conv.id}
                             variant='ghost'
                             onClick={(e) => handleDeleteConversation
@@ -197,7 +197,7 @@ export default function ChatSidebar({
                             }
                             className='p-0!'>
                             <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
-                          </Button>
+                          </Button>}
                         </div>
                       </div>
                     </div>
