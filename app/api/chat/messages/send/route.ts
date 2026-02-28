@@ -128,6 +128,20 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const recipientId = isCompany
+      ? conversation.jobSeekerId
+      : conversation.company.userId;
+
+    await pusherServer.trigger(
+      `user-messages-${recipientId}`,
+      'conversation-updated',
+      {
+        conversationId,
+        lastMessage: message.content,
+        updatedAt: message.createdAt,
+      },
+    );
+
     return NextResponse.json({ message }, { status: 201 });
   } catch (error) {
     console.error('Error sending message:', error);
