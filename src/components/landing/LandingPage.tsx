@@ -142,7 +142,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
             {companies.map(company => (
-              <div
+              <Link
+                href={`/explore/companies/${company.id}`}
                 key={company.id}
                 className="group flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-6 hover:border-primary/30 transition"
               >
@@ -167,7 +168,7 @@ export default function HomePage() {
                 <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition">
                   {company.name}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -297,7 +298,7 @@ export default function HomePage() {
                 </div> : jobs.map((job: DirJobType) => (
                   <Link
                     key={job.id}
-                    href="/login"
+                    href={`/explore/jobs/${job.slug}`}
                     className="group rounded-2xl border border-border/60 bg-card p-6 transition hover:border-primary/30 hover:shadow-lg"
                   >
                     <div className="flex items-center justify-between">
