@@ -3,7 +3,9 @@ import { useEffect, useRef } from 'react';
 import Pusher from 'pusher-js';
 import { useSession } from 'next-auth/react';
 
-export function useChatSidebarUpdate(onUpdate: () => void) {
+export function useChatSidebarUpdate(
+  onUpdate: (deletedConversationId?: string) => void,
+) {
   const { data: session } = useSession();
   const pusherRef = useRef<Pusher | null>(null);
 
@@ -23,6 +25,13 @@ export function useChatSidebarUpdate(onUpdate: () => void) {
     channel.bind('conversation-updated', () => {
       onUpdate();
     });
+
+    channel.bind(
+      'conversation-deleted',
+      ({ conversationId }: { conversationId: string }) => {
+        onUpdate(conversationId);
+      },
+    );
 
     return () => {
       channel.unbind_all();

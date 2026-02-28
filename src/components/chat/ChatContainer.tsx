@@ -57,9 +57,26 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     fetchConversations(1, debouncedSearch);
   }, [debouncedSearch, fetchConversations]);
 
-  const handleSidebarUpdate = useCallback(() => {
-    fetchConversations(1, debouncedSearch);
-  }, [fetchConversations, debouncedSearch]);
+  const handleSidebarUpdate = useCallback(
+    (deletedConversationId?: string) => {
+      if (deletedConversationId) {
+        setConversations((prev) =>
+          prev.filter((c) => c.id !== deletedConversationId),
+        );
+
+        if (selectedConversation === deletedConversationId) {
+          setSelectedConversation(null);
+        }
+
+        toast.success('Conversation deleted');
+
+        return;
+      }
+
+      fetchConversations(1, debouncedSearch);
+    },
+    [fetchConversations, debouncedSearch, selectedConversation],
+  );
 
   useChatSidebarUpdate(handleSidebarUpdate);
 
