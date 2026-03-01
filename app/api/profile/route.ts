@@ -1,6 +1,7 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
   deleteFileFromSupabase,
+  getSignedUrl,
   uploadFileToSupabase,
 } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
@@ -781,9 +782,16 @@ export async function PATCH(req: NextRequest) {
         certifications: true,
       },
     });
-    // });
 
-    return NextResponse.json({ success: true, profile: updatedProfile });
+    const signedAvatar = await getSignedUrl(
+      updatedProfile?.avatarPath as string,
+      604800,
+    );
+
+    return NextResponse.json({
+      success: true,
+      profile: { ...updatedProfile, avatar: signedAvatar },
+    });
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(

@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
   }
 
-  const signedUrl = await getSignedUrl(filePath, 'user-resumes');
+  const signedUrl = await getSignedUrl(filePath);
 
   return NextResponse.json({ url: signedUrl });
 }
