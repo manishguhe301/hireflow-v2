@@ -1,4 +1,3 @@
-import { supabaseServer } from './supabaseServer';
 import { b2Client, bucketName } from './b2';
 import {
   PutObjectCommand,
@@ -12,7 +11,7 @@ type UploadResult = {
   path: string;
 };
 
-export async function uploadFileToSupabase(
+export async function uploadFileToB2(
   file: File,
   bucket:
     | 'company-logos'
@@ -26,27 +25,8 @@ export async function uploadFileToSupabase(
     const fileExt = file.name.split('.').pop();
     const fileName = `${bucket}/${timestamp}-${randomString}.${fileExt}`;
 
-    const filePath = fileName;
-
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-
-    // const { data, error } = await supabaseServer.storage
-    //   .from(bucket)
-    //   .upload(filePath, buffer, {
-    //     contentType: file.type,
-    //     cacheControl: '3600',
-    //     upsert: false,
-    //   });
-
-    // if (error) {
-    //   console.error('Supabase upload error:', error);
-    //   throw new Error(`Upload failed: ${error.message}`);
-    // }
-
-    // const {
-    //   data: { publicUrl },
-    // } = supabaseServer.storage.from(bucket).getPublicUrl(data.path);
 
     await b2Client.send(
       new PutObjectCommand({
@@ -61,8 +41,6 @@ export async function uploadFileToSupabase(
       }),
     );
 
-    const publicUrl = `https://f004.backblazeb2.com/file/${bucketName}/${fileName}`;
-
     return {
       url: fileName,
       path: fileName,
@@ -73,25 +51,9 @@ export async function uploadFileToSupabase(
   }
 }
 
-export async function deleteFileFromSupabase(
-  filePath: string,
-  bucket:
-    | 'company-logos'
-    | 'company-documents'
-    | 'user-resumes'
-    | 'user-avatars',
-): Promise<void> {
+export async function deleteFileFromB2(filePath: string): Promise<void> {
   try {
-    // const { error } = await supabaseServer.storage
-    //   .from(bucket)
-    //   .remove([filePath]);
-
-    // if (error) {
-    //   console.error('Supabase delete error:', error);
-    //   throw new Error(`Delete failed: ${error.message}`);
-    // }
-
-    console.log('deleting file ');
+    // console.log('deleting file ');
 
     const deleteres = await b2Client.send(
       new DeleteObjectCommand({
@@ -99,7 +61,8 @@ export async function deleteFileFromSupabase(
         Key: filePath,
       }),
     );
-    console.log('deleteres', deleteres);
+
+    // console.log('deleteres', deleteres);
   } catch (error) {
     console.error('Delete error:', error);
     throw new Error('Failed to delete file');
@@ -108,25 +71,9 @@ export async function deleteFileFromSupabase(
 
 export async function getSignedUrl(
   filePath: string,
-  // bucket?:
-  //   | 'company-logos'
-  //   | 'company-documents'
-  //   | 'user-resumes'
-  //   | 'user-avatars',
   expiresInSeconds: number = 300,
 ): Promise<string> {
   try {
-    // const { data, error } = await supabaseServer.storage
-    //   .from(bucket)
-    //   .createSignedUrl(filePath, expiresInSeconds);
-
-    // if (error) {
-    //   console.error('Signed URL error:', error);
-    //   throw new Error('Failed to generate signed URL');
-    // }
-
-    // return data.signedUrl;
-
     const command = new GetObjectCommand({
       Bucket: bucketName,
       Key: filePath,
