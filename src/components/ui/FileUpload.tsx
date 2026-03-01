@@ -105,7 +105,7 @@ export function FileUpload<T extends FieldValues>({
               <FileText className="h-8 w-8 text-primary" />
             )}
             <div className="flex-1">
-              <p className="text-sm font-medium">{getFileNameFromPath(existingFileUrl)}</p>
+              <p className="text-sm font-medium">{getFileNameFromPath(existingFileUrl)?.slice(0, 10)}</p>
               <p className="text-xs text-muted-foreground">
                 Click below to replace with a new file
               </p>
