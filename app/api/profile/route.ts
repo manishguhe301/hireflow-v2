@@ -619,9 +619,7 @@ export async function PATCH(req: NextRequest) {
 
     if (avatar && avatar instanceof File) {
       if (existingProfile.avatarPath) {
-        await deleteFileFromB2(
-          existingProfile.avatarPath,
-        );
+        await deleteFileFromB2(existingProfile.avatarPath);
       }
       const avatarResult = await uploadFileToB2(avatar, 'user-avatars');
       avatarUrl = avatarResult.url;
@@ -630,9 +628,7 @@ export async function PATCH(req: NextRequest) {
 
     if (resume && resume instanceof File) {
       if (existingProfile.resumePath) {
-        await deleteFileFromB2(
-          existingProfile.resumePath,
-        );
+        await deleteFileFromB2(existingProfile.resumePath);
       }
       const resumeResult = await uploadFileToB2(resume, 'user-resumes');
       resumeUrl = resumeResult.url;

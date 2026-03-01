@@ -8,7 +8,7 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+  const guard = await apiAuthGuard([Role.PLATFORM_ADMIN, Role.COMPANY_ADMIN]);
   if (!guard.ok) return guard.response;
 
   const { id } = await params;

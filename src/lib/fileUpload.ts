@@ -28,7 +28,9 @@ export async function uploadFileToB2(
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    await b2Client.send(
+    // console.log('UPLOADING FILE+++++++++++++++++++');
+
+    const res = await b2Client.send(
       new PutObjectCommand({
         Bucket: bucketName,
         Key: fileName,
@@ -40,6 +42,10 @@ export async function uploadFileToB2(
             : 'no-cache',
       }),
     );
+
+    // console.log(res);
+
+    // console.log('UPLOADING COMPLETE+++++++++++++++++++');
 
     return {
       url: fileName,
@@ -53,7 +59,7 @@ export async function uploadFileToB2(
 
 export async function deleteFileFromB2(filePath: string): Promise<void> {
   try {
-    // console.log('deleting file ');
+    // console.log('DELETING FILE+++++++++++++++++++ ');
 
     const deleteres = await b2Client.send(
       new DeleteObjectCommand({
@@ -62,7 +68,9 @@ export async function deleteFileFromB2(filePath: string): Promise<void> {
       }),
     );
 
-    // console.log('deleteres', deleteres);
+    // console.log(deleteres);
+
+    // console.log('DELETING COMPLETE+++++++++++++++++++ ');
   } catch (error) {
     console.error('Delete error:', error);
     throw new Error('Failed to delete file');
