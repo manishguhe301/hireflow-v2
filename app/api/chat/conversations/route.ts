@@ -1,4 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -130,8 +131,61 @@ export async function GET(req: NextRequest) {
       ]);
     }
 
+    const conversationsWithSignedUrls = await Promise.all(
+      conversations.map(async (conv) => {
+        if (isCompany) {
+          const companyConv = conv as typeof conv & {
+            jobSeeker?: {
+              profile?: { avatar?: string | null };
+            };
+          };
+
+          if (companyConv.jobSeeker?.profile?.avatar) {
+            const signedAvatar = await getSignedUrl(
+              companyConv.jobSeeker.profile.avatar,
+              60 * 60 * 24 * 7,
+            );
+
+            return {
+              ...companyConv,
+              jobSeeker: {
+                ...companyConv.jobSeeker,
+                profile: {
+                  ...companyConv.jobSeeker.profile,
+                  avatar: signedAvatar,
+                },
+              },
+            };
+          }
+
+          return companyConv;
+        } else {
+          const jobSeekerConv = conv as typeof conv & {
+            company?: { logo?: string | null };
+          };
+
+          if (jobSeekerConv.company?.logo) {
+            const signedLogo = await getSignedUrl(
+              jobSeekerConv.company.logo,
+              60 * 60 * 24 * 7,
+            );
+
+            return {
+              ...jobSeekerConv,
+              company: {
+                ...jobSeekerConv.company,
+                logo: signedLogo,
+              },
+            };
+          }
+
+          return jobSeekerConv;
+        }
+      }),
+    );
+
     return NextResponse.json({
-      conversations,
+      conversations: conversationsWithSignedUrls,
       pagination: {
         total,
         page,

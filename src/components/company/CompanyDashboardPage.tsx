@@ -244,7 +244,9 @@ export default function CompanyDashboard() {
                         className="h-10 w-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-muted" />
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center" >
+                        {app.user.profile?.name && app.user.profile.name[0]}
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium line-clamp-1">
