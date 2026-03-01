@@ -1,7 +1,8 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
-  deleteFileFromSupabase,
-  uploadFileToSupabase,
+  deleteFileFromB2,
+  getSignedUrl,
+  uploadFileToB2,
 } from '@/src/lib/fileUpload';
 import { notifyRoleUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
@@ -21,8 +22,10 @@ export async function GET() {
       },
     });
 
+    const logourl = await getSignedUrl(company?.logo as string, 604800);
+
     return NextResponse.json({
-      company: company || null,
+      company: company ? { ...company, logo: logourl } : null,
     });
   } catch (error) {
     console.error(error);
@@ -96,13 +99,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const logoResult = await uploadFileToSupabase(logo, 'company-logos');
-    const businessDocResult = await uploadFileToSupabase(
+    const logoResult = await uploadFileToB2(logo, 'company-logos');
+    const businessDocResult = await uploadFileToB2(
       businessDocument,
       'company-documents',
     );
     const taxDocResult = taxDocument
-      ? await uploadFileToSupabase(taxDocument, 'company-documents')
+      ? await uploadFileToB2(taxDocument, 'company-documents')
       : null;
 
     const company = await prisma.company.create({
@@ -230,21 +233,18 @@ export async function PATCH(req: NextRequest) {
 
     if (logo) {
       if (existingCompany.logoPath) {
-        await deleteFileFromSupabase(existingCompany.logoPath, 'company-logos');
+        await deleteFileFromB2(existingCompany.logoPath);
       }
-      const logoResult = await uploadFileToSupabase(logo, 'company-logos');
+      const logoResult = await uploadFileToB2(logo, 'company-logos');
       logoUrl = logoResult.url;
       logoPath = logoResult.path;
     }
 
     if (businessDocument) {
       if (existingCompany.businessDocPath) {
-        await deleteFileFromSupabase(
-          existingCompany.businessDocPath,
-          'company-documents',
-        );
+        await deleteFileFromB2(existingCompany.businessDocPath);
       }
-      const docResult = await uploadFileToSupabase(
+      const docResult = await uploadFileToB2(
         businessDocument,
         'company-documents',
       );
@@ -254,15 +254,9 @@ export async function PATCH(req: NextRequest) {
 
     if (taxDocument) {
       if (existingCompany.taxDocPath) {
-        await deleteFileFromSupabase(
-          existingCompany.taxDocPath,
-          'company-documents',
-        );
+        await deleteFileFromB2(existingCompany.taxDocPath);
       }
-      const taxResult = await uploadFileToSupabase(
-        taxDocument,
-        'company-documents',
-      );
+      const taxResult = await uploadFileToB2(taxDocument, 'company-documents');
       taxDocUrl = taxResult.url;
       taxDocPath = taxResult.path;
     }
@@ -303,7 +297,12 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, company: updatedCompany });
+    const logourl = await getSignedUrl(updatedCompany?.logo as string, 604800);
+
+    return NextResponse.json({
+      success: true,
+      company: { ...updatedCompany, logo: logourl },
+    });
   } catch (error) {
     console.error('Error updating company:', error);
     return NextResponse.json(

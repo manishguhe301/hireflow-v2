@@ -4,6 +4,7 @@ import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { pusherServer } from '@/src/lib/pusher';
 import { notifyUser } from '@/src/lib/notificationService';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 
 const MAX_MESSAGE_LENGTH = 5000;
 
@@ -93,6 +94,26 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    let messageWithSignedAvatar = message;
+
+    if (message.sender?.profile?.avatar) {
+      const signedAvatar = await getSignedUrl(
+        message.sender.profile.avatar,
+        60 * 60 * 24 * 7,
+      );
+
+      messageWithSignedAvatar = {
+        ...message,
+        sender: {
+          ...message.sender,
+          profile: {
+            ...message.sender.profile,
+            avatar: signedAvatar,
+          },
+        },
+      };
+    }
+
     await prisma.conversation.update({
       where: { id: conversationId },
       data: { lastMessageAt: message.createdAt },
@@ -142,7 +163,10 @@ export async function POST(req: NextRequest) {
       },
     );
 
-    return NextResponse.json({ message }, { status: 201 });
+    return NextResponse.json(
+      { message: messageWithSignedAvatar },
+      { status: 201 },
+    );
   } catch (error) {
     console.error('Error sending message:', error);
     return NextResponse.json(

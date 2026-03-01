@@ -65,13 +65,13 @@ const ApplicationsTableForJob = ({
       setCreatingFor(null);
     }
   };
-  
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1100px]">
         <thead className="bg-muted/40 border-b border-border/60">
           <tr>
-            <th className="px-6 py-4 text-left">
+            <th className="px-6 py-4 text-left flex flex-row items-center gap-4">
               <input
                 type="checkbox"
                 id="isCurrent"
@@ -85,9 +85,9 @@ const ApplicationsTableForJob = ({
                 checked={lengthSelected === applicationsLength}
                 disabled={applicationsLength === 0 || isBulkProcessing}
               />
+              Applicant
             </th>
 
-            <th className="px-6 py-4 text-left">Applicant</th>
             {/* <th className="px-6 py-4 text-left">Experience</th> */}
             <th className="px-6 py-4 text-left">Location</th>
             <th className="px-6 py-4 text-left">Status</th>
@@ -126,7 +126,7 @@ const ApplicationsTableForJob = ({
               // }
               // }
               >
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 flex flex-row items-center gap-4">
                   <input
                     type="checkbox"
                     className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
@@ -135,8 +135,6 @@ const ApplicationsTableForJob = ({
                     checked={selectedApplicants.includes(app.id)}
                     disabled={isBulkProcessing}
                   />
-                </td>
-                <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     {profile?.avatar ? (
                       <img
@@ -145,7 +143,9 @@ const ApplicationsTableForJob = ({
                         className="h-10 w-10 rounded-full object-cover border"
                       />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-muted" />
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center" >
+                        {profile?.name && profile.name[0]}
+                      </div>
                     )}
 
                     <div>

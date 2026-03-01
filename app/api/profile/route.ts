@@ -1,7 +1,8 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
-  deleteFileFromSupabase,
-  uploadFileToSupabase,
+  getSignedUrl,
+  deleteFileFromB2,
+  uploadFileToB2,
 } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import {
@@ -300,12 +301,12 @@ export async function POST(req: NextRequest) {
     let resumeResult = null;
 
     if (resume) {
-      resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
+      resumeResult = await uploadFileToB2(resume, 'user-resumes');
     }
 
     let avatarResult = null;
     if (avatar && avatar instanceof File) {
-      avatarResult = await uploadFileToSupabase(avatar, 'user-avatars');
+      avatarResult = await uploadFileToB2(avatar, 'user-avatars');
     }
 
     const profile = await prisma.profile.create({
@@ -618,24 +619,18 @@ export async function PATCH(req: NextRequest) {
 
     if (avatar && avatar instanceof File) {
       if (existingProfile.avatarPath) {
-        await deleteFileFromSupabase(
-          existingProfile.avatarPath,
-          'user-avatars',
-        );
+        await deleteFileFromB2(existingProfile.avatarPath);
       }
-      const avatarResult = await uploadFileToSupabase(avatar, 'user-avatars');
+      const avatarResult = await uploadFileToB2(avatar, 'user-avatars');
       avatarUrl = avatarResult.url;
       avatarPath = avatarResult.path;
     }
 
     if (resume && resume instanceof File) {
       if (existingProfile.resumePath) {
-        await deleteFileFromSupabase(
-          existingProfile.resumePath,
-          'user-resumes',
-        );
+        await deleteFileFromB2(existingProfile.resumePath);
       }
-      const resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
+      const resumeResult = await uploadFileToB2(resume, 'user-resumes');
       resumeUrl = resumeResult.url;
       resumePath = resumeResult.path;
     }
@@ -781,9 +776,16 @@ export async function PATCH(req: NextRequest) {
         certifications: true,
       },
     });
-    // });
 
-    return NextResponse.json({ success: true, profile: updatedProfile });
+    const signedAvatar = await getSignedUrl(
+      updatedProfile?.avatarPath as string,
+      604800,
+    );
+
+    return NextResponse.json({
+      success: true,
+      profile: { ...updatedProfile, avatar: signedAvatar },
+    });
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(

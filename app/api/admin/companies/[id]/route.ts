@@ -1,6 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { authOptions } from '@/src/lib/auth';
-import { deleteFileFromSupabase } from '@/src/lib/fileUpload';
+import { deleteFileFromB2, getSignedUrl } from '@/src/lib/fileUpload';
 import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
@@ -37,7 +37,9 @@ export async function GET(
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ company });
+    const signedLogo = await getSignedUrl(company?.logo as string, 604800);
+
+    return NextResponse.json({ company: { ...company, logo: signedLogo } });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -173,18 +175,15 @@ export async function DELETE(
     }
 
     if (company.logoPath) {
-      await deleteFileFromSupabase(company.logoPath, 'company-logos');
+      await deleteFileFromB2(company.logoPath);
     }
 
     if (company.businessDocPath) {
-      await deleteFileFromSupabase(
-        company.businessDocPath,
-        'company-documents',
-      );
+      await deleteFileFromB2(company.businessDocPath);
     }
 
     if (company.taxDocPath) {
-      await deleteFileFromSupabase(company.taxDocPath, 'company-documents');
+      await deleteFileFromB2(company.taxDocPath);
     }
 
     await prisma.company.delete({

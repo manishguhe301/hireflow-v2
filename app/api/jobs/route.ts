@@ -1,4 +1,5 @@
 import { authOptions } from '@/src/lib/auth';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
@@ -168,8 +169,26 @@ export async function GET(req: NextRequest) {
       prisma.job.count({ where }),
     ]);
 
+    const jobsWithLogos = await Promise.all(
+      jobs.map(async (job) => {
+        let logoUrl = null;
+
+        if (job.company.logo) {
+          logoUrl = await getSignedUrl(job.company.logo, 60 * 60 * 24 * 7);
+        }
+
+        return {
+          ...job,
+          company: {
+            ...job.company,
+            logo: logoUrl,
+          },
+        };
+      }),
+    );
+
     return NextResponse.json({
-      jobs: jobs.map((job) => ({
+      jobs: jobsWithLogos.map((job) => ({
         ...job,
         isSaved: savedJobIds.includes(job.id),
       })),

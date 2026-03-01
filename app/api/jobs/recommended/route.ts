@@ -2,6 +2,7 @@ import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 
 export async function GET(req: NextRequest) {
   try {
@@ -122,8 +123,26 @@ export async function GET(req: NextRequest) {
       ).map((s) => s.jobId);
     }
 
+    const jobsWithLogos = await Promise.all(
+      jobs.map(async (job) => {
+        let logoUrl = null;
+
+        if (job.company.logo) {
+          logoUrl = await getSignedUrl(job.company.logo, 60 * 60 * 24 * 7);
+        }
+
+        return {
+          ...job,
+          company: {
+            ...job.company,
+            logo: logoUrl,
+          },
+        };
+      }),
+    );
+
     return NextResponse.json({
-      jobs: jobs.map((job) => ({
+      jobs: jobsWithLogos.map((job) => ({
         ...job,
         isSaved: savedJobIds.includes(job.id),
       })),

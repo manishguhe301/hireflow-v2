@@ -8,7 +8,7 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+  const guard = await apiAuthGuard([Role.PLATFORM_ADMIN, Role.COMPANY_ADMIN]);
   if (!guard.ok) return guard.response;
 
   const { id } = await params;
@@ -37,7 +37,7 @@ export async function GET(
     return NextResponse.json({ error: 'Document not found' }, { status: 404 });
   }
 
-  const signedUrl = await getSignedUrl(filePath, 'company-documents');
+  const signedUrl = await getSignedUrl(filePath);
 
   return NextResponse.json({ url: signedUrl });
 }
