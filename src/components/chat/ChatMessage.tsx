@@ -15,14 +15,17 @@ const ChatMessage = ({ message, isOwnMessage }: {
         isOwnMessage ? 'ml-auto justify-end' : 'mr-auto justify-start',
       )}
     >
-      {!isOwnMessage && message.sender.profile?.avatar && (
+      {/* {!isOwnMessage && message.sender.profile?.avatar && (
         //eslint-disable-next-line @next/next/no-img-element
         <img
           src={message.sender.profile.avatar}
           alt={message.sender.name}
           className="h-8 w-8 rounded-full object-cover shrink-0"
         />
-      )}
+      )} */}
+      {/* {!isOwnMessage && <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center capitalize">
+        {message.sender.profile?.name && message.sender.profile.name[0]}
+      </div>} */}
 
       <div
         className={clsx(
@@ -48,6 +51,9 @@ const ChatMessage = ({ message, isOwnMessage }: {
           <CheckCheck size={12} /> {formatRelativeTime(message.createdAt)}
         </p>
       </div>
+      {/* {isOwnMessage && <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center capitalize">
+        {message.sender.name[0]}
+      </div>} */}
     </div>
   )
 }
