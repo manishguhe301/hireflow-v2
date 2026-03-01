@@ -1,8 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import {
-  deleteFileFromSupabase,
-  uploadFileToSupabase,
-} from '@/src/lib/fileUpload';
+import { deleteFileFromB2, uploadFileToB2 } from '@/src/lib/fileUpload';
 import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
@@ -95,15 +92,12 @@ export async function POST(req: NextRequest) {
       });
 
       if (profile?.resumePath) {
-        await deleteFileFromSupabase(profile.resumePath, 'user-resumes').catch(
-          (err) => console.error('Failed to delete old resume:', err),
+        await deleteFileFromB2(profile.resumePath).catch((err) =>
+          console.error('Failed to delete old resume:', err),
         );
       }
 
-      const uploadResult = await uploadFileToSupabase(
-        customResume,
-        'user-resumes',
-      );
+      const uploadResult = await uploadFileToB2(customResume, 'user-resumes');
       finalResumeUrl = uploadResult.url;
       finalResumePath = uploadResult.path;
 
