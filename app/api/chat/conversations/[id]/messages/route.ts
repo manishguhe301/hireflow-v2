@@ -1,4 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -61,8 +62,32 @@ export async function GET(
       prisma.message.count({ where: { conversationId: id } }),
     ]);
 
+    const messagesWithSignedAvatars = await Promise.all(
+      messages.map(async (msg) => {
+        if (msg.sender?.profile?.avatar) {
+          const signedAvatar = await getSignedUrl(
+            msg.sender.profile.avatar,
+            60 * 60 * 24 * 7,
+          );
+
+          return {
+            ...msg,
+            sender: {
+              ...msg.sender,
+              profile: {
+                ...msg.sender.profile,
+                avatar: signedAvatar,
+              },
+            },
+          };
+        }
+
+        return msg;
+      }),
+    );
+
     return NextResponse.json({
-      messages: messages.reverse(),
+      messages: messagesWithSignedAvatars.reverse(),
       pagination: {
         total,
         page,
