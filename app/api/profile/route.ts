@@ -1,8 +1,8 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
-  deleteFileFromSupabase,
   getSignedUrl,
-  uploadFileToSupabase,
+  deleteFileFromB2,
+  uploadFileToB2,
 } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import {
@@ -301,12 +301,12 @@ export async function POST(req: NextRequest) {
     let resumeResult = null;
 
     if (resume) {
-      resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
+      resumeResult = await uploadFileToB2(resume, 'user-resumes');
     }
 
     let avatarResult = null;
     if (avatar && avatar instanceof File) {
-      avatarResult = await uploadFileToSupabase(avatar, 'user-avatars');
+      avatarResult = await uploadFileToB2(avatar, 'user-avatars');
     }
 
     const profile = await prisma.profile.create({
@@ -619,24 +619,22 @@ export async function PATCH(req: NextRequest) {
 
     if (avatar && avatar instanceof File) {
       if (existingProfile.avatarPath) {
-        await deleteFileFromSupabase(
+        await deleteFileFromB2(
           existingProfile.avatarPath,
-          'user-avatars',
         );
       }
-      const avatarResult = await uploadFileToSupabase(avatar, 'user-avatars');
+      const avatarResult = await uploadFileToB2(avatar, 'user-avatars');
       avatarUrl = avatarResult.url;
       avatarPath = avatarResult.path;
     }
 
     if (resume && resume instanceof File) {
       if (existingProfile.resumePath) {
-        await deleteFileFromSupabase(
+        await deleteFileFromB2(
           existingProfile.resumePath,
-          'user-resumes',
         );
       }
-      const resumeResult = await uploadFileToSupabase(resume, 'user-resumes');
+      const resumeResult = await uploadFileToB2(resume, 'user-resumes');
       resumeUrl = resumeResult.url;
       resumePath = resumeResult.path;
     }
