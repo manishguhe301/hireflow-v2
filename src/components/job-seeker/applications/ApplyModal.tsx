@@ -41,6 +41,8 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
 
   const {
     register,
@@ -128,13 +130,20 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
 
         <div className="rounded-xl border border-border/40 bg-muted/30 p-4 space-y-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
+            <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
               {job.company.logo ? (
-                <img
-                  src={job.company.logo}
-                  alt={job.company.name}
-                  className="h-full w-full object-cover"
-                />
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  <img
+                    src={job.company.logo}
+                    alt={job.company.name}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    className="h-full w-full object-cover"
+                  />
+                </>
               ) : (
                 <Building2 className="h-5 w-5 text-muted-foreground" />
               )}

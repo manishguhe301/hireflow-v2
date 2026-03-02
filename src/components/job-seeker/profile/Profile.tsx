@@ -22,9 +22,12 @@ import {
 } from 'lucide-react'
 import { formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, employmentTypes, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
+import { useState } from 'react'
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
+  const [imageLoaded, setImageLoaded] = useState(false)
+
 
   if (isLoading) {
     return (
@@ -53,14 +56,21 @@ const Profile = () => {
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 
           <div className="flex items-center gap-5 max-sm:flex-col">
-            <div className="h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
+            <div className=" relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={profile.avatar}
-                  alt={profile.name}
-                  className="h-full w-full object-cover"
-                />
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  {/*  eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.avatar}
+                    alt={profile.name}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    className="h-full w-full object-cover"
+                  />
+                </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-muted-foreground">
                   {profile.name.charAt(0)}
@@ -257,7 +267,7 @@ const Profile = () => {
 
       <div className="rounded-2xl border border-border/40 bg-card p-6">
         <h2 className="text-lg font-semibold mb-6">Preferred Job Categories
-</h2>
+        </h2>
 
         {profile.jobCategories.length > 0 ? (
           <div className="flex flex-wrap gap-2">

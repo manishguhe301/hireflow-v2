@@ -22,6 +22,7 @@ export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [companies, setCompanies] = useState<Company[]>([])
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   const [jobs, setJobs] = useState<DirJobType[]>([])
 
@@ -152,13 +153,21 @@ export default function HomePage() {
                   {/* <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
                     {company.name[0]}
                   </div> */}
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                     {company.logo ? (
-                      <img
-                        src={company.logo}
-                        alt={company.name}
-                        className="h-full w-full object-cover"
-                      />
+                      <>
+                        {!imageLoaded && (
+                          <div className="absolute inset-0 animate-pulse bg-muted" />
+                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={company.logo}
+                          alt={company.name}
+                          onLoad={() => setImageLoaded(true)}
+                          onError={() => setImageLoaded(true)}
+                          className="h-full w-full object-cover"
+                        />
+                      </>
                     ) : (
                       <Building2 className="h-6 w-6 text-muted-foreground" />
                     )}
@@ -308,13 +317,20 @@ export default function HomePage() {
                           {/* <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
                             {job.company.name[0]}
                           </div> */}
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+                          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                             {job.company.logo ? (
-                              <img
-                                src={job.company.logo}
-                                alt={job.company.name}
-                                className="h-full w-full object-cover"
-                              />
+                              <>
+                                {!imageLoaded && (
+                                  <div className="absolute inset-0 animate-pulse bg-muted" />
+                                )}
+                                <img
+                                  src={job.company.logo}
+                                  onLoad={() => setImageLoaded(true)}
+                                  onError={() => setImageLoaded(true)}
+                                  alt={job.company.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              </>
                             ) : (
                               <Building2 className="h-6 w-6 text-muted-foreground" />
                             )}
