@@ -363,7 +363,8 @@ enum NotificationType {
   NEW_USER_REGISTERED
   NEW_COMPANY_REGISTERED
   JOB_DEADLINE_APPROACHING    
-  JOB_CLOSING_SOON           
+  JOB_CLOSING_SOON
+  NEW_MESSAGE_RECEIVED           
 }
 model Conversation {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId

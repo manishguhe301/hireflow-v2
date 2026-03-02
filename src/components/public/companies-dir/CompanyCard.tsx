@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Building2, MapPin, Briefcase } from 'lucide-react'
+import { useState } from 'react'
 
 type CompanyCardProps = {
   company: {
@@ -17,23 +18,34 @@ type CompanyCardProps = {
 }
 
 export default function CompanyCard({ company }: CompanyCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false)
+
   return (
     <Link href={`/explore/companies/${company.id}`} className="h-full">
       <div className="group flex h-full flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-xl">
         <div className="mb-5 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden transition group-hover:border-primary/40">
-            {company.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={company.logo}
-                alt={company.name}
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <span className="text-2xl font-bold text-muted-foreground">
-                {company.name.charAt(0)}
-              </span>
-            )}
+          <div className=" relative flex h-20 w-20 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden transition group-hover:border-primary/40">
+            <>
+              {company.logo ? (
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={company.logo}
+                    alt={company.name}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    className="h-full w-full object-contain"
+                  />
+                </>
+              ) : (
+                <span className="text-2xl font-bold text-muted-foreground">
+                  {company.name.charAt(0)}
+                </span>
+              )}
+            </>
           </div>
         </div>
 

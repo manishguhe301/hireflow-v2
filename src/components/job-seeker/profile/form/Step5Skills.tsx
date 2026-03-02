@@ -10,11 +10,13 @@ const Step5Skills = ({
   errors,
   watch,
   setValue,
+  disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  disabled?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -24,6 +26,7 @@ const Step5Skills = ({
       />
 
       <MultiSelect
+        disabled={disabled}
         label="Skills"
         options={jobSkills}
         value={watch('skills')}

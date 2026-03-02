@@ -48,6 +48,8 @@ const JobDetails = () => {
   const [loading, setLoading] = useState(true)
   const [job, setJob] = useState<JobDetails | null>(null)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
 
   const fetchJobDetails = async () => {
     try {
@@ -155,15 +157,22 @@ const JobDetails = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-muted">
+            <div className="  flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-muted">
               {
                 job.company.logo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={job.company.logo}
-                    alt={job.company.name}
-                    className="h-12 w-12 rounded-full"
-                  />
+                  <div className='relative'>
+                    {!imageLoaded && (
+                      <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
+                    )}
+                    {/*  eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={job.company.logo}
+                      alt={job.company.name}
+                      onLoad={() => setImageLoaded(true)}
+                      onError={() => setImageLoaded(true)}
+                      className="h-12 w-12 rounded-full"
+                    />
+                  </div>
                 ) :
                   <Briefcase className="h-6 w-6 text-muted-foreground" />}
             </div>

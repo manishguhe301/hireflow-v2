@@ -12,16 +12,19 @@ import StepHeader from '../../ui/StepHeader'
 type Props = {
   watch: UseFormWatch<ProfileFormInputs>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  isLoading: boolean
 }
 
 const Section = ({
   title,
   onEdit,
   children,
+  disabled
 }: {
   title: string
   onEdit: () => void
   children: React.ReactNode
+  disabled?: boolean
 }) => {
   return (
     <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
@@ -30,6 +33,7 @@ const Section = ({
         <button
           type="button"
           onClick={onEdit}
+          disabled={disabled}
           className="flex items-center gap-1 text-sm text-primary hover:underline"
         >
           <Pencil className="h-4 w-4" />
@@ -109,7 +113,7 @@ const FileItem = ({
   )
 }
 
-const Step4Review = ({ watch, setCurrentStep }: Props) => {
+const Step4Review = ({ watch, setCurrentStep, isLoading }: Props) => {
   const data = watch()
   const { company } = useCompany()
 
@@ -121,7 +125,7 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
         heading='Review & Submit'
         description='Review your information before submitting. You can edit any section.'
       />
-      <Section title="Company Basics" onEdit={() => setCurrentStep(0)}>
+      <Section title="Company Basics" onEdit={() => setCurrentStep(0)} disabled={isLoading}>
         <Item label="Company Name" value={data.name} />
         <Item label="Founded Year" value={data.foundedYear} />
         <Item label="Industry" value={data.industry} />
@@ -133,7 +137,9 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
         </div>
       </Section>
 
-      <Section title="Contact Information" onEdit={() => setCurrentStep(1)}>
+      <Section title="Contact Information" onEdit={() => setCurrentStep(1)}
+        disabled={isLoading}
+      >
         <Item label="Contact Email" value={data.contactEmail} />
         <Item label="Contact Phone" value={`${data.countryPhoneCode} ${data.contactPhone}`} required={false} />
         <Item label="Country" value={data.country} />
@@ -143,7 +149,9 @@ const Step4Review = ({ watch, setCurrentStep }: Props) => {
         </div>
       </Section>
 
-      <Section title="Documents" onEdit={() => setCurrentStep(2)}>
+      <Section title="Documents" onEdit={() => setCurrentStep(2)}
+        disabled={isLoading}
+      >
         <FileItem
           label="Company Logo"
           file={data.logo}

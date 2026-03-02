@@ -108,6 +108,8 @@ const JobDetailsForApplicant = () => {
   } | null>(null)
   const [isSaved, setIsSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
 
   const fetchJobDetails = async () => {
     try {
@@ -426,16 +428,25 @@ const JobDetailsForApplicant = () => {
             </div>
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 ">
                 {job.company.logo ? (
-                  //eslint-disable-next-line
-                  <img
-                    src={job.company.logo}
-                    alt={job.company.name}
-                    className="h-14 w-14 rounded-lg object-cover border"
-                  />
+                  <div className='relative'>
+                    {!imageLoaded && (
+                      <div className="absolute inset-0 animate-pulse bg-muted rounded-lg" />
+                    )}
+                    {/* eslint-disable-next-line */}
+                    <img
+                      src={job.company.logo}
+                      alt={job.company.name}
+                      onLoad={() => setImageLoaded(true)}
+                      onError={() => setImageLoaded(true)}
+                      className="h-14 w-14 rounded-lg object-cover border"
+                    />
+                  </div>
                 ) : (
-                  <div className="h-14 w-14 rounded-lg bg-muted" />
+                  <div className="h-14 w-14 rounded-lg bg-muted" >
+                    {job.company.name.charAt(0)}
+                  </div>
                 )}
                 <div>
                   <h4 className="font-semibold">

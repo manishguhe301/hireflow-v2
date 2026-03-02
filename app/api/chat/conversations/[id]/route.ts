@@ -1,5 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
+import { pusherServer } from '@/src/lib/pusher';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -40,6 +41,21 @@ export async function DELETE(
 
     await prisma.conversation.delete({ where: { id } });
 
+    const recipientId = isCompany
+      ? conversation.jobSeekerId
+      : conversation.company.userId;
+
+    await pusherServer.trigger(
+      `user-messages-${recipientId}`,
+      'conversation-deleted',
+      { conversationId: id },
+    );
+
+    await pusherServer.trigger(
+      `user-messages-${guard.session.user.id}`,
+      'conversation-deleted',
+      { conversationId: id },
+    );
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete conversation error:', error);

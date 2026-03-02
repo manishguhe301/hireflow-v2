@@ -9,7 +9,7 @@ import CompanyCard from './CompanyCard'
 import Pagination from '../../ui/Pagination'
 import { companyIndustries } from '@/src/utils/utils'
 
-type Company = {
+export type Company = {
   id: string
   name: string
   logo: string | null

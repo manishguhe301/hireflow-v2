@@ -8,6 +8,7 @@ import ChatWindow from './ChatWindow';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
 import { useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
+import { useChatSidebarUpdate } from '@/src/store/hooks/useChatSidebarUpdate';
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
@@ -55,6 +56,29 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     setHasMore(true);
     fetchConversations(1, debouncedSearch);
   }, [debouncedSearch, fetchConversations]);
+
+  const handleSidebarUpdate = useCallback(
+    (deletedConversationId?: string) => {
+      if (deletedConversationId) {
+        setConversations((prev) =>
+          prev.filter((c) => c.id !== deletedConversationId),
+        );
+
+        if (selectedConversation === deletedConversationId) {
+          setSelectedConversation(null);
+        }
+
+        toast.success(`Conversation deleted from conversations by company admin`);
+
+        return;
+      }
+
+      fetchConversations(1, debouncedSearch);
+    },
+    [fetchConversations, debouncedSearch, selectedConversation],
+  );
+
+  useChatSidebarUpdate(handleSidebarUpdate);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

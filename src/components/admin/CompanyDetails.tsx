@@ -34,6 +34,7 @@ const CompanyDetails = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [rejectionReason, setRejectionReason] = useState('')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   const fetchCompany = async () => {
     try {
@@ -172,15 +173,22 @@ const CompanyDetails = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-8 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company.logo ? (
-                //eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={company.logo}
-                  alt={`${company.name} logo`}
-                  className="h-full w-full object-contain"
-                  loading="lazy"
-                />
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={company.logo}
+                    alt={`${company.name} logo`}
+                    className="h-full w-full object-contain"
+                    loading="lazy"
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                  />
+                </>
               ) : (
                 <span className="text-sm font-semibold text-muted-foreground">
                   {company.name.charAt(0)}

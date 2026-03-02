@@ -34,10 +34,12 @@ const Step3Experience = ({
   errors,
   watch,
   setValue,
+  disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
+  disabled?: boolean
   setValue: UseFormSetValue<JobSeekerFormInputs>
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -144,6 +146,7 @@ const Step3Experience = ({
           type="button"
           onClick={() => handleOpenModal()}
           className="inline-flex items-center gap-2"
+          disabled={disabled}
         >
           <Plus className="h-4 w-4" />
           Add Experience
@@ -198,12 +201,14 @@ const Step3Experience = ({
                     type="button"
                     variant="ghost"
                     onClick={() => handleOpenModal(index)}
+                    disabled={disabled}
                     className="p-2!"
                   >
                     <Edit className="h-4 w-4 text-primary" />
                   </Button>
                   <Button
                     type="button"
+                    disabled={disabled}
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     className="p-2!"
@@ -233,6 +238,7 @@ const Step3Experience = ({
                 minLength: { value: 2, message: 'Title must be at least 2 characters' },
               })}
               error={expErrors.title}
+              disabled={disabled}
             />
 
             <FormInput
@@ -243,6 +249,7 @@ const Step3Experience = ({
                 minLength: { value: 2, message: 'Company name must be at least 2 characters' },
               })}
               error={expErrors.company}
+              disabled={disabled}
             />
           </div>
 
@@ -250,11 +257,13 @@ const Step3Experience = ({
             <FormInput
               label="Location (Optional)"
               placeholder="e.g., San Francisco, CA"
+              disabled={disabled}
               register={expRegister('location')}
               error={expErrors.location}
             />
 
             <FormSelect
+              disabled={disabled}
               label="Work Mode"
               options={workModes}
               register={expRegister('workMode', {
@@ -266,6 +275,7 @@ const Step3Experience = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormDatePicker
+              disabled={disabled}
               label="Start Date"
               value={expWatch('startDate')}
               maxDate={new Date()}
@@ -279,6 +289,7 @@ const Step3Experience = ({
 
             {!isCurrent && (
               <FormDatePicker
+                disabled={disabled}
                 label="End Date"
                 value={expWatch('endDate')}
                 minDate={expWatch('startDate')}
@@ -306,6 +317,7 @@ const Step3Experience = ({
           </div>
 
           <FormTextarea
+            disabled={disabled}
             label="Description (Optional)"
             placeholder="Describe your role, responsibilities, and achievements..."
             rows={5}
@@ -317,10 +329,14 @@ const Step3Experience = ({
           />
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={handleCloseModal}>
+            <Button type="button" variant="outline" onClick={handleCloseModal}
+              disabled={disabled}
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="primary">
+            <Button type="submit" variant="primary"
+              disabled={disabled}
+            >
               {editingIndex !== null ? 'Update' : 'Add'} Experience
             </Button>
           </div>

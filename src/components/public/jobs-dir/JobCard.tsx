@@ -21,6 +21,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { Button } from '../../ui/Button'
 import clsx from 'clsx'
+import { useState } from 'react'
 
 type JobCardProps = {
   job: DirJobType,
@@ -39,6 +40,7 @@ export default function JobCard({ job,
     : job.country
 
   const { data: session } = useSession()
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   return (
     <Link
@@ -46,13 +48,24 @@ export default function JobCard({ job,
       className="group block rounded-2xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
     >
       <div className="flex items-start gap-4 relative">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+        <div className=" relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
           {job.company.logo ? (
-            <img
-              src={job.company.logo}
-              alt={job.company.name}
-              className="h-full w-full object-cover"
-            />
+            <>
+              {!imageLoaded && (
+                <div className="absolute inset-0 animate-pulse bg-muted" />
+              )}
+              <img
+                src={job.company.logo}
+                alt={job.company.name}
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageLoaded(true)}
+                className={clsx(
+                  "h-full w-full object-cover transition-opacity duration-300",
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                )}
+                loading='lazy'
+              />
+            </>
           ) : (
             <Building2 className="h-6 w-6 text-muted-foreground" />
           )}

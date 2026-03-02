@@ -14,11 +14,13 @@ const Step2Professional = ({
   errors,
   watch,
   setValue,
+  disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  disabled?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -33,6 +35,7 @@ const Step2Professional = ({
           register={register('professionalTitle')}
           placeholder='for e.g, Frontend Developer'
           error={errors.professionalTitle}
+          disabled={disabled}
         />
         <FormTextarea
           label="Bio (Optional)"
@@ -44,6 +47,8 @@ const Step2Professional = ({
           })}
           error={errors.bio}
           maxLength={200}
+          disabled={disabled}
+
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <MultiSelect<WorkMode>
@@ -57,6 +62,7 @@ const Step2Professional = ({
               })
             }
             error={errors.preferredWorkMode?.message}
+            disabled={disabled}
           />
           <FormSelect
             label="Willing to Relocate"
@@ -69,6 +75,7 @@ const Step2Professional = ({
             })}
 
             error={errors.willingToRelocate}
+            disabled={disabled}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -77,12 +84,14 @@ const Step2Professional = ({
             options={currentEmploymentStatuses}
             register={register('currentEmployment')}
             error={errors.currentEmployment}
+            disabled={disabled}
           />
           <FormSelect
             label="Years of Experience (Optional)"
             options={yearsOfExperiences}
             register={register('yearsOfExperience')}
             error={errors.yearsOfExperience}
+            disabled={disabled}
           />
         </div>
       </div>

@@ -40,6 +40,8 @@ const ApplicationsTableForJob = ({
   const lengthSelected = selectedApplicants.length
   const [creatingFor, setCreatingFor] = useState<string | null>(null);
   const router = useRouter()
+  const [imageLoaded, setImageLoaded] = useState(false)
+
 
   const isIndeterminate =
     lengthSelected > 0 && lengthSelected < applicationsLength
@@ -135,13 +137,20 @@ const ApplicationsTableForJob = ({
                     checked={selectedApplicants.includes(app.id)}
                     disabled={isBulkProcessing}
                   />
-                  <div className="flex items-center gap-3">
+                  <div className=" flex items-center gap-3">
                     {profile?.avatar ? (
-                      <img
-                        src={profile.avatar}
-                        alt={profile.name}
-                        className="h-10 w-10 rounded-full object-cover border"
-                      />
+                      <div className="relative">
+                        {!imageLoaded && (
+                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
+                        )}
+                        <img
+                          src={profile.avatar}
+                          alt={profile.name}
+                          onLoad={() => setImageLoaded(true)}
+                          onError={() => setImageLoaded(true)}
+                          className="h-10 w-10 rounded-full object-cover border"
+                        />
+                      </div>
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center" >
                         {profile?.name && profile.name[0]}

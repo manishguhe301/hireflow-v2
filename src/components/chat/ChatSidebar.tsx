@@ -47,7 +47,7 @@ export default function ChatSidebar({
   setSearchQuery,
   setConversations
 }: ChatSidebarProps) {
-
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
   const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
@@ -138,17 +138,25 @@ export default function ChatSidebar({
                     selectedConversation === conv.id && 'bg-muted/50',
                   )}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className=" flex items-start gap-3">
                     {('logo' in otherUser && otherUser.logo) ||
                       (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
-                      //eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={
-                          src
-                        }
-                        alt={otherUser.name}
-                        className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-                      />
+
+                      <div className='relative'>
+                        {!imageLoaded && (
+                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
+                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          onLoad={() => setImageLoaded(true)}
+                          onError={() => setImageLoaded(true)}
+                          src={
+                            src
+                          }
+                          alt={otherUser.name}
+                          className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                        />
+                      </div>
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <span className="text-primary font-semibold">
@@ -189,7 +197,7 @@ export default function ChatSidebar({
                               {unreadCount}
                             </span>
                           )}
-                          <Button
+                          {userType === 'company' && <Button
                             disabled={isDeletingId === conv.id}
                             variant='ghost'
                             onClick={(e) => handleDeleteConversation
@@ -197,7 +205,7 @@ export default function ChatSidebar({
                             }
                             className='p-0!'>
                             <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
-                          </Button>
+                          </Button>}
                         </div>
                       </div>
                     </div>

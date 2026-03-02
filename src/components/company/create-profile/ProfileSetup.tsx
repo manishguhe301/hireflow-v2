@@ -263,14 +263,17 @@ const ProfileSetup = () => {
         </div>
 
         <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-          {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} />}
+          {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} isLoading={isSubmitting} />}
           {currentStep === 1 && <Step2Contact register={register} errors={errors}
-            selectedCountry={selectedCountry} watch={watch} setValue={setValue} />}
-          {currentStep === 2 && <Step3Documents register={register} errors={errors} />}
+            selectedCountry={selectedCountry} watch={watch} setValue={setValue} isLoading={isSubmitting} />}
+          {currentStep === 2 && <Step3Documents register={register} errors={errors}
+            isLoading={isSubmitting}
+          />}
           {currentStep === 3 &&
             <Step4Review
               setCurrentStep={setCurrentStep}
               watch={watch}
+              isLoading={isSubmitting}
             />
           }
         </form>

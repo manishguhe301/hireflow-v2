@@ -13,9 +13,11 @@ const currentYear = new Date().getFullYear()
 const Step1BasicInfo = ({
   register,
   errors,
+  isLoading
 }: {
   register: UseFormRegister<ProfileFormInputs>
   errors: FieldErrors<ProfileFormInputs>
+  isLoading: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -31,6 +33,7 @@ const Step1BasicInfo = ({
             register={register('name', { required: true })}
             placeholder="Acme Corp"
             error={errors.name}
+            disabled={isLoading}
           />
 
           <FormInput
@@ -44,6 +47,7 @@ const Step1BasicInfo = ({
               }
             })}
             placeholder="2010"
+            disabled={isLoading}
             type="number"
             error={errors.foundedYear}
             minLength={2000}
@@ -62,6 +66,7 @@ const Step1BasicInfo = ({
             //   message: 'Description cannot exceed 500 characters',
             // },
           })}
+          disabled={isLoading}
           error={errors.description}
         />
 
@@ -73,6 +78,7 @@ const Step1BasicInfo = ({
             register={register('industry', {
               required: 'Company industry is required',
             })}
+            disabled={isLoading}
             error={errors.industry}
           />
 
@@ -84,6 +90,7 @@ const Step1BasicInfo = ({
               required: 'Company size is required',
             })}
             error={errors.companySize}
+            disabled={isLoading}
           />
         </div>
 
@@ -101,6 +108,7 @@ const Step1BasicInfo = ({
               },
             })}
             error={errors.website}
+            disabled={isLoading}
           />
 
           <FormInput
@@ -116,6 +124,7 @@ const Step1BasicInfo = ({
               },
             })}
             error={errors.linkedinProfile}
+            disabled={isLoading}
           />
         </div>
       </div>

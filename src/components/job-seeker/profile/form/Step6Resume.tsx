@@ -10,11 +10,13 @@ const Step6Resume = ({
   errors,
   watch,
   setValue,
+  disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  disabled?: boolean
 }) => {
   const { jobSeekerProfile } = useProfile()
 
@@ -37,6 +39,7 @@ const Step6Resume = ({
       )}
 
       <FileUpload<JobSeekerFormInputs>
+        disabled={disabled}
         label="Resume"
         description="PDF (max 5MB)"
         name="resume"

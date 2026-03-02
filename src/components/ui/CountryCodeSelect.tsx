@@ -18,6 +18,7 @@ type CountryCodeSelectProps = {
   options: CountryCodeOption[]
   onChange: (value: string) => void
   error?: FieldError
+  disabled?: boolean
 }
 
 export default function CountryCodeSelect({
@@ -26,6 +27,7 @@ export default function CountryCodeSelect({
   options,
   onChange,
   error,
+  disabled
 }: CountryCodeSelectProps) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement | null>(null)

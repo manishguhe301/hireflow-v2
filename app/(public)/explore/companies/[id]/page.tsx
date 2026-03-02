@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import CompanyPublicView from '@/src/components/public/companies-dir/CompanyPublicView'
 import prisma from '@/src/lib/prisma'
+import { getSignedUrl } from '@/src/lib/fileUpload'
 
 async function getCompany(id: string) {
   try {
@@ -25,8 +26,13 @@ async function getCompany(id: string) {
     if (!company) {
       return null
     }
+    const signedCompanyLogo = await getSignedUrl(
+      company?.logo as string,
+      604800,
+    );
 
-    return { company, jobs: company.jobs }
+
+    return { company: { ...company, logo: signedCompanyLogo }, jobs: company.jobs }
   } catch (error) {
     console.error('Error fetching company:', error)
     return null
