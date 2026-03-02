@@ -47,7 +47,7 @@ export default function ChatSidebar({
   setSearchQuery,
   setConversations
 }: ChatSidebarProps) {
-
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
   const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
@@ -138,17 +138,25 @@ export default function ChatSidebar({
                     selectedConversation === conv.id && 'bg-muted/50',
                   )}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="relative flex items-start gap-3">
                     {('logo' in otherUser && otherUser.logo) ||
                       (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
-                      //eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={
-                          src
-                        }
-                        alt={otherUser.name}
-                        className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-                      />
+
+                      <>
+                        {!imageLoaded && (
+                          <div className="absolute inset-0 animate-pulse bg-muted" />
+                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          onLoad={() => setImageLoaded(true)}
+                          onError={() => setImageLoaded(true)}
+                          src={
+                            src
+                          }
+                          alt={otherUser.name}
+                          className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                        />
+                      </>
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <span className="text-primary font-semibold">
