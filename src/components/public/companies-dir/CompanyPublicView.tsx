@@ -19,7 +19,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
   const { data: session } = useSession()
   const [imageLoaded, setImageLoaded] = useState(false)
-  
+
   return (
     <div className={clsx("mx-auto  space-y-10 px-4 py-6", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
       <Button

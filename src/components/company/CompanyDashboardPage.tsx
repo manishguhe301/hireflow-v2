@@ -238,11 +238,11 @@ export default function CompanyDashboard() {
                 className="block rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 hover:shadow-lg transition"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <div className="relative flex items-center gap-3 flex-1 min-w-0">
+                  <div className=" flex items-center gap-3 flex-1 min-w-0">
                     {app.user.profile?.avatar ? (
-                      <>
+                      <div className='relative'>
                         {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted" />
+                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
                         )}
                         <img
                           src={app.user.profile.avatar}
@@ -251,7 +251,7 @@ export default function CompanyDashboard() {
                           onError={() => setImageLoaded(true)}
                           className="h-10 w-10 rounded-full object-cover"
                         />
-                      </>
+                      </div>
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center" >
                         {app.user.profile?.name && app.user.profile.name[0]}

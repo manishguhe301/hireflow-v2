@@ -138,13 +138,13 @@ export default function ChatSidebar({
                     selectedConversation === conv.id && 'bg-muted/50',
                   )}
                 >
-                  <div className="relative flex items-start gap-3">
+                  <div className=" flex items-start gap-3">
                     {('logo' in otherUser && otherUser.logo) ||
                       (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
 
-                      <>
+                      <div className='relative'>
                         {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted" />
+                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
                         )}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -156,7 +156,7 @@ export default function ChatSidebar({
                           alt={otherUser.name}
                           className="h-10 w-10 rounded-full object-cover flex-shrink-0"
                         />
-                      </>
+                      </div>
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <span className="text-primary font-semibold">

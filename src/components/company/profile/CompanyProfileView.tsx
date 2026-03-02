@@ -69,7 +69,7 @@ const CompanyProfileView = () => {
                     alt={`${company.name} logo`}
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageLoaded(true)}
-                    className="h-full w-full object-contain"
+                    className="h-full w-full object-cover"
                   />
                 </>
               ) : (

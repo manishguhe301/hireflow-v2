@@ -56,7 +56,7 @@ const Profile = () => {
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 
           <div className="flex items-center gap-5 max-sm:flex-col">
-            <div className=" relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
+            <div className="relative  h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
                 <>
                   {!imageLoaded && (

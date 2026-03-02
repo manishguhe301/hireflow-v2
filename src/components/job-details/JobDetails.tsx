@@ -157,10 +157,10 @@ const JobDetails = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className=" relative flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-muted">
+            <div className="  flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-muted">
               {
                 job.company.logo ? (
-                  <>
+                  <div className='relative'>
                     {!imageLoaded && (
                       <div className="absolute inset-0 animate-pulse bg-muted" />
                     )}
@@ -172,7 +172,7 @@ const JobDetails = () => {
                       onError={() => setImageLoaded(true)}
                       className="h-12 w-12 rounded-full"
                     />
-                  </>
+                  </div>
                 ) :
                   <Briefcase className="h-6 w-6 text-muted-foreground" />}
             </div>

@@ -428,9 +428,9 @@ const JobDetailsForApplicant = () => {
             </div>
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-              <div className="flex items-center gap-4 relative">
+              <div className="flex items-center gap-4 ">
                 {job.company.logo ? (
-                  <>
+                  <div className='relative'>
                     {!imageLoaded && (
                       <div className="absolute inset-0 animate-pulse bg-muted" />
                     )}
@@ -442,9 +442,11 @@ const JobDetailsForApplicant = () => {
                       onError={() => setImageLoaded(true)}
                       className="h-14 w-14 rounded-lg object-cover border"
                     />
-                  </>
+                  </div>
                 ) : (
-                  <div className="h-14 w-14 rounded-lg bg-muted" />
+                  <div className="h-14 w-14 rounded-lg bg-muted" >
+                    {job.company.name.charAt(0)}
+                  </div>
                 )}
                 <div>
                   <h4 className="font-semibold">
