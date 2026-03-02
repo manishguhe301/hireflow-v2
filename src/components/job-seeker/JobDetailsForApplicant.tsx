@@ -432,7 +432,7 @@ const JobDetailsForApplicant = () => {
                 {job.company.logo ? (
                   <div className='relative'>
                     {!imageLoaded && (
-                      <div className="absolute inset-0 animate-pulse bg-muted" />
+                      <div className="absolute inset-0 animate-pulse bg-muted rounded-lg" />
                     )}
                     {/* eslint-disable-next-line */}
                     <img

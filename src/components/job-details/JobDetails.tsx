@@ -162,7 +162,7 @@ const JobDetails = () => {
                 job.company.logo ? (
                   <div className='relative'>
                     {!imageLoaded && (
-                      <div className="absolute inset-0 animate-pulse bg-muted" />
+                      <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
                     )}
                     {/*  eslint-disable-next-line @next/next/no-img-element */}
                     <img
