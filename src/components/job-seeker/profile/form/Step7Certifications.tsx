@@ -24,12 +24,13 @@ type CertificationForm = {
 
 const Step7Certifications = ({
   watch,
-  setValue,
+  setValue, disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  disabled?: boolean
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -127,6 +128,7 @@ const Step7Certifications = ({
         type="button"
         onClick={() => handleOpenModal()}
         className="inline-flex items-center gap-2"
+        disabled={disabled}
       >
         <Plus className="h-4 w-4" />
         Add Certification
@@ -182,12 +184,14 @@ const Step7Certifications = ({
                     type="button"
                     variant="ghost"
                     onClick={() => handleOpenModal(index)}
+                    disabled={disabled}
                     className="p-2!"
                   >
                     <Edit className="h-4 w-4 text-primary" />
                   </Button>
                   <Button
                     type="button"
+                    disabled={disabled}
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     className="p-2!"
@@ -208,6 +212,7 @@ const Step7Certifications = ({
 
         <form onSubmit={handleCertSubmit(onSubmit)} className="space-y-6">
           <FormInput
+            disabled={disabled}
             label="Certification Name"
             register={certRegister('name', {
               required: 'Certification name is required',
@@ -216,6 +221,7 @@ const Step7Certifications = ({
           />
 
           <FormInput
+            disabled={disabled}
             label="Issuing Organization"
             register={certRegister('organization', {
               required: 'Organization is required',
@@ -224,6 +230,7 @@ const Step7Certifications = ({
           />
 
           <FormDatePicker
+            disabled={disabled}
             label="Issue Date"
             value={certWatch('issueDate')}
             maxDate={new Date()}
@@ -234,6 +241,7 @@ const Step7Certifications = ({
           />
 
           <FormDatePicker
+            disabled={disabled}
             label="Expiry Date (Optional)"
             value={certWatch('expiryDate')}
             minDate={certWatch('issueDate')}
@@ -248,20 +256,26 @@ const Step7Certifications = ({
           <FormInput
             label="Credential ID (Optional)"
             register={certRegister('credentialId')}
+            disabled={disabled}
             error={certErrors.credentialId}
           />
 
           <FormInput
             label="Credential URL (Optional)"
             register={certRegister('credentialUrl')}
+            disabled={disabled}
             error={certErrors.credentialUrl}
           />
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={handleCloseModal}>
+            <Button type="button" variant="outline" onClick={handleCloseModal}
+              disabled={disabled}
+            >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit"
+              disabled={disabled}
+            >
               {editingIndex !== null ? 'Update' : 'Add'} Certification
             </Button>
           </div>

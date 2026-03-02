@@ -25,6 +25,7 @@ type FileUploadProps<T extends FieldValues> = {
   existingFileUrl?: string | null
   isImage?: boolean
   toolTipContent?: string
+  disabled?: boolean
 }
 
 export function FileUpload<T extends FieldValues>({
@@ -38,7 +39,8 @@ export function FileUpload<T extends FieldValues>({
   maxSizeMB,
   existingFileUrl,
   isImage = false,
-  toolTipContent
+  toolTipContent,
+  disabled
 }: FileUploadProps<T>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -209,6 +211,7 @@ export function FileUpload<T extends FieldValues>({
           ref(el)
           inputRef.current = el
         }}
+        disabled={disabled}
         onChange={(e) => {
           onChange(e)
           const file = e.target.files?.[0]

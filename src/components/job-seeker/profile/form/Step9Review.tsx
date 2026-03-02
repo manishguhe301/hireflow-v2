@@ -13,16 +13,19 @@ import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePer
 type Props = {
   watch: UseFormWatch<JobSeekerFormInputs>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  disabled?: boolean
 }
 
 const Section = ({
   title,
   onEdit,
   children,
+  disabled
 }: {
   title: string
   onEdit: () => void
   children: React.ReactNode
+  disabled?: boolean
 }) => {
   return (
     <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
@@ -31,6 +34,7 @@ const Section = ({
         <button
           type="button"
           onClick={onEdit}
+          disabled={disabled}
           className="flex items-center gap-1 text-sm text-primary hover:underline"
         >
           <Pencil className="h-4 w-4" />
@@ -113,7 +117,7 @@ const FileItem = ({
   )
 }
 
-const Step9Review = ({ watch, setCurrentStep }: Props) => {
+const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
   const data = watch()
 
   const { jobSeekerProfile } = useProfile()
@@ -124,7 +128,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         heading="Review & Publish"
         description="Review your profile carefully before publishing. You can edit any section."
       />
-      <Section title="Profile Photo" onEdit={() => setCurrentStep(0)}>
+      <Section
+        disabled={disabled}
+        title="Profile Photo" onEdit={() => setCurrentStep(0)}>
         <FileItem
           label="Profile Photo"
           file={data.avatar}
@@ -134,7 +140,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
       </Section>
 
 
-      <Section title="Basic Information" onEdit={() => setCurrentStep(0)}>
+      <Section
+        disabled={disabled}
+        title="Basic Information" onEdit={() => setCurrentStep(0)}>
         <Item label="Full Name" value={data.name} />
         <Item label="Email" value={data.contactEmail} />
         <Item label="Phone Code" value={data.countryPhoneCode} />
@@ -143,7 +151,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         <Item label="City" value={data.city} required={false} />
       </Section>
 
-      <Section title="Professional Information"
+      <Section
+        disabled={disabled}
+        title="Professional Information"
         onEdit={() => setCurrentStep(1)}>
         <Item
           label="Preferred Work Mode"
@@ -167,7 +177,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
           required={false} />
       </Section>
 
-      <Section title="Work Experience" onEdit={() => setCurrentStep(2)}>
+      <Section
+        disabled={disabled}
+        title="Work Experience" onEdit={() => setCurrentStep(2)}>
         <div className="sm:col-span-2 space-y-3">
           {data.workExperience?.length ? (
             data.workExperience.map((exp, i) => (
@@ -189,7 +201,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         </div>
       </Section>
 
-      <Section title="Education" onEdit={() => setCurrentStep(3)}>
+      <Section
+        disabled={disabled}
+        title="Education" onEdit={() => setCurrentStep(3)}>
         <div className="sm:col-span-2 space-y-3">
           {data.education?.length ? (
             data.education.map((edu, i) => (
@@ -207,7 +221,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         </div>
       </Section>
 
-      <Section title="Skills" onEdit={() => setCurrentStep(4)}>
+      <Section
+        disabled={disabled}
+        title="Skills" onEdit={() => setCurrentStep(4)}>
         <Item
           label="Skills"
           value={data.skills
@@ -215,7 +231,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
             .join(', ')} />
       </Section>
 
-      <Section title="Resume" onEdit={() => setCurrentStep(5)}>
+      <Section
+        disabled={disabled}
+        title="Resume" onEdit={() => setCurrentStep(5)}>
         <FileItem
           label="Resume"
           file={data.resume}
@@ -225,7 +243,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
 
       </Section>
 
-      <Section title="Certifications" onEdit={() => setCurrentStep(6)}>
+      <Section
+        disabled={disabled}
+        title="Certifications" onEdit={() => setCurrentStep(6)}>
         <div className="sm:col-span-2 space-y-3">
           {data.certifications?.length ? (
             data.certifications.map((cert, i) => (
@@ -244,7 +264,9 @@ const Step9Review = ({ watch, setCurrentStep }: Props) => {
         </div>
       </Section>
 
-      <Section title="Additional Information" onEdit={() => setCurrentStep(7)}>
+      <Section
+        disabled={disabled}
+        title="Additional Information" onEdit={() => setCurrentStep(7)}>
         <Item
           label="Job Categories"
           value={data.jobCategories

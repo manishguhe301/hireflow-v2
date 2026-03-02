@@ -106,6 +106,7 @@ const CreateAdminUser = () => {
           placeholder="John Doe"
           register={register('name', { required: true })}
           error={errors.name}
+          disabled={isLoading}
         />
 
 
@@ -115,6 +116,7 @@ const CreateAdminUser = () => {
           placeholder="admin@email.com"
           register={register('email', { required: true })}
           error={errors.email}
+          disabled={isLoading}
         />
 
 
@@ -124,6 +126,7 @@ const CreateAdminUser = () => {
           placeholder="••••••••"
           register={register('password', { required: true })}
           error={errors.password}
+          disabled={isLoading}
         />
 
 
@@ -137,6 +140,7 @@ const CreateAdminUser = () => {
               value === password || 'Passwords do not match',
           })}
           error={errors.confirmPassword}
+          disabled={isLoading}
         />
 
 

@@ -17,12 +17,14 @@ const Step8AdditionalInfo = ({
   register,
   errors,
   watch,
+  disabled,
   setValue,
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  disabled?: boolean
 }) => {
   const [otherLinkInput, setOtherLinkInput] = useState('')
   const { countries } = useCountries()
@@ -76,6 +78,7 @@ const Step8AdditionalInfo = ({
               })
             }
             placeholder="Search categories..."
+            disabled={disabled}
             error={errors.jobCategories?.message}
           />
           <MultiSelect
@@ -88,6 +91,7 @@ const Step8AdditionalInfo = ({
                 shouldValidate: true,
               })
             }
+            disabled={disabled}
             placeholder="Select preferred countries..."
             error={errors.preferredLocations?.message}
           />
@@ -96,6 +100,7 @@ const Step8AdditionalInfo = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             label="Portfolio URL (Optional)"
+            disabled={disabled}
             register={register('portfolioWebsite',
               {
                 validate: (value) => {
@@ -107,6 +112,7 @@ const Step8AdditionalInfo = ({
             toolTipContent=''
           />
           <FormInput
+            disabled={disabled}
             label="Github URL (Optional)"
             register={register('githubUrl', {
               validate: (value) => {
@@ -120,6 +126,7 @@ const Step8AdditionalInfo = ({
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
+            disabled={disabled}
             label="Linkedin URL (Optional)"
             register={register('linkedinUrl',
               {
@@ -132,6 +139,7 @@ const Step8AdditionalInfo = ({
             toolTipContent=''
           />
           <FormInput
+            disabled={disabled}
             label="X Formarily Twitter URL (Optional)"
             register={register('twitterUrl', {
               validate: (value) => {
@@ -151,6 +159,7 @@ const Step8AdditionalInfo = ({
 
             <div className="flex gap-2">
               <input
+                disabled={disabled}
                 type="text"
                 value={otherLinkInput}
                 onChange={(e) => setOtherLinkInput(e.target.value)}
@@ -160,6 +169,7 @@ const Step8AdditionalInfo = ({
               <button
                 type="button"
                 onClick={handleAddOtherLink}
+                disabled={disabled}
                 className="rounded-lg bg-primary px-4 py-2 text-sm text-white hover:opacity-90"
               >
                 Add
@@ -178,6 +188,7 @@ const Step8AdditionalInfo = ({
                       type="button"
                       onClick={() => handleRemoveOtherLink(index)}
                       className="text-destructive"
+                      disabled={disabled}
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -191,11 +202,13 @@ const Step8AdditionalInfo = ({
             options={noticePeriods}
             register={register('noticePeriod')}
             error={errors.noticePeriod}
+            disabled={disabled}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
+            disabled={disabled}
             label="Minimum Expected Salary in Lakhs(Optional)"
             register={
               register('expectedSalaryMin', {
@@ -221,6 +234,7 @@ const Step8AdditionalInfo = ({
             minLength={0}
           />
           <FormInput
+            disabled={disabled}
             label="Maximum Expected Salary in Lakhs (Optional)"
             register={register(
               'expectedSalaryMax', {

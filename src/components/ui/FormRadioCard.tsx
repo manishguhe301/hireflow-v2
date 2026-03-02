@@ -8,6 +8,7 @@ type FormRadioCardProps = {
   title: string
   description?: string
   register: UseFormRegisterReturn
+  disabled?: boolean
 }
 
 export const FormRadioCard = ({
@@ -15,6 +16,7 @@ export const FormRadioCard = ({
   title,
   description,
   register,
+  disabled
 }: FormRadioCardProps) => {
   return (
     <label
@@ -30,6 +32,7 @@ export const FormRadioCard = ({
         value={value}
         {...register}
         className="sr-only peer"
+        disabled={disabled}
       />
 
       <div

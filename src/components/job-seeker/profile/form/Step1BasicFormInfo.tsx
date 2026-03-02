@@ -16,13 +16,15 @@ const Step1BasicFormInfo = ({
   errors,
   watch,
   setValue,
-  selectedCountry
+  selectedCountry,
+  disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
   selectedCountry: string
+  disabled?: boolean
 }) => {
   const { countries, loading, countryPhoneCodes } = useCountries()
   const { jobSeekerProfile } = useProfile()
@@ -81,6 +83,7 @@ const Step1BasicFormInfo = ({
             placeholder="for example, John Doe"
             error={errors.name}
             toolTipContent=''
+            disabled={disabled}
           />
           <FormInput
             label="Contact Email"
@@ -88,6 +91,7 @@ const Step1BasicFormInfo = ({
             placeholder="for example, 0a8wF@example.com"
             error={errors.contactEmail}
             // disabled
+            disabled={disabled}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -109,6 +113,7 @@ const Step1BasicFormInfo = ({
                 required: 'Job location is required',
               })}
               error={errors.country}
+              disabled={disabled}
             />
           )}
 
@@ -117,7 +122,8 @@ const Step1BasicFormInfo = ({
             register={register('city')}
             placeholder="for example, Bangalore"
             error={errors.city}
-          // disabled={workMode === 'REMOTE'}
+            // disabled={workMode === 'REMOTE'}
+            disabled={disabled}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -127,6 +133,7 @@ const Step1BasicFormInfo = ({
             options={countryPhoneCodes}
             onChange={(value) => setValue('countryPhoneCode', value, { shouldDirty: true, shouldValidate: true })}
             error={errors.countryPhoneCode}
+            disabled={disabled}
           />
           <FormInput
             label="Contact Phone"
@@ -141,6 +148,7 @@ const Step1BasicFormInfo = ({
             }
             type='tel'
             error={errors.phone}
+            disabled={disabled}
           />
         </div>
         <FileUpload<JobSeekerFormInputs>
@@ -154,6 +162,7 @@ const Step1BasicFormInfo = ({
           maxSizeMB={2}
           existingFileUrl={jobSeekerProfile?.avatar}
           isImage
+          disabled={disabled}
         />
       </div>
     </div>
