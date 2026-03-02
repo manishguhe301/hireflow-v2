@@ -13,11 +13,13 @@ const Step1BasicJobDetails = ({
   errors,
   watch,
   setValue,
+  disabled
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
   setValue: UseFormSetValue<JobFormInputs>
+  disabled?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -33,6 +35,7 @@ const Step1BasicJobDetails = ({
             register={register('title', { required: true })}
             placeholder="Software Engineer"
             error={errors.title}
+            disabled={disabled}
           />
           <FormSelect
             label='Category'
@@ -41,6 +44,7 @@ const Step1BasicJobDetails = ({
               jobCategories
             }
             error={errors.category}
+            disabled={disabled}
           />
         </div>
         <RichTextEditor
@@ -53,6 +57,7 @@ const Step1BasicJobDetails = ({
             })
           }}
           error={errors.description?.message}
+          disabled={disabled}
         />
         <RichTextEditor
           label="Responsibilities (Optional)"
@@ -64,6 +69,7 @@ const Step1BasicJobDetails = ({
           }
           placeholder="List day-to-day responsibilities…"
           error={errors.responsibilities?.message}
+          disabled={disabled}
         />
       </div>
     </div>

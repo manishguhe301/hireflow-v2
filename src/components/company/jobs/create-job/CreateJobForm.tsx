@@ -407,6 +407,7 @@ const CreateJobForm = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              disabled={isAnyActionInProgress}
             />
           }
           {currentStep === 1 &&
@@ -416,6 +417,7 @@ const CreateJobForm = () => {
               watch={watch}
               setValue={setValue}
               isEditMode={isEditMode}
+              disabled={isAnyActionInProgress}
             />
           }
           {currentStep === 2 &&
@@ -424,6 +426,7 @@ const CreateJobForm = () => {
               errors={errors}
               watch={watch}
               isEditMode={isEditMode}
+              disabled={isAnyActionInProgress}
             />
           }
           {
@@ -432,6 +435,7 @@ const CreateJobForm = () => {
               register={register}
               errors={errors}
               watch={watch}
+              disabled={isAnyActionInProgress}
               isEditMode={isEditMode}
               setValue={setValue}
             />
@@ -440,6 +444,7 @@ const CreateJobForm = () => {
             <Step5JobReview
               setCurrentStep={setCurrentStep}
               watch={watch}
+              disabled={isAnyActionInProgress}
             />
           }
         </form>

@@ -13,12 +13,14 @@ const Step3JobLocation = ({
   register,
   errors,
   watch,
-  isEditMode
+  isEditMode,
+  disabled
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
   isEditMode?: boolean
+  disabled?: boolean
 }) => {
   const { countries, loading } = useCountries()
   const workMode = watch('workMode')
@@ -37,6 +39,7 @@ const Step3JobLocation = ({
             workModes
           }
           error={errors.workMode}
+          disabled={disabled}
         />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {loading ? (
@@ -57,6 +60,7 @@ const Step3JobLocation = ({
                 required: 'Job location is required',
               })}
               error={errors.country}
+              disabled={disabled}
             />
           )}
 
@@ -67,7 +71,7 @@ const Step3JobLocation = ({
             })}
             placeholder="for example, Bangalore"
             error={errors.city}
-            disabled={workMode === 'REMOTE'}
+            disabled={workMode === 'REMOTE' || disabled}
           />
         </div>
       </div>

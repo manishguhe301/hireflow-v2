@@ -188,6 +188,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             maxSizeMB={5}
             description="PDF up to 5MB"
             existingFileUrl={profileResumeUrl}
+            disabled={isSubmitting}
           />
           {profileResumeUrl && (
             <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-3">
@@ -213,6 +214,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             error={errors.coverLetter}
             rows={5}
             maxLength={300}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -221,6 +223,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             type="button"
             variant="danger"
             onClick={onClose}
+            disabled={isSubmitting}
             className='w-full'
           >
             Cancel

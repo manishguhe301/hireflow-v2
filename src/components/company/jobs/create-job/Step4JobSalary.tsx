@@ -12,13 +12,15 @@ const Step4JobSalary = ({
   errors,
   watch,
   setValue,
-  isEditMode
+  isEditMode,
+  disabled
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
   setValue: UseFormSetValue<JobFormInputs>
   isEditMode?: boolean
+  disabled?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -48,6 +50,7 @@ const Step4JobSalary = ({
                 }
               })
             }
+            disabled={disabled}
             placeholder="for example: 10"
             error={errors.salaryMin}
             type='number'
@@ -71,6 +74,7 @@ const Step4JobSalary = ({
               }
             })
             }
+            disabled={disabled}
             placeholder="for example: 20 should be greater than minimum salary"
             error={errors.salaryMax}
             type='number'
@@ -96,6 +100,7 @@ const Step4JobSalary = ({
               setValueAs: (v) => v === 'true',
             })}
             error={errors.hideSalary}
+            disabled={disabled}
           />
 
         </div>
@@ -113,6 +118,7 @@ const Step4JobSalary = ({
             error={errors.numberOfOpenings}
             type='number'
             minLength={1}
+            disabled={disabled}
             maxLength={100}
           />
           <FormDatePicker
@@ -125,6 +131,7 @@ const Step4JobSalary = ({
                 shouldValidate: true,
               })
             }
+            disabled={disabled}
             error={errors.applicationDeadline}
           />
         </div>
