@@ -7,9 +7,11 @@ import StepHeader from "../../ui/StepHeader"
 const Step3Documents = ({
   register,
   errors,
+  isLoading
 }: {
   register: UseFormRegister<ProfileFormInputs>
   errors: FieldErrors<ProfileFormInputs>
+  isLoading: boolean
 }) => {
   const { company } = useCompany()
 
@@ -48,6 +50,7 @@ const Step3Documents = ({
           maxSizeMB={2}
           existingFileUrl={existingCompany?.logo}
           isImage
+          disabled={isLoading}
         />
 
         <FileUpload<ProfileFormInputs>
@@ -60,6 +63,7 @@ const Step3Documents = ({
           accept="application/pdf,image/*"
           maxSizeMB={5}
           existingFileUrl={existingCompany?.businessDocument}
+          disabled={isLoading}
         />
 
         <FileUpload<ProfileFormInputs>
@@ -72,6 +76,7 @@ const Step3Documents = ({
           accept="application/pdf,image/*"
           maxSizeMB={5}
           existingFileUrl={existingCompany?.taxDocument}
+          disabled={isLoading}
         />
       </div>
     </div>

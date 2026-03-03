@@ -3,6 +3,7 @@ import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { pusherServer } from '@/src/lib/pusher';
+import { notifyUser } from '@/src/lib/notificationService';
 import { getSignedUrl } from '@/src/lib/fileUpload';
 
 const MAX_MESSAGE_LENGTH = 5000;
@@ -34,7 +35,20 @@ export async function POST(req: NextRequest) {
         companyId: true,
         jobSeekerId: true,
         company: {
-          select: { userId: true },
+          select: {
+            userId: true,
+            name: true,
+          },
+        },
+        job: {
+          select: {
+            title: true,
+          },
+        },
+        _count: {
+          select: {
+            messages: true,
+          },
         },
       },
     });
@@ -55,6 +69,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
+    const isFirstMessage = conversation._count.messages === 0;
+
     const message = await prisma.message.create({
       data: {
         conversationId,
@@ -70,6 +86,7 @@ export async function POST(req: NextRequest) {
             profile: {
               select: {
                 avatar: true,
+                name: true,
               },
             },
           },
@@ -106,6 +123,44 @@ export async function POST(req: NextRequest) {
       `conversation-${conversationId}`,
       'new-message',
       { message },
+    );
+
+    if (isFirstMessage) {
+      const recipientId = isCompany
+        ? conversation.jobSeekerId
+        : conversation.company.userId;
+
+      const senderName = isCompany
+        ? conversation.company.name
+        : message.sender.profile?.name || message.sender.name;
+
+      await notifyUser({
+        userId: recipientId,
+        type: 'NEW_MESSAGE_RECEIVED',
+        title: 'New Message',
+        message: `${senderName} sent you a message${conversation.job ? ` about ${conversation.job.title}` : ''}`,
+        link: isCompany ? '/dashboard/chat' : '/company/chat',
+        metadata: {
+          conversationId,
+          senderId: guard.session.user.id,
+          senderName,
+          jobTitle: conversation.job?.title,
+        },
+      });
+    }
+
+    const recipientId = isCompany
+      ? conversation.jobSeekerId
+      : conversation.company.userId;
+
+    await pusherServer.trigger(
+      `user-messages-${recipientId}`,
+      'conversation-updated',
+      {
+        conversationId,
+        lastMessage: message.content,
+        updatedAt: message.createdAt,
+      },
     );
 
     return NextResponse.json(

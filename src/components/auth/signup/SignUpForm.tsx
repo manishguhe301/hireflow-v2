@@ -128,6 +128,7 @@ const SignUpForm = () => {
             placeholder="John Doe"
             register={register('name', { required: true })}
             error={errors.name}
+            disabled={isLoading}
           />
           <FormInput
             label="Email"
@@ -135,6 +136,7 @@ const SignUpForm = () => {
             placeholder="john@email.com"
             register={register('email', { required: true })}
             error={errors.email}
+            disabled={isLoading}
           />
         </div>
 
@@ -144,6 +146,7 @@ const SignUpForm = () => {
           placeholder="••••••••"
           register={register('password', { required: true })}
           error={errors.password}
+          disabled={isLoading}
         />
 
         <FormInput
@@ -154,6 +157,7 @@ const SignUpForm = () => {
             required: true,
             validate: (value) => value === password || 'Passwords do not match',
           })}
+          disabled={isLoading}
           error={errors.confirmPassword}
         />
 
@@ -163,12 +167,14 @@ const SignUpForm = () => {
             title="Job Seeker"
             description="Discover and apply to relevant roles"
             register={register('role', { required: true })}
+            disabled={isLoading}
           />
           <FormRadioCard
             value={Role.COMPANY_ADMIN}
             title="Company Admin"
             description="Post jobs and manage applicants"
             register={register('role', { required: true })}
+            disabled={isLoading}
           />
         </FormRadioGroup>
 

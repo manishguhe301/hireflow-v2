@@ -92,6 +92,7 @@ const LoginForm = () => {
           placeholder="john@email.com"
           register={register('email', { required: true })}
           error={errors.email}
+          disabled={isLoading}
         />
 
         <FormInput
@@ -100,6 +101,7 @@ const LoginForm = () => {
           placeholder="••••••••"
           register={register('password', { required: true })}
           error={errors.password}
+          disabled={isLoading}
         />
 
         <Button

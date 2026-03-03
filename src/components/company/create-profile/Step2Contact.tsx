@@ -17,13 +17,15 @@ const Step2Contact = ({
   errors,
   setValue,
   watch,
-  selectedCountry
+  selectedCountry,
+  isLoading
 }: {
   register: UseFormRegister<ProfileFormInputs>
   errors: FieldErrors<ProfileFormInputs>
   setValue: UseFormSetValue<ProfileFormInputs>
   watch: UseFormWatch<ProfileFormInputs>
   selectedCountry: string
+  isLoading: boolean
 }) => {
   const { data: session } = useSession()
   const { countries, loading, countryPhoneCodes } = useCountries()
@@ -100,6 +102,7 @@ const Step2Contact = ({
                 required: 'Company location is required',
               })}
               error={errors.country}
+              disabled={isLoading}
             />
           )}
 
@@ -108,6 +111,7 @@ const Step2Contact = ({
             placeholder="for example, New York"
             register={register('city')}
             error={errors.city}
+            disabled={isLoading}
           />
         </div>
 
@@ -118,6 +122,7 @@ const Step2Contact = ({
             options={countryPhoneCodes}
             onChange={(value) => setValue('countryPhoneCode', value)}
             error={errors.countryPhoneCode}
+            disabled={isLoading}
           />
 
           <FormInput
@@ -132,6 +137,7 @@ const Step2Contact = ({
             })}
             type='tel'
             error={errors.contactPhone}
+            disabled={isLoading}
           />
         </div>
 
@@ -141,6 +147,7 @@ const Step2Contact = ({
           register={register('address')}
           error={errors.address}
           maxLength={200}
+          disabled={isLoading}
         />
       </div>
     </div>

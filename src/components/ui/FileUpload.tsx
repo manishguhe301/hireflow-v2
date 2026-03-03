@@ -25,6 +25,7 @@ type FileUploadProps<T extends FieldValues> = {
   existingFileUrl?: string | null
   isImage?: boolean
   toolTipContent?: string
+  disabled?: boolean
 }
 
 export function FileUpload<T extends FieldValues>({
@@ -38,12 +39,15 @@ export function FileUpload<T extends FieldValues>({
   maxSizeMB,
   existingFileUrl,
   isImage = false,
-  toolTipContent
+  toolTipContent,
+  disabled
 }: FileUploadProps<T>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [fileSize, setFileSize] = useState<number | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
 
   const validateFile = (file: File) => {
     if (maxSizeMB && !validateFileSize(file, maxSizeMB)) {
@@ -93,14 +97,21 @@ export function FileUpload<T extends FieldValues>({
 
       {showExisting && (
         <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 space-y-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             {isImage ? (
-              // eslint-disable-next-line
-              <img
-                src={existingFileUrl}
-                alt="Current file"
-                className="h-16 w-16 rounded-lg object-cover"
-              />
+              <>
+                {!imageLoaded && (
+                  <div className="absolute inset-0 animate-pulse bg-muted" />
+                )}
+                {/*  eslint-disable-next-line */}
+                <img
+                  src={existingFileUrl}
+                  alt="Current file"
+                  onLoad={() => setImageLoaded(true)}
+                  onError={() => setImageLoaded(true)}
+                  className="h-16 w-16 rounded-lg object-cover"
+                />
+              </>
             ) : (
               <FileText className="h-8 w-8 text-primary" />
             )}
@@ -200,6 +211,7 @@ export function FileUpload<T extends FieldValues>({
           ref(el)
           inputRef.current = el
         }}
+        disabled={disabled}
         onChange={(e) => {
           onChange(e)
           const file = e.target.files?.[0]

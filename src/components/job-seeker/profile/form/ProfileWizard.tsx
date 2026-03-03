@@ -329,7 +329,7 @@ const ProfileWizard = () => {
 
       dispatch(setProfile({ profile: result.profile }))
 
-      if (!isEditMode) { toast.success('Draft saved successfully') }else{
+      if (!isEditMode) { toast.success('Draft saved successfully') } else {
         toast.success('Profile updated successfully')
       }
       router.push('/dashboard/profile')
@@ -427,6 +427,7 @@ const ProfileWizard = () => {
               watch={watch}
               setValue={setValue}
               selectedCountry={selectedCountry}
+              disabled={isSubmitting}
             />
           }
           {currentStep === 1 &&
@@ -434,6 +435,7 @@ const ProfileWizard = () => {
               register={register}
               errors={errors}
               watch={watch}
+              disabled={isSubmitting}
               setValue={setValue}
             />
           }
@@ -443,6 +445,7 @@ const ProfileWizard = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              disabled={isSubmitting}
             />
           }
           {currentStep === 3 &&
@@ -451,6 +454,7 @@ const ProfileWizard = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              disabled={isSubmitting}
             />
           }
           {currentStep === 4 &&
@@ -459,6 +463,7 @@ const ProfileWizard = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              disabled={isSubmitting}
             />
           }
           {currentStep === 5 &&
@@ -467,6 +472,7 @@ const ProfileWizard = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              disabled={isSubmitting}
             />
           }
           {currentStep === 6 &&
@@ -475,6 +481,7 @@ const ProfileWizard = () => {
               errors={errors}
               watch={watch}
               setValue={setValue}
+              disabled={isSubmitting}
             />
           }
           {currentStep === 7 &&
@@ -482,6 +489,7 @@ const ProfileWizard = () => {
               register={register}
               errors={errors}
               watch={watch}
+              disabled={isSubmitting}
               setValue={setValue}
             />
           }
@@ -491,6 +499,7 @@ const ProfileWizard = () => {
               // errors={errors}
               watch={watch}
               setCurrentStep={setCurrentStep}
+              disabled={isSubmitting}
             // setValue={setValue}
             />
           }

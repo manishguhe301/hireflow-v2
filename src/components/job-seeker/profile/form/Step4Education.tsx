@@ -20,11 +20,13 @@ const currentYear = new Date().getFullYear()
 const Step4Education = ({
   watch,
   setValue,
+  disabled,
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  disabled?: boolean
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -129,6 +131,8 @@ const Step4Education = ({
         type="button"
         onClick={() => handleOpenModal()}
         className="inline-flex items-center gap-2"
+        disabled={disabled}
+
       >
         <Plus className="h-4 w-4" />
         Add Education
@@ -183,6 +187,7 @@ const Step4Education = ({
                     variant="ghost"
                     onClick={() => handleOpenModal(index)}
                     className="p-2!"
+                    disabled={disabled}
                   >
                     <Edit className="h-4 w-4 text-primary" />
                   </Button>
@@ -191,6 +196,7 @@ const Step4Education = ({
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     className="p-2!"
+                    disabled={disabled}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
@@ -215,11 +221,13 @@ const Step4Education = ({
                 required: 'Degree is required',
               })}
               error={eduErrors.degree}
+              disabled={disabled}
             />
             <FormInput
               label="Institution"
               register={eduRegister('institution', { required: 'Institution is required' })}
               error={eduErrors.institution}
+              disabled={disabled}
             />
           </div>
 
@@ -229,6 +237,7 @@ const Step4Education = ({
             register={eduRegister('fieldOfStudy', {
               required: 'Field of study is required',
             })}
+            disabled={disabled}
             error={eduErrors.fieldOfStudy}
           />
 
@@ -236,6 +245,7 @@ const Step4Education = ({
             <FormInput
               type="number"
               label="Start Year"
+              disabled={disabled}
               register={eduRegister('startYear', { required: true })}
               error={eduErrors.startYear}
               minLength={2000}
@@ -245,6 +255,7 @@ const Step4Education = ({
             {!isCurrent && (
               <FormInput
                 type="number"
+                disabled={disabled}
                 label="End Year"
                 register={eduRegister('endYear')}
                 error={eduErrors.endYear}
@@ -258,6 +269,7 @@ const Step4Education = ({
             <input
               type="checkbox"
               id="isCurrentEdu"
+              disabled={disabled}
               {...eduRegister('isCurrent')}
               className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
             />
@@ -270,13 +282,18 @@ const Step4Education = ({
             label="Grade (Optional)"
             register={eduRegister('grade')}
             error={eduErrors.grade}
+            disabled={disabled}
           />
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={handleCloseModal}>
+            <Button type="button" variant="outline" onClick={handleCloseModal}
+              disabled={disabled}
+            >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit"
+              disabled={disabled}
+            >
               {editingIndex !== null ? 'Update' : 'Add'} Education
             </Button>
           </div>

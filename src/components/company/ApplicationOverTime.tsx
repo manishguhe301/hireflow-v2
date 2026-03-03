@@ -10,6 +10,15 @@ import {
 } from 'recharts'
 
 const ApplicationOverTime = ({ timeSeriesData }: { timeSeriesData: TimeSeriesData[] }) => {
+
+  if (timeSeriesData.length === 0) {
+    return (
+      <div className="bg-card border border-border/60 rounded-2xl p-6 h-75 flex items-center justify-center">
+        <p className="text-center">No data available</p>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-card border border-border/60 rounded-2xl p-6">
       <ResponsiveContainer width="100%" height={300}>

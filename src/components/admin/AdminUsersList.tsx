@@ -12,28 +12,44 @@ import Link from "next/link"
 import UserDeleteModal from "./UserDeleteModal"
 import { Button } from "../ui/Button"
 import UsersTable from "./UsersTable"
+import Pagination from "../ui/Pagination"
+
+type Pagination = {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
 
 const AdminUsersList = () => {
   const [users, setUsers] = useState<User[]>([])
   const [activeTab, setActiveTab] = useState<'ALL' | Role>('ALL')
-  const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [pagination, setPagination] = useState<Pagination | null>(null)
+  const [page, setPage] = useState(1)
 
   const fetchUsers = async (role?: string, isLoadingNeeded: boolean = true) => {
     if (isLoadingNeeded) {
       setIsLoading(true)
     }
     try {
-      const url = role
-        ? `/api/admin/users?role=${role}`
-        : '/api/admin/users'
+      const params = new URLSearchParams()
+      if (search) params.set('search', search)
+      params.set('page', page.toString())
+      params.set('limit', '12')
+      if (activeTab !== 'ALL') params.set('role', activeTab)
+
+      const url =
+        `/api/admin/users?${params.toString()}`
 
       const res = await AppSdk.getData(url, null)
 
       if (res.users) {
         setUsers(res.users)
+        setPagination(res.pagination)
       }
     } catch (error) {
       console.error(error);
@@ -45,15 +61,15 @@ const AdminUsersList = () => {
   }
 
   useEffect(() => {
-    fetchUsers(activeTab === 'ALL' ? undefined : activeTab)
-  }, [activeTab])
+    const shouldDebounce = search.length > 0
+    const delay = shouldDebounce ? 500 : 0
 
-  const filteredUsers = useMemo(() => {
-    return users.filter(user =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-    )
-  }, [users, search])
+    const timer = setTimeout(() => {
+      fetchUsers(activeTab === 'ALL' ? undefined : activeTab)
+    }, delay)
+
+    return () => clearTimeout(timer)
+  }, [activeTab, search, page])
 
   const handleDelete = async () => {
     if (!deleteUserId) return
@@ -90,7 +106,7 @@ const AdminUsersList = () => {
           {ADMIN_USERS_TABS.map((tab) => (
             <button
               key={tab.value}
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => { setActiveTab(tab.value); setPage(1) }}
               className={clsx(
                 'px-4 py-2 rounded-xl text-sm font-medium border transition cursor-pointer',
                 activeTab === tab.value
@@ -113,7 +129,10 @@ const AdminUsersList = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
+              }}
               placeholder="Search users..."
               className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
             />
@@ -132,19 +151,30 @@ const AdminUsersList = () => {
         </div > :
         <>
           <div>
-            {filteredUsers.length === 0 ? (
+            {users.length === 0 ? (
               <div className="py-20 text-center">
                 <Users className="h-10 w-10 mx-auto text-muted-foreground" />
                 <p className="mt-4 text-muted-foreground">No users found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
-                <UsersTable
-                  filteredUsers={filteredUsers}
-                  loadingAction={loadingAction}
-                  setDeleteUserId={setDeleteUserId}
-                />
-              </div>
+              <>
+                <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
+                  <UsersTable
+                    filteredUsers={users}
+                    loadingAction={loadingAction}
+                    setDeleteUserId={setDeleteUserId}
+                  />
+                </div>
+                {!isLoading && pagination && pagination.totalPages > 1 && (
+                  <div className="mt-8">
+                    <Pagination
+                      page={page}
+                      totalPages={pagination.totalPages}
+                      onPageChange={(p) => setPage(p)}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </>

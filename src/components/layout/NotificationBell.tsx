@@ -36,6 +36,7 @@ const NotificationBell = () => {
       setUnreadCount(res.unreadCount)
     } catch (error) {
       console.error(error)
+      toast.error('Failed to load notifications')
     } finally {
       setIsLoading(false)
     }

@@ -22,6 +22,7 @@ import { CompanyStatus } from '@prisma/client'
 import InfoCard from '../../admin/InfoCard'
 import InfoRow from '../../admin/InfoRow'
 import DocumentCard from '../../admin/DocumentCard'
+import { useState } from 'react'
 
 const statusStyles: Record<CompanyStatus, string> = {
   PENDING: 'bg-warning/10 text-warning border-warning/30',
@@ -31,6 +32,7 @@ const statusStyles: Record<CompanyStatus, string> = {
 
 const CompanyProfileView = () => {
   const { company, isLoading, error } = useCompany()
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   if (isLoading) {
     return (
@@ -55,14 +57,21 @@ const CompanyProfileView = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={company.logo}
-                  alt={`${company.name} logo`}
-                  className="h-full w-full object-contain"
-                />
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={company.logo}
+                    alt={`${company.name} logo`}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    className="h-full w-full object-cover"
+                  />
+                </>
               ) : (
                 <span className="text-lg font-semibold text-muted-foreground">
                   {company.name.charAt(0)}

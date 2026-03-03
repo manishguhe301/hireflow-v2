@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import CompanyJobCard from './CompanyJobCard'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
+import { useState } from 'react'
 
 type CompanyPublicViewProps = {
   company: Company,
@@ -17,6 +18,7 @@ type CompanyPublicViewProps = {
 const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
   const { data: session } = useSession()
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   return (
     <div className={clsx("mx-auto  space-y-10 px-4 py-6", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
@@ -31,14 +33,21 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
+            <div className=" relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={company.logo}
-                  alt={`${company.name} logo`}
-                  className="h-full w-full object-contain"
-                />
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  {/*  eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    src={company.logo}
+                    alt={`${company.name} logo`}
+                    className="h-full w-full object-contain"
+                  />
+                </>
               ) : (
                 <span className="text-lg font-semibold text-muted-foreground">
                   {company.name.charAt(0)}

@@ -13,16 +13,19 @@ import StepHeader from '@/src/components/ui/StepHeader'
 type Props = {
   watch: UseFormWatch<JobFormInputs>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
+  disabled: boolean
 }
 
 const Section = ({
   title,
   onEdit,
   children,
+  disabled
 }: {
   title: string
   onEdit: () => void
   children: React.ReactNode
+  disabled?: boolean
 }) => {
   return (
     <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
@@ -31,6 +34,7 @@ const Section = ({
         <button
           type="button"
           onClick={onEdit}
+          disabled={disabled}
           className="flex items-center gap-1 text-sm text-primary hover:underline"
         >
           <Pencil className="h-4 w-4" />
@@ -71,7 +75,7 @@ const Item = ({
   </div>
 )
 
-const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
+const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
   const data = watch()
 
   return (
@@ -81,7 +85,7 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
         description='Review all job details carefully. You can edit any section before publishing.'
       />
 
-      <Section title="Basic Details" onEdit={() => setCurrentStep(0)}>
+      <Section title="Basic Details" onEdit={() => setCurrentStep(0)} disabled={disabled}>
         <Item label="Job Title" value={data.title} />
         <Item label="Category" value={getLabel(jobCategories, data.category)} />
         <div className="sm:col-span-2">
@@ -98,7 +102,7 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
         )}
       </Section>
 
-      <Section title="Requirements & Skills" onEdit={() => setCurrentStep(1)}>
+      <Section title="Requirements & Skills" onEdit={() => setCurrentStep(1)} disabled={disabled}>
         <div className="sm:col-span-2">
           <p className="text-xs text-muted-foreground mb-1">Requirements</p>
           <RichTextRenderer content={data.requirements} />
@@ -121,7 +125,7 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
         </div>
       </Section>
 
-      <Section title="Location & Work Mode" onEdit={() => setCurrentStep(2)}>
+      <Section title="Location & Work Mode" onEdit={() => setCurrentStep(2)} disabled={disabled}>
         <Item
           label="Work Mode"
           value={getLabel(workModes, data.workMode)}
@@ -132,7 +136,7 @@ const Step5JobReview = ({ watch, setCurrentStep }: Props) => {
         )}
       </Section>
 
-      <Section title="Salary & Openings" onEdit={() => setCurrentStep(3)}>
+      <Section title="Salary & Openings" onEdit={() => setCurrentStep(3)} disabled={disabled}>
         <Item
           label="Salary Visibility"
           value={

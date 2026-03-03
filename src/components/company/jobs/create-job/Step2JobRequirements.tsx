@@ -13,13 +13,15 @@ const Step2JobRequirements = ({
   errors,
   watch,
   setValue,
-  isEditMode
+  isEditMode,
+  disabled
 }: {
   register: UseFormRegister<JobFormInputs>
   errors: FieldErrors<JobFormInputs>
   watch: UseFormWatch<JobFormInputs>
   setValue: UseFormSetValue<JobFormInputs>
   isEditMode?: boolean
+  disabled?: boolean
 }) => {
   return (
     <div className="space-y-8">
@@ -38,6 +40,7 @@ const Step2JobRequirements = ({
             })
           }}
           error={errors.requirements?.message}
+          disabled={disabled}
         />
         <MultiSelect
           label="Required Skills"
@@ -51,6 +54,7 @@ const Step2JobRequirements = ({
           }
           placeholder="Search skills..."
           error={errors.skills?.message}
+          disabled={disabled}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -61,6 +65,7 @@ const Step2JobRequirements = ({
               experienceLevels
             }
             error={errors.experienceLevel}
+            disabled={disabled}
           />
           <FormSelect
             label={isEditMode ? 'Employment Type' : 'Employment Type (by default full-time)'}
@@ -69,6 +74,7 @@ const Step2JobRequirements = ({
               employmentTypes
             }
             error={errors.employmentType}
+            disabled={disabled}
           />
         </div>
       </div>

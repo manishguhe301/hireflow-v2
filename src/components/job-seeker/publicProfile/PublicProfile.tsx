@@ -41,7 +41,7 @@ const PublicProfile = () => {
   const [internalNotes, setInternalNotes] = useState('')
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [creatingChat, setCreatingChat] = useState(false)
-
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   const fetchProfile = async () => {
     try {
@@ -189,13 +189,21 @@ const PublicProfile = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
-            <div className="h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
+            <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
-                <img
-                  src={profile.avatar}
-                  alt={profile.name}
-                  className="h-full w-full object-cover"
-                />
+                <>
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 animate-pulse bg-muted" />
+                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.avatar}
+                    alt={profile.name}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    className="h-full w-full object-cover"
+                  />
+                </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-muted-foreground">
                   {profile.name.charAt(0)}
