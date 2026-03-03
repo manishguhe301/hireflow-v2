@@ -111,6 +111,7 @@ const NotificationBell = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 hover:bg-muted rounded-lg transition max-sm:static"
+        aria-label="Notifications"
       >
         {unreadCount > 0 ? <BellRing className='h-5 w-5 text-destructive' /> : <Bell className="h-5 w-5" />}
         {unreadCount > 0 && (

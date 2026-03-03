@@ -17,6 +17,7 @@ import { Spinner } from '../elements/Loader';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
+import clsx from 'clsx';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -165,8 +166,10 @@ export default function HomePage() {
                           alt={company.name}
                           onLoad={() => setImageLoaded(true)}
                           onError={() => setImageLoaded(true)}
-                          className="h-full w-full object-cover"
-                        />
+                          className={clsx(
+                            "h-full w-full object-cover transition-opacity duration-300",
+                            imageLoaded ? "opacity-100" : "opacity-0"
+                          )} />
                       </>
                     ) : (
                       <Building2 className="h-6 w-6 text-muted-foreground" />
@@ -328,8 +331,10 @@ export default function HomePage() {
                                   onLoad={() => setImageLoaded(true)}
                                   onError={() => setImageLoaded(true)}
                                   alt={job.company.name}
-                                  className="h-full w-full object-cover"
-                                />
+                                  className={clsx(
+                                    "h-full w-full object-cover transition-opacity duration-300",
+                                    imageLoaded ? "opacity-100" : "opacity-0"
+                                  )} />
                               </>
                             ) : (
                               <Building2 className="h-6 w-6 text-muted-foreground" />

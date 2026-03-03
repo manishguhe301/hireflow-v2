@@ -186,6 +186,7 @@ const Step7Certifications = ({
                     onClick={() => handleOpenModal(index)}
                     disabled={disabled}
                     className="p-2!"
+                    aria-label="Edit certification"
                   >
                     <Edit className="h-4 w-4 text-primary" />
                   </Button>
@@ -194,6 +195,7 @@ const Step7Certifications = ({
                     disabled={disabled}
                     variant="ghost"
                     onClick={() => handleDelete(index)}
+                    aria-label="Delete certification"
                     className="p-2!"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />

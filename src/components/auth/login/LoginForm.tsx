@@ -92,6 +92,7 @@ const LoginForm = () => {
           placeholder="john@email.com"
           register={register('email', { required: true })}
           error={errors.email}
+          focused
           disabled={isLoading}
         />
 

@@ -39,6 +39,7 @@ const FormHeader = ({
           size="sm"
           onClick={handlePrev}
           disabled={currentStep === 0 || disabled}
+          aria-label="Previous"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -59,6 +60,7 @@ const FormHeader = ({
 
         <Button
           variant="ghost"
+          aria-label="Next"
           size="sm"
           onClick={handleNext}
           disabled={currentStep === totalSteps - 1 || disabled}

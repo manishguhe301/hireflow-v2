@@ -84,6 +84,7 @@ const Step1BasicFormInfo = ({
             error={errors.name}
             toolTipContent=''
             disabled={disabled}
+            focused
           />
           <FormInput
             label="Contact Email"

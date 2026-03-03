@@ -45,8 +45,10 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
                     onError={() => setImageLoaded(true)}
                     src={company.logo}
                     alt={`${company.name} logo`}
-                    className="h-full w-full object-contain"
-                  />
+                    className={clsx(
+                      "h-full w-full object-cover transition-opacity duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )} />
                 </>
               ) : (
                 <span className="text-lg font-semibold text-muted-foreground">

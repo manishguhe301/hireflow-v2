@@ -170,7 +170,11 @@ const JobDetails = () => {
                       alt={job.company.name}
                       onLoad={() => setImageLoaded(true)}
                       onError={() => setImageLoaded(true)}
-                      className="h-12 w-12 rounded-full"
+                      // className="h-12 w-12 rounded-full"
+                      className={clsx(
+                        "h-12 w-12 rounded-full object-cover transition-opacity duration-300",
+                        imageLoaded ? "opacity-100" : "opacity-0"
+                      )}
                     />
                   </div>
                 ) :

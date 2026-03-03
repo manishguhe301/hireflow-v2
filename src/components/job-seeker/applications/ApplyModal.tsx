@@ -12,6 +12,7 @@ import { workModes, employmentTypes } from '@/src/utils/utils'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
+import clsx from 'clsx'
 
 type ApplyFormInputs = {
   coverLetter: string
@@ -141,7 +142,10 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
                     alt={job.company.name}
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageLoaded(true)}
-                    className="h-full w-full object-cover"
+                    className={clsx(
+                      "h-full w-full object-cover transition-opacity duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )}
                   />
                 </>
               ) : (

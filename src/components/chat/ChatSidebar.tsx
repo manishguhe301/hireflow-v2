@@ -89,6 +89,7 @@ export default function ChatSidebar({
           placeholder="Search conversations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          aria-label="Search conversations"
           className={
             clsx(
               ' mt-2 w-full rounded-xl border px-2 py-2 text-sm outline-none transition',
@@ -154,7 +155,11 @@ export default function ChatSidebar({
                             src
                           }
                           alt={otherUser.name}
-                          className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                          // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                          className={clsx(
+                            "h-10 w-10 object-cover rounded-full shrink-0 transition-opacity duration-300",
+                            imageLoaded ? "opacity-100" : "opacity-0"
+                          )}
                         />
                       </div>
                     ) : (
@@ -203,6 +208,7 @@ export default function ChatSidebar({
                             onClick={(e) => handleDeleteConversation
                               (e, conv.id)
                             }
+                            aria-label='Delete conversation'
                             className='p-0!'>
                             <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
                           </Button>}

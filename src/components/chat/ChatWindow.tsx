@@ -189,6 +189,7 @@ export default function ChatWindow({
             variant="ghost"
             size='sm'
             onClick={onBack}
+            aria-label='Go Back'
             className="p-2!"
           >
             <MoveLeft className="h-5 w-5" />
@@ -252,6 +253,7 @@ export default function ChatWindow({
             onClick={handleSendMessage}
             disabled={!newMessage.trim() || isSending}
             className="px-4 self-end"
+            aria-label='Send Message'
           >
             <Send className="h-4 w-4" />
           </Button>

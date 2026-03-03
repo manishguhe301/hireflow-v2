@@ -99,6 +99,7 @@ export default function CompaniesDirectory() {
               type="text"
               placeholder="Search companies by name…"
               value={search}
+              aria-label="Search companies by name"
               onChange={(e) => {
                 setSearch(e.target.value)
                 setPage(1)
@@ -123,6 +124,7 @@ export default function CompaniesDirectory() {
           <input
             type="text"
             placeholder="Location"
+            aria-label="Location"
             value={location}
             onChange={(e) => {
               setLocation(e.target.value)

@@ -45,10 +45,10 @@ export default function JobCard({ job,
   return (
     <Link
       href={session?.user?.id ? `/jobs/${job.slug}` : `/explore/jobs/${job.slug}`}
-      className="group block rounded-2xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
+      className="group block rounded-2xl border border-border/40 bg-card p-6 max-sm:p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
     >
       <div className="flex items-start gap-4 relative">
-        <div className=" relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+        <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
           {job.company.logo ? (
             <>
               {!imageLoaded && (
@@ -97,6 +97,7 @@ export default function JobCard({ job,
           }}
           variant='outline'
           disabled={disabled}
+          aria-label="Save"
           className={clsx("absolute top-0 right-0 p-2! rounded-full! bg-background/80 hover:bg-background",
             !session && "hidden"
           )}

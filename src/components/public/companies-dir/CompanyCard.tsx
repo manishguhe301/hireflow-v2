@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Building2, MapPin, Briefcase } from 'lucide-react'
 import { useState } from 'react'
+import clsx from 'clsx'
 
 type CompanyCardProps = {
   company: {
@@ -37,8 +38,10 @@ export default function CompanyCard({ company }: CompanyCardProps) {
                     alt={company.name}
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageLoaded(true)}
-                    className="h-full w-full object-contain"
-                  />
+                    className={clsx(
+                      "h-full w-full object-cover transition-opacity duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )} />
                 </>
               ) : (
                 <span className="text-2xl font-bold text-muted-foreground">

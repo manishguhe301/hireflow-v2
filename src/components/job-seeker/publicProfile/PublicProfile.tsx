@@ -201,7 +201,10 @@ const PublicProfile = () => {
                     alt={profile.name}
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageLoaded(true)}
-                    className="h-full w-full object-cover"
+                    className={clsx(
+                      "h-full w-full object-cover transition-opacity duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )}
                   />
                 </>
               ) : (

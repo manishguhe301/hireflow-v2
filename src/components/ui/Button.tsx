@@ -55,6 +55,7 @@ export const Button = ({
         SIZE_CLASSES[size],
         className
       )}
+      aria-label={props['aria-label']}
     >
       {isLoading ? (
         loadingText ? (

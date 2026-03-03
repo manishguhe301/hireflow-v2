@@ -99,6 +99,7 @@ const MultiSelect = <T extends string>({
                       e.stopPropagation()
                       removeValue(val)
                     }}
+                    aria-label="Remove"
                     className="text-muted-foreground hover:text-foreground"
                   >
                     <X size={14} />

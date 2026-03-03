@@ -34,6 +34,7 @@ const Step1BasicInfo = ({
             placeholder="Acme Corp"
             error={errors.name}
             disabled={isLoading}
+            focused
           />
 
           <FormInput

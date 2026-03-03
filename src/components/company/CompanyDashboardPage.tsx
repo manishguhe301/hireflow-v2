@@ -249,7 +249,11 @@ export default function CompanyDashboard() {
                           alt={app.user.profile.name}
                           onLoad={() => setImageLoaded(true)}
                           onError={() => setImageLoaded(true)}
-                          className="h-10 w-10 rounded-full object-cover"
+                          // className="h-10 w-10 rounded-full object-cover"
+                          className={clsx(
+                            "h-10 w-10 object-cover rounded-full transition-opacity duration-300",
+                            imageLoaded ? "opacity-100" : "opacity-0"
+                          )}
                         />
                       </div>
                     ) : (

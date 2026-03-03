@@ -109,7 +109,10 @@ export function FileUpload<T extends FieldValues>({
                   alt="Current file"
                   onLoad={() => setImageLoaded(true)}
                   onError={() => setImageLoaded(true)}
-                  className="h-16 w-16 rounded-lg object-cover"
+                  className={clsx(
+                    "h-16 w-16 rounded-lg object-cover transition-opacity duration-300",
+                    imageLoaded ? "opacity-100" : "opacity-0"
+                  )}
                 />
               </>
             ) : (
