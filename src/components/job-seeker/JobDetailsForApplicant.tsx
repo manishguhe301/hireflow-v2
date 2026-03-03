@@ -395,7 +395,7 @@ const JobDetailsForApplicant = () => {
                     <Button
                       variant="outline"
                       className="w-full"
-                      onClick={() => router.push('/dashboard')}
+                      onClick={() => router.push('/dashboard/applications')}
                     >
                       View My Applications
                     </Button>

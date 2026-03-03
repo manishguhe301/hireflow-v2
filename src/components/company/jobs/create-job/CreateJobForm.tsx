@@ -474,7 +474,7 @@ const CreateJobForm = () => {
                 onClick={handlePrev}
                 variant="outline"
                 disabled={isAnyActionInProgress}
-                className="max-md:w-1/2"
+                className="max-md:w-1/2 max-sm:w-full"
               >
                 Previous
               </Button>
@@ -484,7 +484,7 @@ const CreateJobForm = () => {
                 <Button
                   disabled={isAnyActionInProgress}
                   onClick={handleNext}
-                  className="max-md:w-1/2"
+                  className="max-md:w-1/2 max-sm:w-full"
                 >
                   Next
                 </Button>
@@ -494,7 +494,7 @@ const CreateJobForm = () => {
                     disabled={isAnyActionInProgress}
                     onClick={handleSubmit(handleFormSubmit(false))}
                     variant="primary"
-                    className="max-md:w-1/2"
+                    className="max-md:w-1/2 max-sm:w-full"
                   >
                     Save Changes
                   </Button>
@@ -552,7 +552,7 @@ const CreateJobForm = () => {
                     disabled={isAnyActionInProgress}
                     onClick={handleSubmit(handleFormSubmit(false))}
                     variant="primary"
-                    className="max-md:w-1/2"
+                    className="max-md:w-1/2 max-sm:w-full"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
