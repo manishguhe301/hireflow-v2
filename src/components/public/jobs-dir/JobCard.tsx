@@ -97,6 +97,7 @@ export default function JobCard({ job,
           }}
           variant='outline'
           disabled={disabled}
+          aria-label="Save"
           className={clsx("absolute top-0 right-0 p-2! rounded-full! bg-background/80 hover:bg-background",
             !session && "hidden"
           )}
