@@ -440,7 +440,10 @@ const JobDetailsForApplicant = () => {
                       alt={job.company.name}
                       onLoad={() => setImageLoaded(true)}
                       onError={() => setImageLoaded(true)}
-                      className="h-14 w-14 rounded-lg object-cover border"
+                      className={clsx("h-14 w-14 rounded-lg object-cover border-border",
+                        'transition-opacity duration-300',
+                        imageLoaded ? 'opacity-100' : 'opacity-0'
+                      )}
                     />
                   </div>
                 ) : (
