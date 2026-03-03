@@ -164,6 +164,7 @@ const Step8AdditionalInfo = ({
                 value={otherLinkInput}
                 onChange={(e) => setOtherLinkInput(e.target.value)}
                 placeholder="https://example.com"
+                aria-label="Add link"
                 className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
               <button
