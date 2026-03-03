@@ -183,7 +183,10 @@ const CompanyDetails = () => {
                   <img
                     src={company.logo}
                     alt={`${company.name} logo`}
-                    className="h-full w-full object-contain"
+                    className={clsx(
+                      "h-full w-full object-cover transition-opacity duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )}
                     loading="lazy"
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageLoaded(true)}
