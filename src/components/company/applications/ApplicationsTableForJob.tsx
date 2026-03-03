@@ -148,7 +148,11 @@ const ApplicationsTableForJob = ({
                           alt={profile.name}
                           onLoad={() => setImageLoaded(true)}
                           onError={() => setImageLoaded(true)}
-                          className="h-10 w-10 rounded-full object-cover border"
+                          // className="h-10 w-10 rounded-full object-cover border-border"
+                          className={clsx(
+                            "h-10 w-10 rounded-full object-cover border-border transition-opacity duration-300",
+                            imageLoaded ? "opacity-100" : "opacity-0"
+                          )}
                         />
                       </div>
                     ) : (

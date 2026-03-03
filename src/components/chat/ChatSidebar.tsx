@@ -154,7 +154,11 @@ export default function ChatSidebar({
                             src
                           }
                           alt={otherUser.name}
-                          className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                          // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                          className={clsx(
+                            "h-10 w-10 object-cover rounded-full shrink-0 transition-opacity duration-300",
+                            imageLoaded ? "opacity-100" : "opacity-0"
+                          )}
                         />
                       </div>
                     ) : (
