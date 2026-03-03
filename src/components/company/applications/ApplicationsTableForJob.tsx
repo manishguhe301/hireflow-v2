@@ -212,6 +212,7 @@ const ApplicationsTableForJob = ({
                     variant="outline"
                     size="sm"
                     className="p-2!"
+                    aria-label="Initialize chat"
                   >
                     {creatingFor === app.user.id ? <Spinner className="w-4 h-4" /> :
                       <MessageCircle className="h-4 w-4" />

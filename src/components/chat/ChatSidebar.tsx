@@ -207,6 +207,7 @@ export default function ChatSidebar({
                             onClick={(e) => handleDeleteConversation
                               (e, conv.id)
                             }
+                            aria-label='Delete conversation'
                             className='p-0!'>
                             <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
                           </Button>}

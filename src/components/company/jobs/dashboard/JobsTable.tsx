@@ -165,6 +165,7 @@ const JobsTable = ({
                     className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80", loadingAction && 'pointer-events-none opacity-50')}
                     disabled={loadingAction === `delete-${job.id}`}
                     onClick={() => setDeleteJobId(job.id)}
+                    aria-label='Delete Job'
                   >
                     {loadingAction === `delete-${job.id}` ? (
                       <Spinner className="h-4 w-4" />
