@@ -134,6 +134,7 @@ const AdminUsersList = () => {
                 setPage(1)
               }}
               placeholder="Search users..."
+              aria-label="Search users..."
               className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
             />
           </div>

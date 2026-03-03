@@ -193,6 +193,7 @@ const AdminCompanies = () => {
               setSearch(e.target.value)
               setPage(1)
             }}
+            aria-label="Search companies"
             placeholder="Search companies..."
             className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
           />

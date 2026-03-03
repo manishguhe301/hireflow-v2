@@ -89,6 +89,7 @@ export default function ChatSidebar({
           placeholder="Search conversations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          aria-label="Search conversations"
           className={
             clsx(
               ' mt-2 w-full rounded-xl border px-2 py-2 text-sm outline-none transition',
