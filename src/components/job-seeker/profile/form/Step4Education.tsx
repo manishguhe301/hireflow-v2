@@ -188,6 +188,7 @@ const Step4Education = ({
                     onClick={() => handleOpenModal(index)}
                     className="p-2!"
                     disabled={disabled}
+                    aria-label="Edit"
                   >
                     <Edit className="h-4 w-4 text-primary" />
                   </Button>
@@ -197,6 +198,7 @@ const Step4Education = ({
                     onClick={() => handleDelete(index)}
                     className="p-2!"
                     disabled={disabled}
+                    aria-label="Delete"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>

@@ -228,6 +228,7 @@ const JobDetailsForApplicant = () => {
                   !session && "hidden"
                 )}
                 disabled={saving}
+                aria-label='Bookmark Job'
               >
                 {isSaved ? (
                   <BookmarkCheck className="h-5 w-5 text-primary" />

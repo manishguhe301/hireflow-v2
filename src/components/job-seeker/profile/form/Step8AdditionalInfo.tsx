@@ -189,6 +189,7 @@ const Step8AdditionalInfo = ({
                       onClick={() => handleRemoveOtherLink(index)}
                       className="text-destructive"
                       disabled={disabled}
+                      aria-label="Remove link"
                     >
                       <X className="h-3 w-3" />
                     </button>
