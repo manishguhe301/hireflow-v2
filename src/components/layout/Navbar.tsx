@@ -31,6 +31,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
             onClick={onMenuClick}
             variant="ghost"
             className="md:hidden rounded-lg hover:bg-muted/50 p-0!"
+            aria-label="Menu"
           >
             <Menu size={18} />
           </Button>

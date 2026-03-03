@@ -36,6 +36,7 @@ const Step1BasicJobDetails = ({
             placeholder="Software Engineer"
             error={errors.title}
             disabled={disabled}
+            focused
           />
           <FormSelect
             label='Category'

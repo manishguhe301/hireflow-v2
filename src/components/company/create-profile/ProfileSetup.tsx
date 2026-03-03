@@ -286,19 +286,19 @@ const ProfileSetup = () => {
               onClick={handlePrev}
               variant="outline"
               disabled={isSubmitting}
-              className="max-md:w-1/2"
+              className="max-md:w-1/2 max-sm:w-full"
             >
               Previous
             </Button>
           )}
-          <div className="flex items-center gap-3 max-sm:flex-col max-md:w-full">
+          <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
 
             {currentStep !== 3 && < Button
               type="button"
               disabled={isSubmitting}
               onClick={handleSubmit(handleFormSubmit)}
               variant="outline"
-              className="max-md:w-full text-primary border border-primary"
+              className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
             >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
@@ -308,7 +308,7 @@ const ProfileSetup = () => {
               <Button
                 disabled={isSubmitting}
                 onClick={handleNext}
-                className="max-md:w-1/2"
+                className="max-md:w-1/2 max-sm:w-full"
               >
                 Next
               </Button>
@@ -317,7 +317,7 @@ const ProfileSetup = () => {
                 disabled={isSubmitting}
                 onClick={handleSubmit(handleFormSubmit)}
                 variant="primary"
-                className="max-md:w-1/2"
+                className="max-md:w-1/2 max-sm:w-full"
               >
                 {isSubmitting
                   ? 'Submitting...'

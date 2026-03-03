@@ -23,6 +23,7 @@ import {
 import { formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, employmentTypes, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import { useState } from 'react'
+import clsx from 'clsx'
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
@@ -68,7 +69,10 @@ const Profile = () => {
                     alt={profile.name}
                     onLoad={() => setImageLoaded(true)}
                     onError={() => setImageLoaded(true)}
-                    className="h-full w-full object-cover"
+                    className={clsx(
+                      "h-full w-full object-cover transition-opacity duration-300",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )}
                   />
                 </>
               ) : (

@@ -71,7 +71,9 @@ const NotificationDropdown = ({
             Delete all
           </button>
           }
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground cursor-pointer">
+          <button onClick={onClose} 
+          aria-label="Close"
+          className="text-muted-foreground hover:text-foreground cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -139,6 +141,7 @@ const NotificationDropdown = ({
                     onClick={() => onMarkAsRead([notification.id])}
                     className="text-primary hover:text-primary/80"
                     title="Mark as read"
+                    aria-label="Mark as read"
                   >
                     <Check className="h-4 w-4" />
                   </button>

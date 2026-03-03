@@ -136,6 +136,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
             variant="ghost"
             onClick={closeSidebar}
             className="p-1 rounded-md hover:bg-muted/40"
+            aria-label="Close sidebar"
           >
             <X size={16} />
           </Button>
@@ -181,6 +182,7 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
         <Button
           onClick={toggleTheme}
           variant='outline'
+          aria-label='Toggle Theme'
           className={clsx(
             'flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition cursor-pointer',
             'text-muted-foreground hover:bg-muted/40 hover:text-foreground w-full'

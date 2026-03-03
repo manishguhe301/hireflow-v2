@@ -202,6 +202,7 @@ const Step3Experience = ({
                     variant="ghost"
                     onClick={() => handleOpenModal(index)}
                     disabled={disabled}
+                    aria-label="Edit work experience"
                     className="p-2!"
                   >
                     <Edit className="h-4 w-4 text-primary" />
@@ -211,6 +212,7 @@ const Step3Experience = ({
                     disabled={disabled}
                     variant="ghost"
                     onClick={() => handleDelete(index)}
+                    aria-label="Delete work experience"
                     className="p-2!"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
@@ -310,6 +312,7 @@ const Step3Experience = ({
               id="isCurrent"
               {...expRegister('isCurrent')}
               className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
+              aria-label='I currently work here'
             />
             <label htmlFor="isCurrent" className="text-sm font-medium">
               I currently work here

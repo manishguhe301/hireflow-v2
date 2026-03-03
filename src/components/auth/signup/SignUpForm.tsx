@@ -129,6 +129,7 @@ const SignUpForm = () => {
             register={register('name', { required: true })}
             error={errors.name}
             disabled={isLoading}
+            focused
           />
           <FormInput
             label="Email"

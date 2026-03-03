@@ -228,6 +228,7 @@ const JobDetailsForApplicant = () => {
                   !session && "hidden"
                 )}
                 disabled={saving}
+                aria-label='Bookmark Job'
               >
                 {isSaved ? (
                   <BookmarkCheck className="h-5 w-5 text-primary" />
@@ -395,7 +396,7 @@ const JobDetailsForApplicant = () => {
                     <Button
                       variant="outline"
                       className="w-full"
-                      onClick={() => router.push('/dashboard')}
+                      onClick={() => router.push('/dashboard/applications')}
                     >
                       View My Applications
                     </Button>
@@ -440,7 +441,10 @@ const JobDetailsForApplicant = () => {
                       alt={job.company.name}
                       onLoad={() => setImageLoaded(true)}
                       onError={() => setImageLoaded(true)}
-                      className="h-14 w-14 rounded-lg object-cover border"
+                      className={clsx("h-14 w-14 rounded-lg object-cover border-border",
+                        'transition-opacity duration-300',
+                        imageLoaded ? 'opacity-100' : 'opacity-0'
+                      )}
                     />
                   </div>
                 ) : (

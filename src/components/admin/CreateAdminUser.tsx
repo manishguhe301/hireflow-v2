@@ -107,6 +107,7 @@ const CreateAdminUser = () => {
           register={register('name', { required: true })}
           error={errors.name}
           disabled={isLoading}
+          focused
         />
 
 

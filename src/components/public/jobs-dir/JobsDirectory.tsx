@@ -180,7 +180,7 @@ const JobsDirectory = () => {
       fetchJobs(false)
     } catch (error) {
       toast.error('Something went wrong')
-    }finally {
+    } finally {
       setSaving(false)
     }
   }
@@ -252,6 +252,7 @@ const JobsDirectory = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
+              aria-label="Search jobs by title, skills, company…"
               placeholder="Search jobs by title, skills, company…"
               value={search}
               onChange={(e) => {
@@ -276,6 +277,7 @@ const JobsDirectory = () => {
           />
 
           <input
+            aria-label="Location"
             type="text"
             placeholder="Location"
             value={location}
