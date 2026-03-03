@@ -30,6 +30,7 @@ const FormDatePicker = ({
 
       <input
         type="date"
+        aria-label={label}
         value={value ? value.toISOString().split('T')[0] : ''}
         min={minDate ? minDate.toISOString().split('T')[0] : undefined}
         max={maxDate ? maxDate.toISOString().split('T')[0] : undefined}

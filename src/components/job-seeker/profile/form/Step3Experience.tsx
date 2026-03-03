@@ -312,6 +312,7 @@ const Step3Experience = ({
               id="isCurrent"
               {...expRegister('isCurrent')}
               className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
+              aria-label='I currently work here'
             />
             <label htmlFor="isCurrent" className="text-sm font-medium">
               I currently work here

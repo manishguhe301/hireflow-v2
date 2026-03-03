@@ -316,6 +316,7 @@ const JobApplicants = () => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search applicants..."
             className="w-full md:w-64 rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
+            aria-label="Search applicants"
           />
         </div>
 
