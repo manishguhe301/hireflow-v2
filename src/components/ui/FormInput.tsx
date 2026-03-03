@@ -17,6 +17,7 @@ type FormInputProps = {
   minLength?: number
   maxLength?: number
   toolTipContent?: string
+  focused?: boolean
 }
 
 export const FormInput = ({
@@ -29,7 +30,8 @@ export const FormInput = ({
   className,
   minLength,
   maxLength,
-  toolTipContent
+  toolTipContent,
+  focused
 }: FormInputProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -53,6 +55,7 @@ export const FormInput = ({
           disabled={disabled}
           type={isPassword ? (showPassword ? 'text' : 'password') : type}
           placeholder={placeholder}
+          
           className={clsx(
             'w-full rounded-xl border px-4 py-3 text-sm outline-none transition',
             'bg-background text-foreground border-border/60 focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
@@ -65,6 +68,7 @@ export const FormInput = ({
           )}
           min={minLength}
           max={maxLength}
+          autoFocus={focused}
         />
 
 
