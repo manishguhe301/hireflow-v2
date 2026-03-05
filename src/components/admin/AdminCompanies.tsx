@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Building2,
   Search,
@@ -15,6 +15,8 @@ import DeleteCompanyModal from './DeleteCompanyModal'
 import RejectCompanyModal from './RejectCompanyModal'
 import CompaniesTable from './CompaniesTable'
 import Pagination from '../ui/Pagination'
+import useDebounce from '@/src/store/hooks/useDebounce'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type Pagination = {
   total: number
@@ -24,75 +26,151 @@ type Pagination = {
 }
 
 const AdminCompanies = () => {
-  const [companies, setCompanies] = useState<Company[]>([])
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
-  const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteCompanyId, setDeleteCompanyId] = useState<string | null>(null)
   const [rejectCompanyId, setRejectCompanyId] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
   const [search, setSearch] = useState('')
-  const [pagination, setPagination] = useState<Pagination | null>(null)
   const [page, setPage] = useState(1)
+  // const [pagination, setPagination] = useState<Pagination | null>(null)
+  // const [companies, setCompanies] = useState<Company[]>([])
+  // const [isLoading, setIsLoading] = useState(true)
+  const debouncedSearch = useDebounce(search, 500)
+  const queryClient = useQueryClient()
 
-  const fetchCompanies = async (status?: string, isLoadingNeeded: boolean = true) => {
-    if (isLoadingNeeded) {
-      setIsLoading(true)
-    }
-    try {
-      const params = new URLSearchParams()
-      if (status) params.set('status', status)
-      if (search) params.set('search', search)
-      params.set('page', page.toString())
-      params.set('limit', '12')
+  // const fetchCompanies = async (status?: string, isLoadingNeeded: boolean = true) => {
+  //   if (isLoadingNeeded) {
+  //     setIsLoading(true)
+  //   }
+  //   try {
+  //     const params = new URLSearchParams()
+  //     if (status) params.set('status', status)
+  //     if (search) params.set('search', search)
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
 
-      const url =
-        `/api/admin/companies?${params.toString()}`
+  //     const url =
+  //       `/api/admin/companies?${params.toString()}`
 
-      const res = await AppSdk.getData(url, null)
+  //     const res = await AppSdk.getData(url, null)
 
-      if (res.companies) {
-        setCompanies(res.companies)
-        setPagination(res.pagination)
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to fetch companies, please try again.')
-    }
-    finally {
-      setIsLoading(false)
-    }
-  }
+  //     if (res.companies) {
+  //       setCompanies(res.companies)
+  //       setPagination(res.pagination)
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error('Failed to fetch companies, please try again.')
+  //   }
+  //   finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
-  useEffect(() => {
-    const shouldDebounce = search.length > 0
-    const delay = shouldDebounce ? 500 : 0
+  // useEffect(() => {
+  //   const shouldDebounce = search.length > 0
+  //   const delay = shouldDebounce ? 500 : 0
 
-    const timer = setTimeout(() => {
-      fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
-    }, delay)
+  //   const timer = setTimeout(() => {
+  //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
+  //   }, delay)
 
-    return () => clearTimeout(timer)
-  }, [activeTab, search, page])
+  //   return () => clearTimeout(timer)
+  // }, [activeTab, search, page])
+
+  const queryParams = new URLSearchParams()
+
+  if (activeTab !== 'ALL') queryParams.set('status', activeTab)
+  if (debouncedSearch) queryParams.set('search', debouncedSearch)
+
+  queryParams.set('page', page.toString())
+  queryParams.set('limit', '12')
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-companies', activeTab, debouncedSearch, page],
+    queryFn: async () => {
+      const res = await AppSdk.getData(
+        `/api/admin/companies?${queryParams.toString()}`,
+        null
+      )
+
+      if (!res) throw new Error('Failed to fetch companies')
+
+      return res
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const companies: Company[] = data?.companies ?? []
+  const pagination: Pagination | null = data?.pagination ?? null
+
+  const approveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return AppSdk.patchData(`/api/admin/companies/${id}`, {
+        status: 'APPROVED',
+      })
+    },
+    onSuccess: () => {
+      toast.success('Company approved successfully')
+      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
+    },
+    onError: () => {
+      toast.error('Failed to approve company')
+    },
+    onSettled: () => {
+      setLoadingAction(null)
+    },
+  })
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
-    try {
-      const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'APPROVED'
-      })
+    // try {
+    //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
+    //     status: 'APPROVED'
+    //   })
 
-      if (res.success) {
-        toast.success('Company approved successfully')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
-      }
-    } catch (error) {
-      toast.error('Failed to approve company')
-    }
-    finally {
-      setLoadingAction(null)
-    }
+    //   if (res.success) {
+    //     toast.success('Company approved successfully')
+    //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
+    //   }
+    // } catch (error) {
+    //   toast.error('Failed to approve company')
+    // }
+    // finally {
+    // setLoadingAction(null)
+    // }
+
+    approveMutation.mutate(id)
+
+
   }
+
+  const rejectMutation = useMutation({
+    mutationFn: async ({
+      id,
+      reason,
+    }: {
+      id: string
+      reason: string
+    }) => {
+      return AppSdk.patchData(`/api/admin/companies/${id}`, {
+        status: 'REJECTED',
+        rejectionReason: reason,
+      })
+    },
+    onSuccess: () => {
+      toast.success('Company rejected')
+      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
+    },
+    onError: () => {
+      toast.error('Failed to reject company')
+    },
+    onSettled: () => {
+      setLoadingAction(null)
+    },
+  })
 
   const handleReject = async (id: string, reason: string) => {
     if (!reason.trim()) {
@@ -102,47 +180,75 @@ const AdminCompanies = () => {
 
     setLoadingAction(`reject-${id}`)
 
-    try {
-      const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'REJECTED',
-        rejectionReason: reason
-      })
+    rejectMutation.mutate({ id, reason })
 
-      if (res.success) {
-        toast.success('Company rejected')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
-      }
-    } catch (error) {
-      toast.error('Failed to reject company')
-    }
-    finally {
-      setLoadingAction(null)
-      setRejectCompanyId(null)
-      setRejectReason('')
-    }
+    setRejectCompanyId(null)
+    setRejectReason('')
+
+    // try {
+    //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
+    //     status: 'REJECTED',
+    //     rejectionReason: reason
+    //   })
+
+    //   if (res.success) {
+    //     toast.success('Company rejected')
+    //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
+    //   }
+    // } catch (error) {
+    //   toast.error('Failed to reject company')
+    // }
+    // finally {
+    //   setLoadingAction(null)
+    //   setRejectCompanyId(null)
+    //   setRejectReason('')
+    // }
   }
+
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return AppSdk.deleteData(`/api/admin/companies/${id}`, null)
+    },
+    onSuccess: () => {
+      toast.success('Company deleted')
+      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
+    },
+    onError: () => {
+      toast.error('Failed to delete company')
+    },
+    onSettled: () => {
+      setLoadingAction(null)
+    }
+  })
 
   const handleDelete = async () => {
     if (!deleteCompanyId) return
 
     setLoadingAction(`delete-${deleteCompanyId}`)
-    try {
-      const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
 
-      if (res.success) {
-        toast.success('Company deleted')
-        fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
-      }
-    } catch (error) {
-      toast.error('Failed to delete company')
-    }
-    finally {
-      setLoadingAction(null)
-      setDeleteCompanyId(null)
-    }
+    deleteMutation.mutate(deleteCompanyId)
+
+    setDeleteCompanyId(null)
+
+    // try {
+    //   const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
+
+    //   if (res.success) {
+    //     toast.success('Company deleted')
+    //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
+    //   }
+    // } catch (error) {
+    //   toast.error('Failed to delete company')
+    // }
+    // finally {
+    //   setLoadingAction(null)
+    //   setDeleteCompanyId(null)
+    // }
   }
 
   useEffect(() => {
+    //eslint-disable-next-line
     setRejectCompanyId(null)
     setRejectReason('')
     setDeleteCompanyId(null)
