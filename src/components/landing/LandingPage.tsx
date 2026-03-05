@@ -18,46 +18,75 @@ import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import clsx from 'clsx';
+import { useQuery } from '@tanstack/react-query';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [companies, setCompanies] = useState<Company[]>([])
   const [imageLoaded, setImageLoaded] = useState(false)
 
-  const [jobs, setJobs] = useState<DirJobType[]>([])
+  // const [companies, setCompanies] = useState<Company[]>([])
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [jobs, setJobs] = useState<DirJobType[]>([])
 
-  const fetchData = async () => {
-    setIsLoading(true)
-    try {
+  // const fetchData = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     const [jobsRes, companiesRes] = await Promise.all([
+  //       AppSdk.getData(`/api/jobs?limit=4`, null),
+  //       AppSdk.getData(`/api/companies?limit=6`, null),
+  //     ])
+
+  //     if (jobsRes.error) {
+  //       toast.error(jobsRes.error || 'Failed to fetch jobs')
+  //     } else {
+  //       setJobs(jobsRes.jobs)
+  //     }
+
+  //     if (companiesRes.error) {
+  //       toast.error(companiesRes.error || 'Failed to fetch companies')
+  //     } else {
+  //       setCompanies(companiesRes.companies)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error('Failed to load data')
+  //   }
+  //   finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchData()
+  // }, [])
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['homepage-data'],
+    queryFn: async () => {
       const [jobsRes, companiesRes] = await Promise.all([
         AppSdk.getData(`/api/jobs?limit=4`, null),
         AppSdk.getData(`/api/companies?limit=6`, null),
       ])
 
-      if (jobsRes.error) {
-        toast.error(jobsRes.error || 'Failed to fetch jobs')
-      } else {
-        setJobs(jobsRes.jobs)
-      }
+      if (jobsRes.error) throw new Error(jobsRes.error)
+      if (companiesRes.error) throw new Error(companiesRes.error)
 
-      if (companiesRes.error) {
-        toast.error(companiesRes.error || 'Failed to fetch companies')
-      } else {
-        setCompanies(companiesRes.companies)
+      return {
+        jobs: jobsRes.jobs,
+        companies: companiesRes.companies
       }
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to load data')
-    }
-    finally {
-      setIsLoading(false)
-    }
-  }
+    },
+    staleTime: 1000 * 60 * 10
+  })
+
+  const jobs: DirJobType[] = data?.jobs ?? []
+  const companies: Company[] = data?.companies ?? []
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (error) {
+      toast.error('Failed to load landing data')
+    }
+  }, [error])
 
   useEffect(() => {
     //eslint-disable-next-line
@@ -66,9 +95,9 @@ export default function HomePage() {
 
   if (!mounted) return null
 
-  const handleMenuClose = (e: React.MouseEvent) => {
-    e.currentTarget.closest('details')?.removeAttribute('open')
-  }
+  // const handleMenuClose = (e: React.MouseEvent) => {
+  //   e.currentTarget.closest('details')?.removeAttribute('open')
+  // }
 
   if (isLoading) {
     return (
