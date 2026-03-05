@@ -6,6 +6,7 @@ import { ReduxProvider } from '@/src/store/provider';
 import { ThemeProvider } from '@/src/components/theme/theme-provider';
 import { ThemeToggle } from '@/src/components/theme/theme-toggle';
 import { ToasterProvider } from '@/src/components/toaster/ToasterProvider';
+import QueryProvider from '@/src/lib/QueryProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,7 +26,9 @@ export default function RootLayout({
         <SessionProvider>
           <ThemeProvider>
             <ReduxProvider>
-              {children}
+              <QueryProvider>
+                {children}
+              </QueryProvider>
               {/* <ThemeToggle /> */}
               <ToasterProvider />
             </ReduxProvider>
