@@ -1,5 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+import { getCachedSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -85,7 +85,7 @@ export async function GET(
         'logo' in job.company &&
         job.company.logo
       ) {
-        const signedLogo = await getSignedUrl(
+        const signedLogo = await getCachedSignedUrl(
           job.company.logo as string,
           60 * 60 * 24 * 7,
         );

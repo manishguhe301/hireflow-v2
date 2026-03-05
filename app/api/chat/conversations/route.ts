@@ -1,5 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+import { getCachedSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
           };
 
           if (companyConv.jobSeeker?.profile?.avatar) {
-            const signedAvatar = await getSignedUrl(
+            const signedAvatar = await getCachedSignedUrl(
               companyConv.jobSeeker.profile.avatar,
               60 * 60 * 24 * 7,
             );
@@ -165,7 +165,7 @@ export async function GET(req: NextRequest) {
           };
 
           if (jobSeekerConv.company?.logo) {
-            const signedLogo = await getSignedUrl(
+            const signedLogo = await getCachedSignedUrl(
               jobSeekerConv.company.logo,
               60 * 60 * 24 * 7,
             );
