@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+// import { getSignedUrl } from '@/src/lib/fileUpload';
 
 export async function GET() {
   try {
