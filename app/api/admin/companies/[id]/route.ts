@@ -1,6 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { authOptions } from '@/src/lib/auth';
-import { deleteFileFromB2, getCachedSignedUrl } from '@/src/lib/fileUpload';
+import { deleteFileFromB2, getSignedUrl } from '@/src/lib/fileUpload';
 import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
@@ -37,7 +37,7 @@ export async function GET(
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    const signedLogo = await getCachedSignedUrl(company?.logo as string, 604800);
+    const signedLogo = await getSignedUrl(company?.logo as string, 604800);
 
     return NextResponse.json({ company: { ...company, logo: signedLogo } });
   } catch (error) {

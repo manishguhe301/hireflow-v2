@@ -1,6 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
-  getCachedSignedUrl,
+  getSignedUrl,
   deleteFileFromB2,
   uploadFileToB2,
 } from '@/src/lib/fileUpload';
@@ -777,7 +777,7 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const signedAvatar = await getCachedSignedUrl(
+    const signedAvatar = await getSignedUrl(
       updatedProfile?.avatarPath as string,
       604800,
     );

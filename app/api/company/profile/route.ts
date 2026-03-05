@@ -1,7 +1,7 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
   deleteFileFromB2,
-  getCachedSignedUrl,
+  getSignedUrl,
   uploadFileToB2,
 } from '@/src/lib/fileUpload';
 import { notifyRoleUser } from '@/src/lib/notificationService';
@@ -22,7 +22,7 @@ export async function GET() {
       },
     });
 
-    const logourl = await getCachedSignedUrl(company?.logo as string, 604800);
+    const logourl = await getSignedUrl(company?.logo as string, 604800);
 
     return NextResponse.json({
       company: company ? { ...company, logo: logourl } : null,
@@ -297,7 +297,7 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const logourl = await getCachedSignedUrl(updatedCompany?.logo as string, 604800);
+    const logourl = await getSignedUrl(updatedCompany?.logo as string, 604800);
 
     return NextResponse.json({
       success: true,

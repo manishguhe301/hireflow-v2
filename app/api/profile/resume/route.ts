@@ -1,5 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getCachedSignedUrl } from '@/src/lib/fileUpload';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
   }
 
-  const signedUrl = await getCachedSignedUrl(filePath);
+  const signedUrl = await getSignedUrl(filePath);
 
   return NextResponse.json({ url: signedUrl });
 }

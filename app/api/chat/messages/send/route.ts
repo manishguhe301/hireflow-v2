@@ -4,7 +4,7 @@ import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { pusherServer } from '@/src/lib/pusher';
 import { notifyUser } from '@/src/lib/notificationService';
-import { getCachedSignedUrl } from '@/src/lib/fileUpload';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 
 const MAX_MESSAGE_LENGTH = 5000;
 
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     let messageWithSignedAvatar = message;
 
     if (message.sender?.profile?.avatar) {
-      const signedAvatar = await getCachedSignedUrl(
+      const signedAvatar = await getSignedUrl(
         message.sender.profile.avatar,
         60 * 60 * 24 * 7,
       );

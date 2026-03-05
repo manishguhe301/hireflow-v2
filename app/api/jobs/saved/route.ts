@@ -1,5 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getCachedSignedUrl } from '@/src/lib/fileUpload';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -163,7 +163,7 @@ export async function GET(req: NextRequest) {
         let logoUrl = null;
 
         if (job.job.company.logo) {
-          logoUrl = await getCachedSignedUrl(job.job.company.logo, 60 * 60 * 24 * 7);
+          logoUrl = await getSignedUrl(job.job.company.logo, 60 * 60 * 24 * 7);
         }
 
         return {

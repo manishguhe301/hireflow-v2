@@ -1,5 +1,5 @@
 import { authOptions } from '@/src/lib/auth';
-import { getCachedSignedUrl } from '@/src/lib/fileUpload';
+import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
@@ -174,7 +174,7 @@ export async function GET(req: NextRequest) {
         let logoUrl = null;
 
         if (job.company.logo) {
-          logoUrl = await getCachedSignedUrl(job.company.logo, 60 * 60 * 24 * 7);
+          logoUrl = await getSignedUrl(job.company.logo, 60 * 60 * 24 * 7);
         }
 
         return {
