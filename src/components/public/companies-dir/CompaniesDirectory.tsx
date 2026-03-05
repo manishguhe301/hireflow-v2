@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Search, Briefcase } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Spinner } from '../../elements/Loader'
@@ -8,6 +8,8 @@ import { FormSelect } from '../../ui/FormSelect'
 import CompanyCard from './CompanyCard'
 import Pagination from '../../ui/Pagination'
 import { companyIndustries } from '@/src/utils/utils'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import useDebounce from '@/src/store/hooks/useDebounce'
 
 export type Company = {
   id: string
@@ -30,36 +32,41 @@ export default function CompaniesDirectory() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [companies, setCompanies] = useState<Company[]>([])
-  const [pagination, setPagination] = useState<Pagination | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  // const [companies, setCompanies] = useState<Company[]>([])
+  // const [pagination, setPagination] = useState<Pagination | null>(null)
+  // const [isLoading, setIsLoading] = useState(true)
 
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [industry, setIndustry] = useState(searchParams.get('industry') || '')
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
 
-  const fetchCompanies = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (search) params.set('search', search)
-      if (industry) params.set('industry', industry)
-      if (location) params.set('country', location)
-      params.set('page', page.toString())
-      params.set('limit', '12')
+  const debouncedSearch = useDebounce(search, 500)
+  const debouncedIndustry = useDebounce(industry, 500)
+  const debouncedLocation = useDebounce(location, 500)
+  const queryClient = useQueryClient()
 
-      const res = await fetch(`/api/companies?${params.toString()}`)
-      const data = await res.json()
+  // const fetchCompanies = useCallback(async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     const params = new URLSearchParams()
+  //     if (search) params.set('search', search)
+  //     if (industry) params.set('industry', industry)
+  //     if (location) params.set('country', location)
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
 
-      setCompanies(data.companies || [])
-      setPagination(data.pagination)
-    } catch (error) {
-      console.error('Error fetching companies:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [search, industry, location, page])
+  //     const res = await fetch(`/api/companies?${params.toString()}`)
+  //     const data = await res.json()
+
+  //     setCompanies(data.companies || [])
+  //     setPagination(data.pagination)
+  //   } catch (error) {
+  //     console.error('Error fetching companies:', error)
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }, [search, industry, location, page])
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -71,16 +78,59 @@ export default function CompaniesDirectory() {
     router.push(`/explore/companies?${params.toString()}`, { scroll: false })
   }, [search, industry, location, page, router])
 
+  // useEffect(() => {
+  //   const shouldDebounce = search.length > 0 || location.length > 0
+  //   const delay = shouldDebounce ? 500 : 0
+
+  //   const timer = setTimeout(() => {
+  //     fetchCompanies()
+  //   }, delay)
+
+  //   return () => clearTimeout(timer)
+  // }, [search, industry, location, page])
+
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams()
+
+    if (debouncedSearch) params.set('search', debouncedSearch)
+    if (debouncedIndustry) params.set('industry', debouncedIndustry)
+    if (debouncedLocation) params.set('country', debouncedLocation)
+
+    params.set('page', page.toString())
+    params.set('limit', '12')
+
+    return params.toString()
+  }, [debouncedSearch, debouncedIndustry, debouncedLocation, page])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['companies', queryParams],
+    queryFn: async () => {
+      const res = await fetch(`/api/companies?${queryParams}`)
+      if (!res.ok) throw new Error('Failed to fetch companies')
+      return res.json()
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
+  })
+
+  const companies: Company[] = data?.companies ?? []
+  const pagination: Pagination | null = data?.pagination ?? null
+
+
   useEffect(() => {
-    const shouldDebounce = search.length > 0 || location.length > 0
-    const delay = shouldDebounce ? 500 : 0
+    if (!pagination || page >= pagination.totalPages) return
 
-    const timer = setTimeout(() => {
-      fetchCompanies()
-    }, delay)
+    const nextParams = queryParams.replace(`page=${page}`, `page=${page + 1}`)
 
-    return () => clearTimeout(timer)
-  }, [search, industry, location, page, fetchCompanies])
+    queryClient.prefetchQuery({
+      queryKey: ['companies', nextParams],
+      queryFn: async () => {
+        const res = await fetch(`/api/companies?${nextParams}`)
+        return res.json()
+      }
+    })
+  }, [pagination, page, queryParams])
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
