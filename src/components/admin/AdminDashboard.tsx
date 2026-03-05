@@ -31,6 +31,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { formatRelativeTime } from '@/src/utils/helper'
+import { useQuery } from '@tanstack/react-query'
 
 interface DashboardStats {
   companies: {
@@ -63,29 +64,44 @@ interface DashboardStats {
 }
 
 const AdminDashboard = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [stats, setStats] = useState<DashboardStats | null>(null)
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [stats, setStats] = useState<DashboardStats | null>(null)
 
-  const fetchStats = async () => {
-    if (!isLoading) setIsLoading(true)
-    try {
+  // const fetchStats = async () => {
+  //   if (!isLoading) setIsLoading(true)
+  //   try {
+  //     const res = await AppSdk.getData('/api/admin/stats', null)
+  //     if (res.error) {
+  //       toast.error(res.error || 'Failed to fetch stats, please try again.')
+  //       return
+  //     }
+  //     setStats(res)
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error('Failed to fetch stats, please try again.')
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchStats()
+  // }, [])
+
+  const { data: stats, isLoading, refetch, isError } = useQuery({
+    queryKey: ['admin-dashboard-stats'],
+    queryFn: async () => {
       const res = await AppSdk.getData('/api/admin/stats', null)
-      if (res.error) {
-        toast.error(res.error || 'Failed to fetch stats, please try again.')
-        return
-      }
-      setStats(res)
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to fetch stats, please try again.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    fetchStats()
-  }, [])
+      if (res.error) {
+        throw new Error(res.error || 'Failed to fetch stats')
+      }
+
+      return res as DashboardStats
+    },
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  })
 
   if (isLoading) {
     return (
@@ -95,12 +111,12 @@ const AdminDashboard = () => {
     )
   }
 
-  if (!stats) {
+  if (!stats || isError) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load dashboard data</p>
-          <Button onClick={fetchStats} className="mt-4">
+          <Button onClick={() => refetch()} className="mt-4">
             Retry
           </Button>
         </div>
