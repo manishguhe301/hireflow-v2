@@ -39,10 +39,13 @@ const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingA
           <Button
             onClick={handleDelete}
             disabled={loadingAction === `delete-${deleteUserId}`}
-            className="px-4! py-2! border-none! rounded-xl bg-red-500 text-white  disabled:opacity-70 w-full "
+            className="px-4! py-2! border-none! rounded-xl bg-red-500 text-white disabled:opacity-70 w-full"
           >
             {loadingAction === `delete-${deleteUserId}` ? (
-              'Deleting...'
+              <div className="flex items-center gap-2">
+                Deleting
+                <Spinner className="h-4 w-4" />
+              </div>
             ) : (
               'Delete'
             )}

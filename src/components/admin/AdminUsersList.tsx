@@ -109,6 +109,7 @@ const AdminUsersList = () => {
     onSuccess: () => {
       toast.success('User deleted')
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      setDeleteUserId(null)
     },
     onError: () => {
       toast.error('Failed to delete user')
