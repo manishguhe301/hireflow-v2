@@ -97,3 +97,27 @@ export async function getSignedUrl(
     throw new Error('Failed to generate signed URL');
   }
 }
+
+type CacheItem = {
+  url: string;
+  expiresAt: number;
+};
+
+const cache = new Map<string, CacheItem>();
+
+export async function getCachedSignedUrl(path: string, expires = 604800) {
+  const cached = cache.get(path);
+
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.url;
+  }
+
+  const url = await getSignedUrl(path, expires);
+
+  cache.set(path, {
+    url,
+    expiresAt: Date.now() + expires * 1000 - 60_000,
+  });
+
+  return url;
+}
