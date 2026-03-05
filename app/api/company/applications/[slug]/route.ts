@@ -1,5 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+import { getCachedSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { profile } from 'console';
@@ -155,7 +155,7 @@ export async function GET(
         let signedUrl = null;
 
         if (application?.user?.profile?.avatar) {
-          signedUrl = await getSignedUrl(
+          signedUrl = await getCachedSignedUrl(
             application.user.profile.avatar,
             60 * 60 * 24 * 7,
           );

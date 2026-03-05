@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+import { getCachedSignedUrl } from '@/src/lib/fileUpload';
 
 export async function GET(
   req: NextRequest,
@@ -65,7 +65,7 @@ export async function GET(
       );
     }
 
-    const profileWithAvatar = await getSignedUrl(
+    const profileWithAvatar = await getCachedSignedUrl(
       profile?.avatar as string,
       604800,
     );

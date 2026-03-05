@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+import { getCachedSignedUrl } from '@/src/lib/fileUpload';
 
 export async function GET(req: NextRequest) {
   try {
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
         let logoUrl = null;
 
         if (company.logo) {
-          logoUrl = await getSignedUrl(company.logo, 604800);
+          logoUrl = await getCachedSignedUrl(company.logo, 604800);
         }
 
         return {
