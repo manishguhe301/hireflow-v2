@@ -1,6 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
-  getSignedUrl,
+  // getSignedUrl,
   deleteFileFromB2,
   uploadFileToB2,
 } from '@/src/lib/fileUpload';
@@ -777,14 +777,15 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const signedAvatar = await getSignedUrl(
-      updatedProfile?.avatarPath as string,
-      604800,
-    );
+    // const signedAvatar = await getSignedUrl(
+    //   updatedProfile?.avatarPath as string,
+    //   604800,
+    // );
 
     return NextResponse.json({
       success: true,
-      profile: { ...updatedProfile, avatar: signedAvatar },
+      // profile: { ...updatedProfile, avatar: signedAvatar },
+      profile: updatedProfile,
     });
   } catch (error) {
     console.error('Error updating profile:', error);

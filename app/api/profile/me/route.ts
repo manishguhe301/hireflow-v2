@@ -26,13 +26,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    const signedAvatar = await getSignedUrl(
-      profile?.avatarPath as string,
-      604800,
-    );
+    // const signedAvatar = await getSignedUrl(
+    //   profile?.avatarPath as string,
+    //   604800,
+    // );
 
     return NextResponse.json({
-      profile: profile ? { ...profile, avatar: signedAvatar } : null,
+      // profile: profile ? { ...profile, avatar: signedAvatar } : null,
+      profile,
     });
   } catch (error) {
     console.error('Get Profile Error:', error);
