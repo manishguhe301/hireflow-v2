@@ -1,5 +1,5 @@
 import { authOptions } from '@/src/lib/auth';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+import { getCachedSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
@@ -168,7 +168,7 @@ export async function GET(
       isSaved = !!savedJob;
     }
 
-    const companyLogoUrl = await getSignedUrl(
+    const companyLogoUrl = await getCachedSignedUrl(
       job.company.logo as string,
       604800,
     );
