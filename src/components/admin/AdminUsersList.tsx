@@ -13,6 +13,8 @@ import UserDeleteModal from "./UserDeleteModal"
 import { Button } from "../ui/Button"
 import UsersTable from "./UsersTable"
 import Pagination from "../ui/Pagination"
+import useDebounce from "@/src/store/hooks/useDebounce"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 type Pagination = {
   total: number
@@ -22,73 +24,119 @@ type Pagination = {
 }
 
 const AdminUsersList = () => {
-  const [users, setUsers] = useState<User[]>([])
+  // const [users, setUsers] = useState<User[]>([])
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [pagination, setPagination] = useState<Pagination | null>(null)
   const [activeTab, setActiveTab] = useState<'ALL' | Role>('ALL')
-  const [isLoading, setIsLoading] = useState(true)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [pagination, setPagination] = useState<Pagination | null>(null)
   const [page, setPage] = useState(1)
+  const debouncedSearch = useDebounce(search, 500)
+  const queryClient = useQueryClient()
 
-  const fetchUsers = async (role?: string, isLoadingNeeded: boolean = true) => {
-    if (isLoadingNeeded) {
-      setIsLoading(true)
-    }
-    try {
-      const params = new URLSearchParams()
-      if (search) params.set('search', search)
-      params.set('page', page.toString())
-      params.set('limit', '12')
-      if (activeTab !== 'ALL') params.set('role', activeTab)
+  // const fetchUsers = async (role?: string, isLoadingNeeded: boolean = true) => {
+  //   if (isLoadingNeeded) {
+  //     setIsLoading(true)
+  //   }
+  //   try {
+  //     const params = new URLSearchParams()
+  //     if (search) params.set('search', search)
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
+  //     if (activeTab !== 'ALL') params.set('role', activeTab)
 
-      const url =
-        `/api/admin/users?${params.toString()}`
+  //     const url =
+  //       `/api/admin/users?${params.toString()}`
 
-      const res = await AppSdk.getData(url, null)
+  //     const res = await AppSdk.getData(url, null)
 
-      if (res.users) {
-        setUsers(res.users)
-        setPagination(res.pagination)
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to fetch Users, please try again.')
-    }
-    finally {
-      setIsLoading(false)
-    }
-  }
+  //     if (res.users) {
+  //       setUsers(res.users)
+  //       setPagination(res.pagination)
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error('Failed to fetch Users, please try again.')
+  //   }
+  //   finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
-  useEffect(() => {
-    const shouldDebounce = search.length > 0
-    const delay = shouldDebounce ? 500 : 0
+  // useEffect(() => {
+  //   const shouldDebounce = search.length > 0
+  //   const delay = shouldDebounce ? 500 : 0
 
-    const timer = setTimeout(() => {
-      fetchUsers(activeTab === 'ALL' ? undefined : activeTab)
-    }, delay)
+  //   const timer = setTimeout(() => {
+  //     fetchUsers(activeTab === 'ALL' ? undefined : activeTab)
+  //   }, delay)
 
-    return () => clearTimeout(timer)
-  }, [activeTab, search, page])
+  //   return () => clearTimeout(timer)
+  // }, [activeTab, search, page])
+
+  const queryParams = new URLSearchParams()
+
+  if (debouncedSearch) queryParams.set('search', debouncedSearch)
+  if (activeTab !== 'ALL') queryParams.set('role', activeTab)
+
+  queryParams.set('page', page.toString())
+  queryParams.set('limit', '12')
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-users', activeTab, debouncedSearch, page],
+    queryFn: async () => {
+      const res = await AppSdk.getData(
+        `/api/admin/users?${queryParams.toString()}`,
+        null
+      )
+
+      if (!res) throw new Error('Failed to fetch users')
+
+      return res
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const users: User[] = data?.users ?? []
+  const pagination: Pagination | null = data?.pagination ?? null
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return AppSdk.deleteData(`/api/admin/users/${id}`, null)
+    },
+    onSuccess: () => {
+      toast.success('User deleted')
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+    },
+    onError: () => {
+      toast.error('Failed to delete user')
+    },
+    onSettled: () => {
+      setLoadingAction(null)
+    },
+  })
 
   const handleDelete = async () => {
     if (!deleteUserId) return
 
     setLoadingAction(`delete-${deleteUserId}`)
-    try {
-      const res = await AppSdk.deleteData(`/api/admin/users/${deleteUserId}`, null)
+    // try {
+    //   const res = await AppSdk.deleteData(`/api/admin/users/${deleteUserId}`, null)
 
-      if (res.success) {
-        toast.success('User deleted')
-        fetchUsers(activeTab === 'ALL' ? undefined : activeTab, false)
-      }
-    } catch (error) {
-      toast.error('Failed to delete user')
-    }
-    finally {
-      setLoadingAction(null)
-      setDeleteUserId(null)
-    }
+    //   if (res.success) {
+    //     toast.success('User deleted')
+    //     fetchUsers(activeTab === 'ALL' ? undefined : activeTab, false)
+    //   }
+    // } catch (error) {
+    //   toast.error('Failed to delete user')
+    // }
+    // finally {
+    //   setLoadingAction(null)
+    //   setDeleteUserId(null)
+    // }
+    deleteMutation.mutate(deleteUserId)
   }
 
   return (
