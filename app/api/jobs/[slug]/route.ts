@@ -1,5 +1,5 @@
 import { authOptions } from '@/src/lib/auth';
-import { getSignedUrl } from '@/src/lib/fileUpload';
+// import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
@@ -168,22 +168,23 @@ export async function GET(
       isSaved = !!savedJob;
     }
 
-    const companyLogoUrl = await getSignedUrl(
-      job.company.logo as string,
-      604800,
-    );
+    // const companyLogoUrl = await getSignedUrl(
+    //   job.company.logo as string,
+    //   604800,
+    // );
 
     return NextResponse.json({
-      job: {
-        ...job,
-        applicationsCount: job._count.applications,
-        savedCount: job._count.savedJobs,
-        company: {
-          ...job.company,
-          activeJobsCount: job.company._count.jobs,
-          logo: companyLogoUrl,
-        },
-      },
+      // job: {
+      //   ...job,
+      //   applicationsCount: job._count.applications,
+      //   savedCount: job._count.savedJobs,
+      //   company: {
+      //     ...job.company,
+      //     activeJobsCount: job.company._count.jobs,
+      //     logo: companyLogoUrl,
+      //   },
+      // },
+      job,
       similarJobs,
       hasApplied,
       application: existingApplication,
