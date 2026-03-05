@@ -58,9 +58,7 @@ const LoginForm = () => {
       toast.success('Login successful')
       reset()
 
-      // router.replace(callbackURL || '/redirect')
-      window.location.href = callbackURL || '/redirect'
-
+      router.replace(callbackURL || '/redirect')
     } catch (error) {
       console.error(error)
       toast.error('Something went wrong. Please try again.')

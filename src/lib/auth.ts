@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password,
+          user.password
         );
 
         if (!isPasswordValid) {
@@ -60,15 +60,6 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).role = token.role;
       }
       return session;
-    },
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`;
-      }
-      else if (new URL(url).origin === baseUrl) {
-        return url;
-      }
-      return baseUrl;
     },
   },
   pages: {
