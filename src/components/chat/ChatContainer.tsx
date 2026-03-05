@@ -3,12 +3,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
-import ChatSidebar, { useDebounce } from './ChatSidebar';
+import ChatSidebar from './ChatSidebar';
 import ChatWindow from './ChatWindow';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
 import { useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
 import { useChatSidebarUpdate } from '@/src/store/hooks/useChatSidebarUpdate';
+import useDebounce from '@/src/store/hooks/useDebounce';
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);

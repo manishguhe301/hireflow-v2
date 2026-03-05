@@ -3,7 +3,7 @@ import { formatRelativeTime } from '@/src/utils/helper';
 import { MessageCircle, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
@@ -21,17 +21,6 @@ interface ChatSidebarProps {
   isLoadingMore: boolean
   setSearchQuery: Dispatch<SetStateAction<string>>
   setConversations: Dispatch<SetStateAction<ConversationListItem[]>>
-}
-
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
 }
 
 export default function ChatSidebar({
