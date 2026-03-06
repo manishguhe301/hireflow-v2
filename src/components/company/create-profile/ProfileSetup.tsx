@@ -15,7 +15,6 @@ import { setCompany } from '@/src/store/slices/companySlice'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { CompanyStatus } from '@prisma/client'
 import clsx from 'clsx'
-import { useQueryClient } from '@tanstack/react-query'
 
 export type ProfileFormInputs = {
   name: string,
