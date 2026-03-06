@@ -13,6 +13,8 @@ import { APPLICATION_TABS_WITH_SORT, APPLICATIONS_TABS, getLabel } from '@/src/u
 import { FormSelect } from '../../ui/FormSelect';
 import ApplicationsTableForJob from './ApplicationsTableForJob';
 import Modal from '../../ui/Modal';
+import useDebounce from '@/src/store/hooks/useDebounce';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface Stats {
   total: number,
@@ -58,8 +60,16 @@ interface Pagination {
 }
 
 const JobApplicants = () => {
-  const [applications, setApplications] = useState<Applications[] | null>(null)
-  const [applicationsLoading, setApplicationsLoading] = useState(true)
+  // const [applicationsLoading, setApplicationsLoading] = useState(true)
+  // const [applications, setApplications] = useState<Applications[] | null>(null)
+  // const [pagination, setPagination] = useState<Pagination | null>(null)
+  // const [job, setJob] = useState<{
+  //   id: string;
+  //   title: string;
+  // } | null>(null)
+  // const [stats, setStats] = useState<Stats | null>(null)
+  // const [fetchingApplicationsforFilter, setFetchingApplicationsforFilter] = useState(false)
+  // const [isBulkProcessing, setIsBulkProcessing] = useState(false)
   const [page, setPage] = useState(1)
   const searchParams = useSearchParams()
   const { slug } = useParams()
@@ -67,79 +77,244 @@ const JobApplicants = () => {
   const [activeTab, setActiveTab] =
     useState<'ALL' | ApplicationStatus>('ALL')
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || '')
-  const [pagination, setPagination] = useState<Pagination | null>(null)
-  const [job, setJob] = useState<{
-    id: string;
-    title: string;
-  } | null>(null)
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [fetchingApplicationsforFilter, setFetchingApplicationsforFilter] = useState(false)
   const router = useRouter()
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
   const [bulkAction, setBulkAction] = useState<'update_status' | 'reject' | null>(null)
-  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus | ''>('')
+  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus | ''>('APPLIED')
   const [bulkRejectReason, setBulkRejectReason] = useState('')
-  const [isBulkProcessing, setIsBulkProcessing] = useState(false)
+  const debouncedSearch = useDebounce(search, 500)
+  const queryClient = useQueryClient()
 
-  const fetchApplicationsAndStats = async (isNeededSpinner: boolean = true) => {
-    if (isNeededSpinner) {
-      setFetchingApplicationsforFilter(true)
-    }
-    try {
+  // const fetchApplicationsAndStats = async (isNeededSpinner: boolean = true) => {
+  //   if (isNeededSpinner) {
+  //     setFetchingApplicationsforFilter(true)
+  //   }
+  //   try {
+  //     const params = new URLSearchParams()
+  //     if (search) params.set('search', search)
+  //     if (activeTab !== 'ALL') params.set('status', activeTab)
+  //     if (sortBy) params.set('sortBy', sortBy)
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
+
+  //     const res = await AppSdk.getData(
+  //       `/api/company/applications/${slug}?${params.toString()}`,
+  //       null,
+  //     )
+
+  //     if (res.error) {
+  //       toast.error(res.error)
+  //       return
+  //     }
+
+  //     setApplications(res.applications)
+  //     setPagination(res.pagination)
+  //     setJob(res.job)
+  //     setStats(res.stats)
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error('Failed to load applications')
+  //   } finally {
+  //     setApplicationsLoading(false)
+  //     setFetchingApplicationsforFilter(false)
+  //   }
+  // }
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    refetch
+  } = useQuery({
+    queryKey: [
+      'job-applications',
+      slug,
+      page,
+      debouncedSearch,
+      activeTab,
+      sortBy
+    ],
+    queryFn: async () => {
+
       const params = new URLSearchParams()
-      if (search) params.set('search', search)
+
+      if (debouncedSearch) params.set('search', debouncedSearch)
       if (activeTab !== 'ALL') params.set('status', activeTab)
       if (sortBy) params.set('sortBy', sortBy)
+
       params.set('page', page.toString())
       params.set('limit', '12')
 
       const res = await AppSdk.getData(
         `/api/company/applications/${slug}?${params.toString()}`,
-        null,
+        null
       )
 
       if (res.error) {
-        toast.error(res.error)
-        return
+        throw new Error(res.error)
       }
 
-      setApplications(res.applications)
-      setPagination(res.pagination)
-      setJob(res.job)
-      setStats(res.stats)
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to load applications')
-    } finally {
-      setApplicationsLoading(false)
-      setFetchingApplicationsforFilter(false)
-    }
-  }
+      return res
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 5
+  })
+
+  const applications: Applications[] | null = data?.applications || null
+  const pagination: Pagination = data?.pagination
+  const job: {
+    id: string;
+    title: string;
+  } | null = data?.job || null
+  const stats: Stats | null = data?.stats || null
+
+  useEffect(() => {
+    //eslint-disable-next-line
+    setPage(1)
+  }, [debouncedSearch, activeTab, sortBy])
 
   useEffect(() => {
     const params = new URLSearchParams()
-    if (search) params.set('search', search)
+    if (debouncedSearch) params.set('search', debouncedSearch)
     if (activeTab !== 'ALL') params.set('status', activeTab)
     if (sortBy) params.set('sortBy', sortBy)
     if (page > 1) params.set('page', page.toString())
 
     router.push(`/company/applications/${slug}/?${params.toString()}`, { scroll: false })
-  }, [search, activeTab, sortBy, page, router])
+  }, [debouncedSearch, activeTab, sortBy, page, router, slug])
+
+  // useEffect(() => {
+  //   const shouldDebounce = search.length > 0 || activeTab || sortBy
+  //   const delay = shouldDebounce ? 500 : 0
+
+  //   const timer = setTimeout(() => {
+  //     fetchApplicationsAndStats()
+  //   }, delay)
+
+  //   return () => clearTimeout(timer)
+  // }, [search, activeTab, page, sortBy])
+
+
+
+
+  const checkBoxHandler = (appId: string) => {
+    setSelectedApplicants(prev => {
+      if (prev.includes(appId)) {
+        return prev.filter(id => id !== appId)
+      }
+      return [...prev, appId]
+    })
+  }
+
+  const bulkMutation = useMutation({
+    mutationFn: async () => {
+      return AppSdk.patchData('/api/company/applications/bulk', {
+        applicationIds: selectedApplicants,
+        action: bulkAction,
+        status: bulkStatus,
+        rejectReason: bulkRejectReason
+      })
+    },
+
+    onSuccess: (res) => {
+      toast.success(res.message)
+
+      queryClient.invalidateQueries({
+        queryKey: ['job-applications', slug]
+      })
+
+      setSelectedApplicants([])
+      setIsBulkModalOpen(false)
+      setBulkRejectReason('')
+    },
+    onSettled: () => {
+      toast.dismiss()
+    }
+  })
+
+  const handleBulkAction = async () => {
+    if (selectedApplicants.length === 0) {
+      toast.error('No applicants selected')
+      return
+    }
+
+    if (!bulkAction) return
+
+    // setIsBulkProcessing(true)
+    toast.loading('Processing bulk action...')
+
+    // try {
+    //   const res = await AppSdk.patchData('/api/company/applications/bulk', {
+    //     applicationIds: selectedApplicants,
+    //     action: bulkAction,
+    //     status: bulkStatus,
+    //     rejectReason: bulkRejectReason,
+    //   })
+
+    //   if (res.error) {
+    //     toast.dismiss()
+    //     toast.error(res.error || 'Failed to process bulk action')
+    //     return
+    //   }
+
+    //   toast.dismiss()
+    //   toast.success(res.message || 'Bulk action completed successfully')
+    //   setSelectedApplicants([])
+    //   setIsBulkModalOpen(false)
+    //   setBulkRejectReason('')
+    //   refetch()
+    // } catch (error) {
+    //   toast.dismiss()
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setIsBulkProcessing(false)
+    // }
+    bulkMutation.mutate()
+  }
+
+  const isBulkProcessing = bulkMutation.isPending
 
   useEffect(() => {
-    const shouldDebounce = search.length > 0 || activeTab || sortBy
-    const delay = shouldDebounce ? 500 : 0
 
-    const timer = setTimeout(() => {
-      fetchApplicationsAndStats()
-    }, delay)
+    if (!data) return
 
-    return () => clearTimeout(timer)
-  }, [search, activeTab, page, sortBy])
+    const nextPage = page + 1
 
+    if (nextPage <= data.pagination.totalPages) {
 
-  if (applicationsLoading) {
+      queryClient.prefetchQuery({
+        queryKey: [
+          'job-applications',
+          slug,
+          nextPage,
+          debouncedSearch,
+          activeTab,
+          sortBy
+        ],
+        queryFn: async () => {
+
+          const params = new URLSearchParams()
+
+          if (debouncedSearch) params.set('search', debouncedSearch)
+          if (activeTab !== 'ALL') params.set('status', activeTab)
+          if (sortBy) params.set('sortBy', sortBy)
+
+          params.set('page', nextPage.toString())
+          params.set('limit', '12')
+
+          return AppSdk.getData(
+            `/api/company/applications/${slug}?${params.toString()}`,
+            null
+          )
+        }
+      })
+
+    }
+
+  }, [data, page, slug, debouncedSearch, activeTab, sortBy, queryClient])
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center gap-2 min-h-[500px]">
         Loading...<Spinner className="h-4 w-4" />
@@ -157,7 +332,7 @@ const JobApplicants = () => {
           </p>
           <Button onClick={
             () => {
-              fetchApplicationsAndStats()
+              refetch()
             }
           } className="mt-4">
             Retry
@@ -174,55 +349,6 @@ const JobApplicants = () => {
       setSelectedApplicants(applications.map(app => app.id))
     }
   }
-
-  const checkBoxHandler = (appId: string) => {
-    setSelectedApplicants(prev => {
-      if (prev.includes(appId)) {
-        return prev.filter(id => id !== appId)
-      }
-      return [...prev, appId]
-    })
-  }
-
-  const handleBulkAction = async () => {
-    if (selectedApplicants.length === 0) {
-      toast.error('No applicants selected')
-      return
-    }
-
-    if (!bulkAction) return
-
-    setIsBulkProcessing(true)
-    toast.loading('Processing bulk action...')
-
-    try {
-      const res = await AppSdk.patchData('/api/company/applications/bulk', {
-        applicationIds: selectedApplicants,
-        action: bulkAction,
-        status: bulkStatus,
-        rejectReason: bulkRejectReason,
-      })
-
-      if (res.error) {
-        toast.dismiss()
-        toast.error(res.error || 'Failed to process bulk action')
-        return
-      }
-
-      toast.dismiss()
-      toast.success(res.message || 'Bulk action completed successfully')
-      setSelectedApplicants([])
-      setIsBulkModalOpen(false)
-      setBulkRejectReason('')
-      fetchApplicationsAndStats(false)
-    } catch (error) {
-      toast.dismiss()
-      toast.error('Something went wrong')
-    } finally {
-      setIsBulkProcessing(false)
-    }
-  }
-
 
   return (
     <div className="p-4 md:p-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto max-sm:max-w-screen">
@@ -279,7 +405,7 @@ const JobApplicants = () => {
       <div>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <p className="text-muted-foreground text-sm">
-            {applicationsLoading ? 'Loading...' : `Showing ${applications.length} of ${pagination?.total} applicants`}
+            {isLoading ? 'Loading...' : `Showing ${applications.length} of ${pagination?.total} applicants`}
           </p>
         </div>
       </div>
@@ -287,7 +413,7 @@ const JobApplicants = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <FormSelect
           options={APPLICATION_TABS_WITH_SORT}
-          disabled={applicationsLoading}
+          disabled={isLoading}
           placeholder='Filters'
           onChange={(value) => {
             setPage(1)
@@ -360,65 +486,67 @@ const JobApplicants = () => {
           </div>
         </div>
       )}
-      {
-        applicationsLoading || fetchingApplicationsforFilter ? (
-          <div className="flex items-center justify-center min-h-[200px]">
-            <Spinner className="h-8 w-8" />
-          </div>
-        ) : (
-          applications.length > 0 ?
-            <ApplicationsTableForJob
-              applications={applications}
-              selectAllApplicants={selectAllApplicants}
-              selectedApplicants={selectedApplicants}
-              applicationsLength={applications.length}
-              checkBoxHandler={checkBoxHandler}
-              isBulkProcessing={isBulkProcessing}
-              jobId={job?.id || ''}
-            /> : (
-              <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-                <FileText className="h-10 w-10 text-muted-foreground" />
+      <>
+        {
+          isFetching ? (
+            <div className="flex items-center justify-center ">
+              <Spinner className="h-8 w-8" />
+            </div>
+          ) : (
+            applications.length > 0 ?
+              <ApplicationsTableForJob
+                applications={applications}
+                selectAllApplicants={selectAllApplicants}
+                selectedApplicants={selectedApplicants}
+                applicationsLength={applications.length}
+                checkBoxHandler={checkBoxHandler}
+                isBulkProcessing={isBulkProcessing}
+                jobId={job?.id || ''}
+              /> : (
+                <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+                  <FileText className="h-10 w-10 text-muted-foreground" />
 
-                <p className="text-lg font-medium">
-                  No applicants found
-                </p>
+                  <p className="text-lg font-medium">
+                    No applicants found
+                  </p>
 
-                <p className="text-sm text-muted-foreground max-w-md">
-                  {activeTab !== 'ALL' && search
-                    ? `No applicants match the "${getLabel(
-                      APPLICATIONS_TABS,
-                      activeTab,
-                    )}" status with search term "${search}". `
-                    : activeTab !== 'ALL'
-                      ? `No applicants found under "${getLabel(
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    {activeTab !== 'ALL' && search
+                      ? `No applicants match the "${getLabel(
                         APPLICATIONS_TABS,
                         activeTab,
-                      )}" status. `
-                      : search
-                        ? `No applicants match the search term "${search}". `
-                        : `There are no applicants for this job yet. `}
-                  try adjusting your filters to find what you&apos;re looking for.
-                </p>
+                      )}" status with search term "${search}". `
+                      : activeTab !== 'ALL'
+                        ? `No applicants found under "${getLabel(
+                          APPLICATIONS_TABS,
+                          activeTab,
+                        )}" status. `
+                        : search
+                          ? `No applicants match the search term "${search}". `
+                          : `There are no applicants for this job yet. `}
+                    try adjusting your filters to find what you&apos;re looking for.
+                  </p>
 
-                {(activeTab !== 'ALL' || search) && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setActiveTab('ALL')
-                      setSearch('')
-                    }}
-                  >
-                    Clear Filters
-                  </Button>
-                )}
-              </div>
-            )
-        )
-      }
+                  {(activeTab !== 'ALL' || search) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setActiveTab('ALL')
+                        setSearch('')
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
+              )
+          )
+        }
+      </>
 
       {
-        !applicationsLoading && pagination && pagination.totalPages > 1 && (
+        !isLoading && pagination && pagination.totalPages > 1 && (
           <div className="mt-8">
             <Pagination
               page={page}
