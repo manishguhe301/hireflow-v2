@@ -46,8 +46,6 @@ export function FileUpload<T extends FieldValues>({
   const [fileName, setFileName] = useState<string | null>(null)
   const [fileSize, setFileSize] = useState<number | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
-  const [imageLoaded, setImageLoaded] = useState(false)
-
 
   const validateFile = (file: File) => {
     if (maxSizeMB && !validateFileSize(file, maxSizeMB)) {
@@ -100,18 +98,12 @@ export function FileUpload<T extends FieldValues>({
           <div className="flex items-center gap-3 relative">
             {isImage ? (
               <>
-                {!imageLoaded && (
-                  <div className="absolute inset-0 animate-pulse bg-muted" />
-                )}
                 {/*  eslint-disable-next-line */}
                 <img
                   src={existingFileUrl}
                   alt="Current file"
-                  onLoad={() => setImageLoaded(true)}
-                  onError={() => setImageLoaded(true)}
                   className={clsx(
                     "h-16 w-16 rounded-lg object-cover transition-opacity duration-300",
-                    imageLoaded ? "opacity-100" : "opacity-0"
                   )}
                 />
               </>

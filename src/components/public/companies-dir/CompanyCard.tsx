@@ -19,8 +19,6 @@ type CompanyCardProps = {
 }
 
 export default function CompanyCard({ company }: CompanyCardProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-
   return (
     <Link href={`/explore/companies/${company.id}`} className="h-full">
       <div className="group flex h-full flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-xl">
@@ -29,18 +27,13 @@ export default function CompanyCard({ company }: CompanyCardProps) {
             <>
               {company.logo ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={company.logo}
                     alt={company.name}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )} />
                 </>
               ) : (

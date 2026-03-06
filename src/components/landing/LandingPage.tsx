@@ -22,7 +22,6 @@ import { useQuery } from '@tanstack/react-query';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
 
   // const [companies, setCompanies] = useState<Company[]>([])
   // const [isLoading, setIsLoading] = useState(true)
@@ -186,18 +185,13 @@ export default function HomePage() {
                   <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                     {company.logo ? (
                       <>
-                        {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted" />
-                        )}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={company.logo}
                           alt={company.name}
-                          onLoad={() => setImageLoaded(true)}
-                          onError={() => setImageLoaded(true)}
+
                           className={clsx(
                             "h-full w-full object-cover transition-opacity duration-300",
-                            imageLoaded ? "opacity-100" : "opacity-0"
                           )} />
                       </>
                     ) : (
@@ -352,17 +346,11 @@ export default function HomePage() {
                           <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                             {job.company.logo ? (
                               <>
-                                {!imageLoaded && (
-                                  <div className="absolute inset-0 animate-pulse bg-muted" />
-                                )}
                                 <img
                                   src={job.company.logo}
-                                  onLoad={() => setImageLoaded(true)}
-                                  onError={() => setImageLoaded(true)}
                                   alt={job.company.name}
                                   className={clsx(
                                     "h-full w-full object-cover transition-opacity duration-300",
-                                    imageLoaded ? "opacity-100" : "opacity-0"
                                   )} />
                               </>
                             ) : (

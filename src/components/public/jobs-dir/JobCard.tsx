@@ -40,7 +40,6 @@ export default function JobCard({ job,
     : job.country
 
   const { data: session } = useSession()
-  const [imageLoaded, setImageLoaded] = useState(false)
 
   return (
     <Link
@@ -51,17 +50,11 @@ export default function JobCard({ job,
         <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
           {job.company.logo ? (
             <>
-              {!imageLoaded && (
-                <div className="absolute inset-0 animate-pulse bg-muted" />
-              )}
               <img
                 src={job.company.logo}
                 alt={job.company.name}
-                onLoad={() => setImageLoaded(true)}
-                onError={() => setImageLoaded(true)}
                 className={clsx(
                   "h-full w-full object-cover transition-opacity duration-300",
-                  imageLoaded ? "opacity-100" : "opacity-0"
                 )}
                 loading='lazy'
               />
