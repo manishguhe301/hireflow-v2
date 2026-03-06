@@ -51,7 +51,7 @@ const ApplicationsPage = () => {
   const [data, setData] = useState
     <ApplicationWithPagination | null>(null)
   const [activeTab, setActiveTab] =
-    useState<'ALL' | ApplicationStatus>('ALL')
+    useState<ApplicationStatus | 'ALL'>('ALL')
   const [page, setPage] = useState(1)
 
   const fetchApplications = async (
