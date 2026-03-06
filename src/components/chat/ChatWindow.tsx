@@ -37,6 +37,7 @@ export default function ChatWindow({
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const lastFetchedMessageIdRef = useRef<string | null>(null);
 
   const handleNewMessage = useCallback((message: MessageWithSender) => {
     setMessages((prev) => {
@@ -80,13 +81,11 @@ export default function ChatWindow({
       const oldScrollHeight = scrollContainer?.scrollHeight || 0;
 
       if (pageNum === 1) {
+        lastFetchedMessageIdRef.current = res.messages[res.messages.length - 1]?.id ?? null;
         setMessages(res.messages);
-        setTimeout(() => {
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-          }
-        }, 0);
       } else {
+        lastFetchedMessageIdRef.current = res.messages[res.messages.length - 1]?.id ?? null;
+
         setMessages((prev) => [...res.messages, ...prev]);
 
         requestAnimationFrame(() => {
@@ -105,6 +104,15 @@ export default function ChatWindow({
       setIsLoadingMore(false);
     }
   }, [conversationId]);
+
+  useEffect(() => {
+    if (isLoading || !lastFetchedMessageIdRef.current) return;
+    const el = document.getElementById(`msg-${lastFetchedMessageIdRef.current}`);
+    if (el) {
+      el.scrollIntoView({ block: 'end', behavior: 'instant' });
+      lastFetchedMessageIdRef.current = null;
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (!conversationId) return;
@@ -242,11 +250,16 @@ export default function ChatWindow({
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
           return (
-            <ChatMessage
+            <div
+              id={`msg-${message.id}`}
               key={`${message.id}-${message.createdAt}-${index}`}
-              message={message}
-              isOwnMessage={isOwnMessage}
-            />
+            >
+              <ChatMessage
+                // key={`${message.id}-${message.createdAt}-${index}`}
+                message={message}
+                isOwnMessage={isOwnMessage}
+              />
+            </div>
           );
         })}
         <div ref={messagesEndRef} />
@@ -272,7 +285,7 @@ export default function ChatWindow({
               'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
             )}
             rows={2}
-            disabled={sendMutation.isPending}
+          // disabled={sendMutation.isPending}
           />
           <Button
             onClick={handleSendMessage}
