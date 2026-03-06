@@ -69,7 +69,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
           setSelectedConversation(null);
         }
 
-        toast.success(`Conversation deleted from conversations by company admin`);
+        // toast.success(`Conversation deleted from conversations by company admin`);
 
         return;
       }
