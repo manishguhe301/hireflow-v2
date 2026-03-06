@@ -3,11 +3,12 @@ import { formatRelativeTime } from '@/src/utils/helper';
 import { MessageCircle, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { Dispatch, RefObject, SetStateAction, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { Spinner } from '../elements/Loader';
+import { useMutation } from '@tanstack/react-query';
 
 interface ChatSidebarProps {
   conversations: ConversationListItem[];
@@ -20,7 +21,7 @@ interface ChatSidebarProps {
   observerTarget: RefObject<HTMLDivElement | null>
   isLoadingMore: boolean
   setSearchQuery: Dispatch<SetStateAction<string>>
-  setConversations: Dispatch<SetStateAction<ConversationListItem[]>>
+  onDeleteConversation: (id: string) => void;
 }
 
 export default function ChatSidebar({
@@ -34,32 +35,26 @@ export default function ChatSidebar({
   observerTarget,
   isLoadingMore,
   setSearchQuery,
-  setConversations
+  // setConversations
+  onDeleteConversation
 }: ChatSidebarProps) {
-  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
-  const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setIsDeletingId(id);
-    try {
-      const res = await AppSdk.deleteData(`/api/chat/conversations/${id}`, null);
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => AppSdk.deleteData(`/api/chat/conversations/${id}`, null),
+    onSuccess: (res, id) => {
       if (res.error) {
         toast.error(res.error);
         return;
       }
       toast.success('Conversation deleted');
-      setConversations((prev) => prev.filter((c) => c.id !== id));
-      if (selectedConversation === id) {
-        onSelectConversation('');
-      }
+      onDeleteConversation(id);
+      if (selectedConversation === id) onSelectConversation('');
       onConversationUpdate();
-    } catch (error) {
-      console.log(error);
+    },
+    onError: () => {
       toast.error('Failed to delete');
-    } finally {
-      setIsDeletingId(null);
-    }
-  };
+    },
+  });
 
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col max-sm:w-full">
@@ -185,10 +180,12 @@ export default function ChatSidebar({
                             </span>
                           )}
                           {userType === 'company' && <Button
-                            disabled={isDeletingId === conv.id}
+                            disabled={deleteMutation.isPending && deleteMutation.variables === conv.id}
                             variant='ghost'
-                            onClick={(e) => handleDeleteConversation
-                              (e, conv.id)
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteMutation.mutate(conv.id);
+                            }
                             }
                             aria-label='Delete conversation'
                             className='p-0!'>
