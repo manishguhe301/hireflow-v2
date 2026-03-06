@@ -32,7 +32,6 @@ const statusStyles: Record<CompanyStatus, string> = {
 
 const CompanyProfileView = () => {
   const { company, isLoading, error } = useCompany()
-  const [imageLoaded, setImageLoaded] = useState(false)
 
   if (isLoading) {
     return (
@@ -60,18 +59,13 @@ const CompanyProfileView = () => {
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company.logo ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={company.logo}
                     alt={`${company.name} logo`}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </>

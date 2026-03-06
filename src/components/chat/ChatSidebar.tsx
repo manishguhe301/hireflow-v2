@@ -36,7 +36,6 @@ export default function ChatSidebar({
   setSearchQuery,
   setConversations
 }: ChatSidebarProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
   const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
@@ -133,13 +132,8 @@ export default function ChatSidebar({
                       (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
 
                       <div className='relative'>
-                        {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
-                        )}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          onLoad={() => setImageLoaded(true)}
-                          onError={() => setImageLoaded(true)}
                           src={
                             src
                           }
@@ -147,7 +141,6 @@ export default function ChatSidebar({
                           // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
                           className={clsx(
                             "h-10 w-10 object-cover rounded-full shrink-0 transition-opacity duration-300",
-                            imageLoaded ? "opacity-100" : "opacity-0"
                           )}
                         />
                       </div>
