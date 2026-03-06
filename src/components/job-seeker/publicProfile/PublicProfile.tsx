@@ -41,7 +41,6 @@ const PublicProfile = () => {
   const [internalNotes, setInternalNotes] = useState('')
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [creatingChat, setCreatingChat] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
 
   const fetchProfile = async () => {
     try {
@@ -192,18 +191,13 @@ const PublicProfile = () => {
             <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={profile.avatar}
                     alt={profile.name}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </>

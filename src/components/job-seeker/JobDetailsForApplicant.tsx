@@ -104,7 +104,6 @@ const JobDetailsForApplicant = () => {
   const slug = params.slug as string
   const { data: session } = useSession()
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
   const [now, setNow] = useState<number | null>(null)
 
   // const [loading, setLoading] = useState(true)
@@ -492,18 +491,12 @@ const JobDetailsForApplicant = () => {
               <div className="flex items-center gap-4 ">
                 {job.company.logo ? (
                   <div className='relative'>
-                    {!imageLoaded && (
-                      <div className="absolute inset-0 animate-pulse bg-muted rounded-lg" />
-                    )}
                     {/* eslint-disable-next-line */}
                     <img
                       src={job.company.logo}
                       alt={job.company.name}
-                      onLoad={() => setImageLoaded(true)}
-                      onError={() => setImageLoaded(true)}
                       className={clsx("h-14 w-14 rounded-lg object-cover border-border",
                         'transition-opacity duration-300',
-                        imageLoaded ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                   </div>

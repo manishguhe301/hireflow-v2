@@ -48,8 +48,6 @@ const JobDetails = () => {
   const [loading, setLoading] = useState(true)
   const [job, setJob] = useState<JobDetails | null>(null)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
-  const [imageLoaded, setImageLoaded] = useState(false)
-
 
   const fetchJobDetails = async () => {
     try {
@@ -161,19 +159,13 @@ const JobDetails = () => {
               {
                 job.company.logo ? (
                   <div className='relative'>
-                    {!imageLoaded && (
-                      <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
-                    )}
                     {/*  eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={job.company.logo}
                       alt={job.company.name}
-                      onLoad={() => setImageLoaded(true)}
-                      onError={() => setImageLoaded(true)}
                       // className="h-12 w-12 rounded-full"
                       className={clsx(
                         "h-12 w-12 rounded-full object-cover transition-opacity duration-300",
-                        imageLoaded ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </div>
