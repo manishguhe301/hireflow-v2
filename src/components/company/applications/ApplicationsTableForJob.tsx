@@ -18,6 +18,7 @@ import { Spinner } from "../../elements/Loader"
 import { useState } from "react"
 import { AppSdk } from "@/src/utils/AppSdk"
 import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query"
 
 const ApplicationsTableForJob = ({
   applications,
@@ -40,6 +41,7 @@ const ApplicationsTableForJob = ({
   const lengthSelected = selectedApplicants.length
   const [creatingFor, setCreatingFor] = useState<string | null>(null);
   const router = useRouter()
+  const queryClient = useQueryClient();
 
   const isIndeterminate =
     lengthSelected > 0 && lengthSelected < applicationsLength
@@ -56,6 +58,7 @@ const ApplicationsTableForJob = ({
         toast.error(res.error);
         return;
       }
+      await queryClient.invalidateQueries({ queryKey: ['conversations'] });
 
       router.push(`/company/chat?conversation=${res.conversationId}`);
     } catch (error) {
