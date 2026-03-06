@@ -26,6 +26,7 @@ import InfoRow from '../admin/InfoRow'
 import { formatDate, getLabel, isRichTextEmpty, JOB_STATUS_STYLE } from '@/src/utils/helper'
 import { jobCategories } from '@/src/utils/utils'
 import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 interface JobDetails extends Job {
   _count: {
@@ -45,89 +46,197 @@ const JobDetails = () => {
   const router = useRouter()
   const slug = params.slug as string | undefined
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [job, setJob] = useState<JobDetails | null>(null)
+  // const [loading, setLoading] = useState(true)
+  // const [job, setJob] = useState<JobDetails | null>(null)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
+  const queryClient = useQueryClient()
 
-  const fetchJobDetails = async () => {
-    try {
+  // const fetchJobDetails = async () => {
+  //   try {
+  //     const res = await AppSdk.getData(
+  //       `/api/company/jobs/${slug}?company=true&counts=true&applications=true&savedJobs=true`,
+  //       null,
+  //     )
+  //     if (res.job) setJob(res.job)
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error('Failed to fetch job details')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (!slug) return
+  //   fetchJobDetails()
+  // }, [slug])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['company-job', slug],
+    queryFn: async () => {
       const res = await AppSdk.getData(
         `/api/company/jobs/${slug}?company=true&counts=true&applications=true&savedJobs=true`,
-        null,
+        null
       )
-      if (res.job) setJob(res.job)
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to fetch job details')
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    if (!slug) return
-    fetchJobDetails()
-  }, [slug])
+      if (!res?.job) {
+        throw new Error('Job not found')
+      }
+
+      return res.job
+    },
+    enabled: !!slug,
+    staleTime: 0,
+    refetchOnMount: 'always'
+  })
+
+  const job: JobDetails = data
+
+  const statusMutation = useMutation({
+    mutationFn: async ({
+      slug,
+      status
+    }: {
+      slug: string
+      status: 'ACTIVE' | 'CLOSED'
+    }) => {
+
+      const res = await fetch(`/api/company/jobs/${slug}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update job')
+      }
+
+      return data
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['company-job', slug]
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['company-jobs']
+      })
+    },
+    onSettled: () => {
+      setLoadingAction(null)
+    }
+  })
 
   const handleStatusChange = async (newStatus: 'ACTIVE' | 'CLOSED') => {
     if (!job) return
 
     setLoadingAction(`status-${job.id}`)
 
-    try {
-      const res = await fetch(`/api/company/jobs/${job.slug}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      })
+    // try {
+    //   const res = await fetch(`/api/company/jobs/${job.slug}/status`, {
+    //     method: 'PATCH',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ status: newStatus })
+    //   })
 
-      const data = await res.json()
+    //   const data = await res.json()
 
-      if (!res.ok) {
-        toast.error(data.error || 'Failed to update job status')
-        return
-      }
+    //   if (!res.ok) {
+    //     toast.error(data.error || 'Failed to update job status')
+    //     return
+    //   }
 
-      toast.success(data.message)
-      await fetchJobDetails()
-    } catch (error) {
-      console.error(error)
-      toast.error('Something went wrong')
-    } finally {
-      setLoadingAction(null)
-    }
+    //   toast.success(data.message)
+    //   refetch()
+    // } catch (error) {
+    //   console.error(error)
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setLoadingAction(null)
+    // }
+
+    statusMutation.mutate({
+      slug: job.slug,
+      status: newStatus
+    })
   }
 
-  const handleDelete = async () => {
-    if (!job) return
+  const deleteMutation = useMutation({
+    mutationFn: async (slug: string) => {
 
-    setLoadingAction(`delete-${job.id}`)
-
-    try {
-      const res = await fetch(`/api/company/jobs/${job.slug}`, {
+      const res = await fetch(`/api/company/jobs/${slug}`, {
         method: 'DELETE'
       })
 
       const data = await res.json()
 
       if (!res.ok) {
-        toast.error(data.error || 'Failed to delete job')
-        return
+        throw new Error(data.error || 'Failed to delete job')
       }
+
+      return data
+    },
+
+    onSuccess: (data) => {
 
       if (data.action === 'closed') {
         toast.warning(data.message)
-        await fetchJobDetails()
-      } else {
-        toast.success(data.message)
-        router.push('/company/jobs')
+
+        queryClient.invalidateQueries({
+          queryKey: ['company-job', slug]
+        })
+
+        return
       }
-    } catch (error) {
-      console.error(error)
-      toast.error('Something went wrong')
-    } finally {
+
+      toast.success(data.message)
+
+      queryClient.invalidateQueries({
+        queryKey: ['company-jobs']
+      })
+
+      router.push('/company/jobs')
+    },
+    onSettled: () => {
       setLoadingAction(null)
     }
+  })
+
+  const handleDelete = async () => {
+    if (!job) return
+
+    setLoadingAction(`delete-${job.id}`)
+
+    // try {
+    //   const res = await fetch(`/api/company/jobs/${job.slug}`, {
+    //     method: 'DELETE'
+    //   })
+
+    //   const data = await res.json()
+
+    //   if (!res.ok) {
+    //     toast.error(data.error || 'Failed to delete job')
+    //     return
+    //   }
+
+    //   if (data.action === 'closed') {
+    //     toast.warning(data.message)
+    //     refetch()
+    //   } else {
+    //     toast.success(data.message)
+    //     router.push('/company/jobs')
+    //   }
+    // } catch (error) {
+    //   console.error(error)
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setLoadingAction(null)
+    // }
+
+    deleteMutation.mutate(job.slug)
   }
 
   const applicationStats = useMemo(() => {
@@ -139,7 +248,7 @@ const JobDetails = () => {
     }, {})
   }, [job])
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center gap-2 h-[90%] text-sm">
         Loading job details... <Spinner className="h-6 w-6" />
@@ -170,7 +279,8 @@ const JobDetails = () => {
                     />
                   </div>
                 ) :
-                  <Briefcase className="h-6 w-6 text-muted-foreground" />}
+                  <Briefcase className="h-6 w-6 text-muted-foreground" />
+              }
             </div>
 
             <div>
