@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
+import JobsDirectorySkeleton from '../../skeletons/JobsDirectorySkeleton'
 
 export type DirJobType = {
   id: string,
@@ -324,6 +325,9 @@ const JobsDirectory = () => {
     }
   }, [isMobileFilterOpen])
 
+  if (isLoading) {
+    return <JobsDirectorySkeleton />
+  }
 
   return (
     <div className={clsx(isLoggedIn
