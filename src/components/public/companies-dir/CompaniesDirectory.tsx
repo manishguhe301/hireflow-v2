@@ -10,6 +10,7 @@ import Pagination from '../../ui/Pagination'
 import { companyIndustries } from '@/src/utils/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
+import CompaniesDirectorySkeleton from '../../skeletons/CompaniesDirectorySkeleton'
 
 export type Company = {
   id: string
@@ -131,6 +132,10 @@ export default function CompaniesDirectory() {
       }
     })
   }, [pagination, page, queryParams])
+
+  if (isLoading) {
+    return <CompaniesDirectorySkeleton />
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 space-y-10">
