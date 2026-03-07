@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import clsx from 'clsx'
+import { useQueryClient } from '@tanstack/react-query'
 
 type ApplyFormInputs = {
   coverLetter: string
@@ -42,7 +43,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
+  const queryClient = useQueryClient()
 
 
   const {
@@ -97,6 +98,12 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         toast.error(result.error || 'Failed to submit application')
         return
       }
+      queryClient.invalidateQueries({ queryKey: ['company-applications'] })
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-activity'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
 
       toast.success(result.message || 'Application submitted successfully!')
       reset()
@@ -134,17 +141,12 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
             <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
               {job.company.logo ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={job.company.logo}
                     alt={job.company.name}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </>

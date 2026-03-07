@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '.';
 import { AppSdk } from '@/src/utils/AppSdk';
 import {
@@ -6,10 +6,12 @@ import {
   setLoading,
   setProfile,
 } from '../slices/job-seeker/userProfileSlice';
+import { useSession } from 'next-auth/react';
 
 export function useProfile() {
   const dispatch = useAppDispatch();
   const jobSeekerProfile = useAppSelector((state) => state.jobSeekerProfile);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,7 +40,11 @@ export function useProfile() {
       }
     };
 
-    if (!jobSeekerProfile.isLoading && !jobSeekerProfile.isFetched) {
+    if (
+      !jobSeekerProfile.isLoading &&
+      !jobSeekerProfile.isFetched &&
+      session?.user.role === 'JOB_SEEKER'
+    ) {
       fetchProfile();
     }
   }, [jobSeekerProfile.isFetched, jobSeekerProfile.isLoading, dispatch]);

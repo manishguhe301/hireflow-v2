@@ -26,6 +26,7 @@ const RejectCompanyModal = ({
     <Modal
       open={isOpen}
       onClose={() => {
+        if (!isLoading)
         setRejectCompanyId(null)
         setRejectReason('')
       }}

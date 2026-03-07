@@ -23,6 +23,7 @@ import InfoCard from '../../admin/InfoCard'
 import InfoRow from '../../admin/InfoRow'
 import DocumentCard from '../../admin/DocumentCard'
 import { useState } from 'react'
+import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
 
 const statusStyles: Record<CompanyStatus, string> = {
   PENDING: 'bg-warning/10 text-warning border-warning/30',
@@ -32,13 +33,10 @@ const statusStyles: Record<CompanyStatus, string> = {
 
 const CompanyProfileView = () => {
   const { company, isLoading, error } = useCompany()
-  const [imageLoaded, setImageLoaded] = useState(false)
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <ProfileSkeleton />
     )
   }
 
@@ -60,18 +58,13 @@ const CompanyProfileView = () => {
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company.logo ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={company.logo}
                     alt={`${company.name} logo`}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </>

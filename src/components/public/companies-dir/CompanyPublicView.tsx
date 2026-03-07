@@ -18,7 +18,6 @@ type CompanyPublicViewProps = {
 const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
   const router = useRouter()
   const { data: session } = useSession()
-  const [imageLoaded, setImageLoaded] = useState(false)
 
   return (
     <div className={clsx("mx-auto  space-y-10 px-4 py-6", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
@@ -36,18 +35,12 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
             <div className=" relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company.logo ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
                   {/*  eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     src={company.logo}
                     alt={`${company.name} logo`}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )} />
                 </>
               ) : (

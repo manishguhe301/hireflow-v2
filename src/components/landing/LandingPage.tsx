@@ -13,51 +13,79 @@ import { useEffect, useState } from 'react';
 import { DirJobType } from '../public/jobs-dir/JobsDirectory';
 import { getLabel } from '@/src/utils/helper';
 import { employmentTypes, jobCategories } from '@/src/utils/utils';
-import { Spinner } from '../elements/Loader';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import clsx from 'clsx';
+import { useQuery } from '@tanstack/react-query';
+import LandingPageSkeleton from '../skeletons/LandingPageSkeleton';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [companies, setCompanies] = useState<Company[]>([])
-  const [imageLoaded, setImageLoaded] = useState(false)
 
-  const [jobs, setJobs] = useState<DirJobType[]>([])
+  // const [companies, setCompanies] = useState<Company[]>([])
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [jobs, setJobs] = useState<DirJobType[]>([])
 
-  const fetchData = async () => {
-    setIsLoading(true)
-    try {
+  // const fetchData = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     const [jobsRes, companiesRes] = await Promise.all([
+  //       AppSdk.getData(`/api/jobs?limit=4`, null),
+  //       AppSdk.getData(`/api/companies?limit=6`, null),
+  //     ])
+
+  //     if (jobsRes.error) {
+  //       toast.error(jobsRes.error || 'Failed to fetch jobs')
+  //     } else {
+  //       setJobs(jobsRes.jobs)
+  //     }
+
+  //     if (companiesRes.error) {
+  //       toast.error(companiesRes.error || 'Failed to fetch companies')
+  //     } else {
+  //       setCompanies(companiesRes.companies)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error('Failed to load data')
+  //   }
+  //   finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchData()
+  // }, [])
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['homepage-data'],
+    queryFn: async () => {
       const [jobsRes, companiesRes] = await Promise.all([
         AppSdk.getData(`/api/jobs?limit=4`, null),
         AppSdk.getData(`/api/companies?limit=6`, null),
       ])
 
-      if (jobsRes.error) {
-        toast.error(jobsRes.error || 'Failed to fetch jobs')
-      } else {
-        setJobs(jobsRes.jobs)
-      }
+      if (jobsRes.error) throw new Error(jobsRes.error)
+      if (companiesRes.error) throw new Error(companiesRes.error)
 
-      if (companiesRes.error) {
-        toast.error(companiesRes.error || 'Failed to fetch companies')
-      } else {
-        setCompanies(companiesRes.companies)
+      return {
+        jobs: jobsRes.jobs,
+        companies: companiesRes.companies
       }
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to load data')
-    }
-    finally {
-      setIsLoading(false)
-    }
-  }
+    },
+    staleTime: 1000 * 60 * 10
+  })
+
+  const jobs: DirJobType[] = data?.jobs ?? []
+  const companies: Company[] = data?.companies ?? []
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (error) {
+      toast.error('Failed to load landing data')
+    }
+  }, [error])
 
   useEffect(() => {
     //eslint-disable-next-line
@@ -66,15 +94,13 @@ export default function HomePage() {
 
   if (!mounted) return null
 
-  const handleMenuClose = (e: React.MouseEvent) => {
-    e.currentTarget.closest('details')?.removeAttribute('open')
-  }
+  // const handleMenuClose = (e: React.MouseEvent) => {
+  //   e.currentTarget.closest('details')?.removeAttribute('open')
+  // }
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen" >
-        <Spinner className="h-8 w-8" />
-      </div>
+      <LandingPageSkeleton />
     )
   }
 
@@ -157,18 +183,13 @@ export default function HomePage() {
                   <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                     {company.logo ? (
                       <>
-                        {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted" />
-                        )}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={company.logo}
                           alt={company.name}
-                          onLoad={() => setImageLoaded(true)}
-                          onError={() => setImageLoaded(true)}
+
                           className={clsx(
                             "h-full w-full object-cover transition-opacity duration-300",
-                            imageLoaded ? "opacity-100" : "opacity-0"
                           )} />
                       </>
                     ) : (
@@ -323,17 +344,11 @@ export default function HomePage() {
                           <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                             {job.company.logo ? (
                               <>
-                                {!imageLoaded && (
-                                  <div className="absolute inset-0 animate-pulse bg-muted" />
-                                )}
                                 <img
                                   src={job.company.logo}
-                                  onLoad={() => setImageLoaded(true)}
-                                  onError={() => setImageLoaded(true)}
                                   alt={job.company.name}
                                   className={clsx(
                                     "h-full w-full object-cover transition-opacity duration-300",
-                                    imageLoaded ? "opacity-100" : "opacity-0"
                                   )} />
                               </>
                             ) : (

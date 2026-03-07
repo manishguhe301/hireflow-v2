@@ -15,6 +15,7 @@ import { isRichTextEmpty } from '@/src/utils/helper';
 import { Spinner } from '@/src/components/elements/Loader';
 import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export type JobFormInputs = {
   jobId?: string;
@@ -146,52 +147,100 @@ const CreateJobForm = () => {
   const params = useParams();
   const slug = params.slug as string | undefined
   const isEditMode = !!slug
-  const [jobLoading, setJobLoading] = useState(false)
-  const [job, setJob] = useState<Job | null>(null)
+  // const [jobLoading, setJobLoading] = useState(false)
+  // const [job, setJob] = useState<Job | null>(null)
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
+  const queryClient = useQueryClient()
 
-  const fetchJobDetails = async () => {
-    setJobLoading(true)
-    try {
+  // const fetchJobDetails = async () => {
+  //   setJobLoading(true)
+  //   try {
+  //     const res = await AppSdk.getData(`/api/company/jobs/${slug}`, null)
+  //     const job = res.job
+  //     if (job) {
+  //       setJob(job)
+  //       reset({
+  //         jobId: job.id,
+  //         title: job.title,
+  //         description: job.description,
+  //         requirements: job.requirements,
+  //         responsibilities: job.responsibilities ?? '',
+  //         skills: job.skills,
+  //         experienceLevel: job.experienceLevel,
+  //         employmentType: job.employmentType,
+  //         workMode: job.workMode,
+  //         country: job.country,
+  //         city: job.city,
+  //         salaryMin: job.salaryMin,
+  //         salaryMax: job.salaryMax,
+  //         hideSalary: job.hideSalary,
+  //         numberOfOpenings: job.numberOfOpenings,
+  //         applicationDeadline: job.applicationDeadline
+  //           ? new Date(job.applicationDeadline)
+  //           : undefined,
+  //         category: job.category,
+  //       })
+  //       setJobStatus(job.status)
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error('Failed to fetch job details, please try again.')
+  //   } finally {
+  //     setJobLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (!slug) return;
+  //   fetchJobDetails()
+  // }, [slug])
+
+  const { data, isLoading: jobLoading } = useQuery({
+    queryKey: ['company-job', slug],
+    queryFn: async () => {
       const res = await AppSdk.getData(`/api/company/jobs/${slug}`, null)
-      const job = res.job
-      if (job) {
-        setJob(job)
-        reset({
-          jobId: job.id,
-          title: job.title,
-          description: job.description,
-          requirements: job.requirements,
-          responsibilities: job.responsibilities ?? '',
-          skills: job.skills,
-          experienceLevel: job.experienceLevel,
-          employmentType: job.employmentType,
-          workMode: job.workMode,
-          country: job.country,
-          city: job.city,
-          salaryMin: job.salaryMin,
-          salaryMax: job.salaryMax,
-          hideSalary: job.hideSalary,
-          numberOfOpenings: job.numberOfOpenings,
-          applicationDeadline: job.applicationDeadline
-            ? new Date(job.applicationDeadline)
-            : undefined,
-          category: job.category,
-        })
-        setJobStatus(job.status)
+
+      if (!res?.job) {
+        throw new Error('Job not found')
       }
-    } catch (error) {
-      console.log(error);
-      toast.error('Failed to fetch job details, please try again.')
-    } finally {
-      setJobLoading(false)
-    }
-  }
+
+      return res.job
+    },
+    enabled: !!slug,
+    staleTime: 0,
+    refetchOnMount: 'always'
+  })
 
   useEffect(() => {
-    if (!slug) return;
-    fetchJobDetails()
-  }, [slug])
+    if (!data) return
+
+    const job = data
+
+    reset({
+      jobId: job.id,
+      title: job.title,
+      description: job.description,
+      requirements: job.requirements,
+      responsibilities: job.responsibilities ?? '',
+      skills: job.skills,
+      experienceLevel: job.experienceLevel,
+      employmentType: job.employmentType,
+      workMode: job.workMode,
+      country: job.country,
+      city: job.city,
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+      hideSalary: job.hideSalary,
+      numberOfOpenings: job.numberOfOpenings,
+      applicationDeadline: job.applicationDeadline
+        ? new Date(job.applicationDeadline)
+        : undefined,
+      category: job.category,
+    })
+
+    setJobStatus(job.status)
+
+  }, [data, reset])
 
   if (jobLoading) {
     return (
@@ -339,6 +388,8 @@ const CreateJobForm = () => {
 
           toast.success(successMessage)
           reset()
+          queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
+          queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
           setTimeout(() => router.push('/company/jobs'), 100)
         } catch (error) {
           console.error('Submit error:', error)

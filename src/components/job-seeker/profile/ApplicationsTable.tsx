@@ -19,10 +19,10 @@ export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   REJECTED: 'bg-red-500/10 text-red-600',
 }
 
-const ApplicationsTable = ({ data, fetchApplications }:
+const ApplicationsTable = ({ data, refetch }:
   {
     data: ApplicationWithPagination | null
-    fetchApplications: (isLoadingNeeded?: boolean) => Promise<void>
+    refetch: () => void
   }) => {
   const [isWithDrawModalOpen, setIsWithDrawModalOpen] = useState(false)
   const [withdrawApplicationId, setWithdrawApplicationId] = useState<string | null>(null)
@@ -135,7 +135,7 @@ const ApplicationsTable = ({ data, fetchApplications }:
       <WithdrawModal
         isWithDrawModalOpen={isWithDrawModalOpen}
         id={withdrawApplicationId}
-        fetchApplications={fetchApplications}
+        onSuccess={refetch}
         onClose={() => {
           setWithdrawApplicationId(null)
           setIsWithDrawModalOpen(false)

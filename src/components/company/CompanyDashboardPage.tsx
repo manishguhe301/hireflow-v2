@@ -18,6 +18,8 @@ import { Button } from '../ui/Button'
 import ApplicationOverTime from './ApplicationOverTime'
 import TopJobs from './TopJobs'
 import ApplicantionFunnel from './ApplicantionFunnel'
+import { useQuery } from '@tanstack/react-query'
+import AdminDashboardSkeleton from '../skeletons/DashboardSkeleton'
 
 export interface DashboardStats {
   totalJobs: number
@@ -100,51 +102,79 @@ const StatCard = ({
 
 export default function CompanyDashboard() {
   const { company } = useCompany()
-  const [isLoading, setIsLoading] = useState(true)
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData[]>([])
-  const [recentApplications, setRecentApplications] = useState<RecentApplication[]>([])
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
-  const [imageLoaded, setImageLoaded] = useState(false)
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [stats, setStats] = useState<DashboardStats | null>(null)
+  // const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData[]>([])
+  // const [recentApplications, setRecentApplications] = useState<RecentApplication[]>([])
+  // const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
 
 
-  const fetchDashboardData = async () => {
-    try {
+  // const fetchDashboardData = async () => {
+  //   try {
+  //     const [statsRes, analyticsRes] = await Promise.all([
+  //       AppSdk.getData('/api/company/dashboard/stats', null),
+  //       AppSdk.getData('/api/company/dashboard/analytics', null),
+  //     ])
+
+  //     if (statsRes.error) {
+  //       toast.error(statsRes.error)
+  //     } else {
+  //       setStats(statsRes.stats)
+  //       setTimeSeriesData(statsRes.timeSeriesData)
+  //       setRecentApplications(statsRes.recentApplications)
+  //     }
+
+  //     if (analyticsRes.error) {
+  //       toast.error(analyticsRes.error)
+  //     } else {
+  //       setAnalytics(analyticsRes)
+  //     }
+  //   } catch (err) {
+  //     console.error(err)
+  //     toast.error('Failed to load dashboard data')
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchDashboardData()
+  // }, [])
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['company-dashboard'],
+    queryFn: async () => {
       const [statsRes, analyticsRes] = await Promise.all([
         AppSdk.getData('/api/company/dashboard/stats', null),
         AppSdk.getData('/api/company/dashboard/analytics', null),
       ])
 
       if (statsRes.error) {
-        toast.error(statsRes.error)
-      } else {
-        setStats(statsRes.stats)
-        setTimeSeriesData(statsRes.timeSeriesData)
-        setRecentApplications(statsRes.recentApplications)
+        throw new Error(statsRes.error)
       }
 
       if (analyticsRes.error) {
-        toast.error(analyticsRes.error)
-      } else {
-        setAnalytics(analyticsRes)
+        throw new Error(analyticsRes.error)
       }
-    } catch (err) {
-      console.error(err)
-      toast.error('Failed to load dashboard data')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    fetchDashboardData()
-  }, [])
+      return {
+        stats: statsRes.stats,
+        timeSeriesData: statsRes.timeSeriesData,
+        recentApplications: statsRes.recentApplications,
+        analytics: analyticsRes,
+      }
+    },
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const stats: DashboardStats | null = data?.stats ?? null
+  const timeSeriesData: TimeSeriesData[] = data?.timeSeriesData ?? []
+  const recentApplications: RecentApplication[] = data?.recentApplications ?? []
+  const analytics: AnalyticsData = data?.analytics ?? null
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <AdminDashboardSkeleton />
     )
   }
 
@@ -153,7 +183,7 @@ export default function CompanyDashboard() {
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load dashboard data</p>
-          <Button onClick={fetchDashboardData} className="mt-4">
+          <Button onClick={() => refetch()} className="mt-4">
             Retry
           </Button>
         </div>
@@ -241,18 +271,13 @@ export default function CompanyDashboard() {
                   <div className=" flex items-center gap-3 flex-1 min-w-0">
                     {app.user.profile?.avatar ? (
                       <div className='relative'>
-                        {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
-                        )}
+
                         <img
                           src={app.user.profile.avatar}
                           alt={app.user.profile.name}
-                          onLoad={() => setImageLoaded(true)}
-                          onError={() => setImageLoaded(true)}
                           // className="h-10 w-10 rounded-full object-cover"
                           className={clsx(
                             "h-10 w-10 object-cover rounded-full transition-opacity duration-300",
-                            imageLoaded ? "opacity-100" : "opacity-0"
                           )}
                         />
                       </div>

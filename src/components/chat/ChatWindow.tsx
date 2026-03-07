@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { useChatPusher } from '@/src/store/hooks/useChatPusher';
 import { MessageWithSender } from '@/src/types';
 import ChatMessage from './ChatMessage';
-
+import { useMutation } from '@tanstack/react-query';
 
 interface ChatWindowProps {
   conversationId: string | null;
@@ -26,17 +26,18 @@ export default function ChatWindow({
   onMessageSent,
   chatPartnerName,
   jobTitle,
-  onBack
+  onBack,
 }: ChatWindowProps) {
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  // const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const lastFetchedMessageIdRef = useRef<string | null>(null);
 
   const handleNewMessage = useCallback((message: MessageWithSender) => {
     setMessages((prev) => {
@@ -80,13 +81,11 @@ export default function ChatWindow({
       const oldScrollHeight = scrollContainer?.scrollHeight || 0;
 
       if (pageNum === 1) {
+        lastFetchedMessageIdRef.current = res.messages[res.messages.length - 1]?.id ?? null;
         setMessages(res.messages);
-        setTimeout(() => {
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-          }
-        }, 0);
       } else {
+        lastFetchedMessageIdRef.current = res.messages[res.messages.length - 1]?.id ?? null;
+
         setMessages((prev) => [...res.messages, ...prev]);
 
         requestAnimationFrame(() => {
@@ -107,6 +106,15 @@ export default function ChatWindow({
   }, [conversationId]);
 
   useEffect(() => {
+    if (isLoading || !lastFetchedMessageIdRef.current) return;
+    const el = document.getElementById(`msg-${lastFetchedMessageIdRef.current}`);
+    if (el) {
+      el.scrollIntoView({ block: 'end', behavior: 'instant' });
+      lastFetchedMessageIdRef.current = null;
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
     if (!conversationId) return;
 
     setMessages([]);
@@ -120,6 +128,11 @@ export default function ChatWindow({
 
   }, [conversationId, fetchMessages]);
 
+  useEffect(() => {
+    setNewMessage('')
+  }, [conversationId])
+
+
   const handleScroll = async () => {
     if (!scrollContainerRef.current || isLoadingMore || !hasMore) return;
 
@@ -130,35 +143,55 @@ export default function ChatWindow({
     }
   };
 
+  const sendMutation = useMutation({
+    mutationFn: (content: string) =>
+      AppSdk.postData('/api/chat/messages/send', { conversationId, content }),
+    onSuccess: (res, content) => {
+      if (res.error) {
+        toast.error(res.error);
+        setNewMessage(content);
+        return;
+      }
+      onMessageSent();
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    },
+    onError: (_error, content) => {
+      toast.error('Failed to send message');
+      setNewMessage(content); // restore on network error
+    },
+  });
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId) return;
 
     const tempMessage = newMessage;
     setNewMessage('');
-    setIsSending(true);
+    // setIsSending(true);
+    sendMutation.mutate(tempMessage);
 
-    try {
-      const res = await AppSdk.postData('/api/chat/messages/send', {
-        conversationId,
-        content: tempMessage,
-      });
 
-      if (res.error) {
-        toast.error(res.error);
-        setNewMessage(tempMessage);
-        return;
-      }
+    // try {
+    //   const res = await AppSdk.postData('/api/chat/messages/send', {
+    //     conversationId,
+    //     content: tempMessage,
+    //   });
 
-      onMessageSent();
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      //eslint-disable-next-line
-    } catch (error: any) {
-      console.error(error, 'asdsad');
-      toast.error(error.error as string || 'Failed to send message');
-      setNewMessage(tempMessage);
-    } finally {
-      setIsSending(false);
-    }
+    //   if (res.error) {
+    //     toast.error(res.error);
+    //     setNewMessage(tempMessage);
+    //     return;
+    //   }
+
+    //   onMessageSent();
+    //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    //   //eslint-disable-next-line
+    // } catch (error: any) {
+    //   console.error(error, 'asdsad');
+    //   toast.error(error.error as string || 'Failed to send message');
+    //   setNewMessage(tempMessage);
+    // } finally {
+    //   setIsSending(false);
+    // }
   };
 
   if (!conversationId) {
@@ -217,11 +250,16 @@ export default function ChatWindow({
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
           return (
-            <ChatMessage
+            <div
+              id={`msg-${message.id}`}
               key={`${message.id}-${message.createdAt}-${index}`}
-              message={message}
-              isOwnMessage={isOwnMessage}
-            />
+            >
+              <ChatMessage
+                // key={`${message.id}-${message.createdAt}-${index}`}
+                message={message}
+                isOwnMessage={isOwnMessage}
+              />
+            </div>
           );
         })}
         <div ref={messagesEndRef} />
@@ -247,11 +285,11 @@ export default function ChatWindow({
               'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
             )}
             rows={2}
-            disabled={isSending}
+          // disabled={sendMutation.isPending}
           />
           <Button
             onClick={handleSendMessage}
-            disabled={!newMessage.trim() || isSending}
+            disabled={!newMessage.trim() || sendMutation.isPending}
             className="px-4 self-end"
             aria-label='Send Message'
           >

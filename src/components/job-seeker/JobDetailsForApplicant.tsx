@@ -11,6 +11,7 @@ import {
   XCircle,
   BookmarkCheck,
   Bookmark,
+  Send,
 } from 'lucide-react'
 import { APPLICATIONS_TABS, formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
@@ -18,6 +19,8 @@ import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
 import ApplyModal from './applications/ApplyModal'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import JobDetailsSkeleton from '../skeletons/JobDetailsSkeleton'
 
 interface SimilarJob {
   company: {
@@ -89,63 +92,150 @@ const STATUS_FLOW = [
   'REJECTED',
 ]
 
+type ExistingHistory = {
+  id: string
+  status: string
+  createdAt: string
+  statusHistory: { status: string; date: string }[]
+}
+
 
 const JobDetailsForApplicant = () => {
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string
-  const [loading, setLoading] = useState(true)
-  const [job, setJob] = useState<JobDetails | null>(null)
-  const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
   const { data: session } = useSession()
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
-  const [hasApplied, setHasApplied] = useState(false)
-  const [existingApplication, setExistingApplication] = useState<{
-    id: string
-    status: string
-    createdAt: string
-    statusHistory: { status: string; date: string }[]
-  } | null>(null)
-  const [isSaved, setIsSaved] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
+  const [now, setNow] = useState<number | null>(null)
 
+  // const [loading, setLoading] = useState(true)
+  // const [job, setJob] = useState<JobDetails | null>(null)
+  // const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
+  // const [hasApplied, setHasApplied] = useState(false)
+  // const [existingApplication, setExistingApplication] = useState<{
+  //   id: string
+  //   status: string
+  //   createdAt: string
+  //   statusHistory: { status: string; date: string }[]
+  // } | null>(null)
+  // const [isSaved, setIsSaved] = useState(false)
+  // const [saving, setSaving] = useState(false)
 
-  const fetchJobDetails = async () => {
-    try {
-      const res = await AppSdk.getData(
-        `/api/jobs/${slug}`,
-        null,
-      )
-      if (res.job) {
-        setJob(res.job)
-        setSimilarJobs(res.similarJobs)
-        setHasApplied(res.hasApplied)
-        setExistingApplication(res.application)
-        setIsSaved(res.isSaved)
-      }
-    } catch (error) {
-      console.error(error)
-      toast.error('Failed to fetch job details')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (!slug) return
-    fetchJobDetails()
-  }, [slug])
+    //eslint-disable-next-line
+    setNow(Date.now())
+  }, [])
+
+  // const fetchJobDetails = async () => {
+  //   try {
+  //     const res = await AppSdk.getData(
+  //       `/api/jobs/${slug}`,
+  //       null,
+  //     )
+  //     if (res.job) {
+  //       setJob(res.job)
+  //       setSimilarJobs(res.similarJobs)
+  //       setHasApplied(res.hasApplied)
+  //       setExistingApplication(res.application)
+  //       setIsSaved(res.isSaved)
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error('Failed to fetch job details')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (!slug) return
+  //   fetchJobDetails()
+  // }, [slug])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['job-details', slug],
+    queryFn: async () => {
+      const res = await AppSdk.getData(`/api/jobs/${slug}`, null)
+
+      if (!res?.job) throw new Error('Failed to fetch job')
+
+      return res
+    },
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
+  })
+
+  const job: JobDetails | null = data?.job ?? null
+  const similarJobs: SimilarJob[] = data?.similarJobs ?? []
+  const hasApplied = data?.hasApplied ?? false
+  const existingApplication: ExistingHistory | null = data?.application ?? null
+  const isSaved = data?.isSaved ?? false
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [slug])
 
-  if (loading) {
+  const saveJobMutation = useMutation({
+    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
+      if (currentlySaved) {
+        return AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+      } else {
+        return AppSdk.postData(`/api/jobs/saved`, { jobId })
+      }
+    },
+    onSuccess: (_data, variables) => {
+      toast.success(
+        variables.currentlySaved
+          ? 'Job removed from saved'
+          : 'Job saved successfully'
+      )
+
+      queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+    },
+    onError: () => {
+      toast.error('Something went wrong')
+    }
+  })
+
+  const onSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    // setSaving(true)
+    // try {
+    //   if (currentlySaved) {
+    //     const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+    //     if (res.error) {
+    //       toast.error(res.error || 'Failed to remove saved job')
+    //       return
+    //     }
+    //     toast.success('Job removed from saved')
+    //   } else {
+    //     const res = await AppSdk.postData(`/api/jobs/saved`, {
+    //       jobId
+    //     })
+
+    //     if (res.error) {
+    //       toast.error(res.error || 'Failed to save job')
+    //       return
+    //     }
+
+    //     toast.success('Job saved successfully')
+    //   }
+    //   fetchJobDetails()
+    // } catch (error) {
+    //   toast.error('Something went wrong')
+    // }
+    // finally {
+    //   setSaving(false)
+    // }
+    saveJobMutation.mutate({ jobId, currentlySaved })
+  }
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 h-screen text-sm">
-        <Spinner className="h-6 w-6" />
-      </div>
+      <JobDetailsSkeleton />
     )
   }
 
@@ -164,40 +254,9 @@ const JobDetailsForApplicant = () => {
   }
 
   const isDeadlinePassed =
-    job.applicationDeadline &&
-    new Date(job.applicationDeadline).getTime() < Date.now()
-
-
-  const onSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    setSaving(true)
-    try {
-      if (currentlySaved) {
-        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) {
-          toast.error(res.error || 'Failed to remove saved job')
-          return
-        }
-        toast.success('Job removed from saved')
-      } else {
-        const res = await AppSdk.postData(`/api/jobs/saved`, {
-          jobId
-        })
-
-        if (res.error) {
-          toast.error(res.error || 'Failed to save job')
-          return
-        }
-
-        toast.success('Job saved successfully')
-      }
-      fetchJobDetails()
-    } catch (error) {
-      toast.error('Something went wrong')
-    }
-    finally {
-      setSaving(false)
-    }
-  }
+    job?.applicationDeadline && now
+      ? new Date(job.applicationDeadline).getTime() < now
+      : false
 
   return (
     <div className={clsx("mx-auto  px-4 py-10 space-y-10", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
@@ -227,7 +286,7 @@ const JobDetailsForApplicant = () => {
                 className={clsx("p-2! h-full!  bg-background/80 hover:bg-background",
                   !session && "hidden"
                 )}
-                disabled={saving}
+                disabled={saveJobMutation.isPending}
                 aria-label='Bookmark Job'
               >
                 {isSaved ? (
@@ -405,10 +464,10 @@ const JobDetailsForApplicant = () => {
                   !isDeadlinePassed ? (
                     <Button
                       onClick={() => setIsApplyModalOpen(true)}
-                      className="w-full rounded-xl py-3"
+                      className="w-full rounded-xl py-3 flex items-center gap-2 justify-center"
                       disabled={!session?.user?.id}
                     >
-                      Apply Now
+                      <Send size={20} />  Apply Now
                     </Button>
                   ) :
                     <div className="w-full rounded-xl bg-red-500/10 border border-red-500/30 py-3 px-4 text-center">
@@ -432,23 +491,17 @@ const JobDetailsForApplicant = () => {
               <div className="flex items-center gap-4 ">
                 {job.company.logo ? (
                   <div className='relative'>
-                    {!imageLoaded && (
-                      <div className="absolute inset-0 animate-pulse bg-muted rounded-lg" />
-                    )}
                     {/* eslint-disable-next-line */}
                     <img
                       src={job.company.logo}
                       alt={job.company.name}
-                      onLoad={() => setImageLoaded(true)}
-                      onError={() => setImageLoaded(true)}
                       className={clsx("h-14 w-14 rounded-lg object-cover border-border",
                         'transition-opacity duration-300',
-                        imageLoaded ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                   </div>
                 ) : (
-                  <div className="h-14 w-14 rounded-lg bg-muted" >
+                  <div className="h-14 w-14 rounded-lg bg-muted flex items-center justify-center" >
                     {job.company.name.charAt(0)}
                   </div>
                 )}
@@ -553,14 +606,15 @@ const JobDetailsForApplicant = () => {
           city: job.city || null,
         }}
         onSuccess={() => {
-          setHasApplied(true)
-          setExistingApplication({
-            id: '',
-            status: 'APPLIED',
-            createdAt: new Date().toISOString(),
-            statusHistory: []
-          })
-          fetchJobDetails()
+          // setHasApplied(true)
+          // setExistingApplication({
+          //   id: '',
+          //   status: 'APPLIED',
+          //   createdAt: new Date().toISOString(),
+          //   statusHistory: []
+          // })
+          // fetchJobDetails()
+          queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
         }}
       />
     </div>

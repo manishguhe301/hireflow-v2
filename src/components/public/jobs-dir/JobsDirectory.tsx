@@ -1,7 +1,7 @@
 'use client'
 import { Briefcase, Search } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FormSelect } from '../../ui/FormSelect'
 import { jobCategories } from '@/src/utils/utils'
 import { Spinner } from '../../elements/Loader'
@@ -13,6 +13,9 @@ import clsx from 'clsx'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import useDebounce from '@/src/store/hooks/useDebounce'
+import JobsDirectorySkeleton from '../../skeletons/JobsDirectorySkeleton'
 
 export type DirJobType = {
   id: string,
@@ -60,18 +63,18 @@ type Filters = {
 const JobsDirectory = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [pagination, setPagination] = useState<Pagination | null>(null)
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [category, setCategory] = useState(searchParams.get('category') || '')
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
-  const [isLoading, setIsLoading] = useState(true)
-  const [jobs, setJobs] = useState<DirJobType[]>([])
+  // const [pagination, setPagination] = useState<Pagination | null>(null)
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [jobs, setJobs] = useState<DirJobType[]>([])
+  // const [saving, setSaving] = useState(false)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const { data: session } = useSession()
   const isLoggedIn = session?.user?.id
   const pathName = usePathname()
-  const [saving, setSaving] = useState(false)
 
   const [filters, setFilters] = useState<Filters>({
     workModes: [],
@@ -82,41 +85,106 @@ const JobsDirectory = () => {
     datePosted: '',
     sortBy: 'recent',
   })
+  const queryClient = useQueryClient()
+  const debouncedSearch = useDebounce(search, 500)
+  const debouncedLocation = useDebounce(location, 500)
+  const debouncedCategory = useDebounce(category, 500)
+  const debouncedFilters = useDebounce(filters, 500)
 
+  // const fetchJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
+  //   if (isLoadingNeeded) {
+  //     setIsLoading(true)
+  //   }
+  //   try {
+  //     const params = new URLSearchParams()
+  //     if (search) params.set('search', search)
+  //     if (category) params.set('category', category)
+  //     if (location) params.set('country', location)
+  //     if (filters.workModes.length) params.set('workModes', filters.workModes.join(','))
+  //     if (filters.employmentTypes.length) params.set('employmentTypes', filters.employmentTypes.join(','))
+  //     if (filters.experienceLevels.length) params.set('experienceLevels', filters.experienceLevels.join(','))
+  //     if (filters.salaryMin > 0) params.set('salaryMin', filters.salaryMin.toString())
+  //     if (filters.salaryMax < 10000000) params.set('salaryMax', filters.salaryMax.toString())
+  //     if (filters.datePosted) params.set('datePosted', filters.datePosted)
+  //     if (filters.sortBy) params.set('sortBy', filters.sortBy)
 
-  const fetchJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
-    if (isLoadingNeeded) {
-      setIsLoading(true)
-    }
-    try {
-      const params = new URLSearchParams()
-      if (search) params.set('search', search)
-      if (category) params.set('category', category)
-      if (location) params.set('country', location)
-      if (filters.workModes.length) params.set('workModes', filters.workModes.join(','))
-      if (filters.employmentTypes.length) params.set('employmentTypes', filters.employmentTypes.join(','))
-      if (filters.experienceLevels.length) params.set('experienceLevels', filters.experienceLevels.join(','))
-      if (filters.salaryMin > 0) params.set('salaryMin', filters.salaryMin.toString())
-      if (filters.salaryMax < 10000000) params.set('salaryMax', filters.salaryMax.toString())
-      if (filters.datePosted) params.set('datePosted', filters.datePosted)
-      if (filters.sortBy) params.set('sortBy', filters.sortBy)
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
 
-      params.set('page', page.toString())
-      params.set('limit', '12')
+  //     const res = await fetch(
+  //       `/api/jobs?${params.toString()}`
+  //     )
+  //     const data = await res.json()
 
-      const res = await fetch(
-        `/api/jobs?${params.toString()}`
-      )
-      const data = await res.json()
+  //     setJobs(data.jobs || [])
+  //     setPagination(data.pagination)
+  //   } catch (error) {
+  //     console.error('Error fetching companies:', error)
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }, [search, category, location, page, filters])
 
-      setJobs(data.jobs || [])
-      setPagination(data.pagination)
-    } catch (error) {
-      console.error('Error fetching companies:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [search, category, location, page, filters])
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams()
+
+    if (debouncedSearch) params.set('search', debouncedSearch)
+    if (debouncedCategory) params.set('category', debouncedCategory)
+    if (debouncedLocation) params.set('country', debouncedLocation)
+
+    if (debouncedFilters.workModes.length)
+      params.set('workModes', debouncedFilters.workModes.join(','))
+
+    if (debouncedFilters.employmentTypes.length)
+      params.set('employmentTypes', debouncedFilters.employmentTypes.join(','))
+
+    if (debouncedFilters.experienceLevels.length)
+      params.set('experienceLevels', debouncedFilters.experienceLevels.join(','))
+
+    if (debouncedFilters.salaryMin > 0)
+      params.set('salaryMin', debouncedFilters.salaryMin.toString())
+
+    if (debouncedFilters.salaryMax < 10000000)
+      params.set('salaryMax', debouncedFilters.salaryMax.toString())
+
+    if (debouncedFilters.datePosted)
+      params.set('datePosted', debouncedFilters.datePosted)
+
+    if (debouncedFilters.sortBy)
+      params.set('sortBy', debouncedFilters.sortBy)
+
+    params.set('page', page.toString())
+    params.set('limit', '12')
+
+    return params.toString()
+  }, [debouncedSearch, debouncedCategory, debouncedLocation, debouncedFilters, page])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['jobs', queryParams],
+    queryFn: async () => {
+      const res = await fetch(`/api/jobs?${queryParams}`)
+      if (!res.ok) throw new Error('Failed to fetch jobs')
+      return res.json()
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false
+  })
+
+  const jobs: DirJobType[] = data?.jobs ?? []
+  const pagination: Pagination | null = data?.pagination ?? null
+
+  useEffect(() => {
+    if (!pagination || page >= pagination.totalPages) return
+
+    queryClient.prefetchQuery({
+      queryKey: ['jobs', queryParams.replace(`page=${page}`, `page=${page + 1}`)],
+      queryFn: async () => {
+        const res = await fetch(`/api/jobs?${queryParams.replace(`page=${page}`, `page=${page + 1}`)}`)
+        return res.json()
+      }
+    })
+  }, [pagination, page, queryParams])
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -143,46 +211,79 @@ const JobsDirectory = () => {
   }, [search, category, location, page, session, pathName])
 
   useEffect(() => {
-    const shouldDebounce = search.length > 0 || location.length > 0 || filters.workModes.length > 0 || filters.employmentTypes.length > 0 || filters.experienceLevels.length > 0 || filters.salaryMin > 0 || filters.salaryMax < 10000000 || filters.datePosted || filters.sortBy
-    const delay = shouldDebounce ? 500 : 0
+    // eslint-disable-next-line
+    setPage(1)
+  }, [filters])
 
-    const timer = setTimeout(() => {
-      fetchJobs()
-    }, delay)
-    if (isMobileFilterOpen) setIsMobileFilterOpen(false)
+  // useEffect(() => {
+  //   const shouldDebounce = search.length > 0 || location.length > 0 || filters.workModes.length > 0 || filters.employmentTypes.length > 0 || filters.experienceLevels.length > 0 || filters.salaryMin > 0 || filters.salaryMax < 10000000 || filters.datePosted || filters.sortBy
+  //   const delay = shouldDebounce ? 500 : 0
 
-    return () => clearTimeout(timer)
-  }, [search, category, location, page, fetchJobs])
+  //   const timer = setTimeout(() => {
+  //     fetchJobs()
+  //   }, delay)
+  //   if (isMobileFilterOpen) setIsMobileFilterOpen(false)
+
+  //   return () => clearTimeout(timer)
+  // }, [search, category, location, page, fetchJobs])
 
 
-  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    setSaving(true)
-    try {
+  // const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+  //   setSaving(true)
+  //   try {
+  //     if (currentlySaved) {
+  //       const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+  //       if (res.error) {
+  //         toast.error(res.error || 'Failed to remove saved job')
+  //         return
+  //       }
+  //       toast.success('Job removed from saved')
+  //     } else {
+  //       const res = await AppSdk.postData(`/api/jobs/saved`, {
+  //         jobId
+  //       })
+
+  //       if (res.error) {
+  //         toast.error(res.error || 'Failed to save job')
+  //         return
+  //       }
+
+  //       toast.success('Job saved successfully')
+  //     }
+  //     // fetchJobs(false)
+  //     queryClient.invalidateQueries({ queryKey: ['jobs'] })
+  //   } catch (error) {
+  //     toast.error('Something went wrong')
+  //   } finally {
+  //     setSaving(false)
+  //   }
+  // }
+
+  const saveJobMutation = useMutation({
+    mutationFn: async ({ jobId, currentlySaved }: { jobId: string, currentlySaved: boolean }) => {
       if (currentlySaved) {
-        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) {
-          toast.error(res.error || 'Failed to remove saved job')
-          return
-        }
+        return AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+      } else {
+        return AppSdk.postData(`/api/jobs/saved`, { jobId })
+      }
+    },
+    onSuccess: (_data, variables) => {
+      if (variables.currentlySaved) {
         toast.success('Job removed from saved')
       } else {
-        const res = await AppSdk.postData(`/api/jobs/saved`, {
-          jobId
-        })
-
-        if (res.error) {
-          toast.error(res.error || 'Failed to save job')
-          return
-        }
-
         toast.success('Job saved successfully')
       }
-      fetchJobs(false)
-    } catch (error) {
-      toast.error('Something went wrong')
-    } finally {
-      setSaving(false)
+
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
+    },
+    onError: () => {
+      toast.error('Failed to save job, please try again')
     }
+  })
+
+  const handleSaveToggle = (jobId: string, currentlySaved: boolean) => {
+    saveJobMutation.mutate({ jobId, currentlySaved })
   }
 
   const handleClearAllFilters = () => {
@@ -224,10 +325,9 @@ const JobsDirectory = () => {
     }
   }, [isMobileFilterOpen])
 
-  useEffect(() => {
-    setPage(1)
-  }, [filters])
-
+  if (isLoading) {
+    return <JobsDirectorySkeleton />
+  }
 
   return (
     <div className={clsx(isLoggedIn
@@ -363,7 +463,7 @@ const JobsDirectory = () => {
                   job={job}
                   isSaved={job.isSaved}
                   onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                  disabled={saving}
+                  disabled={saveJobMutation.isPending}
                 />
               ))}
             </div>

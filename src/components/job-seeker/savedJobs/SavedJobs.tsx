@@ -10,6 +10,8 @@ import JobCard from '../../public/jobs-dir/JobCard';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { formatRelativeTime } from '@/src/utils/helper';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import JobCardSkeleton from '../../skeletons/JobCardSkeleton';
 
 export interface SavedJobs {
   company: {
@@ -47,34 +49,51 @@ type Pagination = {
 
 const SavedJobs = () => {
   const searchParams = useSearchParams()
-  const [pagination, setPagination] = useState<Pagination | null>(null)
-  const [jobs, setJobs] = useState<SavedJobs[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  // const [pagination, setPagination] = useState<Pagination | null>(null)
+  // const [jobs, setJobs] = useState<SavedJobs[]>([])
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [saving, setSaving] = useState(false)
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
   const router = useRouter()
+  const queryClient = useQueryClient()
 
-  const fetchSavedJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
-    if (isLoadingNeeded) {
-      setIsLoading(true)
-    }
-    try {
+  // const fetchSavedJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
+  //   if (isLoadingNeeded) {
+  //     setIsLoading(true)
+  //   }
+  //   try {
+  //     const params = new URLSearchParams()
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
+
+  //     const res = await AppSdk.getData(
+  //       `/api/jobs/saved?${params.toString()}`,
+  //       null
+  //     )
+  //     setJobs(res.savedJobs || [])
+  //     setPagination(res.pagination)
+  //   } catch (error) {
+  //     console.error('Error fetching companies:', error)
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }, [page])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['saved-jobs', page],
+    queryFn: async () => {
       const params = new URLSearchParams()
       params.set('page', page.toString())
       params.set('limit', '12')
+      const res = await AppSdk.getData(`/api/jobs/saved?${params.toString()}`, null)
+      if (res.error) throw new Error(res.error)
+      return res
+    },
+    placeholderData: (prev) => prev,
+  })
 
-      const res = await AppSdk.getData(
-        `/api/jobs/saved?${params.toString()}`,
-        null
-      )
-      setJobs(res.savedJobs || [])
-      setPagination(res.pagination)
-    } catch (error) {
-      console.error('Error fetching companies:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [page])
+  const jobs: SavedJobs[] = data?.savedJobs ?? []
+  const pagination: Pagination = data?.pagination ?? null
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -90,38 +109,62 @@ const SavedJobs = () => {
     }
   }, [page])
 
-  useEffect(() => {
-    fetchSavedJobs()
-  }, [page])
+  // useEffect(() => {
+  //   fetchSavedJobs()
+  // }, [page])
 
-  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    setSaving(true)
-    try {
+  const saveMutation = useMutation({
+    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
       if (currentlySaved) {
         const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) {
-          toast.error(res.error || 'Failed to remove saved job')
-          return
-        }
-        toast.success('Job removed from saved')
+        if (res.error) throw new Error(res.error)
+        return { removed: true }
       } else {
-        const res = await AppSdk.postData(`/api/jobs/saved`, {
-          jobId
-        })
-
-        if (res.error) {
-          toast.error(res.error || 'Failed to save job')
-          return
-        }
-
-        toast.success('Job saved successfully')
+        const res = await AppSdk.postData('/api/jobs/saved', { jobId })
+        if (res.error) throw new Error(res.error)
+        return { removed: false }
       }
-      fetchSavedJobs(false)
-    } catch (error) {
+    },
+    onSuccess: ({ removed }) => {
+      toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs', page] })
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+    },
+    onError: () => {
       toast.error('Something went wrong')
-    } finally {
-      setSaving(false)
-    }
+    },
+  })
+
+
+  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    // setSaving(true)
+    // try {
+    //   if (currentlySaved) {
+    //     const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+    //     if (res.error) {
+    //       toast.error(res.error || 'Failed to remove saved job')
+    //       return
+    //     }
+    //     toast.success('Job removed from saved')
+    //   } else {
+    //     const res = await AppSdk.postData(`/api/jobs/saved`, {
+    //       jobId
+    //     })
+
+    //     if (res.error) {
+    //       toast.error(res.error || 'Failed to save job')
+    //       return
+    //     }
+
+    //     toast.success('Job saved successfully')
+    //   }
+    //   fetchSavedJobs(false)
+    // } catch (error) {
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setSaving(false)
+    // }
+    saveMutation.mutate({ jobId, currentlySaved })
   }
 
 
@@ -143,8 +186,10 @@ const SavedJobs = () => {
 
       <main className="flex-1 min-w-0">
         {isLoading && (
-          <div className="flex justify-center py-24">
-            <Spinner className="h-8 w-8" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {[...Array(6)].map((_, i) => (
+              <JobCardSkeleton key={i} />
+            ))}
           </div>
         )}
 
@@ -162,7 +207,7 @@ const SavedJobs = () => {
                   job={job}
                   isSaved={job.isSaved}
                   onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                  disabled={saving}
+                  disabled={saveMutation.isPending}
                 />
               </div>
             ))}
