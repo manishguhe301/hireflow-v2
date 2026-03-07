@@ -17,7 +17,7 @@ export default function Skeleton({
   variant = 'rectangular',
   width,
   height,
-  animation = 'pulse',
+  animation = 'wave',
   className,
 }: SkeletonProps) {
   const style = {

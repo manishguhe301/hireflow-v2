@@ -23,6 +23,7 @@ import InfoCard from '../../admin/InfoCard'
 import InfoRow from '../../admin/InfoRow'
 import DocumentCard from '../../admin/DocumentCard'
 import { useState } from 'react'
+import { CompanyProfileSkeleton } from '../../skeletons/CompanyProfileSkeleton'
 
 const statusStyles: Record<CompanyStatus, string> = {
   PENDING: 'bg-warning/10 text-warning border-warning/30',
@@ -35,9 +36,7 @@ const CompanyProfileView = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <CompanyProfileSkeleton />
     )
   }
 

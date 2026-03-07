@@ -15,6 +15,8 @@ import ApplicationsTableForJob from './ApplicationsTableForJob';
 import Modal from '../../ui/Modal';
 import useDebounce from '@/src/store/hooks/useDebounce';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton';
+import TableSkeleton from '../../skeletons/TableSkeleton';
 
 interface Stats {
   total: number,
@@ -319,8 +321,13 @@ const JobApplicants = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 min-h-[500px]">
-        Loading...<Spinner className="h-4 w-4" />
+      <div className="flex flex-col gap-4 p-6">
+        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </section>
+        <TableSkeleton columns={5} rows={8} />
       </div>
     )
   }
