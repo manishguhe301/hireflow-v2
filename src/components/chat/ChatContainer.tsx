@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import clsx from 'clsx';
 import { useChatSidebarUpdate } from '@/src/store/hooks/useChatSidebarUpdate';
 import useDebounce from '@/src/store/hooks/useDebounce';
+import ChatSidebarSkeleton from '../skeletons/ChatSidebarSkeleton';
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -112,8 +113,12 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <Spinner className="h-8 w-8" />
+      <div className="flex h-[calc(100vh-8rem)] border border-border rounded-2xl overflow-hidden m-4">
+        <ChatSidebarSkeleton />
+
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          Select a conversation
+        </div>
       </div>
     );
   }
