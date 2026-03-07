@@ -25,13 +25,14 @@ import { currentEmploymentStatuses, degrees, employmentTypes, jobCategories, job
 import { useState } from 'react'
 import clsx from 'clsx'
 import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
+import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
 
   if (isLoading) {
     return (
-      <ProfileSkeleton className=' max-w-full' />
+      <PublicProfileSkeleton />
     )
   }
 
