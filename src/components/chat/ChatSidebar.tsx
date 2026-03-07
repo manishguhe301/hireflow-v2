@@ -1,9 +1,9 @@
 'use client';
 import { formatRelativeTime } from '@/src/utils/helper';
-import { MessageCircle, Trash2 } from 'lucide-react';
+import { MessageCircle, RefreshCw, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { Dispatch, RefObject, SetStateAction } from 'react';
+import { Dispatch, RefObject, SetStateAction, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
@@ -36,8 +36,10 @@ export default function ChatSidebar({
   isLoadingMore,
   setSearchQuery,
   // setConversations
-  onDeleteConversation
+  onDeleteConversation,
 }: ChatSidebarProps) {
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => AppSdk.deleteData(`/api/chat/conversations/${id}`, null),
@@ -61,9 +63,23 @@ export default function ChatSidebar({
       <div className="p-4 border-b border-border">
         <div className='flex flex-row items-center justify-between gap-2'>
           <h2 className="text-lg font-semibold">Messages</h2>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1 flex flex-row items-center gap-2">
             {conversations.length} conversation
             {conversations.length !== 1 ? 's' : ''}
+            <RefreshCw
+              onClick={() => {
+                setIsRefreshing(true);
+                onConversationUpdate();
+                setTimeout(() => setIsRefreshing(false), 1000);
+              }}
+              size={16}
+              className={
+                clsx(
+                  'transform transition duration-500 ease-in-out ',
+                  isRefreshing && 'animate-spin',
+                )
+              }
+            />
           </p>
         </div>
 
