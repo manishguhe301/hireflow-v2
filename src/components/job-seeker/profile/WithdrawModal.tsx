@@ -5,19 +5,37 @@ import { toast } from "sonner"
 import Modal from "../../ui/Modal"
 import { Button } from "../../ui/Button"
 import { Spinner } from "../../elements/Loader"
+import { useMutation } from "@tanstack/react-query"
 
 const WithdrawModal = ({
   isWithDrawModalOpen,
   id,
   onClose,
-  fetchApplications,
+  onSuccess,
 }: {
   isWithDrawModalOpen: boolean
   id: string | null
   onClose: () => void
-  fetchApplications: (isLoadingNeeded?: boolean) => Promise<void>
+  onSuccess: () => void
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  // const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const withdrawMutation = useMutation({
+    mutationFn: async () => {
+      if (!id) throw new Error('No application id')
+      const res = await AppSdk.deleteData(`/api/applications/${id}/withdraw`, null)
+      if (res.error) throw new Error(res.error)
+      return res
+    },
+    onSuccess: () => {
+      toast.success('Application withdrawn successfully')
+      onSuccess()
+      onClose()
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to withdraw application')
+    },
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,31 +43,32 @@ const WithdrawModal = ({
       toast.error('Failed to withdraw application')
       return
     }
-    setIsSubmitting(true)
-    try {
-      const res = await AppSdk.deleteData(`/api/applications/${id}/withdraw`, null)
+    // setIsSubmitting(true)
+    // try {
+    //   const res = await AppSdk.deleteData(`/api/applications/${id}/withdraw`, null)
 
-      if (res.error) {
-        toast.error(res.error || 'Failed to withdraw application')
-        return
-      }
+    //   if (res.error) {
+    //     toast.error(res.error || 'Failed to withdraw application')
+    //     return
+    //   }
 
-      toast.success('Application withdrawn successfully')
-      fetchApplications(false)
-      onClose()
-    } catch (error) {
-      console.log(error)
-      toast.error('Failed to withdraw application')
-    } finally {
-      setIsSubmitting(false)
-    }
+    //   toast.success('Application withdrawn successfully')
+    //   fetchApplications(false)
+    //   onClose()
+    // } catch (error) {
+    //   console.log(error)
+    //   toast.error('Failed to withdraw application')
+    // } finally {
+    //   setIsSubmitting(false)
+    // }
+    withdrawMutation.mutate()
   }
 
   return (
     <Modal
       open={isWithDrawModalOpen}
       onClose={() => {
-        if (!isSubmitting) {
+        if (!withdrawMutation.isPending) {
           onClose()
         }
       }}
@@ -72,10 +91,10 @@ const WithdrawModal = ({
           </Button>
           <Button
             type="submit"
-            disabled={!id || isSubmitting}
+            disabled={!id || withdrawMutation.isPending}
             className='w-full'
           >
-            {isSubmitting ?
+            {withdrawMutation.isPending ?
               <Spinner className='w-4 h-4' />
               : 'Withdraw Application'}
           </Button>
