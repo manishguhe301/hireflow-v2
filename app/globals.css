@@ -253,3 +253,32 @@ body {
 .prose p {
   margin: 0.75rem 0;
 }
+
+.skeleton-wave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.08),
+    transparent
+  );
+  animation: skeleton-wave 1.6s linear infinite;
+}
+
+.dark .skeleton-wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+}
+
+@keyframes skeleton-wave {
+  100% {
+    transform: translateX(100%);
+  }
+}
