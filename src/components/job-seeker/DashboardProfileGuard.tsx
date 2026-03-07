@@ -68,8 +68,16 @@ const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
-        <Spinner className="h-8 w-8" />
+      <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
+        <Spinner className="h-8 w-8 mb-4" />
+
+        <p className="text-sm font-medium">
+          Setting things up for you
+        </p>
+
+        <p className="text-xs text-muted-foreground mt-1">
+          Just a moment
+        </p>
       </div>
     )
   }
