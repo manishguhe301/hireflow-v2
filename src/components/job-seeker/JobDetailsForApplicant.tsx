@@ -20,6 +20,7 @@ import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
 import ApplyModal from './applications/ApplyModal'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import JobDetailsSkeleton from '../skeletons/JobDetailsSkeleton'
 
 interface SimilarJob {
   company: {
@@ -234,9 +235,7 @@ const JobDetailsForApplicant = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 h-screen text-sm">
-        <Spinner className="h-6 w-6" />
-      </div>
+      <JobDetailsSkeleton />
     )
   }
 
