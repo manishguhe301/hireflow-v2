@@ -15,6 +15,7 @@ import UsersTable from "./UsersTable"
 import Pagination from "../ui/Pagination"
 import useDebounce from "@/src/store/hooks/useDebounce"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import AdminUsersTableSkeleton from "../skeletons/AdminUsersTableSkeleton"
 
 type Pagination = {
   total: number
@@ -196,9 +197,7 @@ const AdminUsersList = () => {
         </div>
       </div>
       {isLoading ?
-        <div className='flex items-center justify-center min-h-75'>
-          <Spinner />
-        </div > :
+        <AdminUsersTableSkeleton /> :
         <>
           <div>
             {users.length === 0 ? (
