@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import Modal from "../../ui/Modal"
 import { Button } from "../../ui/Button"
 import { Spinner } from "../../elements/Loader"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 const WithdrawModal = ({
   isWithDrawModalOpen,
@@ -19,6 +19,7 @@ const WithdrawModal = ({
   onSuccess: () => void
 }) => {
   // const [isSubmitting, setIsSubmitting] = useState(false)
+  const queryClient = useQueryClient()
 
   const withdrawMutation = useMutation({
     mutationFn: async () => {
@@ -29,6 +30,9 @@ const WithdrawModal = ({
     },
     onSuccess: () => {
       toast.success('Application withdrawn successfully')
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-activity'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
       onSuccess()
       onClose()
     },
