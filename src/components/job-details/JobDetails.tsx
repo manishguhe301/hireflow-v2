@@ -27,6 +27,7 @@ import { formatDate, getLabel, isRichTextEmpty, JOB_STATUS_STYLE } from '@/src/u
 import { jobCategories } from '@/src/utils/utils'
 import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import JobDetailPageSkeleton from '../skeletons/JobDetailPageSkeleton'
 
 interface JobDetails extends Job {
   _count: {
@@ -256,9 +257,7 @@ const JobDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 h-[90%] text-sm">
-        Loading job details... <Spinner className="h-6 w-6" />
-      </div>
+      <JobDetailPageSkeleton />
     )
   }
 

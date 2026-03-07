@@ -2,7 +2,7 @@
 
 import Skeleton from "../ui/Skeleton"
 
-export default function AdminDashboardSkeleton() {
+export default function DashboardSkeleton() {
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
       <div className="space-y-3">

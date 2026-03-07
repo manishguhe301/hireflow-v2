@@ -32,7 +32,7 @@ import {
 } from 'recharts'
 import { formatRelativeTime } from '@/src/utils/helper'
 import { useQuery } from '@tanstack/react-query'
-import AdminDashboardSkeleton from '../skeletons/AdminDashboardSkeleton'
+import AdminDashboardSkeleton from '../skeletons/DashboardSkeleton'
 
 interface DashboardStats {
   companies: {

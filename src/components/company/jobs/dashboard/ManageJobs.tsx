@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import JobsTable, { JobWithCount } from './JobsTable'
 import DeleteJobModal from './DeleteJobModal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import TableSkeleton from '@/src/components/skeletons/TableSkeleton'
 
 const ManageJobs = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
@@ -240,9 +241,8 @@ const ManageJobs = () => {
         </div>
       </div>
       {isLoading ?
-        <div className='flex items-center justify-center min-h-75'>
-          <Spinner />
-        </div > : <>
+        <TableSkeleton columns={5} rows={6} /> :
+        <>
           {jobs.length === 0 ? (
             <div className="py-20 text-center">
               <Briefcase className="h-10 w-10 mx-auto text-muted-foreground" />

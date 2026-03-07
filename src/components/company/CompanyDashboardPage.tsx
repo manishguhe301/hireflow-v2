@@ -19,6 +19,7 @@ import ApplicationOverTime from './ApplicationOverTime'
 import TopJobs from './TopJobs'
 import ApplicantionFunnel from './ApplicantionFunnel'
 import { useQuery } from '@tanstack/react-query'
+import AdminDashboardSkeleton from '../skeletons/DashboardSkeleton'
 
 export interface DashboardStats {
   totalJobs: number
@@ -173,9 +174,7 @@ export default function CompanyDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <AdminDashboardSkeleton />
     )
   }
 
