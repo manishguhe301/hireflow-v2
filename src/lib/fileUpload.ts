@@ -47,6 +47,25 @@ export async function uploadFileToB2(
 
     // console.log('UPLOADING COMPLETE+++++++++++++++++++');
 
+    const shouldGenerateSignedUrl =
+      bucket === 'company-logos' || bucket === 'user-avatars';
+
+    if (shouldGenerateSignedUrl) {
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: fileName,
+      });
+
+      const signedUrl = await getAwsSignedUrl(b2Client, command, {
+        expiresIn: 60 * 60 * 24 * 7,
+      });
+
+      return {
+        url: signedUrl,
+        path: fileName,
+      };
+    }
+
     return {
       url: fileName,
       path: fileName,

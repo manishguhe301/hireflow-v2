@@ -1,7 +1,7 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import {
   deleteFileFromB2,
-  getSignedUrl,
+  // getSignedUrl,
   uploadFileToB2,
 } from '@/src/lib/fileUpload';
 import { notifyRoleUser } from '@/src/lib/notificationService';
@@ -22,10 +22,11 @@ export async function GET() {
       },
     });
 
-    const logourl = await getSignedUrl(company?.logo as string, 604800);
+    // const logourl = await getSignedUrl(company?.logo as string, 604800);
 
     return NextResponse.json({
-      company: company ? { ...company, logo: logourl } : null,
+      // company: company ? { ...company, logo: logourl } : null,
+      company,
     });
   } catch (error) {
     console.error(error);
@@ -297,11 +298,12 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    const logourl = await getSignedUrl(updatedCompany?.logo as string, 604800);
+    // const logourl = await getSignedUrl(updatedCompany?.logo as string, 604800);
 
     return NextResponse.json({
       success: true,
-      company: { ...updatedCompany, logo: logourl },
+      // company: { ...updatedCompany, logo: logourl },
+      company: updatedCompany,
     });
   } catch (error) {
     console.error('Error updating company:', error);

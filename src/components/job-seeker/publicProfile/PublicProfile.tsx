@@ -26,43 +26,87 @@ import {
 import { Application, ApplicationStatus } from '@prisma/client'
 import Modal from '../../ui/Modal'
 import clsx from 'clsx'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
 
 const PublicProfile = () => {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const [profile, setProfile] = useState<FullProfile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [application, setApplication] = useState<Application | null>(null)
   const { data: session } = useSession()
   const isComapnyAdmin = session?.user.role === 'COMPANY_ADMIN'
   const { slug, applicationId } = useParams()
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
   const [newStatus, setNewStatus] = useState<ApplicationStatus | null>(null)
   const [internalNotes, setInternalNotes] = useState('')
-  const [updatingStatus, setUpdatingStatus] = useState(false)
-  const [creatingChat, setCreatingChat] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
+  const queryClient = useQueryClient()
 
-  const fetchProfile = async () => {
-    try {
-      const api = isComapnyAdmin ? `/api/company/applications/${slug}/${applicationId}` : `/api/profile/${id}`;
+  // const fetchProfile = async () => {
+  //   try {
+  //     const api = isComapnyAdmin ? `/api/company/applications/${slug}/${applicationId}` : `/api/profile/${id}`;
+  //     const res = await AppSdk.getData(api, null)
+
+  //     if (isComapnyAdmin) {
+  //       setApplication(res.application)
+  //     }
+
+  //     setProfile(res.profile)
+  //   } catch (error) {
+  //     toast.error('Failed to load profile')
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchProfile()
+  // }, [id])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['public-profile', id, slug, applicationId],
+    queryFn: async () => {
+      const api = isComapnyAdmin
+        ? `/api/company/applications/${slug}/${applicationId}`
+        : `/api/profile/${id}`
       const res = await AppSdk.getData(api, null)
+      if (res.error) throw new Error(res.error)
+      return res
+    },
+  })
+  const profile: FullProfile = data?.profile ?? null
+  const application: Application = data?.application ?? null
 
-      if (isComapnyAdmin) {
-        setApplication(res.application)
-      }
+  const statusMutation = useMutation({
+    mutationFn: async ({ status, notes }: { status: ApplicationStatus; notes?: string }) => {
+      if (!application) throw new Error('No application')
+      const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
+        status,
+        internalNotes: status === 'REJECTED' ? notes : '',
+      })
+      if (res.error) throw new Error(res.error)
+      return res
+    },
+    onSuccess: (res) => {
+      toast.dismiss()
+      toast.success('Application status updated')
+      queryClient.setQueryData(['public-profile', id, slug, applicationId],
+        //eslint-disable-next-line
+        (old: any) => ({
+          ...old,
+          application: res.application,
+        }))
+      queryClient.invalidateQueries({ queryKey: ['job-applications'] })
+      setIsRejectModalOpen(false)
+      setInternalNotes('')
+    },
+    onError: () => {
+      toast.dismiss()
+      toast.error('Something went wrong')
+    },
+    onMutate: () => {
+      toast.loading('Updating status...')
+    },
+  })
 
-      setProfile(res.profile)
-    } catch (error) {
-      toast.error('Failed to load profile')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchProfile()
-  }, [id])
 
   const handleStatusChange = async (
     status: ApplicationStatus,
@@ -70,59 +114,77 @@ const PublicProfile = () => {
   ) => {
     if (!application) return
 
-    try {
-      setUpdatingStatus(true)
-      toast.loading('Updating status...')
+    // try {
+    //   setUpdatingStatus(true)
+    //   toast.loading('Updating status...')
 
-      const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
-        status,
-        internalNotes: status === 'REJECTED' ? notes : '',
-      })
+    //   const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
+    //     status,
+    //     internalNotes: status === 'REJECTED' ? notes : '',
+    //   })
 
-      if (res.error) {
-        toast.error(res.error || 'Failed to update status')
-        return
-      }
+    //   if (res.error) {
+    //     toast.error(res.error || 'Failed to update status')
+    //     return
+    //   }
 
-      toast.dismiss()
-      toast.success('Application status updated')
-      setApplication(res.application)
-      setIsRejectModalOpen(false)
-      setInternalNotes('')
-    } catch (error) {
-      toast.error('Something went wrong')
-    } finally {
-      setUpdatingStatus(false)
-    }
+    //   toast.dismiss()
+    //   toast.success('Application status updated')
+    //   setApplication(res.application)
+    //   setIsRejectModalOpen(false)
+    //   setInternalNotes('')
+    // } catch (error) {
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setUpdatingStatus(false)
+    // }
+
+    statusMutation.mutate({ status, notes })
   }
 
-  const handleMessageClick = async () => {
-    setCreatingChat(true);
-    try {
+  const chatMutation = useMutation({
+    mutationFn: async () => {
       const res = await AppSdk.postData('/api/chat/conversations/create', {
         jobSeekerId: application?.userId,
         jobId: application?.jobId,
-      });
+      })
+      if (res.error) throw new Error(res.error)
+      return res
+    },
+    onSuccess: (res) => {
+      router.push(`/company/chat?conversation=${res.conversationId}`)
+    },
+    onError: () => {
+      toast.error('Failed to start conversation')
+    },
+  })
 
-      if (res.error) {
-        toast.error(res.error);
-        return;
-      }
+  const handleMessageClick = async () => {
+    // setCreatingChat(true);
+    // try {
+    //   const res = await AppSdk.postData('/api/chat/conversations/create', {
+    //     jobSeekerId: application?.userId,
+    //     jobId: application?.jobId,
+    //   });
 
-      router.push(`/company/chat?conversation=${res.conversationId}`);
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to start conversation');
-    } finally {
-      setCreatingChat(false);
-    }
+    //   if (res.error) {
+    //     toast.error(res.error);
+    //     return;
+    //   }
+
+    //   router.push(`/company/chat?conversation=${res.conversationId}`);
+    // } catch (error) {
+    //   console.error(error);
+    //   toast.error('Failed to start conversation');
+    // } finally {
+    //   setCreatingChat(false);
+    // }
+    chatMutation.mutate()
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <PublicProfileSkeleton />
     )
   }
 
@@ -192,18 +254,13 @@ const PublicProfile = () => {
             <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={profile.avatar}
                     alt={profile.name}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </>
@@ -246,9 +303,9 @@ const PublicProfile = () => {
               variant="outline"
               className='flex flex-row items-center gap-1 border-primary text-primary'
               onClick={handleMessageClick}
-              disabled={creatingChat}
+              disabled={chatMutation.isPending}
             >
-              {creatingChat ? <span className='flex flex-row items-center gap-1'>
+              {chatMutation.isPending ? <span className='flex flex-row items-center gap-1'>
                 <Spinner className="w-4 h-4" /> Intializing Chat
               </span>
                 :
@@ -551,7 +608,7 @@ const PublicProfile = () => {
 
             <select
               value={application.status}
-              disabled={updatingStatus}
+              disabled={statusMutation.isPending}
               onChange={(e) => {
                 const selected = e.target.value as ApplicationStatus
 
@@ -598,7 +655,7 @@ const PublicProfile = () => {
       <Modal
         open={isComapnyAdmin && isRejectModalOpen}
         onClose={() => {
-          if (!updatingStatus) {
+          if (!statusMutation.isPending) {
             setIsRejectModalOpen(false)
             setInternalNotes('')
           }
@@ -619,19 +676,19 @@ const PublicProfile = () => {
             <Button
               variant="outline"
               onClick={() => setIsRejectModalOpen(false)}
-              disabled={updatingStatus}
+              disabled={statusMutation.isPending}
             >
               Cancel
             </Button>
 
             <Button
               variant="danger"
-              disabled={updatingStatus}
+              disabled={statusMutation.isPending}
               onClick={() =>
                 handleStatusChange(newStatus as ApplicationStatus, internalNotes)
               }
             >
-              {updatingStatus ? <Spinner className="h-4 w-4" /> : 'Reject'}
+              {statusMutation.isPending ? <Spinner className="h-4 w-4" /> : 'Reject'}
             </Button>
           </div>
         </div>

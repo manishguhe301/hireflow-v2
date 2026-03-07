@@ -10,6 +10,7 @@ import { AppSdk } from '@/src/utils/AppSdk'
 import { useRouter } from 'next/navigation'
 import { FormInput } from '../ui/FormInput'
 import { Button } from '../ui/Button'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 type Inputs = {
   name: string
@@ -38,7 +39,31 @@ const CreateAdminUser = () => {
   const router = useRouter()
 
   const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
+
+  const queryClient = useQueryClient()
+
+  const createAdminMutation = useMutation({
+    mutationFn: async (payload: {
+      name: string
+      email: string
+      password: string
+      role: Role
+    }) => {
+      return AppSdk.postData('/api/admin/create-admin', payload)
+    },
+    onSuccess: () => {
+      toast.success('Platform admin created successfully')
+      reset()
+      setError('')
+
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
+    },
+    onError: () => {
+      toast.error('Something went wrong. Please try again.')
+    },
+  })
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!isValidEmail(data.email)) {
@@ -51,7 +76,7 @@ const CreateAdminUser = () => {
       return
     }
 
-    setIsLoading(true)
+    // setIsLoading(true)
 
     const payload = {
       name: data.name.trim(),
@@ -60,25 +85,29 @@ const CreateAdminUser = () => {
       role: Role.PLATFORM_ADMIN,
     }
 
-    try {
-      const res = await AppSdk.postData('/api/admin/create-admin', payload)
+    // try {
+    //   const res = await AppSdk.postData('/api/admin/create-admin', payload)
 
-      if (res.error) {
-        toast.error(res.error || 'Something went wrong')
-        return
-      }
+    //   if (res.error) {
+    //     toast.error(res.error || 'Something went wrong')
+    //     return
+    //   }
 
-      toast.success('Platform admin created successfully')
-      reset()
-      setError('')
-      // router.push('/admin/users')
-    } catch (error) {
-      console.error(error)
-      toast.error('Something went wrong. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
+    //   toast.success('Platform admin created successfully')
+    //   reset()
+    //   setError('')
+    //   // router.push('/admin/users')
+    // } catch (error) {
+    //   console.error(error)
+    //   toast.error('Something went wrong. Please try again.')
+    // } finally {
+    //   setIsLoading(false)
+    // }
+
+    createAdminMutation.mutate(payload)
   }
+
+  const isLoading = createAdminMutation.isPending
 
   return (
     <div className="p-4 md:p-8 md:px-8 w-full max-w-xl mx-auto animate-in fade-in duration-500">

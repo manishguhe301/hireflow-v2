@@ -8,6 +8,8 @@ import { Button } from '../../ui/Button'
 import ApplicationsTable from './ApplicationsTable'
 import Pagination from '../../ui/Pagination'
 import { APPLICATIONS_TABS } from '@/src/utils/helper'
+import { useQuery } from '@tanstack/react-query'
+import TableSkeleton from '../../skeletons/TableSkeleton'
 
 interface Application {
   job: {
@@ -47,52 +49,66 @@ export interface ApplicationWithPagination {
 }
 
 const ApplicationsPage = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [data, setData] = useState
-    <ApplicationWithPagination | null>(null)
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [data, setData] = useState
+  //   <ApplicationWithPagination | null>(null)
   const [activeTab, setActiveTab] =
-    useState<'ALL' | ApplicationStatus>('ALL')
+    useState<ApplicationStatus | 'ALL'>('ALL')
   const [page, setPage] = useState(1)
 
-  const fetchApplications = async (
-    isLoadingNeeded: boolean = true
-  ) => {
-    if (isLoadingNeeded) { setIsLoading(true) }
-    try {
+  // const fetchApplications = async (
+  //   isLoadingNeeded: boolean = true
+  // ) => {
+  //   if (isLoadingNeeded) { setIsLoading(true) }
+  //   try {
+  //     const params = new URLSearchParams()
+  //     if (activeTab !== 'ALL') params.set('status', activeTab)
+  //     params.set('page', page.toString())
+  //     params.set('limit', '12')
+
+  //     const res = await AppSdk.getData(
+  //       `/api/applications?${params.toString()}`,
+  //       null,
+  //     )
+
+  //     if (res.error) {
+  //       toast.error(res.error)
+  //       return
+  //     }
+  //     setData(res)
+  //   } catch (err) {
+  //     console.error(err)
+  //     toast.error('Failed to load applications')
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchApplications()
+  // }, [page, activeTab])
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['applications', activeTab, page],
+    queryFn: async () => {
       const params = new URLSearchParams()
       if (activeTab !== 'ALL') params.set('status', activeTab)
       params.set('page', page.toString())
       params.set('limit', '12')
+      const res = await AppSdk.getData(`/api/applications?${params.toString()}`, null)
+      if (res.error) throw new Error(res.error)
+      return res as ApplicationWithPagination
+    },
+    placeholderData: (prev) => prev,
+  })
 
-      const res = await AppSdk.getData(
-        `/api/applications?${params.toString()}`,
-        null,
-      )
-
-      if (res.error) {
-        toast.error(res.error)
-        return
-      }
-      setData(res)
-    } catch (err) {
-      console.error(err)
-      toast.error('Failed to load applications')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchApplications()
-  }, [page, activeTab])
-
-  if (!isLoading && !data) {
+  if (!isLoading && !data && !isError) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load your applications</p>
           <Button
-            onClick={() => fetchApplications()}
+            onClick={() => refetch()}
             className="mt-4"
           >
             Retry
@@ -131,13 +147,11 @@ const ApplicationsPage = () => {
       </div>
       {
         isLoading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <Spinner className="h-8 w-8" />
-          </div>
+          <TableSkeleton columns={5} rows={6} />
         ) : (
           <ApplicationsTable
-            data={data}
-            fetchApplications={fetchApplications}
+            data={data as ApplicationWithPagination}
+            refetch={refetch}
           />
         )
       }

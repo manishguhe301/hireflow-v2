@@ -19,28 +19,21 @@ type CompanyCardProps = {
 }
 
 export default function CompanyCard({ company }: CompanyCardProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-
   return (
-    <Link href={`/explore/companies/${company.id}`} className="h-full">
-      <div className="group flex h-full flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-xl">
+    <Link href={`/explore/companies/${company.id}`} className="h-full block w-full">
+      <div className="group flex w-full h-full min-h-[220px] flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-xl">
         <div className="mb-5 flex justify-center">
           <div className=" relative flex h-20 w-20 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden transition group-hover:border-primary/40">
             <>
               {company.logo ? (
                 <>
-                  {!imageLoaded && (
-                    <div className="absolute inset-0 animate-pulse bg-muted" />
-                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={company.logo}
                     alt={company.name}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                      imageLoaded ? "opacity-100" : "opacity-0"
                     )} />
                 </>
               ) : (

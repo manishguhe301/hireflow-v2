@@ -1,13 +1,14 @@
 'use client';
 import { formatRelativeTime } from '@/src/utils/helper';
-import { MessageCircle, Trash2 } from 'lucide-react';
+import { MessageCircle, RefreshCw, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { Spinner } from '../elements/Loader';
+import { useMutation } from '@tanstack/react-query';
 
 interface ChatSidebarProps {
   conversations: ConversationListItem[];
@@ -20,18 +21,7 @@ interface ChatSidebarProps {
   observerTarget: RefObject<HTMLDivElement | null>
   isLoadingMore: boolean
   setSearchQuery: Dispatch<SetStateAction<string>>
-  setConversations: Dispatch<SetStateAction<ConversationListItem[]>>
-}
-
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
+  onDeleteConversation: (id: string) => void;
 }
 
 export default function ChatSidebar({
@@ -45,42 +35,51 @@ export default function ChatSidebar({
   observerTarget,
   isLoadingMore,
   setSearchQuery,
-  setConversations
+  // setConversations
+  onDeleteConversation,
 }: ChatSidebarProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
-  const handleDeleteConversation = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setIsDeletingId(id);
-    try {
-      const res = await AppSdk.deleteData(`/api/chat/conversations/${id}`, null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => AppSdk.deleteData(`/api/chat/conversations/${id}`, null),
+    onSuccess: (res, id) => {
       if (res.error) {
         toast.error(res.error);
         return;
       }
       toast.success('Conversation deleted');
-      setConversations((prev) => prev.filter((c) => c.id !== id));
-      if (selectedConversation === id) {
-        onSelectConversation('');
-      }
+      onDeleteConversation(id);
+      if (selectedConversation === id) onSelectConversation('');
       onConversationUpdate();
-    } catch (error) {
-      console.log(error);
+    },
+    onError: () => {
       toast.error('Failed to delete');
-    } finally {
-      setIsDeletingId(null);
-    }
-  };
+    },
+  });
 
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col max-sm:w-full">
       <div className="p-4 border-b border-border">
         <div className='flex flex-row items-center justify-between gap-2'>
           <h2 className="text-lg font-semibold">Messages</h2>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1 flex flex-row items-center gap-2">
             {conversations.length} conversation
             {conversations.length !== 1 ? 's' : ''}
+            <RefreshCw
+              onClick={() => {
+                setIsRefreshing(true);
+                onConversationUpdate();
+                setTimeout(() => setIsRefreshing(false), 1000);
+              }}
+              size={16}
+              className={
+                clsx(
+                  'transform transition duration-500 ease-in-out ',
+                  isRefreshing && 'animate-spin',
+                )
+              }
+            />
           </p>
         </div>
 
@@ -144,13 +143,8 @@ export default function ChatSidebar({
                       (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
 
                       <div className='relative'>
-                        {!imageLoaded && (
-                          <div className="absolute inset-0 animate-pulse bg-muted rounded-full" />
-                        )}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          onLoad={() => setImageLoaded(true)}
-                          onError={() => setImageLoaded(true)}
                           src={
                             src
                           }
@@ -158,7 +152,6 @@ export default function ChatSidebar({
                           // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
                           className={clsx(
                             "h-10 w-10 object-cover rounded-full shrink-0 transition-opacity duration-300",
-                            imageLoaded ? "opacity-100" : "opacity-0"
                           )}
                         />
                       </div>
@@ -203,10 +196,12 @@ export default function ChatSidebar({
                             </span>
                           )}
                           {userType === 'company' && <Button
-                            disabled={isDeletingId === conv.id}
+                            disabled={deleteMutation.isPending && deleteMutation.variables === conv.id}
                             variant='ghost'
-                            onClick={(e) => handleDeleteConversation
-                              (e, conv.id)
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteMutation.mutate(conv.id);
+                            }
                             }
                             aria-label='Delete conversation'
                             className='p-0!'>

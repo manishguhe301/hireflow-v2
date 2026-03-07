@@ -9,41 +9,97 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import JobsTable, { JobWithCount } from './JobsTable'
 import DeleteJobModal from './DeleteJobModal'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import TableSkeleton from '@/src/components/skeletons/TableSkeleton'
 
 const ManageJobs = () => {
-  const [jobs, setJobs] = useState<JobWithCount[]>([])
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
-  const [isLoading, setIsLoading] = useState(true)
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [jobs, setJobs] = useState<JobWithCount[]>([])
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const queryClient = useQueryClient()
 
-  const fetchJobs = async (status?: string, isLoadingNeeded: boolean = true) => {
-    if (isLoadingNeeded) {
-      setIsLoading(true)
-    }
-    try {
-      const url = status
-        ? `/api/company/jobs?status=${status}`
-        : '/api/company/jobs'
+  // const fetchJobs = async (status?: string, isLoadingNeeded: boolean = true) => {
+  //   if (isLoadingNeeded) {
+  //     setIsLoading(true)
+  //   }
+  //   try {
+  //     const url = status
+  //       ? `/api/company/jobs?status=${status}`
+  //       : '/api/company/jobs'
+
+  //     const res = await AppSdk.getData(url, null)
+
+  //     if (res.jobs) {
+  //       setJobs(res.jobs)
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error('Failed to fetch jobs, please try again.')
+  //   }
+  //   finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchJobs(activeTab === 'ALL' ? undefined : activeTab)
+  // }, [activeTab])
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['company-jobs', activeTab],
+    queryFn: async () => {
+      const url =
+        activeTab === 'ALL'
+          ? '/api/company/jobs'
+          : `/api/company/jobs?status=${activeTab}`
 
       const res = await AppSdk.getData(url, null)
 
-      if (res.jobs) {
-        setJobs(res.jobs)
+      if (!res) throw new Error('Failed to fetch jobs')
+
+      return res
+    },
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const jobs: JobWithCount[] = data?.jobs ?? []
+
+  const statusMutation = useMutation({
+    mutationFn: async ({
+      slug,
+      status,
+    }: {
+      slug: string
+      status: 'ACTIVE' | 'CLOSED'
+    }) => {
+      const res = await fetch(`/api/company/jobs/${slug}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update job status')
       }
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to fetch jobs, please try again.')
-    }
-    finally {
-      setIsLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    fetchJobs(activeTab === 'ALL' ? undefined : activeTab)
-  }, [activeTab])
-
+      return data
+    },
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Something went wrong')
+    },
+    onSettled: () => {
+      setLoadingAction(null)
+    },
+  })
 
   const handleStatusChange = async (slug: string, newStatus: 'ACTIVE' | 'CLOSED') => {
     const job = jobs.find(j => j.slug === slug)
@@ -55,29 +111,66 @@ const ManageJobs = () => {
 
     setLoadingAction(`${actionType}-${job.id}`)
 
-    try {
-      const res = await fetch(`/api/company/jobs/${slug}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
+    // try {
+    //   const res = await fetch(`/api/company/jobs/${slug}/status`, {
+    //     method: 'PATCH',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ status: newStatus })
+    //   })
+
+    //   const data = await res.json()
+
+    //   if (!res.ok) {
+    //     toast.error(data.error || 'Failed to update job status')
+    //     return
+    //   }
+
+    //   toast.success(data.message)
+    //   await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false)
+    // } catch (error) {
+    //   console.error(error)
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setLoadingAction(null)
+    // }
+    statusMutation.mutate({
+      slug,
+      status: newStatus,
+    })
+  }
+
+  const deleteMutation = useMutation({
+    mutationFn: async ({ id, slug }: { id: string, slug: string }) => {
+      const res = await fetch(`/api/company/jobs/${slug}`, {
+        method: 'DELETE',
       })
 
       const data = await res.json()
 
       if (!res.ok) {
-        toast.error(data.error || 'Failed to update job status')
-        return
+        throw new Error(data.error || 'Failed to delete job')
       }
 
-      toast.success(data.message)
-      await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false)
-    } catch (error) {
-      console.error(error)
-      toast.error('Something went wrong')
-    } finally {
+      return data
+    },
+    onSuccess: (data) => {
+      if (data.action === 'closed') {
+        toast.warning(data.message)
+      } else {
+        toast.success(data.message)
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
+      setDeleteJobId(null)
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Something went wrong')
+    },
+    onSettled: () => {
       setLoadingAction(null)
-    }
-  }
+    },
+  })
 
   const handleDelete = async () => {
     if (!deleteJobId) return;
@@ -87,32 +180,37 @@ const ManageJobs = () => {
 
     setLoadingAction(`delete-${deleteJobId}`);
 
-    try {
-      const res = await fetch(`/api/company/jobs/${job.slug}`, {
-        method: 'DELETE'
-      });
+    // try {
+    //   const res = await fetch(`/api/company/jobs/${job.slug}`, {
+    //     method: 'DELETE'
+    //   });
 
-      const data = await res.json();
+    //   const data = await res.json();
 
-      if (!res.ok) {
-        toast.error(data.error || 'Failed to delete job');
-        return;
-      }
+    //   if (!res.ok) {
+    //     toast.error(data.error || 'Failed to delete job');
+    //     return;
+    //   }
 
-      if (data.action === 'closed') {
-        toast.warning(data.message);
-      } else {
-        toast.success(data.message);
-      }
+    //   if (data.action === 'closed') {
+    //     toast.warning(data.message);
+    //   } else {
+    //     toast.success(data.message);
+    //   }
 
-      setDeleteJobId(null);
-      await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false);
-    } catch (error) {
-      console.error(error);
-      toast.error('Something went wrong');
-    } finally {
-      setLoadingAction(null);
-    }
+    //   setDeleteJobId(null);
+    //   await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false);
+    // } catch (error) {
+    //   console.error(error);
+    //   toast.error('Something went wrong');
+    // } finally {
+    //   setLoadingAction(null);
+    // }
+
+    deleteMutation.mutate({
+      id: job.id,
+      slug: job.slug
+    })
   };
 
 
@@ -143,9 +241,8 @@ const ManageJobs = () => {
         </div>
       </div>
       {isLoading ?
-        <div className='flex items-center justify-center min-h-75'>
-          <Spinner />
-        </div > : <>
+        <TableSkeleton columns={5} rows={6} /> :
+        <>
           {jobs.length === 0 ? (
             <div className="py-20 text-center">
               <Briefcase className="h-10 w-10 mx-auto text-muted-foreground" />
