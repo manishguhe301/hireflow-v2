@@ -26,6 +26,9 @@ import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/hel
 import clsx from 'clsx'
 import JobCard from '../../public/jobs-dir/JobCard'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
+import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
+import { ActivitySkeleton } from '../../skeletons/ActivitySkeleton'
 
 interface DashboardStats {
   total: number
@@ -222,6 +225,7 @@ const JobSeekerDashboard = () => {
     onSuccess: ({ removed }) => {
       toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
       queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
     },
     onError: () => {
       toast.error('Something went wrong')
@@ -260,15 +264,15 @@ const JobSeekerDashboard = () => {
     saveMutation.mutate({ jobId, currentlySaved })
   }
 
-  if (statsLoading || activityLoading || recommendedLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner className="h-8 w-8" />
-      </div>
-    )
-  }
+  // if (statsLoading || activityLoading || recommendedLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-[400px]">
+  //       <Spinner className="h-8 w-8" />
+  //     </div>
+  //   )
+  // }
 
-  if (!statsData || !activityData || !recommendedData) {
+  if ((!statsData || !activityData || !recommendedData) && !statsLoading && !activityLoading && !recommendedLoading) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
@@ -302,69 +306,78 @@ const JobSeekerDashboard = () => {
       <section className="space-y-6">
         <h2 className="text-xl font-semibold">Applications Overview</h2>
         <div className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          <DashboardStatCard
-            title="Total"
-            value={statsData.total}
-            description="All your applications"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.total}
-            icon={<Layers className="h-5 w-5" />}
-          />
+          {statsLoading ? (
+            Array.from({ length: 8 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))
+          ) : (
+            statsData && <>
+              <DashboardStatCard
+                title="Total"
+                value={statsData.total}
+                description="All your applications"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.total}
+                icon={<Layers className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Applied"
-            value={statsData.applied}
-            description="Submitted applications"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.applied}
-            icon={<Send className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Applied"
+                value={statsData.applied}
+                description="Submitted applications"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.applied}
+                icon={<Send className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Reviewing"
-            value={statsData.reviewing}
-            description="Under review"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.reviewing}
-            icon={<Eye className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Reviewing"
+                value={statsData.reviewing}
+                description="Under review"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.reviewing}
+                icon={<Eye className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Shortlisted"
-            value={statsData.shortlisted}
-            description="Selected for interview"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.shortlisted}
-            icon={<UserCheck className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Shortlisted"
+                value={statsData.shortlisted}
+                description="Selected for interview"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.shortlisted}
+                icon={<UserCheck className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Interview"
-            value={statsData.interviewScheduled}
-            description="Interview scheduled"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.interviewScheduled}
-            icon={<CalendarClock className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Interview"
+                value={statsData.interviewScheduled}
+                description="Interview scheduled"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.interviewScheduled}
+                icon={<CalendarClock className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Rejected"
-            value={statsData.rejected}
-            description="Not selected"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.rejected}
-            icon={<XCircle className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Rejected"
+                value={statsData.rejected}
+                description="Not selected"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.rejected}
+                icon={<XCircle className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Offered"
-            value={statsData.offered}
-            description="Offer received"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.offered}
-            icon={<Gift className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Offered"
+                value={statsData.offered}
+                description="Offer received"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.offered}
+                icon={<Gift className="h-5 w-5" />}
+              />
 
-          <DashboardStatCard
-            title="Hired"
-            value={statsData.hired}
-            description="Successfully hired"
-            colorClass={APPLICTION_TABS_STATUS_COLORS.hired}
-            icon={<CheckCircle className="h-5 w-5" />}
-          />
+              <DashboardStatCard
+                title="Hired"
+                value={statsData.hired}
+                description="Successfully hired"
+                colorClass={APPLICTION_TABS_STATUS_COLORS.hired}
+                icon={<CheckCircle className="h-5 w-5" />}
+              />
+            </>
+          )
+          }
         </div>
       </section>
       <section className="space-y-6">
@@ -375,7 +388,13 @@ const JobSeekerDashboard = () => {
           </Link>
         </div>
 
-        {recommendedData.length > 0 ? (
+        {recommendedLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <JobCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : recommendedData && recommendedData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {recommendedData.map((job) => (
               <JobCard
@@ -438,7 +457,13 @@ const JobSeekerDashboard = () => {
       </section>
       <section className="space-y-6">
         <h2 className="text-xl font-semibold">Recent Activity</h2>
-        {activityData.length > 0 ? (
+        {activityLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <ActivitySkeleton key={i} />
+            ))}
+          </div>
+        ) : activityData && activityData.length > 0 ? (
           <div className="space-y-3">
             {activityData.map((activity) => (
               <Link

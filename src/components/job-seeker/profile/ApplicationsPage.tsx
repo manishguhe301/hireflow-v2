@@ -9,6 +9,7 @@ import ApplicationsTable from './ApplicationsTable'
 import Pagination from '../../ui/Pagination'
 import { APPLICATIONS_TABS } from '@/src/utils/helper'
 import { useQuery } from '@tanstack/react-query'
+import TableSkeleton from '../../skeletons/TableSkeleton'
 
 interface Application {
   job: {
@@ -146,9 +147,7 @@ const ApplicationsPage = () => {
       </div>
       {
         isLoading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <Spinner className="h-8 w-8" />
-          </div>
+          <TableSkeleton columns={5} rows={6} />
         ) : (
           <ApplicationsTable
             data={data as ApplicationWithPagination}

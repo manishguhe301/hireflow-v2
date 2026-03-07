@@ -24,15 +24,14 @@ import { formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, employmentTypes, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import { useState } from 'react'
 import clsx from 'clsx'
+import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <ProfileSkeleton className=' max-w-full' />
     )
   }
 

@@ -11,6 +11,7 @@ import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { formatRelativeTime } from '@/src/utils/helper';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import JobCardSkeleton from '../../skeletons/JobCardSkeleton';
 
 export interface SavedJobs {
   company: {
@@ -185,8 +186,10 @@ const SavedJobs = () => {
 
       <main className="flex-1 min-w-0">
         {isLoading && (
-          <div className="flex justify-center py-24">
-            <Spinner className="h-8 w-8" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {[...Array(6)].map((_, i) => (
+              <JobCardSkeleton key={i} />
+            ))}
           </div>
         )}
 

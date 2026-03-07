@@ -23,7 +23,7 @@ import InfoCard from '../../admin/InfoCard'
 import InfoRow from '../../admin/InfoRow'
 import DocumentCard from '../../admin/DocumentCard'
 import { useState } from 'react'
-import { CompanyProfileSkeleton } from '../../skeletons/CompanyProfileSkeleton'
+import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
 
 const statusStyles: Record<CompanyStatus, string> = {
   PENDING: 'bg-warning/10 text-warning border-warning/30',
@@ -36,7 +36,7 @@ const CompanyProfileView = () => {
 
   if (isLoading) {
     return (
-      <CompanyProfileSkeleton />
+      <ProfileSkeleton />
     )
   }
 

@@ -1,8 +1,9 @@
+import clsx from "clsx";
 import Skeleton from "../ui/Skeleton";
 
-export function CompanyProfileSkeleton() {
+export function ProfileSkeleton({ className }: { className?: string }) {
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-6">
+    <div className={clsx("mx-auto max-w-5xl space-y-8 px-4 py-6", className!)}>
 
       <div className="rounded-3xl border border-border/40 bg-card p-6">
         <div className="flex items-center gap-4">

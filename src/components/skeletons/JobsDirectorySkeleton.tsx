@@ -1,14 +1,17 @@
 'use client'
 
+import { useSession } from "next-auth/react"
 import Skeleton from "../ui/Skeleton"
 import JobCardSkeleton from "./JobCardSkeleton"
+import clsx from "clsx"
 
 export default function JobsDirectorySkeleton() {
+  const { data: session } = useSession()
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 space-y-10">
-      <div className="space-y-2 text-center">
-        <Skeleton width={250} height={34} animation="wave" className="mx-auto" />
-        <Skeleton width={350} height={16} animation="wave" className="mx-auto" />
+    <div className={clsx("mx-auto max-w-5xl px-4 py-10 space-y-10", session && 'w-full max-w-full mx-0')}>
+      <div className={clsx("space-y-2 text-center", session && 'text-left! w-fit!')}>
+        <Skeleton width={250} height={34} animation="wave" className={clsx("mx-auto", session && 'mx-0!')} />
+        <Skeleton width={350} height={16} animation="wave" className={clsx("mx-auto", session && 'mx-0')} />
       </div>
       <div className="rounded-3xl border border-border/40 bg-card p-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
