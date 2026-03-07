@@ -122,8 +122,12 @@ const JobDetails = () => {
       })
 
       queryClient.invalidateQueries({
+        queryKey: ['company-jobs', slug]
+      })
+      queryClient.invalidateQueries({
         queryKey: ['company-jobs']
       })
+      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
     },
     onSettled: () => {
       setLoadingAction(null)
@@ -197,6 +201,8 @@ const JobDetails = () => {
       queryClient.invalidateQueries({
         queryKey: ['company-jobs']
       })
+      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
+
 
       router.push('/company/jobs')
     },

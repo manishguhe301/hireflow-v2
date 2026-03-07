@@ -18,7 +18,13 @@ const DeleteJobModal = ({
   return (
     <Modal
       open={!!deleteJobId}
-      onClose={() => setDeleteJobId(null)}
+      onClose={() => {
+        if (!loadingAction) {
+          setDeleteJobId(null)
+        }
+      }
+
+      }
       className="max-w-md"
     >
       <div className="space-y-4">

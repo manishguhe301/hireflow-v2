@@ -90,6 +90,7 @@ const ManageJobs = () => {
     onSuccess: (data) => {
       toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
     },
     onError: (error) => {
       toast.error(error.message || 'Something went wrong')
@@ -159,6 +160,7 @@ const ManageJobs = () => {
       }
 
       queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
       setDeleteJobId(null)
     },
     onError: (error) => {

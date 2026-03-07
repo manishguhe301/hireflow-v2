@@ -11,6 +11,7 @@ import {
   XCircle,
   BookmarkCheck,
   Bookmark,
+  Send,
 } from 'lucide-react'
 import { APPLICATIONS_TABS, formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
@@ -464,10 +465,10 @@ const JobDetailsForApplicant = () => {
                   !isDeadlinePassed ? (
                     <Button
                       onClick={() => setIsApplyModalOpen(true)}
-                      className="w-full rounded-xl py-3"
+                      className="w-full rounded-xl py-3 flex items-center gap-2 justify-center"
                       disabled={!session?.user?.id}
                     >
-                      Apply Now
+                      <Send size={20} />  Apply Now
                     </Button>
                   ) :
                     <div className="w-full rounded-xl bg-red-500/10 border border-red-500/30 py-3 px-4 text-center">

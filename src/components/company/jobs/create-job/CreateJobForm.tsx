@@ -15,7 +15,7 @@ import { isRichTextEmpty } from '@/src/utils/helper';
 import { Spinner } from '@/src/components/elements/Loader';
 import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export type JobFormInputs = {
   jobId?: string;
@@ -150,6 +150,7 @@ const CreateJobForm = () => {
   // const [jobLoading, setJobLoading] = useState(false)
   // const [job, setJob] = useState<Job | null>(null)
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
+  const queryClient = useQueryClient()
 
   // const fetchJobDetails = async () => {
   //   setJobLoading(true)
@@ -387,6 +388,8 @@ const CreateJobForm = () => {
 
           toast.success(successMessage)
           reset()
+          queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
+          queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
           setTimeout(() => router.push('/company/jobs'), 100)
         } catch (error) {
           console.error('Submit error:', error)
