@@ -115,6 +115,7 @@ const AdminCompanies = () => {
     onSuccess: () => {
       toast.success('Company approved successfully')
       queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
     },
     onError: () => {
       toast.error('Failed to approve company')
@@ -163,11 +164,14 @@ const AdminCompanies = () => {
     onSuccess: () => {
       toast.success('Company rejected')
       queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
     },
     onError: () => {
       toast.error('Failed to reject company')
     },
     onSettled: () => {
+      setRejectCompanyId(null)
+      setRejectReason('')
       setLoadingAction(null)
     },
   })
@@ -181,9 +185,6 @@ const AdminCompanies = () => {
     setLoadingAction(`reject-${id}`)
 
     rejectMutation.mutate({ id, reason })
-
-    setRejectCompanyId(null)
-    setRejectReason('')
 
     // try {
     //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
@@ -213,6 +214,7 @@ const AdminCompanies = () => {
     onSuccess: () => {
       toast.success('Company deleted')
       queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
     },
     onError: () => {
       toast.error('Failed to delete company')

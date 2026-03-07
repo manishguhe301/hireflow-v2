@@ -58,6 +58,7 @@ const CreateAdminUser = () => {
       setError('')
 
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
     },
     onError: () => {
       toast.error('Something went wrong. Please try again.')

@@ -64,7 +64,9 @@ const UsersTable = ({
               <span className='text-xs text-muted-foreground'>
                 {
                   user.role === Role.JOB_SEEKER && (
-                    <Link href={`/user-profile/${user.id}`}>View Profile</Link>
+                    <Link href={`/user-profile/${user.id}`}
+                    target='_blank'
+                    >View Profile</Link>
                   )
                 }
               </span>
