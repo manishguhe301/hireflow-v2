@@ -13,12 +13,12 @@ import { useEffect, useState } from 'react';
 import { DirJobType } from '../public/jobs-dir/JobsDirectory';
 import { getLabel } from '@/src/utils/helper';
 import { employmentTypes, jobCategories } from '@/src/utils/utils';
-import { Spinner } from '../elements/Loader';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import clsx from 'clsx';
 import { useQuery } from '@tanstack/react-query';
+import LandingPageSkeleton from '../skeletons/LandingPageSkeleton';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -100,9 +100,7 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen" >
-        <Spinner className="h-8 w-8" />
-      </div>
+      <LandingPageSkeleton />
     )
   }
 
