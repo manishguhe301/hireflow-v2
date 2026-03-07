@@ -32,6 +32,7 @@ import {
 } from 'recharts'
 import { formatRelativeTime } from '@/src/utils/helper'
 import { useQuery } from '@tanstack/react-query'
+import AdminDashboardSkeleton from '../skeletons/AdminDashboardSkeleton'
 
 interface DashboardStats {
   companies: {
@@ -105,9 +106,7 @@ const AdminDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <AdminDashboardSkeleton />
     )
   }
 
