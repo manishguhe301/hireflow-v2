@@ -27,6 +27,7 @@ import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
 import { companyIndustries } from '@/src/utils/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import CompanyDetailsSkeleton from '../skeletons/CompanyDetailsSkeleton'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -201,9 +202,7 @@ const CompanyDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <CompanyDetailsSkeleton />
     )
   }
 
