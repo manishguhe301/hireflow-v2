@@ -19,6 +19,8 @@ import { formatDate, formatRelativeTime } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
 import clsx from 'clsx'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
+import TableSkeleton from '../../skeletons/TableSkeleton'
 
 interface JobRow {
   id: string
@@ -219,15 +221,7 @@ export default function CompanyApplicationsPage() {
 
   }, [applicationsData, page, queryClient])
 
-  if (statsLoading || applicationsLoading) {
-    return (
-      <div className="flex items-center justify-center gap-2 min-h-[500px]">
-        Loading...<Spinner className="h-4 w-4" />
-      </div>
-    )
-  }
-
-  if (!statsData || !applicationsData) {
+  if ((!statsData || !applicationsData) && !statsLoading && !applicationsLoading) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
@@ -261,7 +255,13 @@ export default function CompanyApplicationsPage() {
         </p>
       </div>
 
-      {statsData &&
+      {statsLoading ? (
+        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </section>
+      ) :
         <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           <StatCard
             title="Total"
@@ -302,9 +302,14 @@ export default function CompanyApplicationsPage() {
         </section>
       }
 
-      <CompanyApplicationsTable data={applicationsData} />
       {
-        pageChangeLoading && (
+        applicationsLoading ? (
+          <TableSkeleton columns={5} rows={8} />
+        ) :
+          (<CompanyApplicationsTable data={applicationsData} />)
+      }
+      {
+        !applicationsLoading && pageChangeLoading && (
           <div className="flex items-center justify-center min-h-[200px]">
             <Spinner className="h-8 w-8" />
           </div>
