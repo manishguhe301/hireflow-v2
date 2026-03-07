@@ -25,6 +25,7 @@ import { ApplicationStatus, EmploymentType, ExperienceLevel, WorkMode } from '@p
 import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import JobCard from '../../public/jobs-dir/JobCard'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 interface DashboardStats {
   total: number
@@ -134,81 +135,132 @@ const QuickActionCard = ({ href, icon, colorClass, label, desc }:
 }
 
 const JobSeekerDashboard = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [recentActivity, setRecentActivity] = useState<Activities[]>([])
-  const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
-  const [saving, setSaving] = useState(false)
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [stats, setStats] = useState<DashboardStats | null>(null)
+  // const [recentActivity, setRecentActivity] = useState<Activities[]>([])
+  // const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
+  // const [saving, setSaving] = useState(false)
+  const queryClient = useQueryClient()
 
-  const fetchDashboardData = async () => {
-    try {
+  // const fetchDashboardData = async () => {
+  //   try {
 
-      const [statsRes, activityRes, recommendedRes] = await Promise.all([
-        AppSdk.getData('/api/applications/stats', null),
-        AppSdk.getData('/api/applications/recent-activity', null),
-        AppSdk.getData('/api/jobs/recommended', null),
-      ])
+  //     const [statsRes, activityRes, recommendedRes] = await Promise.all([
+  //       AppSdk.getData('/api/applications/stats', null),
+  //       AppSdk.getData('/api/applications/recent-activity', null),
+  //       AppSdk.getData('/api/jobs/recommended', null),
+  //     ])
 
-      if (statsRes.error) {
-        toast.error(statsRes.error)
-      } else {
-        setStats(statsRes.stats)
-      }
+  //     if (statsRes.error) {
+  //       toast.error(statsRes.error)
+  //     } else {
+  //       setStats(statsRes.stats)
+  //     }
 
-      if (activityRes.error) {
-        toast.error(activityRes.error)
-      } else {
-        setRecentActivity(activityRes.activities)
-      }
+  //     if (activityRes.error) {
+  //       toast.error(activityRes.error)
+  //     } else {
+  //       setRecentActivity(activityRes.activities)
+  //     }
 
-      if (recommendedRes.error) {
-        toast.error(recommendedRes.error)
-      } else {
-        setRecommendedJobs(recommendedRes.jobs)
-      }
-    } catch (err) {
-      console.error(err)
-      toast.error('Failed to load dashboard data')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  //     if (recommendedRes.error) {
+  //       toast.error(recommendedRes.error)
+  //     } else {
+  //       setRecommendedJobs(recommendedRes.jobs)
+  //     }
+  //   } catch (err) {
+  //     console.error(err)
+  //     toast.error('Failed to load dashboard data')
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchDashboardData()
-  }, [])
+  // useEffect(() => {
+  //   fetchDashboardData()
+  // }, [])
 
-  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    setSaving(true)
-    try {
+  const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery({
+    queryKey: ['dashboard-stats'],
+    queryFn: async () => {
+      const res = await AppSdk.getData('/api/applications/stats', null)
+      if (res.error) throw new Error(res.error)
+      return res.stats as DashboardStats
+    },
+  })
+
+  const { data: activityData, isLoading: activityLoading } = useQuery({
+    queryKey: ['dashboard-activity'],
+    queryFn: async () => {
+      const res = await AppSdk.getData('/api/applications/recent-activity', null)
+      if (res.error) throw new Error(res.error)
+      return res.activities as Activities[]
+    },
+  })
+
+  const { data: recommendedData, isLoading: recommendedLoading } = useQuery({
+    queryKey: ['dashboard-recommended'],
+    queryFn: async () => {
+      const res = await AppSdk.getData('/api/jobs/recommended', null)
+      if (res.error) throw new Error(res.error)
+      return res.jobs as RecommendedJob[]
+    },
+  })
+
+  const saveMutation = useMutation({
+    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
       if (currentlySaved) {
         const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) {
-          toast.error(res.error || 'Failed to remove saved job')
-          return
-        }
-        toast.success('Job removed from saved')
+        if (res.error) throw new Error(res.error)
+        return { removed: true }
       } else {
-        const res = await AppSdk.postData(`/api/jobs/saved`, {
-          jobId
-        })
-
-        if (res.error) {
-          toast.error(res.error || 'Failed to save job')
-          return
-        }
-
-        toast.success('Job saved successfully')
+        const res = await AppSdk.postData('/api/jobs/saved', { jobId })
+        if (res.error) throw new Error(res.error)
+        return { removed: false }
       }
-      fetchDashboardData()
-    } catch (error) {
+    },
+    onSuccess: ({ removed }) => {
+      toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
+      queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
+    },
+    onError: () => {
       toast.error('Something went wrong')
-    } finally {
-      setSaving(false)
-    }
+    },
+  })
+
+
+  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
+    // setSaving(true)
+    // try {
+    //   if (currentlySaved) {
+    //     const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
+    //     if (res.error) {
+    //       toast.error(res.error || 'Failed to remove saved job')
+    //       return
+    //     }
+    //     toast.success('Job removed from saved')
+    //   } else {
+    //     const res = await AppSdk.postData(`/api/jobs/saved`, {
+    //       jobId
+    //     })
+
+    //     if (res.error) {
+    //       toast.error(res.error || 'Failed to save job')
+    //       return
+    //     }
+
+    //     toast.success('Job saved successfully')
+    //   }
+    //   fetchDashboardData()
+    // } catch (error) {
+    //   toast.error('Something went wrong')
+    // } finally {
+    //   setSaving(false)
+    // }
+    saveMutation.mutate({ jobId, currentlySaved })
   }
 
-  if (isLoading) {
+  if (statsLoading || activityLoading || recommendedLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Spinner className="h-8 w-8" />
@@ -216,13 +268,17 @@ const JobSeekerDashboard = () => {
     )
   }
 
-  if (!stats) {
+  if (!statsData || !activityData || !recommendedData) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">
           <p className="text-muted-foreground">Failed to load dashboard data</p>
           <Button
-            onClick={fetchDashboardData}
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+              queryClient.invalidateQueries({ queryKey: ['dashboard-activity'] })
+              queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
+            }}
             className="mt-4"
           >
             Retry
@@ -248,7 +304,7 @@ const JobSeekerDashboard = () => {
         <div className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
           <DashboardStatCard
             title="Total"
-            value={stats.total}
+            value={statsData.total}
             description="All your applications"
             colorClass={APPLICTION_TABS_STATUS_COLORS.total}
             icon={<Layers className="h-5 w-5" />}
@@ -256,7 +312,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Applied"
-            value={stats.applied}
+            value={statsData.applied}
             description="Submitted applications"
             colorClass={APPLICTION_TABS_STATUS_COLORS.applied}
             icon={<Send className="h-5 w-5" />}
@@ -264,7 +320,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Reviewing"
-            value={stats.reviewing}
+            value={statsData.reviewing}
             description="Under review"
             colorClass={APPLICTION_TABS_STATUS_COLORS.reviewing}
             icon={<Eye className="h-5 w-5" />}
@@ -272,7 +328,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Shortlisted"
-            value={stats.shortlisted}
+            value={statsData.shortlisted}
             description="Selected for interview"
             colorClass={APPLICTION_TABS_STATUS_COLORS.shortlisted}
             icon={<UserCheck className="h-5 w-5" />}
@@ -280,7 +336,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Interview"
-            value={stats.interviewScheduled}
+            value={statsData.interviewScheduled}
             description="Interview scheduled"
             colorClass={APPLICTION_TABS_STATUS_COLORS.interviewScheduled}
             icon={<CalendarClock className="h-5 w-5" />}
@@ -288,7 +344,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Rejected"
-            value={stats.rejected}
+            value={statsData.rejected}
             description="Not selected"
             colorClass={APPLICTION_TABS_STATUS_COLORS.rejected}
             icon={<XCircle className="h-5 w-5" />}
@@ -296,7 +352,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Offered"
-            value={stats.offered}
+            value={statsData.offered}
             description="Offer received"
             colorClass={APPLICTION_TABS_STATUS_COLORS.offered}
             icon={<Gift className="h-5 w-5" />}
@@ -304,7 +360,7 @@ const JobSeekerDashboard = () => {
 
           <DashboardStatCard
             title="Hired"
-            value={stats.hired}
+            value={statsData.hired}
             description="Successfully hired"
             colorClass={APPLICTION_TABS_STATUS_COLORS.hired}
             icon={<CheckCircle className="h-5 w-5" />}
@@ -319,15 +375,15 @@ const JobSeekerDashboard = () => {
           </Link>
         </div>
 
-        {recommendedJobs.length > 0 ? (
+        {recommendedData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {recommendedJobs.map((job) => (
+            {recommendedData.map((job) => (
               <JobCard
                 key={job.id}
                 job={job}
                 isSaved={job.isSaved}
                 onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                disabled={saving}
+                disabled={saveMutation.isPending}
               />
             ))}
           </div>
@@ -382,9 +438,9 @@ const JobSeekerDashboard = () => {
       </section>
       <section className="space-y-6">
         <h2 className="text-xl font-semibold">Recent Activity</h2>
-        {recentActivity.length > 0 ? (
+        {activityData.length > 0 ? (
           <div className="space-y-3">
-            {recentActivity.map((activity) => (
+            {activityData.map((activity) => (
               <Link
                 key={activity.id}
                 href={`/jobs/${activity.job.slug}`}
