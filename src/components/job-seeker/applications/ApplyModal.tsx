@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import clsx from 'clsx'
+import { useQueryClient } from '@tanstack/react-query'
 
 type ApplyFormInputs = {
   coverLetter: string
@@ -42,6 +43,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const queryClient = useQueryClient()
 
 
   const {
@@ -96,6 +98,12 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         toast.error(result.error || 'Failed to submit application')
         return
       }
+      queryClient.invalidateQueries({ queryKey: ['company-applications'] })
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-activity'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
 
       toast.success(result.message || 'Application submitted successfully!')
       reset()

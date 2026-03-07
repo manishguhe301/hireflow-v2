@@ -274,6 +274,7 @@ const JobsDirectory = () => {
       }
 
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
     },
     onError: () => {
       toast.error('Failed to save job, please try again')

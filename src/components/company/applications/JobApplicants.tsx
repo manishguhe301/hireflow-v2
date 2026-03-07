@@ -223,6 +223,9 @@ const JobApplicants = () => {
       queryClient.invalidateQueries({
         queryKey: ['job-applications', slug]
       })
+      queryClient.invalidateQueries({
+        queryKey: ['applications']
+      })
 
       setSelectedApplicants([])
       setIsBulkModalOpen(false)
