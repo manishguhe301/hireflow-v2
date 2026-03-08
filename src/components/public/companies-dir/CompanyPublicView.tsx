@@ -2,13 +2,12 @@
 
 import { Company, Job } from '@prisma/client'
 import InfoRow from '../../admin/InfoRow'
-import { ArrowLeft, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
+import { ArrowLeft, Briefcase, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
 import { Button } from '../../ui/Button'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import CompanyJobCard from './CompanyJobCard'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
-import { useState } from 'react'
 
 type CompanyPublicViewProps = {
   company: Company,
@@ -29,7 +28,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
         <ArrowLeft className="h-4 w-4" />
         Back
       </Button>
-      <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
             <div className=" relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
@@ -44,18 +43,20 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
                     )} />
                 </>
               ) : (
-                <span className="text-lg font-semibold text-muted-foreground">
+                <span className="text-lg font-semibold tracking-tight text-muted-foreground">
                   {company.name.charAt(0)}
                 </span>
               )}
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl font-bold break-words">
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight break-words">
                 {company.name}
               </h1>
               <p className="text-sm text-muted-foreground capitalize">
-                {company.industry} • {company.city && ` ${company.city}` + ', '}  {company.country}
+                {company.industry} • {company.city
+                  ? `${company.city}, ${company.country}`
+                  : company.country}
               </p>
             </div>
           </div>
@@ -63,8 +64,8 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
       </div>
 
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3">
-        <h2 className="text-lg font-semibold">About the Company</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words">
+        <h2 className="text-lg font-semibold tracking-tight">About the Company</h2>
+        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words text-sm leading-relaxed max-w-3xl">
           {company.description}
         </p>
       </div>
@@ -108,14 +109,17 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
 
       {/* Jobs */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold tracking-tight">
           Open Positions ({jobs.length})
         </h2>
 
         {jobs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No active job openings at the moment.
-          </p>
+          <div className="flex flex-col items-center py-12 text-center">
+            <Briefcase className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">
+              No active job openings at the moment.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {jobs.map((job) => (

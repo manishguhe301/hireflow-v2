@@ -112,7 +112,7 @@ export default function CompaniesDirectory() {
         </p>
       </div>
 
-      <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="relative md:col-span-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
