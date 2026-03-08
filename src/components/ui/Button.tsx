@@ -51,7 +51,6 @@ export const Button = ({
         'w-fit font-semibold border transition',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
         'disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer',
-        'flex flex-row items-center justify-center gap-2', 
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         className

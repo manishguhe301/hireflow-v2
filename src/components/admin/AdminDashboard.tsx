@@ -1,8 +1,5 @@
 'use client'
 import { AppSdk } from '@/src/utils/AppSdk'
-import React, { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { Spinner } from '../elements/Loader'
 import {
   Building2,
   Users,
@@ -65,30 +62,6 @@ interface DashboardStats {
 }
 
 const AdminDashboard = () => {
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [stats, setStats] = useState<DashboardStats | null>(null)
-
-  // const fetchStats = async () => {
-  //   if (!isLoading) setIsLoading(true)
-  //   try {
-  //     const res = await AppSdk.getData('/api/admin/stats', null)
-  //     if (res.error) {
-  //       toast.error(res.error || 'Failed to fetch stats, please try again.')
-  //       return
-  //     }
-  //     setStats(res)
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to fetch stats, please try again.')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchStats()
-  // }, [])
-
   const { data: stats, isLoading, refetch, isError } = useQuery({
     queryKey: ['admin-dashboard-stats'],
     queryFn: async () => {
@@ -125,15 +98,21 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
+      {stats.companies.pending > 0 && (
+        <div className="bg-warning/10 border border-warning/30 rounded-xl p-4">
+          <p className="text-sm font-medium">
+            {stats.companies.pending} companies awaiting approval
+          </p>
+        </div>
+      )}
       <div>
         <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="mt-2 text-lg text-muted-foreground">
           Manage companies, users, and platform settings
         </p>
       </div>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Platform Overview</h2>
+      <section className="space-y-4 pt-2">
+        <h2 className="text-2xl font-semibold tracking-tight">Platform Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             title="Total Jobs"
@@ -166,9 +145,9 @@ const AdminDashboard = () => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Companies Overview</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Companies Overview</h2>
           <Link
             href="/admin/companies"
             className="text-sm text-primary hover:underline flex items-center gap-1"
@@ -208,9 +187,9 @@ const AdminDashboard = () => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Users Overview</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Users Overview</h2>
           <Link
             href="/admin/users"
             className="text-sm text-primary hover:underline flex items-center gap-1"
@@ -244,10 +223,10 @@ const AdminDashboard = () => {
       </section>
 
       {stats.analytics.userGrowth.length > 0 && (
-        <section className="space-y-4">
+        <section className="space-y-4 pt-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-primary" />
-            <h2 className="text-2xl font-semibold">User Growth (Last 12 Months)</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">User Growth (Last 12 Months)</h2>
           </div>
           <div className="bg-card border border-border/60 rounded-2xl p-6">
             <ResponsiveContainer width="100%" height={300}>
@@ -260,6 +239,7 @@ const AdminDashboard = () => {
                     backgroundColor: 'rgb(var(--card))',
                     border: '1px solid rgb(var(--border))',
                     borderRadius: '8px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
                   }}
                 />
                 <Line
@@ -276,8 +256,8 @@ const AdminDashboard = () => {
       )}
 
       {stats.analytics.jobTrends.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">Job Posting Trends (Last 12 Months)</h2>
+        <section className="space-y-4 pt-2">
+          <h2 className="text-2xl font-semibold tracking-tight">Job Posting Trends (Last 12 Months)</h2>
           <div className="bg-card border border-border/60 rounded-2xl p-6">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={stats.analytics.jobTrends}>
@@ -289,6 +269,7 @@ const AdminDashboard = () => {
                     backgroundColor: 'rgb(var(--card))',
                     border: '1px solid rgb(var(--border))',
                     borderRadius: '8px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
                   }}
                 />
                 <Bar dataKey="jobs" fill="rgb(var(--primary))" radius={[8, 8, 0, 0]} />
@@ -299,10 +280,10 @@ const AdminDashboard = () => {
       )}
 
       {stats.analytics.topCompanies.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">Top Companies by Job Count</h2>
+        <section className="space-y-4 pt-2">
+          <h2 className="text-2xl font-semibold tracking-tight">Top Companies by Job Count</h2>
           <div className="bg-card border border-border/60 rounded-2xl p-6">
-            <div className="space-y-4">
+            <div className="space-y-4 pt-2">
               {stats.analytics.topCompanies.map((company, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -319,10 +300,10 @@ const AdminDashboard = () => {
         </section>
       )}
 
-      <section className="space-y-4">
+      <section className="space-y-4 pt-2">
         <div className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-primary" />
-          <h2 className="text-2xl font-semibold">Recent Activity</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Recent Activity</h2>
         </div>
         {stats.analytics.recentActivity.length > 0 ? (
           <div className="space-y-3">
@@ -353,12 +334,12 @@ const AdminDashboard = () => {
         )}
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Quick Actions</h2>
+      <section className="space-y-4 pt-2">
+        <h2 className="text-2xl font-semibold tracking-tight">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             href="/admin/companies"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
           >
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition">
@@ -375,7 +356,7 @@ const AdminDashboard = () => {
 
           <Link
             href="/admin/users"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
           >
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center transition">
@@ -392,7 +373,7 @@ const AdminDashboard = () => {
 
           <Link
             href="/admin/create-admin"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
           >
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center transition">
