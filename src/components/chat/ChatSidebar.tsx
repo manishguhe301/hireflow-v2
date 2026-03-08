@@ -3,7 +3,7 @@ import { formatRelativeTime } from '@/src/utils/helper';
 import { MessageCircle, RefreshCw, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { Dispatch, RefObject, SetStateAction, useState } from 'react';
+import { Dispatch, RefObject, SetStateAction, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
@@ -58,44 +58,85 @@ export default function ChatSidebar({
     },
   });
 
+  const renderedConversations = useMemo(() => {
+    return conversations.map((conv) => {
+      const otherUser =
+        userType === 'company'
+          ? (conv.jobSeeker as ConversationUser)
+          : (conv.company as ConversationCompany);
+
+      if (!otherUser) return null;
+
+      const lastMessage = conv.messages[0];
+      const unreadCount = conv._count.messages;
+
+      let src = '';
+
+      if ('logo' in otherUser) {
+        src = otherUser.logo || '';
+      } else {
+        src = otherUser.profile?.avatar || '';
+      }
+
+      const name =
+        (otherUser as ConversationUser)?.profile?.name || otherUser.name;
+
+      return { conv, otherUser, lastMessage, unreadCount, src, name };
+    });
+  }, [conversations, userType]);
+
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col max-sm:w-full">
       <div className="p-4 border-b border-border">
         <div className='flex flex-row items-center justify-between gap-2'>
           <h2 className="text-lg font-semibold">Messages</h2>
           <p className="text-xs text-muted-foreground mt-1 flex flex-row items-center gap-2">
-            {conversations.length} conversation
-            {conversations.length !== 1 ? 's' : ''}
+            {conversations.length.toLocaleString()} conversation
+            {conversations.length !== 1 && 's'}
             <RefreshCw
               onClick={() => {
+                if (isRefreshing) return;
+
                 setIsRefreshing(true);
                 onConversationUpdate();
+
                 setTimeout(() => setIsRefreshing(false), 1000);
               }}
               size={16}
-              className={
-                clsx(
-                  'transform transition duration-500 ease-in-out ',
-                  isRefreshing && 'animate-spin',
-                )
-              }
+              className={clsx(
+                'transition',
+                isRefreshing && 'animate-spin opacity-50 cursor-not-allowed'
+              )}
             />
           </p>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search conversations..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          aria-label="Search conversations"
-          className={
-            clsx(
-              ' mt-2 w-full rounded-xl border px-2 py-2 text-sm outline-none transition',
-              'bg-background text-foreground border-border/60 focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
-              'appearance-none',)
-          }
-        />
+        <div className="relative mt-2">
+
+          <input
+            type="text"
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+            }}
+            aria-label="Search conversations"
+            className={
+              clsx(
+                ' mt-2 w-full rounded-xl border px-2 py-2 text-sm outline-none transition',
+                'bg-background text-foreground border-border/60 focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
+                'appearance-none',)
+            }
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-[60%] -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="overflow-y-auto flex-1">
@@ -111,31 +152,21 @@ export default function ChatSidebar({
           </div>
         ) : (
           <>
-            {conversations.map((conv) => {
-              const otherUser =
-                userType === 'company' ? conv.jobSeeker as ConversationUser : conv.company as ConversationCompany;
-              const lastMessage = conv.messages[0];
-              const unreadCount = conv._count.messages;
+            {renderedConversations.map((item) => {
+              if (!item) return null;
+
+              const { conv, otherUser, lastMessage, unreadCount, src, name } = item;
 
               if (!otherUser) return null;
-
-              let src = '';
-
-              if ('logo' in otherUser) {
-                src = otherUser.logo || '';
-              } else {
-                src = otherUser.profile?.avatar || '';
-              }
-
-              const name = (otherUser as ConversationUser)?.profile?.name || otherUser.name;
 
               return (
                 <div
                   key={conv.id}
                   onClick={() => onSelectConversation(conv.id)}
                   className={clsx(
-                    'w-full p-4 border-b border-border hover:bg-muted/30 transition text-left cursor-pointer',
-                    selectedConversation === conv.id && 'bg-muted/50',
+                    'w-full p-4 border-b border-border hover:bg-muted/30 hover:shadow-sm transition text-left cursor-pointer',
+                    selectedConversation === conv.id &&
+                    'bg-muted/50 border-l-2 border-primary'
                   )}
                 >
                   <div className=" flex items-start gap-3">
@@ -148,6 +179,7 @@ export default function ChatSidebar({
                           src={
                             src
                           }
+                          loading='lazy'
                           alt={otherUser.name}
                           // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
                           className={clsx(
@@ -205,7 +237,12 @@ export default function ChatSidebar({
                             }
                             aria-label='Delete conversation'
                             className='p-0!'>
-                            <Trash2 className='text-destructive h-4 w-4 cursor-pointer' />
+                            {deleteMutation.isPending &&
+                              deleteMutation.variables === conv.id ? (
+                              <Spinner className="h-4 w-4" />
+                            ) : (
+                              <Trash2 className="text-destructive h-4 w-4 cursor-pointer" />
+                            )}
                           </Button>}
                         </div>
                       </div>
