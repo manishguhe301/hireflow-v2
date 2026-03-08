@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link';
 import {
-  Briefcase,
   ShieldCheck,
   Workflow,
   UserCircle,
@@ -11,53 +10,17 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DirJobType } from '../public/jobs-dir/JobsDirectory';
-import { getLabel } from '@/src/utils/helper';
+import { features, formatRelativeTime, getLabel, isNewJob } from '@/src/utils/helper';
 import { employmentTypes, jobCategories } from '@/src/utils/utils';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
-import clsx from 'clsx';
 import { useQuery } from '@tanstack/react-query';
 import LandingPageSkeleton from '../skeletons/LandingPageSkeleton';
+import { Button } from '../ui/Button';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-
-  // const [companies, setCompanies] = useState<Company[]>([])
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [jobs, setJobs] = useState<DirJobType[]>([])
-
-  // const fetchData = async () => {
-  //   setIsLoading(true)
-  //   try {
-  //     const [jobsRes, companiesRes] = await Promise.all([
-  //       AppSdk.getData(`/api/jobs?limit=4`, null),
-  //       AppSdk.getData(`/api/companies?limit=6`, null),
-  //     ])
-
-  //     if (jobsRes.error) {
-  //       toast.error(jobsRes.error || 'Failed to fetch jobs')
-  //     } else {
-  //       setJobs(jobsRes.jobs)
-  //     }
-
-  //     if (companiesRes.error) {
-  //       toast.error(companiesRes.error || 'Failed to fetch companies')
-  //     } else {
-  //       setCompanies(companiesRes.companies)
-  //     }
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to load data')
-  //   }
-  //   finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchData()
-  // }, [])
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['homepage-data'],
@@ -94,10 +57,6 @@ export default function HomePage() {
 
   if (!mounted) return null
 
-  // const handleMenuClose = (e: React.MouseEvent) => {
-  //   e.currentTarget.closest('details')?.removeAttribute('open')
-  // }
-
   if (isLoading) {
     return (
       <LandingPageSkeleton />
@@ -106,7 +65,10 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden isolate">
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="absolute left-1/2 top-[-120px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-primary/15 blur-[160px]" />
+        </div>
         <div className="mx-auto max-w-7xl px-6 py-28 grid gap-16 md:grid-cols-2 items-center">
           <div>
             <span className="inline-block mb-6 rounded-full border border-border/60 bg-muted/50 px-4 py-1 text-xs tracking-widest text-muted-foreground">
@@ -124,30 +86,24 @@ export default function HomePage() {
             </p>
 
             <div className="mt-10 flex gap-4">
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 transition"
-              >
-                Get Started <ArrowRight className="w-4 h-4" />
+              <Link href="/signup" className='flex items-center justify-center  gap-2 '>
+                <Button size="md" className='' >
+                  Get Started <ArrowRight className="w-4 h-4" />
+                </Button>
               </Link>
 
-              <Link
-                href="/explore/jobs"
-                className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-medium hover:bg-muted/50 transition"
-              >
-                Browse Jobs
+              <Link href="/explore/jobs" className='flex items-center justify-center  gap-2'>
+                <Button variant="outline" size="md">
+                  Browse Jobs
+                </Button>
               </Link>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1">
-            {[
-              { icon: Briefcase, title: 'Quality Jobs', desc: 'Curated opportunities from verified companies only.' },
-              { icon: ShieldCheck, title: 'Verified Companies', desc: 'Every employer is manually approved.' },
-              { icon: Workflow, title: 'Application Tracking', desc: 'Track your hiring progress in real-time.' },
-              { icon: UserCircle, title: 'Complete Profiles', desc: 'Build detailed and professional profiles.' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-2xl border border-border/60 bg-card p-6">
+            {features.map(({ icon: Icon, title, desc }) => (
+              <div key={title}
+                className="rounded-2xl border border-border/60 bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-md hover:border-primary/30"              >
                 <Icon className="w-6 h-6 text-primary mb-4" />
                 <h3 className="font-semibold">{title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
@@ -173,24 +129,18 @@ export default function HomePage() {
               <Link
                 href={`/explore/companies/${company.id}`}
                 key={company.id}
-                className="group flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-6 hover:border-primary/30 transition"
+                className="group flex flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
               >
                 <div className="relative mb-4">
                   <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
-                  {/* <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
-                    {company.name[0]}
-                  </div> */}
                   <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                     {company.logo ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={company.logo}
-                          alt={company.name}
-
-                          className={clsx(
-                            "h-full w-full object-cover transition-opacity duration-300",
-                          )} />
+                          alt={`${company.name} logo`}
+                          className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105" />
                       </>
                     ) : (
                       <Building2 className="h-6 w-6 text-muted-foreground" />
@@ -332,24 +282,20 @@ export default function HomePage() {
                   <Link
                     key={job.id}
                     href={`/explore/jobs/${job.slug}`}
-                    className="group rounded-2xl border border-border/60 bg-card p-6 transition hover:border-primary/30 hover:shadow-lg"
+                    className="group rounded-2xl border border-border/60 bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-start gap-5">
                         <div className="relative">
                           <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
-                          {/* <div className="relative h-12 w-12 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground ring-0.5 ring-background backdrop-blur">
-                            {job.company.name[0]}
-                          </div> */}
                           <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                             {job.company.logo ? (
                               <>
                                 <img
                                   src={job.company.logo}
                                   alt={job.company.name}
-                                  className={clsx(
-                                    "h-full w-full object-cover transition-opacity duration-300",
-                                  )} />
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
                               </>
                             ) : (
                               <Building2 className="h-6 w-6 text-muted-foreground" />
@@ -357,9 +303,19 @@ export default function HomePage() {
                           </div>
                         </div>
                         <div>
-                          <h3 className="font-semibold">{job.title}</h3>
+                          <h3 className="font-semibold flex items-center gap-2">
+                            {job.title}
+
+                            {isNewJob(job.createdAt) && (
+                              <span className="rounded-md bg-primary/15 px-2 py-[2px] text-[10px] font-semibold text-primary">
+                                NEW
+                              </span>
+                            )}
+                          </h3>
                           <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                            <span>{job.company.name}</span>
+                            <span className="font-medium text-foreground/80">
+                              {job.company.name}
+                            </span>
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
                               {job.city ? `${job.city}, ${job.country}` : job.country}
@@ -367,6 +323,8 @@ export default function HomePage() {
                             <span className="rounded bg-muted px-2 py-0.5 uppercase tracking-wide max-sm:hidden">
                               {getLabel(jobCategories, job.category)}
                             </span>
+                            <span className="flex items-center gap-1">
+                              {formatRelativeTime(job.createdAt)}</span>
                           </div>
                         </div>
                       </div>
@@ -375,7 +333,7 @@ export default function HomePage() {
                         <span className="hidden md:inline-block text-[11px] font-semibold uppercase tracking-widest text-primary/70">
                           {getLabel(employmentTypes, job.employmentType)}
                         </span>
-                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition" />
+                        <ArrowRight className="w-4 h-4 text-muted-foreground transition-all group-hover:text-primary group-hover:translate-x-1" />
                       </div>
                     </div>
                   </Link>
