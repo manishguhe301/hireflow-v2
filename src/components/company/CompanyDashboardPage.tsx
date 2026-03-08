@@ -2,24 +2,23 @@
 
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 import {
   Briefcase,
   FileText,
   Eye,
   Users,
+  Wrench,
 } from 'lucide-react'
 import Link from 'next/link'
-import { formatRelativeTime, getLabel, APPLICATIONS_TABS } from '@/src/utils/helper'
+import { formatRelativeTime, getLabel, APPLICATIONS_TABS, STATUS_STYLES } from '@/src/utils/helper'
 import clsx from 'clsx'
-import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import ApplicationOverTime from './ApplicationOverTime'
 import TopJobs from './TopJobs'
 import ApplicantionFunnel from './ApplicantionFunnel'
 import { useQuery } from '@tanstack/react-query'
 import AdminDashboardSkeleton from '../skeletons/DashboardSkeleton'
+import { ApplicationStatus } from '@prisma/client'
 
 export interface DashboardStats {
   totalJobs: number
@@ -92,7 +91,7 @@ const StatCard = ({
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
       <div
-        className={`h-14 w-14 rounded-2xl ${colorClass} flex items-center justify-center flex-shrink-0 ml-4`}
+        className={`h-12 w-12 rounded-xl ${colorClass} flex items-center justify-center flex-shrink-0 ml-4`}
       >
         {icon}
       </div>
@@ -102,44 +101,7 @@ const StatCard = ({
 
 export default function CompanyDashboard() {
   const { company } = useCompany()
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [stats, setStats] = useState<DashboardStats | null>(null)
-  // const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData[]>([])
-  // const [recentApplications, setRecentApplications] = useState<RecentApplication[]>([])
-  // const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
-
-
-  // const fetchDashboardData = async () => {
-  //   try {
-  //     const [statsRes, analyticsRes] = await Promise.all([
-  //       AppSdk.getData('/api/company/dashboard/stats', null),
-  //       AppSdk.getData('/api/company/dashboard/analytics', null),
-  //     ])
-
-  //     if (statsRes.error) {
-  //       toast.error(statsRes.error)
-  //     } else {
-  //       setStats(statsRes.stats)
-  //       setTimeSeriesData(statsRes.timeSeriesData)
-  //       setRecentApplications(statsRes.recentApplications)
-  //     }
-
-  //     if (analyticsRes.error) {
-  //       toast.error(analyticsRes.error)
-  //     } else {
-  //       setAnalytics(analyticsRes)
-  //     }
-  //   } catch (err) {
-  //     console.error(err)
-  //     toast.error('Failed to load dashboard data')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchDashboardData()
-  // }, [])
+  const companyName = company?.name
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['company-dashboard'],
@@ -170,7 +132,7 @@ export default function CompanyDashboard() {
   const stats: DashboardStats | null = data?.stats ?? null
   const timeSeriesData: TimeSeriesData[] = data?.timeSeriesData ?? []
   const recentApplications: RecentApplication[] = data?.recentApplications ?? []
-  const analytics: AnalyticsData = data?.analytics ?? null
+  const analytics: AnalyticsData | null = data?.analytics ?? null
 
   if (isLoading) {
     return (
@@ -195,7 +157,7 @@ export default function CompanyDashboard() {
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Company Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Welcome, {company?.name}</p>
+        <p className="text-muted-foreground mt-1">Welcome, {companyName}</p>
       </div>
 
       <section className="space-y-6">
@@ -271,7 +233,7 @@ export default function CompanyDashboard() {
                   <div className=" flex items-center gap-3 flex-1 min-w-0">
                     {app.user.profile?.avatar ? (
                       <div className='relative'>
-
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={app.user.profile.avatar}
                           alt={app.user.profile.name}
@@ -283,7 +245,7 @@ export default function CompanyDashboard() {
                       </div>
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center" >
-                        {app.user.profile?.name && app.user.profile.name[0]}
+                        {app.user.profile?.name && app.user.profile?.name?.[0] || '?'}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -299,9 +261,7 @@ export default function CompanyDashboard() {
                     <span
                       className={clsx(
                         'inline-block px-3 py-1 rounded-full text-xs font-medium',
-                        app.status === 'APPLIED' && 'bg-blue-500/10 text-blue-600',
-                        app.status === 'REVIEWING' && 'bg-yellow-500/10 text-yellow-600',
-                        app.status === 'SHORTLISTED' && 'bg-purple-500/10 text-purple-600',
+                        STATUS_STYLES[app.status as ApplicationStatus],
                       )}
                     >
                       {getLabel(APPLICATIONS_TABS, app.status)}
@@ -320,6 +280,62 @@ export default function CompanyDashboard() {
             <p className="text-sm">No recent applications</p>
           </div>
         )}
+      </section>
+
+      <section className="space-y-4 pt-2">
+        <h2 className="text-2xl font-semibold tracking-tight">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            href="company/jobs/create"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition">
+                <Briefcase className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <p className="font-semibold">Create New Job</p>
+                <p className="text-sm text-muted-foreground">
+                  Create a new job listing
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/company/applications"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center transition">
+                <FileText className="h-6 w-6 text-violet-600 dark:text-violet-400" />
+              </div>
+              <div>
+                <p className="font-semibold">Manage Applications</p>
+                <p className="text-sm text-muted-foreground">
+                  View and manage job applications
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/company/jobs"
+            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
+          >
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center transition">
+                <Wrench className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+              </div>
+              <div>
+                <p className="font-semibold">Manage Jobs</p>
+                <p className="text-sm text-muted-foreground">
+                  View and manage job postings
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
       </section>
     </div>
   )

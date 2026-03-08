@@ -332,3 +332,13 @@ export function isNewJob(date: Date | string): boolean {
 
   return now - created < oneDay;
 }
+
+export const STATUS_STYLES: Record<ApplicationStatus, string> = {
+  APPLIED: 'bg-blue-500/10 text-blue-600',
+  REVIEWING: 'bg-yellow-500/10 text-yellow-600',
+  SHORTLISTED: 'bg-purple-500/10 text-purple-600',
+  INTERVIEW_SCHEDULED: 'bg-indigo-500/10 text-indigo-600',
+  OFFERED: 'bg-green-500/10 text-green-600',
+  HIRED: 'bg-emerald-500/10 text-emerald-600',
+  REJECTED: 'bg-red-500/10 text-red-600',
+};
