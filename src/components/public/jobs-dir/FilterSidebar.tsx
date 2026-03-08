@@ -29,7 +29,7 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
 
   return (
     <aside className="w-60 shrink-0 space-y-6 max-lg:w-full">
-      <div className="rounded-2xl border border-border/40 bg-card p-6 sticky top-4">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 sticky top-24">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-semibold text-lg">Filters</h3>
           <button
@@ -92,10 +92,17 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
                 <input
                   type="number"
                   value={filters.salaryMin}
-                  onChange={(e) => onFilterChange({ ...filters, salaryMin: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    const value = Number(e.target.value)
+                    onFilterChange({
+                      ...filters,
+                      salaryMin: Number.isNaN(value) ? 0 : value
+                    })
+                  }}
                   placeholder="Min"
                   aria-label="Min"
                   min={0}
+                  step={10000}
                   className="w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"
                 />
               </div>
@@ -104,9 +111,17 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
                 <input
                   type="number"
                   value={filters.salaryMax}
-                  onChange={(e) => onFilterChange({ ...filters, salaryMax: parseInt(e.target.value) || 10000000 })}
+                  onChange={(e) => {
+                    const value = Number(e.target.value)
+                    onFilterChange({
+                      ...filters,
+                      salaryMax: Number.isNaN(value) ? 0 : value
+                    })
+                  }}
+                  step={10000}
                   placeholder="Max"
                   max={10000000}
+                  min={0}
                   aria-label="Max"
                   className="w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"
                 />

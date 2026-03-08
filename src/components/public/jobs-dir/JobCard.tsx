@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDate, formatSalary, getLabel, formatRelativeTime } from '@/src/utils/helper'
+import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import {
   Building2,
   MapPin,
@@ -9,7 +9,6 @@ import {
   Banknote,
   BookmarkCheck,
   Bookmark,
-  Send,
   Zap,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -48,18 +47,19 @@ export default function JobCard({ job,
   const queryClient = useQueryClient()
 
   return (
-    <>
+    <div
+      className="group block rounded-2xl border border-border/40 bg-card p-6 max-sm:p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:-translate-y-[2px]">
       <Link
         href={session?.user?.id ? `/jobs/${job.slug}` : `/explore/jobs/${job.slug}`}
-        className="group block rounded-2xl border border-border/40 bg-card p-6 max-sm:p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
       >
         <div className="flex items-start gap-4 relative">
           <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
             {job.company.logo ? (
               <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={job.company.logo}
-                  alt={job.company.name}
+                  alt={`${job.company.name} logo`}
                   className={clsx(
                     "h-full w-full object-cover transition-opacity duration-300",
                   )}
@@ -75,8 +75,7 @@ export default function JobCard({ job,
             <h3 className="text-base font-semibold leading-snug group-hover:text-primary transition line-clamp-2">
               {job.title}
             </h3>
-            <p className="text-sm text-muted-foreground line-clamp-1">
-              {job.company.name}
+            <p className="text-sm font-medium text-muted-foreground line-clamp-1">              {job.company.name}
             </p>
 
             <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground ">
@@ -98,8 +97,8 @@ export default function JobCard({ job,
             variant='outline'
             disabled={disabled}
             aria-label="Save"
-            className={clsx("absolute top-0 right-0 p-2! rounded-full! bg-background/80 hover:bg-background",
-              !session && "hidden"
+            className={clsx("absolute top-1 right-1 p-2! rounded-full! bg-background/80 hover:bg-background",
+              !session?.user.id && "hidden"
             )}
           >
             {isSaved ? (
@@ -114,7 +113,7 @@ export default function JobCard({ job,
         <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
           <div className="flex items-center gap-1 font-medium text-foreground">
             <Banknote className="h-4 w-4 text-primary" />
-            {formatSalary(job.salaryMin, job.salaryMax)}
+            {formatSalary(job.salaryMin ?? null, job.salaryMax ?? null)}
           </div>
 
           <div className="flex items-center gap-1 text-muted-foreground">
@@ -134,7 +133,7 @@ export default function JobCard({ job,
 
         <div className="mt-5 flex items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground">
 
-          <div className={clsx("flex items-center gap-3", !session && "w-full justify-between")}>
+          <div className={clsx("flex items-center gap-3", !session?.user.id && "w-full justify-between")}>
             <div className="flex items-center gap-1">
               <Hourglass className="h-3.5 w-3.5" />
               <span>Apply by {formatDate(job.applicationDeadline)}</span>
@@ -195,6 +194,6 @@ export default function JobCard({ job,
           queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
         }}
       />
-    </>
+    </div>
   )
 }
