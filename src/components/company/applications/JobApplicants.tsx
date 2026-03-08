@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Spinner } from '../../elements/Loader';
 import { Button } from '../../ui/Button';
 import { StatCard } from './CompanyApplicationsDashboard';
-import { CalendarClock, CheckCircle, Eye, FileText, Layers, Search, UserCheck, XCircle } from 'lucide-react';
+import { CalendarClock, CheckCircle, Eye, FileText, Layers, RefreshCw, Search, UserCheck, XCircle } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
 import { APPLICATION_TABS_WITH_SORT, APPLICATIONS_TABS, getLabel } from '@/src/utils/helper';
 import { FormSelect } from '../../ui/FormSelect';
@@ -17,6 +17,7 @@ import useDebounce from '@/src/store/hooks/useDebounce';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton';
 import TableSkeleton from '../../skeletons/TableSkeleton';
+import clsx from 'clsx';
 
 interface Stats {
   total: number,
@@ -77,6 +78,7 @@ const JobApplicants = () => {
   const [bulkRejectReason, setBulkRejectReason] = useState('')
   const debouncedSearch = useDebounce(search, 500)
   const queryClient = useQueryClient()
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const {
     data,
@@ -236,7 +238,7 @@ const JobApplicants = () => {
   useEffect(() => {
     //eslint-disable-next-line
     setSelectedApplicants([])
-  }, [debouncedSearch, activeTab, sortBy])
+  }, [debouncedSearch, activeTab, sortBy, isRefreshing])
 
   if (isLoading) {
     return (
@@ -376,13 +378,38 @@ const JobApplicants = () => {
               </button>
             )}
           </div>
+          <Button
+            className='flex items-center gap-2'
+            disabled={isRefreshing}
+            onClick={() => {
+              if (isRefreshing) return;
+              setPage(1)
+              setActiveTab('ALL')
+              setSortBy('')
+              setSearch('')
 
+              setIsRefreshing(true);
+              refetch();
+
+              setTimeout(() => setIsRefreshing(false), 1000);
+            }}>
+            <RefreshCw
+              size={16}
+              className={clsx(
+                'transition',
+                isRefreshing && 'animate-spin opacity-50 cursor-not-allowed'
+              )}
+            />
+            Refresh
+
+          </Button>
         </div>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4">
+        <div className="flex items-center  gap-4 mt-4">
           <p className="text-sm text-muted-foreground">
             Showing <span className="font-semibold text-foreground">{applications.length} </span>
             of <span className="font-semibold text-foreground">{pagination?.total}</span> applicants
           </p>
+
         </div>
       </div>
       {selectedApplicants.length > 0 && (
