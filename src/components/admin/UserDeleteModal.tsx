@@ -8,9 +8,10 @@ type UserDeleteModalProps = {
   setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>,
   handleDelete: () => Promise<void>,
   loadingAction: string | null
+  deleteUserName: string
 }
 
-const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingAction }: UserDeleteModalProps) => {
+const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingAction, deleteUserName }: UserDeleteModalProps) => {
   return (
     <Modal
       open={!!deleteUserId}
@@ -25,21 +26,23 @@ const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingA
         </h3>
 
         <p className="text-sm text-muted-foreground">
-          This action cannot be undone. The user and all related data will be permanently removed.
+          Are you sure you want to delete "{deleteUserName}"? This action cannot be undone. The user and all related data will be permanently removed.
         </p>
 
         <div className="flex justify-end gap-3 pt-4">
           <Button
             onClick={() => setDeleteUserId(null)}
+            variant='outline'
             className=" px-4! py-2! rounded-xl w-full"
           >
             Cancel
           </Button>
 
           <Button
+            variant='danger'
             onClick={handleDelete}
             disabled={loadingAction === `delete-${deleteUserId}`}
-            className="px-4! py-2! border-none! rounded-xl bg-red-500 text-white disabled:opacity-70 w-full"
+            className="px-4! py-2! border-none! rounded-xl  text-white disabled:opacity-70 w-full"
           >
             {loadingAction === `delete-${deleteUserId}` ? (
               <div className="flex items-center gap-2 justify-center">

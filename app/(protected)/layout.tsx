@@ -33,7 +33,7 @@ export default function ProtectedLayout({
 
   if (status === 'loading') {
     return (
-      <div className='flex items-center justify-center h-screen'>
+      <div className='flex items-center justify-center h-screen bg-muted'>
         <PageLoader
           title="Checking your session"
           subtitle="Verifying authentication status"

@@ -25,12 +25,24 @@ const UsersTable = ({
     <table className="w-full text-sm">
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
-          <th className="px-6 py-4 text-left">Name</th>
-          <th className="px-6 py-4 text-left">Email</th>
-          <th className="px-6 py-4 text-left">Role</th>
-          <th className="px-6 py-4 text-left">Email Verified</th>
-          <th className="px-6 py-4 text-right">Created At</th>
-          <th className="px-6 py-4 text-right">Action</th>
+          <th
+            scope="col"
+            className="px-6 py-5 text-left">Name</th>
+          <th
+            scope="col"
+            className="px-6 py-5 text-left">Email</th>
+          <th
+            scope="col"
+            className="px-6 py-5 text-left">Role</th>
+          <th
+            scope="col"
+            className="px-6 py-5 text-left">Email Verified</th>
+          <th
+            scope="col"
+            className="px-6 py-5 text-right">Created At</th>
+          <th
+            scope="col"
+            className="px-6 py-5 text-right">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -39,33 +51,37 @@ const UsersTable = ({
             key={user.id}
             className='w-full hover:bg-muted/30 transition'
           >
-            <td className="px-6 py-4">
+            <td className="px-6 py-5">
               {user.name}
             </td>
-            <td className="px-6 py-4">{user.email}</td>
-            <td className="px-6 py-4">{labels[user.role]}</td>
-            <td className="px-6 py-4">
+            <td className="px-6 py-5">{user.email}</td>
+            <td className="px-6 py-5">
+              <span className="px-2 py-1 rounded-full text-xs bg-muted">
+                {labels[user.role]}
+              </span>
+            </td>
+            <td className="px-6 py-5">
               {user.emailVerified ? (
                 <div className="inline-flex items-center gap-2">
-                  <Check size={18} color="green" />
+                  <Check className="h-4 w-4 text-success" />
                   <span className="text-green-600 text-xs">Verified</span>
                 </div>
               ) : (
                 <div className="inline-flex items-center gap-2">
-                  <X size={18} color='red' />
+                  <X className="h-4 w-4 text-destructive" />
                   <span className="text-red-600 text-xs">Not Verified</span>
                 </div>
               )}
             </td>
-            <td className="px-6 py-4 text-right">
+            <td className="px-6 py-5 text-right">
               {formatDate(user.createdAt)}
             </td>
-            <td className="px-6 py-4 text-right flex items-center gap-2 justify-end">
+            <td className="px-6 py-5 text-right flex items-center gap-3 justify-end">
               <span className='text-xs text-muted-foreground'>
                 {
                   user.role === Role.JOB_SEEKER && (
                     <Link href={`/user-profile/${user.id}`}
-                    target='_blank'
+                      target='_blank'
                     >View Profile</Link>
                   )
                 }
@@ -74,7 +90,7 @@ const UsersTable = ({
                 {
                   user.id !== session?.user?.id ? (
                     <Button
-                      variant='danger'
+                      variant='ghost'
                       className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed bg-transparent! "
                       disabled={
                         !!loadingAction ||

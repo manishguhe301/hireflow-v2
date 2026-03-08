@@ -1,13 +1,12 @@
 'use client'
 import { AppSdk } from "@/src/utils/AppSdk"
-import { ADMIN_USERS_TABS, formatDate, ROLE_STYLE } from "@/src/utils/helper"
+import { ADMIN_USERS_TABS, } from "@/src/utils/helper"
 import { Role, User } from "@prisma/client"
 import clsx from "clsx"
-import { Check, Search, Trash2, UserPlus, Users, X } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Search, UserPlus, Users, } from "lucide-react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { Spinner } from "../elements/Loader"
-import { useSession } from "next-auth/react"
+
 import Link from "next/link"
 import UserDeleteModal from "./UserDeleteModal"
 import { Button } from "../ui/Button"
@@ -25,9 +24,6 @@ type Pagination = {
 }
 
 const AdminUsersList = () => {
-  // const [users, setUsers] = useState<User[]>([])
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [pagination, setPagination] = useState<Pagination | null>(null)
   const [activeTab, setActiveTab] = useState<'ALL' | Role>('ALL')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
@@ -36,53 +32,17 @@ const AdminUsersList = () => {
   const debouncedSearch = useDebounce(search, 500)
   const queryClient = useQueryClient()
 
-  // const fetchUsers = async (role?: string, isLoadingNeeded: boolean = true) => {
-  //   if (isLoadingNeeded) {
-  //     setIsLoading(true)
-  //   }
-  //   try {
-  //     const params = new URLSearchParams()
-  //     if (search) params.set('search', search)
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
-  //     if (activeTab !== 'ALL') params.set('role', activeTab)
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams()
 
-  //     const url =
-  //       `/api/admin/users?${params.toString()}`
+    if (debouncedSearch) params.set('search', debouncedSearch)
+    if (activeTab !== 'ALL') params.set('role', activeTab)
 
-  //     const res = await AppSdk.getData(url, null)
+    params.set('page', page.toString())
+    params.set('limit', '12')
 
-  //     if (res.users) {
-  //       setUsers(res.users)
-  //       setPagination(res.pagination)
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error('Failed to fetch Users, please try again.')
-  //   }
-  //   finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const shouldDebounce = search.length > 0
-  //   const delay = shouldDebounce ? 500 : 0
-
-  //   const timer = setTimeout(() => {
-  //     fetchUsers(activeTab === 'ALL' ? undefined : activeTab)
-  //   }, delay)
-
-  //   return () => clearTimeout(timer)
-  // }, [activeTab, search, page])
-
-  const queryParams = new URLSearchParams()
-
-  if (debouncedSearch) queryParams.set('search', debouncedSearch)
-  if (activeTab !== 'ALL') queryParams.set('role', activeTab)
-
-  queryParams.set('page', page.toString())
-  queryParams.set('limit', '12')
+    return params.toString()
+  }, [debouncedSearch, activeTab, page])
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-users', activeTab, debouncedSearch, page],
@@ -122,22 +82,7 @@ const AdminUsersList = () => {
 
   const handleDelete = async () => {
     if (!deleteUserId) return
-
     setLoadingAction(`delete-${deleteUserId}`)
-    // try {
-    //   const res = await AppSdk.deleteData(`/api/admin/users/${deleteUserId}`, null)
-
-    //   if (res.success) {
-    //     toast.success('User deleted')
-    //     fetchUsers(activeTab === 'ALL' ? undefined : activeTab, false)
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to delete user')
-    // }
-    // finally {
-    //   setLoadingAction(null)
-    //   setDeleteUserId(null)
-    // }
     deleteMutation.mutate(deleteUserId)
   }
 
@@ -232,6 +177,7 @@ const AdminUsersList = () => {
         deleteUserId={deleteUserId}
         handleDelete={handleDelete}
         loadingAction={loadingAction}
+        deleteUserName={users.find((u) => u.id === deleteUserId)?.name ?? ''}
         setDeleteUserId={setDeleteUserId}
       />
     </div>
