@@ -8,7 +8,7 @@ const InfoRow = ({
 }: {
   icon: React.ReactNode
   label: string
-  value: string
+  value: string 
   isLink?: boolean
 }) => {
   return (
