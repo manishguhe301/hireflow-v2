@@ -2,58 +2,53 @@ import { MessageWithSender } from '@/src/types'
 import { formatRelativeTime } from '@/src/utils/helper'
 import clsx from 'clsx'
 import { CheckCheck } from 'lucide-react'
-import React, { memo } from 'react'
+import { memo } from 'react'
 
-const ChatMessage = ({ message, isOwnMessage }: {
-  isOwnMessage: boolean,
+const ChatMessage = ({
+  message,
+  isOwnMessage
+}: {
+  isOwnMessage: boolean
   message: MessageWithSender
 }) => {
+  const name =
+    isOwnMessage
+      ? 'You'
+      : message.sender.profile?.name || message.sender?.name
+
   return (
     <div
       className={clsx(
-        'flex gap-3 max-w-[80%]',
-        isOwnMessage ? 'ml-auto justify-end' : 'mr-auto justify-start',
+        "w-full flex",
+        isOwnMessage ? "justify-end" : "justify-start"
       )}
     >
-      {/* {!isOwnMessage && message.sender.profile?.avatar && (
-        //eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={message.sender.profile.avatar}
-          alt={message.sender.name}
-          className="h-8 w-8 rounded-full object-cover shrink-0"
-        />
-      )} */}
-      {/* {!isOwnMessage && <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center capitalize">
-        {message.sender.profile?.name && message.sender.profile.name[0]}
-      </div>} */}
-
       <div
         className={clsx(
-          'rounded-2xl px-4 py-2 flex flex-col',
+          "max-w-[75%] px-3 py-2 rounded-xl transition hover:bg-muted/30",
           isOwnMessage
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-muted text-foreground',
+            ? "bg-muted/40 text-foreground"
+            : "bg-muted/10 text-muted-foreground"
         )}
       >
-        {
-          <p className="text-xs font-medium mb-1 opacity-70">
-            {isOwnMessage ? 'You' : message.sender.profile && message.sender.profile.name ? message.sender?.profile?.name : message.sender?.name}
-          </p>
-        }
-        <p className="text-sm break-all whitespace-pre-wrap wrap-break-word">{message.content}</p>
-        <p
-          className={clsx(
-            'self-end',
-            'text-xs mt-1 flex flex-row items-center gap-1',
-            isOwnMessage ? 'text-primary-foreground/70' : 'text-muted-foreground',
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+          <span className="font-medium text-foreground">
+            {name}
+          </span>
+
+          <span className="text-[10px]">
+            {formatRelativeTime(message.createdAt)}
+          </span>
+
+          {isOwnMessage && (
+            <CheckCheck size={12} className="opacity-70" />
           )}
-        >
-          <CheckCheck size={12} /> {formatRelativeTime(message.createdAt)}
+        </div>
+
+        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+          {message.content}
         </p>
       </div>
-      {/* {isOwnMessage && <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center capitalize">
-        {message.sender.name[0]}
-      </div>} */}
     </div>
   )
 }
