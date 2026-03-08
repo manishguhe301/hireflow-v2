@@ -2,18 +2,15 @@
 import { AppSdk } from '@/src/utils/AppSdk'
 import { EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client'
 import { useParams, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Spinner } from '../elements/Loader'
 import {
-  ArrowLeft, Briefcase, Clock, MapPin, CheckCircle,
-  Circle,
-  XCircle,
+  ArrowLeft, Briefcase,
   BookmarkCheck,
   Bookmark,
   Send,
 } from 'lucide-react'
-import { APPLICATIONS_TABS, formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
+import { formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
 import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
@@ -21,8 +18,10 @@ import clsx from 'clsx'
 import ApplyModal from './applications/ApplyModal'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import JobDetailsSkeleton from '../skeletons/JobDetailsSkeleton'
+import ApplicationProgress from './applications/ApplicationProgress'
+import SimilarJobs from './similarJobs/SimilarJobs'
 
-interface SimilarJob {
+export interface SimilarJob {
   company: {
     id: string;
     name: string;
@@ -58,7 +57,7 @@ interface JobDetails {
   city?: string,
   salaryMin?: string,
   salaryMax?: string,
-  hideSalary: string,
+  hideSalary: boolean,
   numberOfOpenings: string,
   applicationDeadline?: string,
   category: string,
@@ -82,17 +81,7 @@ interface JobDetails {
   }
 }
 
-const STATUS_FLOW = [
-  'APPLIED',
-  'REVIEWING',
-  'SHORTLISTED',
-  'INTERVIEW_SCHEDULED',
-  'OFFERED',
-  'HIRED',
-  'REJECTED',
-]
-
-type ExistingHistory = {
+export type ExistingHistory = {
   id: string
   status: string
   createdAt: string
@@ -108,51 +97,12 @@ const JobDetailsForApplicant = () => {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
   const [now, setNow] = useState<number | null>(null)
 
-  // const [loading, setLoading] = useState(true)
-  // const [job, setJob] = useState<JobDetails | null>(null)
-  // const [similarJobs, setSimilarJobs] = useState<SimilarJob[]>([])
-  // const [hasApplied, setHasApplied] = useState(false)
-  // const [existingApplication, setExistingApplication] = useState<{
-  //   id: string
-  //   status: string
-  //   createdAt: string
-  //   statusHistory: { status: string; date: string }[]
-  // } | null>(null)
-  // const [isSaved, setIsSaved] = useState(false)
-  // const [saving, setSaving] = useState(false)
-
   const queryClient = useQueryClient()
 
   useEffect(() => {
     //eslint-disable-next-line
     setNow(Date.now())
   }, [])
-
-  // const fetchJobDetails = async () => {
-  //   try {
-  //     const res = await AppSdk.getData(
-  //       `/api/jobs/${slug}`,
-  //       null,
-  //     )
-  //     if (res.job) {
-  //       setJob(res.job)
-  //       setSimilarJobs(res.similarJobs)
-  //       setHasApplied(res.hasApplied)
-  //       setExistingApplication(res.application)
-  //       setIsSaved(res.isSaved)
-  //     }
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to fetch job details')
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!slug) return
-  //   fetchJobDetails()
-  // }, [slug])
 
   const { data, isLoading } = useQuery({
     queryKey: ['job-details', slug],
@@ -175,7 +125,7 @@ const JobDetailsForApplicant = () => {
   const isSaved = data?.isSaved ?? false
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [slug])
 
   const saveJobMutation = useMutation({
@@ -202,34 +152,6 @@ const JobDetailsForApplicant = () => {
   })
 
   const onSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    // setSaving(true)
-    // try {
-    //   if (currentlySaved) {
-    //     const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-    //     if (res.error) {
-    //       toast.error(res.error || 'Failed to remove saved job')
-    //       return
-    //     }
-    //     toast.success('Job removed from saved')
-    //   } else {
-    //     const res = await AppSdk.postData(`/api/jobs/saved`, {
-    //       jobId
-    //     })
-
-    //     if (res.error) {
-    //       toast.error(res.error || 'Failed to save job')
-    //       return
-    //     }
-
-    //     toast.success('Job saved successfully')
-    //   }
-    //   fetchJobDetails()
-    // } catch (error) {
-    //   toast.error('Something went wrong')
-    // }
-    // finally {
-    //   setSaving(false)
-    // }
     saveJobMutation.mutate({ jobId, currentlySaved })
   }
 
@@ -274,7 +196,7 @@ const JobDetailsForApplicant = () => {
 
           <div className="space-y-4">
             <div className="flex flex-row items-start justify-between gap-4">
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                 {job.title}
               </h1>
               <Button
@@ -284,7 +206,7 @@ const JobDetailsForApplicant = () => {
                 }}
                 variant='outline'
                 className={clsx("p-2! h-full!  bg-background/80 hover:bg-background",
-                  !session && "hidden"
+                  !session?.user.id && "hidden"
                 )}
                 disabled={saveJobMutation.isPending}
                 aria-label='Bookmark Job'
@@ -308,6 +230,8 @@ const JobDetailsForApplicant = () => {
               <span>{getLabel(workModes, job.workMode)}</span>
               <span>•</span>
               <span>{getLabel(employmentTypes, job.employmentType)}</span>
+              <span>•</span>
+              <span>{formatRelativeTime(job.createdAt)}</span>
             </div>
           </div>
 
@@ -389,66 +313,7 @@ const JobDetailsForApplicant = () => {
                     </div>
 
                     {existingApplication && existingApplication?.statusHistory?.length > 0 && (
-                      <div className="border-t border-border/60 pt-4 space-y-4">
-                        <h4 className="text-sm font-semibold">Application Progress</h4>
-                        {existingApplication.status === 'REJECTED' && <p className="text-xs text-red-600 mt-2">
-                          This application was closed before moving to the next stage.
-                        </p>
-                        }
-                        <div className="relative pl-6">
-                          <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
-
-                          {STATUS_FLOW.map((status) => {
-                            const historyItem = existingApplication.statusHistory.find(
-                              (s) => s.status === status,
-                            )
-
-                            const isCompleted = !!historyItem
-
-                            return (
-                              <div
-                                key={status}
-                                className="relative flex items-start gap-3 pb-6 last:pb-0"
-                              >
-
-                                <div className="absolute -left-[9px] top-1">
-                                  {isCompleted ? (
-                                    status === 'REJECTED' ? (
-                                      <XCircle className="h-4 w-4 text-red-600" />
-                                    ) : (
-                                      <CheckCircle className="h-4 w-4 text-green-600" />
-                                    )
-                                  ) : (
-                                    <Circle className="h-4 w-4 text-muted-foreground" />
-                                  )}
-                                </div>
-
-                                <div>
-                                  <p
-                                    className={clsx(
-                                      'text-sm font-medium pl-4',
-                                      isCompleted
-                                        ? status === 'REJECTED' ? 'text-red-600' : 'text-primary'
-                                        : 'text-muted-foreground',
-                                    )}
-                                  >
-                                    {getLabel(
-                                      APPLICATIONS_TABS,
-                                      status,
-                                    )}
-                                  </p>
-
-                                  {historyItem && (
-                                    <p className="text-xs text-muted-foreground mt-1 pl-4">
-                                      {formatRelativeTime(historyItem.date)}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
+                      <ApplicationProgress existingApplication={existingApplication} />
                     )}
 
 
@@ -495,7 +360,7 @@ const JobDetailsForApplicant = () => {
                     <img
                       src={job.company.logo}
                       alt={job.company.name}
-                      className={clsx("h-14 w-14 rounded-lg object-cover border-border",
+                      className={clsx("h-14 w-14 rounded-lg object-cover border border-border",
                         'transition-opacity duration-300',
                       )}
                     />
@@ -538,58 +403,10 @@ const JobDetailsForApplicant = () => {
       </div>
 
       {similarJobs?.length > 0 && (
-        <div className="space-y-6 border-t border-border/40 pt-10">
-          <h3 className="text-xl font-semibold">Similar Jobs</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {similarJobs.map((similar) => (
-              <div
-                key={similar.id}
-                className="group rounded-2xl border border-border/40 bg-card p-5 space-y-3   cursor-pointer transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
-                onClick={() => router.push(
-                  session?.user.id ? `/jobs/${similar.slug}` :
-                    `/explore/jobs/${similar.slug}`
-                )}
-              >
-                <div className="space-y-1">
-                  <h3 className="text-base font-semibold leading-tight break-words group-hover:text-primary">
-                    {similar.title}
-                  </h3>
-
-                  <p className="text-sm text-muted-foreground">{similar.company.name}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    <span className="break-words"> {similar.city ? `${similar.city}, ${similar.country}` : job.country}</span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <Briefcase className="h-4 w-4" />
-                    <span>
-                      {getLabel(workModes, similar.workMode)} • {getLabel(employmentTypes, similar.employmentType)}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{getLabel(experienceLevels, similar.experienceLevel)}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-muted-foreground">
-                    {formatRelativeTime(similar.createdAt)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SimilarJobs similarJobs={similarJobs} />
       )}
 
-      <ApplyModal
+      {job && <ApplyModal
         open={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
         job={{
@@ -616,7 +433,7 @@ const JobDetailsForApplicant = () => {
           // fetchJobDetails()
           queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
         }}
-      />
+      />}
     </div>
   )
 
