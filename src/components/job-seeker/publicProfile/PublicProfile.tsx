@@ -2,11 +2,11 @@
 import { FullProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useParams, useRouter } from 'next/navigation'
-import React, { use, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
-import { ArrowLeft, CircleUser, MessageCircle, ShieldUser } from 'lucide-react'
+import { ArrowLeft, CircleUser, FileText, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { APPLICATIONS_TABS, formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
@@ -39,27 +39,6 @@ const PublicProfile = () => {
   const [newStatus, setNewStatus] = useState<ApplicationStatus | null>(null)
   const [internalNotes, setInternalNotes] = useState('')
   const queryClient = useQueryClient()
-
-  // const fetchProfile = async () => {
-  //   try {
-  //     const api = isComapnyAdmin ? `/api/company/applications/${slug}/${applicationId}` : `/api/profile/${id}`;
-  //     const res = await AppSdk.getData(api, null)
-
-  //     if (isComapnyAdmin) {
-  //       setApplication(res.application)
-  //     }
-
-  //     setProfile(res.profile)
-  //   } catch (error) {
-  //     toast.error('Failed to load profile')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchProfile()
-  // }, [id])
 
   const { data, isLoading } = useQuery({
     queryKey: ['public-profile', id, slug, applicationId],
@@ -114,31 +93,6 @@ const PublicProfile = () => {
   ) => {
     if (!application) return
 
-    // try {
-    //   setUpdatingStatus(true)
-    //   toast.loading('Updating status...')
-
-    //   const res = await AppSdk.patchData(`/api/applications/${application.id}/update`, {
-    //     status,
-    //     internalNotes: status === 'REJECTED' ? notes : '',
-    //   })
-
-    //   if (res.error) {
-    //     toast.error(res.error || 'Failed to update status')
-    //     return
-    //   }
-
-    //   toast.dismiss()
-    //   toast.success('Application status updated')
-    //   setApplication(res.application)
-    //   setIsRejectModalOpen(false)
-    //   setInternalNotes('')
-    // } catch (error) {
-    //   toast.error('Something went wrong')
-    // } finally {
-    //   setUpdatingStatus(false)
-    // }
-
     statusMutation.mutate({ status, notes })
   }
 
@@ -160,25 +114,6 @@ const PublicProfile = () => {
   })
 
   const handleMessageClick = async () => {
-    // setCreatingChat(true);
-    // try {
-    //   const res = await AppSdk.postData('/api/chat/conversations/create', {
-    //     jobSeekerId: application?.userId,
-    //     jobId: application?.jobId,
-    //   });
-
-    //   if (res.error) {
-    //     toast.error(res.error);
-    //     return;
-    //   }
-
-    //   router.push(`/company/chat?conversation=${res.conversationId}`);
-    // } catch (error) {
-    //   console.error(error);
-    //   toast.error('Failed to start conversation');
-    // } finally {
-    //   setCreatingChat(false);
-    // }
     chatMutation.mutate()
   };
 
@@ -243,12 +178,12 @@ const PublicProfile = () => {
       <Button
         variant="ghost"
         onClick={() => router.back()}
-        className="inline-flex items-center gap-2 mb-6 p-0!"
+        className="inline-flex items-center gap-2 py-2 mb-6 p-0!"
       >
         <ArrowLeft className="h-4 w-4" />
         Back
       </Button>
-      <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
+      <div className="rounded-3xl border border-border/40 bg-card p-6 space-y-4 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
@@ -273,7 +208,7 @@ const PublicProfile = () => {
 
             <div>
               <h1 className="text-2xl font-bold">{profile.name}</h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-medium text-muted-foreground">
                 {profile.professionalTitle || '—'}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
@@ -298,29 +233,43 @@ const PublicProfile = () => {
             </Button>
           )}
 
-          {!isOwner && (
-            <Button
-              variant="outline"
-              className='flex flex-row items-center gap-1 border-primary text-primary'
-              onClick={handleMessageClick}
-              disabled={chatMutation.isPending}
-            >
-              {chatMutation.isPending ? <span className='flex flex-row items-center gap-1'>
-                <Spinner className="w-4 h-4" /> Intializing Chat
-              </span>
-                :
-                <span className='flex flex-row items-center gap-1'>
-                  <MessageCircle className="h-4 w-4" />
-                  Message {profile.name}
-                </span>
-              }
-            </Button>
-          )}
+          <div className="flex gap-2 flex-wrap">
+            {!isOwner && (
+              <Button
+                variant="outline"
+                className="flex items-center gap-1 border-primary text-primary"
+                onClick={handleMessageClick}
+                disabled={chatMutation.isPending}
+              >
+                {chatMutation.isPending ? (
+                  <span className="flex items-center gap-1">
+                    <Spinner className="w-4 h-4" />
+                    Initializing Chat
+                  </span>
+                ) : (
+                  <>
+                    <MessageCircle className="h-4 w-4" />
+                    Message
+                  </>
+                )}
+              </Button>
+            )}
+
+            {isComapnyAdmin && application && (
+              <Button
+                variant="outline"
+                className="flex items-center gap-1"
+                onClick={() => router.push(`/company/applications/${slug}`)}
+              >
+                View Application
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
       {profile.bio && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold mb-3">About</h2>
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">
             {profile.bio}
@@ -333,19 +282,19 @@ const PublicProfile = () => {
         <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold">Contact Information</h2>
 
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
+          <div className="space-y-3 text-sm text-muted-foreground divide-y divide-border/40">
+            <div className="flex items-center gap-2 py-2">
               <Mail className="h-4 w-4" />
               {profile.contactEmail}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 py-2">
               <Phone className="h-4 w-4" />
               {profile.countryPhoneCode} {profile.phone}
             </div>
 
             {profile.portfolioWebsite && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 py-2">
                 <Globe className="h-4 w-4" />
                 <Link href={profile.portfolioWebsite} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300">
                   Portfolio
@@ -354,16 +303,20 @@ const PublicProfile = () => {
             )}
 
             {profile.githubUrl && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 py-2">
                 <Github className="h-4 w-4" />
-                <Link href={profile.githubUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
+                <Link
+                  href={profile.githubUrl}
+                  target="_blank"
+                  className="underline hover:text-primary transition break-all"
+                >
                   GitHub
                 </Link>
               </div>
             )}
 
             {profile.linkedinUrl && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 py-2">
                 <Linkedin className="h-4 w-4" />
                 <Link href={profile.linkedinUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                   LinkedIn
@@ -372,7 +325,7 @@ const PublicProfile = () => {
             )}
 
             {profile.twitterUrl && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 py-2">
                 <Twitter className="h-4 w-4" />
                 <Link href={profile.twitterUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                   Twitter
@@ -382,7 +335,7 @@ const PublicProfile = () => {
 
             {(profile.otherLinks && profile.otherLinks.length > 0) &&
               profile.otherLinks.map((link, index) => {
-                return <div key={`${link}-${index}`} className="flex items-center gap-2">
+                return <div key={`${link}-${index}`} className="flex items-center gap-2 py-2">
                   <Link2 className="h-4 w-4" />
                   <Link href={link} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
                     {link}
@@ -393,15 +346,15 @@ const PublicProfile = () => {
           </div>
         </div>
         <div className='flex flex-col gap-6'>
-          <div className="rounded-2xl border border-border/40 bg-card p-6">
+          <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
             <h2 className="text-lg font-semibold mb-6">Preffered Job Categories</h2>
 
             {profile.jobCategories.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-w-3xl">
                 {profile.jobCategories.map((category) => (
                   <span
                     key={category}
-                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                    className="rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-medium text-primary"
                   >
                     {getLabel(jobCategories, category)}
                   </span>
@@ -411,7 +364,7 @@ const PublicProfile = () => {
               <p className="text-sm text-muted-foreground">—</p>
             )}
           </div>
-          <div className="rounded-2xl border border-border/40 bg-card p-6">
+          <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
             <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
 
             {profile.preferredLocations.length > 0 ? (
@@ -433,7 +386,7 @@ const PublicProfile = () => {
       </div>
 
       {profile.skills.length > 0 && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold mb-4">Skills</h2>
 
           <div className="flex flex-wrap gap-2">
@@ -449,7 +402,7 @@ const PublicProfile = () => {
         </div>
       )}
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold mb-6">Professional Preferences</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
@@ -498,13 +451,8 @@ const PublicProfile = () => {
           </div>
         </div>
       </div>
-
-
-
-
-
       {profile.workExperience.length > 0 && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold mb-6">Work Experience</h2>
 
           <div className="space-y-6">
@@ -532,7 +480,7 @@ const PublicProfile = () => {
       )}
 
       {profile.education.length > 0 && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold mb-6">Education</h2>
 
           <div className="space-y-4">
@@ -552,7 +500,7 @@ const PublicProfile = () => {
       )}
 
       {profile.certifications.length > 0 && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold mb-6">Certifications</h2>
 
           <div className="space-y-4">
@@ -569,8 +517,11 @@ const PublicProfile = () => {
       )}
 
       {(isOwner || isAdmin) && profile.resumeUrl && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
-          <h2 className="text-lg font-semibold mb-4">Resume</h2>
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            Resume
+          </h2>
 
           <DocumentCard
             label="Resume"
@@ -582,7 +533,7 @@ const PublicProfile = () => {
       )}
 
       {isComapnyAdmin && application && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4 space-y-6">
           <h2 className="text-lg font-semibold">Application Details</h2>
 
           {application.coverLetter && (
@@ -604,7 +555,12 @@ const PublicProfile = () => {
           )}
 
           <div>
-            <h4 className="font-medium mb-2">Status</h4>
+            <h4 className="font-medium mb-2">
+              Application Status
+            </h4>
+            <p className="text-xs text-muted-foreground mb-3">
+              Update the candidate&apos;s application stage
+            </p>
 
             <select
               value={application.status}
@@ -637,7 +593,7 @@ const PublicProfile = () => {
 
 
       {isAdmin && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold mb-4">Admin Metadata</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
@@ -669,8 +625,7 @@ const PublicProfile = () => {
             onChange={(e) => setInternalNotes(e.target.value)}
             placeholder="Add internal notes (optional)..."
             rows={4}
-            className="w-full rounded-lg border border-border p-3 text-sm bg-background"
-          />
+            className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40" />
 
           <div className="flex justify-end gap-3">
             <Button
