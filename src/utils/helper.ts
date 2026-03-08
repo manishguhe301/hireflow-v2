@@ -7,6 +7,7 @@ import {
   ApplicationStatus,
 } from '@prisma/client';
 import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
+import { Briefcase, ShieldCheck, UserCircle, Workflow } from 'lucide-react';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -299,3 +300,35 @@ export const APPLICATION_TABS_WITH_SORT: {
   { label: 'Sort by Newest', value: 'recent' },
   { label: 'Sort by Oldest', value: 'oldest' },
 ];
+
+export const features = [
+  {
+    icon: Briefcase,
+    title: 'Quality Jobs',
+    desc: 'Curated opportunities from verified companies only.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Verified Companies',
+    desc: 'Every employer is manually approved.',
+  },
+  {
+    icon: Workflow,
+    title: 'Application Tracking',
+    desc: 'Track your hiring progress in real-time.',
+  },
+  {
+    icon: UserCircle,
+    title: 'Complete Profiles',
+    desc: 'Build detailed and professional profiles.',
+  },
+];
+
+export function isNewJob(date: Date | string): boolean {
+  const created = new Date(date).getTime();
+  const now = Date.now();
+
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  return now - created < oneDay;
+}
