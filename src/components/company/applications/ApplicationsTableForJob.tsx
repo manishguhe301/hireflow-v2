@@ -1,17 +1,12 @@
 import {
   FileText,
   MessageCircle,
-  // Trash2
 } from "lucide-react"
 import { Applications } from "./JobApplicants"
 import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from "@/src/utils/helper"
-// import { yearsOfExperiences } from "@/src/utils/utils"
 import { STATUS_STYLE } from "../../job-seeker/profile/ApplicationsTable"
 import Link from "next/link"
-// import { Button } from "../../ui/Button"
 import clsx from "clsx"
-// import { ExperienceLevel } from "@prisma/client"
-// import { Spinner } from "../../elements/Loader"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "../../ui/Button"
 import { Spinner } from "../../elements/Loader"
@@ -72,9 +67,9 @@ const ApplicationsTableForJob = ({
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1100px]">
-        <thead className="bg-muted/40 border-b border-border/60">
+        <thead className="bg-muted/50 border-b border-border/60 text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
-            <th className="px-6 py-4 text-left flex flex-row items-center gap-4">
+            <th scope='col' className="px-6 py-5 text-left flex flex-row items-center gap-4">
               <input
                 type="checkbox"
                 id="isCurrent"
@@ -90,12 +85,10 @@ const ApplicationsTableForJob = ({
               />
               Applicant
             </th>
-
-            {/* <th className="px-6 py-4 text-left">Experience</th> */}
-            <th className="px-6 py-4 text-left">Location</th>
-            <th className="px-6 py-4 text-left">Status</th>
-            <th className="px-6 py-4 text-left">Applied</th>
-            <th className="px-6 py-4 text-right">Actions</th>
+            <th scope='col' className="px-6 py-5 text-left">Location</th>
+            <th scope='col' className="px-6 py-5 text-left">Status</th>
+            <th scope='col' className="px-6 py-5 text-left" >Applied</th>
+            <th scope='col' className="px-6 py-5 text-right">Actions</th>
           </tr>
         </thead>
 
@@ -123,17 +116,11 @@ const ApplicationsTableForJob = ({
                   (isBulkProcessing) && "pointer-events-none opacity-50",
                   selectedApplicants.includes(app.id) && "bg-muted"
                 )}
-              // onClick={(e) => {
-              //   e.stopPropagation()
-              //   checkBoxHandler(app.id)
-              // }
-              // }
               >
-                <td className="px-6 py-4 flex flex-row items-center gap-4">
+                <td className="px-6 py-5 flex flex-row items-center gap-4">
                   <input
                     type="checkbox"
                     className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
-                    // onClick={(e) => e.stopPropagation()}
                     onChange={() => checkBoxHandler(app.id)}
                     checked={selectedApplicants.includes(app.id)}
                     disabled={isBulkProcessing}
@@ -166,18 +153,13 @@ const ApplicationsTableForJob = ({
                     </div>
                   </div>
                 </td>
-
-                {/* <td className="px-6 py-4 text-xs text-muted-foreground">
-                  {getLabel(yearsOfExperiences, profile?.yearsOfExperience as ExperienceLevel) || '—'}
-                </td> */}
-
-                <td className="px-6 py-4 text-xs text-muted-foreground">
+                <td className="px-6 py-5 text-xs text-muted-foreground">
                   {profile?.city
                     ? `${profile.city}, ${profile.country}`
                     : profile?.country || '—'}
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-6 py-5">
                   <span
                     className={clsx(
                       'px-3 py-1 rounded-full text-xs font-medium',
@@ -188,7 +170,7 @@ const ApplicationsTableForJob = ({
                   </span>
                 </td>
 
-                <td className="px-6 py-4 text-xs text-muted-foreground">
+                <td className="px-6 py-5 text-xs text-muted-foreground">
                   {formatRelativeTime(app.createdAt)}
                 </td>
                 <td className="px-6 py-7 text-right flex items-center justify-end gap-3">
@@ -213,19 +195,6 @@ const ApplicationsTableForJob = ({
                       <MessageCircle className="h-4 w-4" />
                     }
                   </Button>
-                  {/* <Button
-                    className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80",
-                      // loadingAction && 'pointer-events-none opacity-50'
-                    )}
-                  // disabled={loadingAction === `delete-${job.id}`}
-                  // onClick={() => setDeleteJobId(job.id)}
-                  >
-                    {false ? (
-                      <Spinner className="h-4 w-4" />
-                    ) : (
-                      <Trash2 className="h-4 w-4" />
-                    )}
-                  </Button> */}
                 </td>
               </tr>
             )
