@@ -21,7 +21,7 @@ const InfoRow = ({
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-primary hover:underline"
+            className="text-sm font-medium text-primary hover:underline break-all"
           >
             {value}
           </a>

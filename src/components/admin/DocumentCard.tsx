@@ -23,7 +23,7 @@ const DocumentCard = ({
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
 
   const handleReveal = async () => {
-    if (!hasDocument) return
+    if (!hasDocument || loading) return
 
     setLoading(true)
     try {
@@ -45,7 +45,10 @@ const DocumentCard = ({
       } else if (apiUrl) {
         const res = await AppSdk.getData(apiUrl, null)
         // console.log(res);
-        url = res?.url ?? null
+        if (!res?.url) {
+          throw new Error('No document url returned')
+        }
+        url = res?.url || null
       }
       if (!url) {
         toast.error('Failed to retrieve document')
@@ -62,51 +65,68 @@ const DocumentCard = ({
   }
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <FileText className="h-5 w-5 text-muted-foreground" />
-          <p className="text-sm font-medium flex flex-col gap-1">
-            {label}
-            {desc &&
-              <span className="text-xs text-muted-foreground">
+    <div className="rounded-xl border border-border/60 bg-card p-4 hover:border-primary/30 transition flex items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
+
+        <div className="flex items-start gap-3 min-w-0">
+          <FileText className="h-5 w-5 text-muted-foreground shrink-0" />
+
+          <div className="flex flex-col min-w-0">
+            <p className="text-sm font-medium">{label}</p>
+
+            {hasDocument && (
+              <span className="text-[11px] text-muted-foreground">
+                Secure document
+              </span>
+            )}
+
+            {desc && (
+              <span className="text-xs text-muted-foreground leading-relaxed">
                 {desc}
               </span>
-            }
-          </p>
+            )}
+          </div>
         </div>
 
-        {!hasDocument && (
-          <span className="text-xs text-muted-foreground">
-            Not uploaded
-          </span>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
 
-        {hasDocument && !signedUrl && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleReveal}
-            disabled={loading}
-            className="flex items-center gap-2"
-          >
-            {loading ? 'Revealing…' : 'Reveal'}
-            {!loading && <Eye className="h-4 w-4" />}
-          </Button>
-        )}
-        {hasDocument && signedUrl && (
-          <div className="flex items-center gap-2 text-sm">
-            <ExternalLink className="h-4 w-4 text-primary" />
-            <Link
-              href={signedUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline underline-offset-2 break-all"
+          {!hasDocument && (
+            <span className="text-xs text-muted-foreground">
+              Not uploaded
+            </span>
+          )}
+
+          {hasDocument && !signedUrl && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleReveal}
+              disabled={loading}
+              className="flex items-center gap-2"
             >
-              Open document
-            </Link>
-          </div>
-        )}
+              {loading ? 'Revealing…' : 'Reveal'}
+              {!loading && <Eye className="h-4 w-4" />}
+            </Button>
+          )}
+
+          {hasDocument && signedUrl && (
+            <div className="flex flex-col text-sm">
+              <Link
+                href={signedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline break-all"
+              >
+                Open document
+              </Link>
+
+              <span className="text-[11px] text-muted-foreground">
+                Link expires shortly
+              </span>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   )
