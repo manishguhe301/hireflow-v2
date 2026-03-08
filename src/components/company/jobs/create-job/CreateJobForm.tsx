@@ -1,7 +1,7 @@
 'use client'
 import { EmploymentType, ExperienceLevel, Job, JobStatus, WorkMode } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import FormHeader from '../../../ui/FormHeader';
@@ -148,53 +148,8 @@ const CreateJobForm = () => {
   const params = useParams();
   const slug = params.slug as string | undefined
   const isEditMode = !!slug
-  // const [jobLoading, setJobLoading] = useState(false)
-  // const [job, setJob] = useState<Job | null>(null)
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
   const queryClient = useQueryClient()
-
-  // const fetchJobDetails = async () => {
-  //   setJobLoading(true)
-  //   try {
-  //     const res = await AppSdk.getData(`/api/company/jobs/${slug}`, null)
-  //     const job = res.job
-  //     if (job) {
-  //       setJob(job)
-  //       reset({
-  //         jobId: job.id,
-  //         title: job.title,
-  //         description: job.description,
-  //         requirements: job.requirements,
-  //         responsibilities: job.responsibilities ?? '',
-  //         skills: job.skills,
-  //         experienceLevel: job.experienceLevel,
-  //         employmentType: job.employmentType,
-  //         workMode: job.workMode,
-  //         country: job.country,
-  //         city: job.city,
-  //         salaryMin: job.salaryMin,
-  //         salaryMax: job.salaryMax,
-  //         hideSalary: job.hideSalary,
-  //         numberOfOpenings: job.numberOfOpenings,
-  //         applicationDeadline: job.applicationDeadline
-  //           ? new Date(job.applicationDeadline)
-  //           : undefined,
-  //         category: job.category,
-  //       })
-  //       setJobStatus(job.status)
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error('Failed to fetch job details, please try again.')
-  //   } finally {
-  //     setJobLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!slug) return;
-  //   fetchJobDetails()
-  // }, [slug])
 
   const { data, isLoading: jobLoading } = useQuery({
     queryKey: ['company-job', slug],
@@ -620,7 +575,6 @@ const CreateJobForm = () => {
                 )}
               </>
             )}
-
           </div>
         </div>
       </div>
