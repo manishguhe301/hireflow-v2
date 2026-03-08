@@ -16,16 +16,39 @@ const ChatMessage = ({
       ? 'You'
       : message.sender.profile?.name || message.sender?.name
 
+  const avatar =
+    message.sender.profile?.avatar || ''
+
+  const fallbackLetter = name?.charAt(0)?.toUpperCase()
+
+  const Avatar = (
+    avatar ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={avatar}
+        alt={name}
+        loading="lazy"
+        className="h-8 w-8 rounded-full object-cover shrink-0"
+      />
+    ) : (
+      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold shrink-0">
+        {fallbackLetter}
+      </div>
+    )
+  )
+
   return (
     <div
       className={clsx(
-        "w-full flex",
+        "w-full flex items-start gap-3",
         isOwnMessage ? "justify-end" : "justify-start"
       )}
     >
+      {!isOwnMessage && Avatar}
+
       <div
         className={clsx(
-          "max-w-[75%] px-3 py-2 rounded-xl transition hover:bg-muted/30",
+          "max-w-[70%] px-3 py-2 rounded-xl transition hover:bg-muted/30",
           isOwnMessage
             ? "bg-muted/40 text-foreground"
             : "bg-muted/10 text-muted-foreground"
@@ -49,6 +72,8 @@ const ChatMessage = ({
           {message.content}
         </p>
       </div>
+
+      {isOwnMessage && Avatar}
     </div>
   )
 }
