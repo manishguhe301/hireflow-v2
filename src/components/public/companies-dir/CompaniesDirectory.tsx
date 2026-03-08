@@ -133,7 +133,7 @@ export default function CompaniesDirectory() {
     })
   }, [pagination, page, queryParams])
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return <CompaniesDirectorySkeleton />
   }
 
@@ -195,12 +195,6 @@ export default function CompaniesDirectory() {
           Showing <span className="font-medium text-foreground">{companies.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> companies
         </p>
-      )}
-
-      {isLoading && (
-        <div className="flex justify-center py-24">
-          <Spinner className="h-8 w-8" />
-        </div>
       )}
 
       {!isLoading && companies.length > 0 && (

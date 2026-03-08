@@ -10,6 +10,7 @@ import { useChatPusher } from '@/src/store/hooks/useChatPusher';
 import { MessageWithSender } from '@/src/types';
 import ChatMessage from './ChatMessage';
 import { useMutation } from '@tanstack/react-query';
+import PageLoader from '../ui/PageLoader';
 
 interface ChatWindowProps {
   conversationId: string | null;
@@ -206,13 +207,9 @@ export default function ChatWindow({
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <PageLoader title='Loading conversation' />
     );
   }
-
-
 
   return (
     <div className="flex-1 flex flex-col bg-background w-full">
@@ -241,8 +238,9 @@ export default function ChatWindow({
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto p-4 space-y-4">
         {isLoadingMore && page > 1 && (
-          <div className="text-center py-2">
-            <Spinner className="h-6 w-6 mx-auto" />
+          <div className="text-center py-2 text-xs text-muted-foreground flex flex-col items-center gap-2">
+            <Spinner className="h-5 w-5" />
+            Loading older messages
           </div>
         )}
         {messages.map((message, index) => {
@@ -293,7 +291,11 @@ export default function ChatWindow({
             className="px-4 self-end"
             aria-label='Send Message'
           >
-            <Send className="h-4 w-4" />
+            {sendMutation.isPending ? (
+              <Spinner className="h-4 w-4" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

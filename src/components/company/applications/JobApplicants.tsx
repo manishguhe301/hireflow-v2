@@ -499,9 +499,7 @@ const JobApplicants = () => {
       <>
         {
           isFetching ? (
-            <div className="flex items-center justify-center ">
-              <Spinner className="h-8 w-8" />
-            </div>
+            <TableSkeleton columns={5} rows={5} />
           ) : (
             applications.length > 0 ?
               <ApplicationsTableForJob

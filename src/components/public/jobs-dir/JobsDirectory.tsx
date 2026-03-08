@@ -325,7 +325,7 @@ const JobsDirectory = () => {
     }
   }, [isMobileFilterOpen])
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return <JobsDirectorySkeleton />
   }
 
@@ -400,12 +400,12 @@ const JobsDirectory = () => {
 
       </div>
 
-      {!isLoading && pagination ? (
+      {pagination && (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
         </p>
-      ) : <p className="text-sm text-muted-foreground ">Loading Results...</p>}
+      )}
 
       <div className="relative flex gap-6">
         <div className="hidden lg:block">
@@ -449,11 +449,6 @@ const JobsDirectory = () => {
         )}
 
         <main className="flex-1 min-w-0">
-          {isLoading && (
-            <div className="flex justify-center py-24">
-              <Spinner className="h-8 w-8" />
-            </div>
-          )}
 
           {!isLoading && jobs.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2">

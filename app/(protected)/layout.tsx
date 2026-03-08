@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react'
 import { Spinner } from '@/src/components/elements/Loader'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
-import PublicFooter from '@/src/components/public/PublicFooter'
+import PageLoader from '@/src/components/ui/PageLoader'
 
 export default function ProtectedLayout({
   children,
@@ -33,8 +33,11 @@ export default function ProtectedLayout({
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spinner className="h-8 w-8" />
+      <div className='flex items-center justify-center h-screen'>
+        <PageLoader
+          title="Checking your session"
+          subtitle="Verifying authentication status"
+        />
       </div>
     )
   }

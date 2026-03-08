@@ -16,6 +16,7 @@ import { Spinner } from '@/src/components/elements/Loader';
 import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import PageLoader from '@/src/components/ui/PageLoader';
 
 export type JobFormInputs = {
   jobId?: string;
@@ -244,9 +245,7 @@ const CreateJobForm = () => {
 
   if (jobLoading) {
     return (
-      <div className="flex items-center text-sm justify-center gap-2 h-[90%]">
-        Loading job details... <Spinner className='w-6 h-6' />
-      </div>
+      <PageLoader title='Loading job details' subtitle='Preparing the job editor' />
     )
   }
 

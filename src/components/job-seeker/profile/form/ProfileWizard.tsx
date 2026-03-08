@@ -24,6 +24,7 @@ import { Button } from '@/src/components/ui/Button'
 import { toast } from 'sonner'
 import { buildProfileFormData } from '@/src/utils/helper'
 import { setProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
+import PageLoader from '@/src/components/ui/PageLoader'
 
 export type WorkExperienceInput = {
   company: string
@@ -265,9 +266,7 @@ const ProfileWizard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <PageLoader title="Loading your profile" subtitle="Preparing the profile editor" />
     )
   }
 

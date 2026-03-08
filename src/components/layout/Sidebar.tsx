@@ -65,9 +65,18 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
 
   if (status === 'loading') {
     return (
-      <div className='hidden md:flex w-64 flex-col items-center justify-center border-r border-border/60 bg-card px-4 py-6'>
-        <Spinner className="h-8 w-8" />
-      </div>
+      <aside className="hidden md:flex w-64 flex-col border-r border-border/60 bg-background px-4 py-6">
+        <div className="h-6 w-32 bg-muted rounded mb-8 animate-pulse" />
+
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-10 rounded-lg bg-muted animate-pulse"
+            />
+          ))}
+        </div>
+      </aside>
     )
   }
 
