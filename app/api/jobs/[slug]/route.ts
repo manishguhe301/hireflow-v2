@@ -121,6 +121,9 @@ export async function GET(
     const similarJobs = await prisma.job.findMany({
       where: {
         status: 'ACTIVE',
+        applicationDeadline: {
+          gte: new Date(),
+        },
         id: {
           notIn: [job.id, ...appliedJobIds],
         },
