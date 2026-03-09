@@ -29,6 +29,7 @@ import StepSidebar from '@/src/components/layout/StepSidebar'
 import MobileTabs from '@/src/components/layout/MobileTabs'
 
 export type WorkExperienceInput = {
+  id?: string
   company: string
   title: string
   location?: string | null
@@ -40,6 +41,7 @@ export type WorkExperienceInput = {
 }
 
 export type EducationInput = {
+  id?: string
   institution: string
   degree: string
   fieldOfStudy: string | null
@@ -50,6 +52,7 @@ export type EducationInput = {
 }
 
 export type CertificationInput = {
+  id?: string
   name: string
   organization: string
   issueDate: Date
@@ -314,6 +317,11 @@ const ProfileWizard = () => {
 
     try {
       const formData = buildProfileFormData(data);
+      if (isEditMode) {
+        formData.delete('workExperience')
+        formData.delete('education')
+        formData.delete('certifications')
+      }
       formData.append('isDraft', 'true');
 
       const response = await fetch('/api/profile', {
@@ -365,6 +373,11 @@ const ProfileWizard = () => {
     setIsSubmitting(true);
     try {
       const formData = buildProfileFormData(data);
+      if (isEditMode) {
+        formData.delete('workExperience')
+        formData.delete('education')
+        formData.delete('certifications')
+      }
       formData.append('isDraft', 'false');
 
       const method = isEditMode ? 'PATCH' : 'POST';
@@ -471,6 +484,7 @@ const ProfileWizard = () => {
                 watch={watch}
                 setValue={setValue}
                 disabled={isSubmitting}
+                isEditMode={isEditMode}
               />
             }
             {currentStep === 3 &&
@@ -480,6 +494,7 @@ const ProfileWizard = () => {
                 watch={watch}
                 setValue={setValue}
                 disabled={isSubmitting}
+                isEditMode={isEditMode}
               />
             }
             {currentStep === 4 &&
@@ -507,6 +522,7 @@ const ProfileWizard = () => {
                 watch={watch}
                 setValue={setValue}
                 disabled={isSubmitting}
+                isEditMode={isEditMode}
               />
             }
             {currentStep === 7 &&
@@ -554,8 +570,9 @@ const ProfileWizard = () => {
                 variant="outline"
                 className="max-md:w-full"
               >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </Button>}
+                {isSubmitting ? "Saving..." : jobSeekerProfile ? "Save Changes" : "Save as Draft"}
+              </Button>
+              }
 
               {currentStep < 8 && (
                 <Button

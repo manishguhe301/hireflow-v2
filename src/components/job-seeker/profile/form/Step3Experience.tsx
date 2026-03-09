@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
+import { JobSeekerFormInputs, WorkExperienceInput } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
 import Modal from '@/src/components/ui/Modal'
 import FormDatePicker from '@/src/components/ui/FormDatePicker'
-import { Briefcase, Edit, Plus, Trash2 } from 'lucide-react'
+import { Briefcase, Edit, Loader2, Plus, Trash2 } from 'lucide-react'
 import { WorkMode } from '@prisma/client'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -16,6 +16,7 @@ import { FormSelect } from '@/src/components/ui/FormSelect'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormTextarea } from '@/src/components/ui/FormTextarea'
 import { workModes } from '@/src/utils/constants'
+import { AppSdk } from '@/src/utils/AppSdk'
 
 type WorkExperienceForm = {
   company: string
@@ -31,16 +32,20 @@ type WorkExperienceForm = {
 const Step3Experience = ({
   watch,
   setValue,
-  disabled
+  disabled,
+  isEditMode,
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   disabled?: boolean
   setValue: UseFormSetValue<JobSeekerFormInputs>
+  isEditMode?: boolean
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const workExperiences = watch('workExperience') || []
 
@@ -102,38 +107,87 @@ const Step3Experience = ({
     resetExpForm()
   }
 
-  const onSubmit = (data: WorkExperienceForm) => {
+  const onSubmit = async (data: WorkExperienceForm) => {
     if (!data.isCurrent && data.endDate && data.endDate < data.startDate) {
       toast.error('End date must be after start date')
       return
     }
 
-    const newExperience = {
+    const payload = {
       ...data,
       location: data.location || null,
       description: data.description || null,
       endDate: data.isCurrent ? null : data.endDate || null,
     }
 
+    if (isEditMode) {
+      setIsSaving(true)
+      try {
+        const editingItem = editingIndex !== null ? workExperiences[editingIndex] : null
+        let res
+
+        if (editingItem?.id) {
+          res = await AppSdk.patchData(`/api/profile/experience/${editingItem.id}`, payload)
+        } else {
+          res = await AppSdk.postData('/api/profile/experience', payload)
+        }
+
+        if (res.error) {
+          toast.error(res.error)
+          return
+        }
+
+        const saved: WorkExperienceInput = res.experience
+
+        if (editingIndex !== null) {
+          const updated = [...workExperiences]
+          updated[editingIndex] = saved
+          setValue('workExperience', updated, { shouldValidate: true })
+        } else {
+          setValue('workExperience', [...workExperiences, saved], { shouldValidate: true })
+        }
+
+        toast.success(editingIndex !== null ? 'Experience updated' : 'Experience added')
+        handleCloseModal()
+      } catch {
+        toast.error('Something went wrong')
+      } finally {
+        setIsSaving(false)
+      }
+      return
+    }
 
     if (editingIndex !== null) {
       const updated = [...workExperiences]
-      updated[editingIndex] = newExperience
+      updated[editingIndex] = payload
       setValue('workExperience', updated, { shouldValidate: true })
     } else {
-      setValue('workExperience', [...workExperiences, newExperience], { shouldValidate: true })
+      setValue('workExperience', [...workExperiences, payload], { shouldValidate: true })
     }
 
     handleCloseModal()
   }
 
-  const handleDelete = (index: number) => {
+  const handleDelete = async (index: number) => {
+    const item = workExperiences[index]
+
+    if (isEditMode && item.id) {
+      setIsDeleting(true)
+      const res = await AppSdk.deleteData(`/api/profile/experience/${item.id}`, null)
+      if (res.error) {
+        toast.error(res.error)
+        return
+      }
+      toast.success('Experience deleted')
+      setIsDeleting(false)
+    }
+
     const updated = workExperiences.filter((_, i) => i !== index)
     setValue('workExperience', updated, { shouldValidate: true })
   }
 
   return (
-    <div className="space-y-8 ">
+    <div className="space-y-8">
       <StepHeader
         heading="Your Work Experience (Optional)"
         description="Add your professional work experience to help employers understand your background."
@@ -163,7 +217,7 @@ const Step3Experience = ({
         <div className="space-y-4">
           {workExperiences.map((exp, index) => (
             <div
-              key={index}
+              key={exp.id || index}
               className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60 max-sm:w-full"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -182,8 +236,7 @@ const Step3Experience = ({
                       </span>
                     )}
                     <span className="inline-flex items-center gap-1 break-all">
-                      {formatDate(exp.startDate)} -{' '}
-                      {exp.isCurrent ? 'Present' : exp.endDate ? formatDate(exp.endDate) : 'N/A'}
+                      {formatDate(exp.startDate)} — {exp.isCurrent ? 'Present' : exp.endDate ? formatDate(exp.endDate) : 'N/A'}
                     </span>
                   </div>
                   {exp.description && (
@@ -192,7 +245,6 @@ const Step3Experience = ({
                     </p>
                   )}
                 </div>
-
                 <div className="flex gap-2 self-start sm:self-auto">
                   <Button
                     type="button"
@@ -212,7 +264,7 @@ const Step3Experience = ({
                     aria-label="Delete work experience"
                     className="p-2!"
                   >
-                    <Trash2 className="h-4 w-4 text-destructive" />
+                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
                   </Button>
                 </div>
               </div>
@@ -220,14 +272,18 @@ const Step3Experience = ({
           ))}
         </div>
       )}
-      <Modal open={isModalOpen} onClose={handleCloseModal}
+      <Modal
+        open={isModalOpen}
+        onClose={handleCloseModal}
         className="max-w-3xl max-sm:max-h-[70%] max-sm:overflow-y-scroll "
       >
         <h2 className="text-xl font-semibold mb-6">
           {editingIndex !== null ? 'Edit Work Experience' : 'Add Work Experience'}
         </h2>
-
-        <form onSubmit={handleExpSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleExpSubmit(onSubmit)}
+          className="space-y-6"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormInput
               label="Job Title"
@@ -237,7 +293,7 @@ const Step3Experience = ({
                 minLength: { value: 2, message: 'Title must be at least 2 characters' },
               })}
               error={expErrors.title}
-              disabled={disabled}
+              disabled={disabled || isSaving}
             />
 
             <FormInput
@@ -248,7 +304,7 @@ const Step3Experience = ({
                 minLength: { value: 2, message: 'Company name must be at least 2 characters' },
               })}
               error={expErrors.company}
-              disabled={disabled}
+              disabled={disabled || isSaving}
             />
           </div>
 
@@ -256,39 +312,35 @@ const Step3Experience = ({
             <FormInput
               label="Location (Optional)"
               placeholder="e.g., San Francisco, CA"
-              disabled={disabled}
+              disabled={disabled || isSaving}
               register={expRegister('location')}
               error={expErrors.location}
             />
-
             <FormSelect
-              disabled={disabled}
+              disabled={disabled || isSaving}
               label="Work Mode"
               options={workModes}
-              register={expRegister('workMode', {
-                required: 'Work mode is required',
-              })}
+              register={expRegister('workMode', { required: 'Work mode is required' })}
               error={expErrors.workMode}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormDatePicker
-              disabled={disabled}
+              disabled={disabled || isSaving}
               label="Start Date"
               value={expWatch('startDate')}
               maxDate={new Date()}
               onChange={(date) =>
                 setExpValue('startDate', date!, {
-                  shouldValidate: true,
-                })
-              }
+                  shouldValidate: true
+                })}
               error={expErrors.startDate}
             />
 
             {!isCurrent && (
               <FormDatePicker
-                disabled={disabled}
+                disabled={disabled || isSaving}
                 label="End Date"
                 value={expWatch('endDate')}
                 minDate={expWatch('startDate')}
@@ -296,28 +348,26 @@ const Step3Experience = ({
                 onChange={(date) =>
                   setExpValue('endDate', date!, {
                     shouldValidate: true,
-                  })
-                }
+                  })}
                 error={expErrors.endDate}
               />
             )}
           </div>
-
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
               id="isCurrent"
               {...expRegister('isCurrent')}
               className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
-              aria-label='I currently work here'
+              aria-label="I currently work here"
+              disabled={disabled || isSaving}
             />
             <label htmlFor="isCurrent" className="text-sm font-medium">
               I currently work here
             </label>
           </div>
-
           <FormTextarea
-            disabled={disabled}
+            disabled={disabled || isSaving}
             label="Description (Optional)"
             placeholder="Describe your role, responsibilities, and achievements..."
             rows={5}
@@ -329,15 +379,24 @@ const Step3Experience = ({
           />
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={handleCloseModal}
-              disabled={disabled}
-            >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCloseModal}
+              disabled={disabled || isSaving}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary"
-              disabled={disabled}
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={disabled || isSaving}
             >
-              {editingIndex !== null ? 'Update' : 'Add'} Experience
+              {
+                isSaving ?
+                  'Saving...' : editingIndex !== null
+                    ? 'Update Experience'
+                    : 'Add Experience'
+              }
             </Button>
           </div>
         </form>
