@@ -227,23 +227,25 @@ export default function ChatSidebar({
                               {unreadCount}
                             </span>
                           )}
-                          {userType === 'company' && <Button
-                            disabled={deleteMutation.isPending && deleteMutation.variables === conv.id}
-                            variant='ghost'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteMutation.mutate(conv.id);
-                            }
-                            }
-                            aria-label='Delete conversation'
-                            className='p-0!'>
-                            {deleteMutation.isPending &&
-                              deleteMutation.variables === conv.id ? (
-                              <Spinner className="h-4 w-4" />
-                            ) : (
-                              <Trash2 className="text-destructive h-4 w-4 cursor-pointer" />
-                            )}
-                          </Button>}
+                          {userType === 'company' &&
+                            <Button
+                              disabled={deleteMutation.isPending &&
+                                deleteMutation.variables === conv.id}
+                              variant='ghost'
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteMutation.mutate(conv.id);
+                              }
+                              }
+                              aria-label='Delete conversation'
+                              className='p-0!'>
+                              {deleteMutation.isPending &&
+                                deleteMutation.variables === conv.id ? (
+                                <Spinner className="h-4 w-4" />
+                              ) : (
+                                <Trash2 className="text-destructive h-4 w-4 cursor-pointer" />
+                              )}
+                            </Button>}
                         </div>
                       </div>
                     </div>
