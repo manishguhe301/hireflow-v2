@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Building2,
@@ -32,25 +32,8 @@ import CompanyDetailsSkeleton from '../skeletons/CompanyDetailsSkeleton'
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  // const [company, setCompany] = useState<Company | null>(null)
-  // const [isLoading, setIsLoading] = useState(true)
   const [rejectionReason, setRejectionReason] = useState('')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
-
-  // const fetchCompany = async () => {
-  //   try {
-  //     const res = await AppSdk.getData(`/api/admin/companies/${id}`, null)
-  //     setCompany(res.company)
-  //   } catch (error) {
-  //     toast.error('Failed to load company')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchCompany()
-  // }, [id])
 
   const queryClient = useQueryClient()
 
@@ -69,17 +52,6 @@ const CompanyDetails = () => {
   })
 
   const company: Company = data
-
-  // const mockCompany = useMemo(
-  //   () => mockCompanies.find((c) => c.id === id),
-  //   [id]
-  // )
-  // useEffect(() => {
-  //   if (mockCompany) {
-  //     setCompany(mockCompany)
-  //     setIsLoading(false)
-  //   }
-  // }, [mockCompany])
 
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -102,20 +74,6 @@ const CompanyDetails = () => {
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
-    // try {
-    //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
-    //     status: 'APPROVED'
-    //   })
-
-    //   if (res.success) {
-    //     toast.success('Company approved successfully')
-    //     fetchCompany()
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to approve company')
-    // } finally {
-    //   setLoadingAction(null)
-    // }
     approveMutation.mutate(id)
   }
 
@@ -145,21 +103,7 @@ const CompanyDetails = () => {
       return
     }
     setLoadingAction(`reject-${id}`)
-    // try {
-    //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
-    //     status: 'REJECTED',
-    //     rejectionReason: reason
-    //   })
 
-    //   if (res.success) {
-    //     toast.success('Company rejected')
-    //     fetchCompany()
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to reject company')
-    // } finally {
-    //   setLoadingAction(null)
-    // }
     rejectMutation.mutate({ id, reason })
   }
 
@@ -184,19 +128,7 @@ const CompanyDetails = () => {
     if (!deleteCompanyId) return
 
     setLoadingAction(`delete-${deleteCompanyId}`)
-    // try {
-    //   const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
 
-    //   if (res.success) {
-    //     toast.success('Company deleted successfully!')
-    //     router.push('/admin/companies')
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to delete company')
-    // }
-    // finally {
-    //   setLoadingAction(null)
-    // }
     deleteMutation.mutate(deleteCompanyId)
   }
 

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { Building2, MapPin, Briefcase } from 'lucide-react'
-import { useState } from 'react'
 import clsx from 'clsx'
 
 type CompanyCardProps = {

@@ -1,4 +1,4 @@
-import { use, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '.';
 import { AppSdk } from '@/src/utils/AppSdk';
 import {

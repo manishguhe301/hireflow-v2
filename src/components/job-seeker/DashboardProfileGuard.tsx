@@ -2,7 +2,6 @@
 
 import { useProfile } from '@/src/store/hooks/useProfile'
 import React from 'react'
-import { Spinner } from '../elements/Loader'
 import { StateWrapper } from '../company/CompanyProfileGuard'
 import { CircleUserRound, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'

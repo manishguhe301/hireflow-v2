@@ -6,7 +6,6 @@ import MultiSelect from '@/src/components/ui/MultiSelect'
 import { jobSkills } from '@/src/utils/utils'
 
 const Step5Skills = ({
-  register,
   errors,
   watch,
   setValue,

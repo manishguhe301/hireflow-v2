@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
         role,
       },
     });
+
     return NextResponse.json(
       {
         success: true,

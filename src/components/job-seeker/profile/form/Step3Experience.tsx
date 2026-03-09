@@ -1,4 +1,3 @@
-// Step3Experience.tsx
 'use client'
 
 import React, { useState } from 'react'
@@ -30,8 +29,6 @@ type WorkExperienceForm = {
 }
 
 const Step3Experience = ({
-  register,
-  errors,
   watch,
   setValue,
   disabled

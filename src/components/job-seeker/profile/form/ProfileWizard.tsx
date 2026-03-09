@@ -494,12 +494,9 @@ const ProfileWizard = () => {
           }
           {currentStep === 8 &&
             <Step9Review
-              // register={register}
-              // errors={errors}
               watch={watch}
               setCurrentStep={setCurrentStep}
               disabled={isSubmitting}
-            // setValue={setValue}
             />
           }
         </div>

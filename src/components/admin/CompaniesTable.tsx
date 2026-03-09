@@ -122,20 +122,6 @@ const CompaniesTable = ({
                     </>
                   )}
 
-                  {/* {company.status === 'APPROVED' && (
-                  <Button
-                    onClick={() => {
-                      setDeleteCompanyId(null)
-                      setRejectCompanyId(company.id)
-                    }}
-                    className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent" disabled={
-                      !!loadingAction && loadingAction !== `reject-${company.id}`
-                    }                              >
-                    {loadingAction === `reject-${company.id}` ?
-                      'Rejecting...' : 'Reject'}
-                  </Button>
-                )} */}
-
                   <Button
                     className="p-0! border-none text-destructive! bg-transparent hover:text-destructive/80"
                     disabled={loadingAction === `delete-${company.id}`}

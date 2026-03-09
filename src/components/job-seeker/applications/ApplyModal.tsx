@@ -227,7 +227,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40">
           <Button
             type="button"
-            variant="danger"
+            variant="outline"
             onClick={onClose}
             disabled={isSubmitting}
             className='w-full'

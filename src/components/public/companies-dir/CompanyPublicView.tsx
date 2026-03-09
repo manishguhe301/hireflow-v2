@@ -70,7 +70,6 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
         </p>
       </div>
 
-      {/* Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
           <h3 className="text-base font-semibold">Company Information</h3>
@@ -107,7 +106,6 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
         </div>
       </div>
 
-      {/* Jobs */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold tracking-tight">
           Open Positions ({jobs.length})

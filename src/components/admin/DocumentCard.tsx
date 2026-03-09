@@ -1,5 +1,5 @@
 import { AppSdk } from "@/src/utils/AppSdk"
-import { ExternalLink, Eye, FileText } from "lucide-react"
+import { Eye, FileText } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -29,22 +29,10 @@ const DocumentCard = ({
     try {
       let url: string | null = null
 
-      // const res = await AppSdk.getData(
-      //   `/api/company/${companyId}/document?type=${type}`,
-      //   null
-      // );
-
-      // if (!res?.url) {
-      //   toast.error('Failed to retrieve document')
-      //   return
-      // }
-
-      // setSignedUrl(res.url)
       if (onReveal) {
         url = await onReveal()
       } else if (apiUrl) {
         const res = await AppSdk.getData(apiUrl, null)
-        // console.log(res);
         if (!res?.url) {
           throw new Error('No document url returned')
         }
@@ -57,7 +45,6 @@ const DocumentCard = ({
 
       setSignedUrl(url)
     } catch {
-      // console.log(apiUrl);
       toast.error('Unable to access document')
     } finally {
       setLoading(false)

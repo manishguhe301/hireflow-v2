@@ -1,9 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import {
-  // getSignedUrl,
-  deleteFileFromB2,
-  uploadFileToB2,
-} from '@/src/lib/fileUpload';
+import { deleteFileFromB2, uploadFileToB2 } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import {
   CurrentEmployment,
@@ -777,14 +773,8 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    // const signedAvatar = await getSignedUrl(
-    //   updatedProfile?.avatarPath as string,
-    //   604800,
-    // );
-
     return NextResponse.json({
       success: true,
-      // profile: { ...updatedProfile, avatar: signedAvatar },
       profile: updatedProfile,
     });
   } catch (error) {

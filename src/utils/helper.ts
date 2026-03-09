@@ -1,12 +1,5 @@
-import {
-  CompanyStatus,
-  Role,
-  JobStatus,
-  ExperienceLevel,
-  ApplicationStatus,
-} from '@prisma/client';
+import { ExperienceLevel } from '@prisma/client';
 import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
-import { Briefcase, ShieldCheck, UserCircle, Workflow } from 'lucide-react';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);

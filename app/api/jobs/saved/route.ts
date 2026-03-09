@@ -1,5 +1,4 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-// import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -158,30 +157,8 @@ export async function GET(req: NextRequest) {
       }),
     ]);
 
-    // const jobsWithLogos = await Promise.all(
-    //   savedJobs.map(async (job) => {
-    //     let logoUrl = null;
-
-    //     if (job.job.company.logo) {
-    //       logoUrl = await getSignedUrl(job.job.company.logo, 60 * 60 * 24 * 7);
-    //     }
-
-    //     return {
-    //       ...job,
-    //       job: {
-    //         ...job.job,
-    //         company: {
-    //           ...job.job.company,
-    //           logo: logoUrl,
-    //         },
-    //       },
-    //     };
-    //   }),
-    // );
-
     return NextResponse.json({
       savedJobs: savedJobs.map((s) => ({
-        // savedId: s.id,
         savedAt: s.createdAt,
         ...s.job,
         isSaved: true,

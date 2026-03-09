@@ -431,14 +431,6 @@ const JobDetailsForApplicant = () => {
           city: job.city || null,
         }}
         onSuccess={() => {
-          // setHasApplied(true)
-          // setExistingApplication({
-          //   id: '',
-          //   status: 'APPLIED',
-          //   createdAt: new Date().toISOString(),
-          //   statusHistory: []
-          // })
-          // fetchJobDetails()
           queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
         }}
       />}

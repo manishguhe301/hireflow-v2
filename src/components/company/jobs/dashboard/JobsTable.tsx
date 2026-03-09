@@ -1,7 +1,6 @@
 import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
 import { formatDate, isRichTextEmpty } from '@/src/utils/helper'
-import { jobCategories } from '@/src/utils/utils'
 import { Job } from '@prisma/client'
 import clsx from 'clsx'
 import { CheckCircle, Clock, Pencil, Trash2, XCircle } from 'lucide-react'

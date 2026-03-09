@@ -1,6 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
-import { CompanyStatus, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -29,20 +29,6 @@ export async function GET(request: NextRequest) {
         {
           name: { contains: search, mode: 'insensitive' },
         },
-        // {
-        //   user: {
-        //     is: {
-        //       name: { contains: search, mode: 'insensitive' },
-        //     },
-        //   },
-        // },
-        // {
-        //   user: {
-        //     is: {
-        //       email: { contains: search, mode: 'insensitive' },
-        //     },
-        //   },
-        // },
       ];
     }
 

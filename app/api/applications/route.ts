@@ -3,7 +3,6 @@ import { deleteFileFromB2, uploadFileToB2 } from '@/src/lib/fileUpload';
 import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
-import { profile } from 'console';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {

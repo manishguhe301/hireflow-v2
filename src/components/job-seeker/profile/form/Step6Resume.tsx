@@ -8,8 +8,6 @@ import { useProfile } from '@/src/store/hooks/useProfile'
 const Step6Resume = ({
   register,
   errors,
-  watch,
-  setValue,
   disabled
 }: {
   register: UseFormRegister<JobSeekerFormInputs>

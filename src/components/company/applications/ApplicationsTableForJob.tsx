@@ -129,6 +129,7 @@ const ApplicationsTableForJob = ({
                   <div className=" flex items-center gap-3">
                     {profile?.avatar ? (
                       <div className="relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={profile.avatar}
                           alt={profile.name}

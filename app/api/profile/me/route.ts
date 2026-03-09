@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-// import { getSignedUrl } from '@/src/lib/fileUpload';
 
 export async function GET() {
   try {
@@ -26,13 +25,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // const signedAvatar = await getSignedUrl(
-    //   profile?.avatarPath as string,
-    //   604800,
-    // );
-
     return NextResponse.json({
-      // profile: profile ? { ...profile, avatar: signedAvatar } : null,
       profile,
     });
   } catch (error) {

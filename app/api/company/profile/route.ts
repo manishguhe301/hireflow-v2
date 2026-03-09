@@ -1,9 +1,5 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import {
-  deleteFileFromB2,
-  // getSignedUrl,
-  uploadFileToB2,
-} from '@/src/lib/fileUpload';
+import { deleteFileFromB2, uploadFileToB2 } from '@/src/lib/fileUpload';
 import { notifyRoleUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
@@ -22,10 +18,7 @@ export async function GET() {
       },
     });
 
-    // const logourl = await getSignedUrl(company?.logo as string, 604800);
-
     return NextResponse.json({
-      // company: company ? { ...company, logo: logourl } : null,
       company,
     });
   } catch (error) {
@@ -298,11 +291,8 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    // const logourl = await getSignedUrl(updatedCompany?.logo as string, 604800);
-
     return NextResponse.json({
       success: true,
-      // company: { ...updatedCompany, logo: logourl },
       company: updatedCompany,
     });
   } catch (error) {

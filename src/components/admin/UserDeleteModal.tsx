@@ -26,7 +26,7 @@ const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingA
         </h3>
 
         <p className="text-sm text-muted-foreground">
-          Are you sure you want to delete "{deleteUserName}"? This action cannot be undone. The user and all related data will be permanently removed.
+          Are you sure you want to delete &#34;{deleteUserName}&#34;? This action cannot be undone. The user and all related data will be permanently removed.
         </p>
 
         <div className="flex justify-end gap-3 pt-4">

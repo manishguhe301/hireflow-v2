@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Spinner } from '@/src/components/elements/Loader'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { Button } from '../ui/Button'
 import { Company } from '@prisma/client'

@@ -3,7 +3,6 @@ import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'rea
 import { JobFormInputs } from './CreateJobForm'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
-import { currencyOptions } from '@/src/utils/utils'
 import FormDatePicker from '@/src/components/ui/FormDatePicker'
 import StepHeader from '@/src/components/ui/StepHeader'
 
@@ -82,14 +81,6 @@ const Step4JobSalary = ({
           />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
-          {/* <FormSelect
-            label='Currency (Optional)'
-            register={register('currency')}
-            options={
-              currencyOptions
-            }
-            error={errors.currency}
-          /> */}
           <FormSelect
             label="Salary Visibility"
             options={[

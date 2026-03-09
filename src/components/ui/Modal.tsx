@@ -3,7 +3,6 @@
 import { ReactNode, useEffect } from 'react'
 import { X } from 'lucide-react'
 import clsx from 'clsx'
-import { useTheme } from 'next-themes'
 import { Button } from './Button'
 
 interface ModalProps {
@@ -14,8 +13,6 @@ interface ModalProps {
 }
 
 const Modal = ({ open, onClose, children, className }: ModalProps) => {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark';
 
   useEffect(() => {
     if (open) {
@@ -35,7 +32,6 @@ const Modal = ({ open, onClose, children, className }: ModalProps) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div
         className="absolute inset-0 bg-black/10 backdrop-blur-md transition-opacity"
-      // onClick={onClose}
       />
 
       <div
