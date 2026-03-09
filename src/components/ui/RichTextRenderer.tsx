@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify'
 type RichTextRendererProps = {
   content: string
 }
@@ -8,7 +9,7 @@ const RichTextRenderer = ({ content }: RichTextRendererProps) => {
   return (
     <div
       className="prose prose-sm max-w-none dark:prose-invert"
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
     />
   )
 }

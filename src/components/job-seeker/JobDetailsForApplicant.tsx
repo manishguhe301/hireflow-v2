@@ -20,6 +20,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import JobDetailsSkeleton from '../skeletons/JobDetailsSkeleton'
 import ApplicationProgress from './applications/ApplicationProgress'
 import SimilarJobs from './similarJobs/SimilarJobs'
+import DOMPurify from 'dompurify'
 
 export interface SimilarJob {
   company: {
@@ -145,6 +146,7 @@ const JobDetailsForApplicant = () => {
 
       queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
     },
     onError: () => {
       toast.error('Something went wrong')
@@ -269,7 +271,7 @@ const JobDetailsForApplicant = () => {
               <h3 className="font-semibold text-lg">Job Description</h3>
               <div
                 className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: job.description }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
               />
             </div>
           )}
@@ -279,7 +281,7 @@ const JobDetailsForApplicant = () => {
               <h3 className="font-semibold text-lg">Requirements</h3>
               <div
                 className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: job.requirements }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.requirements) }}
               />
             </div>
           )}
@@ -289,7 +291,7 @@ const JobDetailsForApplicant = () => {
               <h3 className="font-semibold text-lg">Responsibilities</h3>
               <div
                 className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: job.responsibilities }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.responsibilities) }}
               />
             </div>
           )}
@@ -328,7 +330,13 @@ const JobDetailsForApplicant = () => {
                 ) :
                   !isDeadlinePassed ? (
                     <Button
-                      onClick={() => setIsApplyModalOpen(true)}
+                      onClick={() => {
+                        if (!session?.user?.id) {
+                          router.push('/login')
+                          return
+                        }
+                        setIsApplyModalOpen(true)
+                      }}
                       className="w-full rounded-xl py-3 flex items-center gap-2 justify-center"
                       disabled={!session?.user?.id}
                     >
@@ -380,7 +388,7 @@ const JobDetailsForApplicant = () => {
                 </div>
               </div>
 
-              <p className="text-sm text-muted-foreground line-clamp-4">
+              <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                 {job.company.description}
               </p>
 

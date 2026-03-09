@@ -123,8 +123,8 @@ const JobsDirectory = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ['jobs', queryParams],
-    queryFn: async () => {
-      const res = await fetch(`/api/jobs?${queryParams}`)
+    queryFn: async ({ signal }) => {
+      const res = await fetch(`/api/jobs?${queryParams}`, { signal })
       if (!res.ok) throw new Error('Failed to fetch jobs')
       return res.json()
     },
@@ -167,14 +167,16 @@ const JobsDirectory = () => {
       ? `${basePath}?${queryString}`
       : basePath
 
-    if (newUrl !== `${pathName}?${searchParams.toString()}`) {
-      router.push(newUrl, { scroll: false })
+    const currentURL = `${pathName}?${searchParams.toString()}`
+
+    if (newUrl !== currentURL) {
+      router.replace(newUrl, { scroll: false })
     }
   }, [search, category, location, page, session, pathName])
 
   useEffect(() => {
     // eslint-disable-next-line
-    setPage(1)
+    if (page !== 1) setPage(1)
   }, [filters])
 
   const saveJobMutation = useMutation({
@@ -243,9 +245,13 @@ const JobsDirectory = () => {
     }
   }, [isMobileFilterOpen])
 
+
   if (isLoading) {
     return <JobsDirectorySkeleton />
   }
+
+  const start = (page - 1) * (pagination?.limit ?? 0) + 1;
+  const end = Math.min(page * (pagination?.limit ?? 0), pagination?.total ?? 0);
 
   return (
     <div className={clsx(isLoggedIn
@@ -320,8 +326,8 @@ const JobsDirectory = () => {
 
       {pagination && (
         <p className="text-sm text-muted-foreground">
-          Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
-          <span className="font-medium text-foreground">{pagination.total}</span> results
+          Showing <span className="font-medium text-foreground">{start} - {end}</span> of{' '}
+          <span className="font-medium text-foreground">{pagination.total}</span> jobs
         </p>
       )}
 

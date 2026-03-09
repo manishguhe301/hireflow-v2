@@ -129,6 +129,7 @@ const SavedJobs = () => {
       toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
       queryClient.invalidateQueries({ queryKey: ['saved-jobs', page] })
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['job-details'] })
     },
     onError: () => {
       toast.error('Something went wrong')
