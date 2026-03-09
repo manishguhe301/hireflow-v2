@@ -1,10 +1,8 @@
 'use client'
-import { EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client';
-import clsx from 'clsx';
+import { WorkMode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect, useState } from 'react'
-import { Spinner } from '../../elements/Loader';
-import { Bookmark, Briefcase } from 'lucide-react';
+import { useEffect, useState } from 'react'
+import { Bookmark } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
 import JobCard from '../../public/jobs-dir/JobCard';
 import { AppSdk } from '@/src/utils/AppSdk';
@@ -13,7 +11,7 @@ import { formatRelativeTime } from '@/src/utils/helper';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton';
 
-export interface SavedJobs {
+export interface SavedJob {
   company: {
     name: string;
     id: string;
@@ -49,35 +47,9 @@ type Pagination = {
 
 const SavedJobs = () => {
   const searchParams = useSearchParams()
-  // const [pagination, setPagination] = useState<Pagination | null>(null)
-  // const [jobs, setJobs] = useState<SavedJobs[]>([])
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [saving, setSaving] = useState(false)
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
   const router = useRouter()
   const queryClient = useQueryClient()
-
-  // const fetchSavedJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
-  //   if (isLoadingNeeded) {
-  //     setIsLoading(true)
-  //   }
-  //   try {
-  //     const params = new URLSearchParams()
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
-
-  //     const res = await AppSdk.getData(
-  //       `/api/jobs/saved?${params.toString()}`,
-  //       null
-  //     )
-  //     setJobs(res.savedJobs || [])
-  //     setPagination(res.pagination)
-  //   } catch (error) {
-  //     console.error('Error fetching companies:', error)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }, [page])
 
   const { data, isLoading } = useQuery({
     queryKey: ['saved-jobs', page],
@@ -92,26 +64,19 @@ const SavedJobs = () => {
     placeholderData: (prev) => prev,
   })
 
-  const jobs: SavedJobs[] = data?.savedJobs ?? []
+  const jobs: SavedJob[] = data?.savedJobs ?? []
   const pagination: Pagination = data?.pagination ?? null
 
   useEffect(() => {
     const params = new URLSearchParams()
+
     if (page > 1) params.set('page', page.toString())
 
-    const query = params.toString()
-    const newUrl = query
-      ? `/dashboard/saved-jobs?${query}`
-      : `/dashboard/saved-jobs`
+    router.push(`/dashboard/saved-jobs?${params.toString()}`, {
+      scroll: false,
+    })
+  }, [page, router])
 
-    if (newUrl !== window.location.pathname + window.location.search) {
-      router.push(newUrl, { scroll: false })
-    }
-  }, [page])
-
-  // useEffect(() => {
-  //   fetchSavedJobs()
-  // }, [page])
 
   const saveMutation = useMutation({
     mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
@@ -127,7 +92,7 @@ const SavedJobs = () => {
     },
     onSuccess: ({ removed }) => {
       toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs', page] })
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
       queryClient.invalidateQueries({ queryKey: ['job-details'] })
     },
@@ -138,33 +103,6 @@ const SavedJobs = () => {
 
 
   const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    // setSaving(true)
-    // try {
-    //   if (currentlySaved) {
-    //     const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-    //     if (res.error) {
-    //       toast.error(res.error || 'Failed to remove saved job')
-    //       return
-    //     }
-    //     toast.success('Job removed from saved')
-    //   } else {
-    //     const res = await AppSdk.postData(`/api/jobs/saved`, {
-    //       jobId
-    //     })
-
-    //     if (res.error) {
-    //       toast.error(res.error || 'Failed to save job')
-    //       return
-    //     }
-
-    //     toast.success('Job saved successfully')
-    //   }
-    //   fetchSavedJobs(false)
-    // } catch (error) {
-    //   toast.error('Something went wrong')
-    // } finally {
-    //   setSaving(false)
-    // }
     saveMutation.mutate({ jobId, currentlySaved })
   }
 
