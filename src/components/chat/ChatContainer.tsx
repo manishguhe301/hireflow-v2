@@ -136,7 +136,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
       <div className="flex h-[calc(100vh-8rem)] border border-border rounded-2xl overflow-hidden m-4">
         <ChatSidebarSkeleton />
 
-        <div className="flex-1 overflow-hidden flex flex-col text-muted-foreground border border-border rounded-lg m-4 p-4">
+        <div className="flex-1 overflow-hidden flex flex-col text-muted-foreground border border-border rounded-lg m-4 p-4 max-sm:hidden">
           {
             Array.from({ length: 8 }).map((_, i) =>
               <Skeleton key={i} width={'300px'} height={'100px'}
