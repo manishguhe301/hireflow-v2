@@ -117,10 +117,10 @@ const SavedJobs = () => {
       </div>
 
       {!isLoading && pagination ? (
-        <p className="text-sm text-muted-foreground">
+        jobs.length > 0 && (<p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
-        </p>
+        </p>)
       ) : <p className="text-sm text-muted-foreground ">Loading Results...</p>}
 
       <main className="flex-1 min-w-0">

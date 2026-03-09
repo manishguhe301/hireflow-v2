@@ -8,6 +8,7 @@ import { Spinner } from '@/src/components/elements/Loader'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import PageLoader from '@/src/components/ui/PageLoader'
+import MobileSidebar from '@/src/components/layout/MobileSidebar'
 
 export default function ProtectedLayout({
   children,
@@ -23,6 +24,8 @@ export default function ProtectedLayout({
       router.replace('/login')
     }
   }, [status, router])
+
+
 
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? 'hidden' : ''
@@ -43,7 +46,14 @@ export default function ProtectedLayout({
   }
 
   if (status === 'unauthenticated') {
-    return null
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <PageLoader
+          title="Redirecting"
+          subtitle="Taking you to login"
+        />
+      </div>
+    )
   }
 
   return (
@@ -52,30 +62,7 @@ export default function ProtectedLayout({
       <div className="flex min-h-screen">
         <Sidebar />
 
-        <div
-          className={clsx(
-            'fixed inset-0 z-50 md:hidden',
-            sidebarOpen ? 'pointer-events-auto' : 'pointer-events-none'
-          )}
-        >
-          <div
-            className={clsx(
-              'absolute inset-0 bg-black/30 transition-opacity duration-300',
-              sidebarOpen ? 'opacity-100' : 'opacity-0'
-            )}
-            onClick={() => setSidebarOpen(false)}
-          />
-
-          <div
-            className={clsx(
-              'absolute left-0 top-0 h-full w-64 bg-card border-r border-border/60',
-              'transform transition-transform duration-300 ease-out',
-              sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            )}
-          >
-            <Sidebar mobile closeSidebar={() => setSidebarOpen(false)} />
-          </div>
-        </div>
+        <MobileSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <div className="flex flex-1 flex-col lg:pl-64 md:pl-20 pl-0">
           <Navbar onMenuClick={() => setSidebarOpen(true)} />
