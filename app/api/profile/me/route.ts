@@ -21,10 +21,6 @@ export async function GET() {
       },
     });
 
-    if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
-    }
-
     return NextResponse.json({
       profile,
     });
