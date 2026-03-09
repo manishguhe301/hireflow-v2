@@ -527,48 +527,6 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let workExperienceArray: any[] = [];
-    if (data.workExperience) {
-      try {
-        workExperienceArray = JSON.parse(data.workExperience);
-      } catch (error) {
-        console.error('Error parsing workExperience:', error);
-        return NextResponse.json(
-          { error: 'Invalid workExperience format' },
-          { status: 400 },
-        );
-      }
-    }
-
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let educationArray: any[] = [];
-    if (data.education) {
-      try {
-        educationArray = JSON.parse(data.education);
-      } catch (error) {
-        console.error('Error parsing education:', error);
-        return NextResponse.json(
-          { error: 'Invalid education format' },
-          { status: 400 },
-        );
-      }
-    }
-
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let certificationsArray: any[] = [];
-    if (data.certifications) {
-      try {
-        certificationsArray = JSON.parse(data.certifications);
-      } catch (error) {
-        console.error('Error parsing certifications:', error);
-        return NextResponse.json(
-          { error: 'Invalid certifications format' },
-          { status: 400 },
-        );
-      }
-    }
-
     let jobCategoriesArray: string[] = [];
     if (data.jobCategories) {
       try {
@@ -638,18 +596,11 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    // const updatedProfile = await prisma.$transaction(async (tx) => {
-    await prisma.workExperience.deleteMany({
-      where: { profileId: existingProfile.id },
-    });
-
-    await prisma.education.deleteMany({
-      where: { profileId: existingProfile.id },
-    });
-
-    await prisma.certification.deleteMany({
-      where: { profileId: existingProfile.id },
-    });
+    const [expCount, eduCount, certCount] = await Promise.all([
+      prisma.workExperience.count({ where: { profileId: existingProfile.id } }),
+      prisma.education.count({ where: { profileId: existingProfile.id } }),
+      prisma.certification.count({ where: { profileId: existingProfile.id } }),
+    ]);
 
     const updatedProfile = await prisma.profile.update({
       where: { id: existingProfile.id },
@@ -708,9 +659,9 @@ export async function PATCH(req: NextRequest) {
           currentEmployment:
             (data.currentEmployment as CurrentEmployment) || null,
           skills: skillsArray,
-          workExperience: workExperienceArray,
-          education: educationArray,
-          certifications: certificationsArray,
+          workExperience: expCount > 0 ? [{}] : [],
+          education: eduCount > 0 ? [{}] : [],
+          certifications: certCount > 0 ? [{}] : [],
           portfolioWebsite: data.portfolioWebsite || null,
           githubUrl: data.githubUrl || null,
           linkedinUrl: data.linkedinUrl || null,
@@ -726,45 +677,6 @@ export async function PATCH(req: NextRequest) {
             : null,
           noticePeriod: data.noticePeriod || null,
         }),
-
-        workExperience: {
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          create: workExperienceArray.map((exp: any) => ({
-            company: exp.company,
-            title: exp.title,
-            location: exp.location || null,
-            workMode: exp.workMode,
-            startDate: new Date(exp.startDate),
-            endDate: exp.endDate ? new Date(exp.endDate) : null,
-            description: exp.description || null,
-            isCurrent: exp.isCurrent,
-          })),
-        },
-
-        education: {
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          create: educationArray.map((edu: any) => ({
-            institution: edu.institution,
-            degree: edu.degree,
-            fieldOfStudy: edu.fieldOfStudy || null,
-            startYear: Number(edu.startYear),
-            endYear: Number(edu.endYear) || null,
-            grade: edu.grade || null,
-            isCurrent: edu.isCurrent,
-          })),
-        },
-
-        certifications: {
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          create: certificationsArray.map((cert: any) => ({
-            name: cert.name,
-            organization: cert.organization,
-            issueDate: new Date(cert.issueDate),
-            expiryDate: cert.expiryDate ? new Date(cert.expiryDate) : null,
-            credentialUrl: cert.credentialUrl || null,
-            credentialId: cert.credentialId || null,
-          })),
-        },
       },
       include: {
         workExperience: true,
