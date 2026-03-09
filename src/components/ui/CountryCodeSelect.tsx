@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { ChevronDown } from 'lucide-react'
 import { FieldError } from 'react-hook-form'
@@ -27,13 +27,14 @@ export default function CountryCodeSelect({
   options,
   onChange,
   error,
-  disabled
 }: CountryCodeSelectProps) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
-  const selected = options.find((o) => o.value === value)
-
+  const selected = useMemo(
+    () => options.find((o) => o.value === value),
+    [options, value]
+  )
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -44,9 +45,18 @@ export default function CountryCodeSelect({
       }
     }
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false)
+      }
+    }
+
     document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
     }
   }, [])
 
