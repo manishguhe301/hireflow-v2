@@ -4,7 +4,7 @@ import { SimilarJob } from '../JobDetailsForApplicant'
 import { useRouter } from 'next/navigation'
 import { Briefcase, Clock, MapPin } from 'lucide-react'
 import { formatRelativeTime, getLabel } from '@/src/utils/helper'
-import { employmentTypes, experienceLevels, workModes } from '@/src/utils/utils'
+import { employmentTypes, experienceLevels, workModes } from '@/src/utils/constants'
 
 const SimilarJobs = ({ similarJobs }: { similarJobs: SimilarJob[] }) => {
   const router = useRouter()

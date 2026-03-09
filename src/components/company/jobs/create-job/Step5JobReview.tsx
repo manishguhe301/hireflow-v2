@@ -7,8 +7,8 @@ import { UseFormWatch } from 'react-hook-form'
 import { JobFormInputs } from './CreateJobForm'
 import { formatDate, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
-import { employmentTypes, experienceLevels, jobCategories, jobSkills, workModes } from '@/src/utils/utils'
 import StepHeader from '@/src/components/ui/StepHeader'
+import { employmentTypes, experienceLevels, jobCategories, jobSkills, workModes } from '@/src/utils/constants'
 
 type Props = {
   watch: UseFormWatch<JobFormInputs>

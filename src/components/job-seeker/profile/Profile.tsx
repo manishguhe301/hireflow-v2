@@ -18,9 +18,9 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { formatSalary, getLabel } from '@/src/utils/helper'
-import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import clsx from 'clsx'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
+import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
 
 const ProfileSection = ({ title, children, className }: { title: string, children: React.ReactNode, className?: string }) => (
   <div className={clsx("rounded-2xl border border-border/40 bg-card p-6", className!)}>

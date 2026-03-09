@@ -11,7 +11,7 @@ import {
   Send,
 } from 'lucide-react'
 import { formatDate, formatRelativeTime, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
-import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/utils'
+import { companyIndustries, employmentTypes, experienceLevels, jobSkills, workModes } from '@/src/utils/constants'
 import { Button } from '../ui/Button'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'

@@ -25,9 +25,9 @@ import InfoCard from './InfoCard'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
-import { companyIndustries } from '@/src/utils/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import CompanyDetailsSkeleton from '../skeletons/CompanyDetailsSkeleton'
+import { companyIndustries } from '@/src/utils/constants'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()

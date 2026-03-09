@@ -9,7 +9,7 @@ import { Button } from '../../ui/Button'
 import { ArrowLeft, CircleUser, FileText, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
-import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
+import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
 import {

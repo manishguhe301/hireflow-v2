@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { Button } from '../ui/Button'
 import { Spinner } from '../elements/Loader'
 import { Company } from '@prisma/client'
-import { companyIndustries } from '@/src/utils/utils'
+import { companyIndustries } from '@/src/utils/constants'
 
 type CompaniesTableProps = {
   filteredCompanies: Company[],

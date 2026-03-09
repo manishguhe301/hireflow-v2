@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
 import { Button } from '../ui/Button'
-import { links } from '@/src/utils/utils'
+import { links } from '@/src/utils/constants'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 

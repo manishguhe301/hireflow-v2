@@ -18,7 +18,7 @@ import {
   experienceLevels,
   jobCategories,
   workModes,
-} from '@/src/utils/utils'
+} from '@/src/utils/constants'
 import { useSession } from 'next-auth/react'
 import { Button } from '../../ui/Button'
 import clsx from 'clsx'

@@ -15,7 +15,7 @@ import { formatDate, getLabel } from '@/src/utils/helper'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormTextarea } from '@/src/components/ui/FormTextarea'
-import { workModes } from '@/src/utils/utils'
+import { workModes } from '@/src/utils/constants'
 
 type WorkExperienceForm = {
   company: string

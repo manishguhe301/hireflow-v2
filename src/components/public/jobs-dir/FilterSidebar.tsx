@@ -1,6 +1,6 @@
 'use client'
 
-import { workModes, employmentTypes, experienceLevels } from '@/src/utils/utils'
+import { workModes, employmentTypes, experienceLevels } from '@/src/utils/constants'
 
 type Filters = {
   workModes: string[]

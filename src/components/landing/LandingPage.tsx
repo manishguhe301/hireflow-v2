@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { DirJobType } from '../public/jobs-dir/JobsDirectory';
 import { formatRelativeTime, getLabel, isNewJob } from '@/src/utils/helper';
-import { employmentTypes, jobCategories } from '@/src/utils/utils';
+import { employmentTypes, jobCategories } from '@/src/utils/constants';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';

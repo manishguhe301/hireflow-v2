@@ -24,11 +24,10 @@ import { Company, Job } from '@prisma/client'
 import InfoCard from '../admin/InfoCard'
 import InfoRow from '../admin/InfoRow'
 import { formatDate, getLabel, isRichTextEmpty, } from '@/src/utils/helper'
-import { jobCategories } from '@/src/utils/utils'
 import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import JobDetailPageSkeleton from '../skeletons/JobDetailPageSkeleton'
-import { APPLICATIONS_TABS, JOB_STATUS_STYLE } from '@/src/utils/constants'
+import { APPLICATIONS_TABS, JOB_STATUS_STYLE, jobCategories } from '@/src/utils/constants'
 
 interface JobDetails extends Job {
   _count: {
