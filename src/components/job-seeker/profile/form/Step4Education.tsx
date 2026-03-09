@@ -6,7 +6,7 @@ import { EducationInput, JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
 import Modal from '@/src/components/ui/Modal'
-import { GraduationCap, Edit, Plus, Trash2 } from 'lucide-react'
+import { GraduationCap, Edit, Plus, Trash2, Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { FormInput } from '@/src/components/ui/FormInput'
@@ -14,6 +14,7 @@ import { FormSelect } from '@/src/components/ui/FormSelect'
 import { degrees, fieldOfStudies } from '@/src/utils/constants'
 import { useSession } from 'next-auth/react'
 import { getLabel } from '@/src/utils/helper'
+import { AppSdk } from '@/src/utils/AppSdk'
 
 const currentYear = new Date().getFullYear()
 
@@ -21,18 +22,20 @@ const Step4Education = ({
   watch,
   setValue,
   disabled,
+  isEditMode
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
   watch: UseFormWatch<JobSeekerFormInputs>
   setValue: UseFormSetValue<JobSeekerFormInputs>
   disabled?: boolean
+  isEditMode?: boolean
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
-
+  const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const educations = watch('education') || []
-  const { data: session } = useSession()
 
   const {
     register: eduRegister,
@@ -81,7 +84,7 @@ const Step4Education = ({
     resetEduForm()
   }
 
-  const onSubmit = (data: EducationInput) => {
+  const onSubmit = async (data: EducationInput) => {
     if (!data.isCurrent && data.endYear && data.endYear < data.startYear) {
       toast.error('End year must be after start year')
       return
@@ -97,25 +100,72 @@ const Step4Education = ({
       return
     }
 
-    const newEducation = {
+    const payload = {
       ...data,
       fieldOfStudy: data.fieldOfStudy || null,
       grade: data.grade || null,
       endYear: data.isCurrent ? null : data.endYear || null,
     }
 
-    if (editingIndex !== null) {
-      const updated = [...educations]
-      updated[editingIndex] = newEducation
-      setValue('education', updated, { shouldValidate: true, shouldDirty: true })
-    } else {
-      setValue('education', [...educations, newEducation], { shouldValidate: true, shouldDirty: true })
+    if (isEditMode) {
+      setIsSaving(true)
+      try {
+        const editingItem = editingIndex !== null ? educations[editingIndex] : null
+        let res
+
+        if (editingItem?.id) {
+          res = await AppSdk.patchData(`/api/profile/education/${editingItem.id}`, payload)
+        } else {
+          res = await AppSdk.postData('/api/profile/education', payload)
+        }
+
+        if (res.error) { toast.error(res.error); return }
+
+        const saved: EducationInput = res.education
+
+        if (editingIndex !== null) {
+          const updated = [...educations]
+          updated[editingIndex] = saved
+          setValue('education', updated, { shouldValidate: true, shouldDirty: true })
+        } else {
+          setValue('education', [...educations, saved], { shouldValidate: true, shouldDirty: true })
+        }
+
+        toast.success(editingIndex !== null ? 'Education updated' : 'Education added')
+        handleCloseModal()
+      } catch {
+        toast.error('Something went wrong')
+      } finally {
+        setIsSaving(false)
+      }
+      return
     }
 
+    if (editingIndex !== null) {
+      const updated = [...educations]
+      updated[editingIndex] = payload
+      setValue('education', updated, { shouldValidate: true, shouldDirty: true })
+    } else {
+      setValue('education', [...educations, payload], { shouldValidate: true, shouldDirty: true })
+    }
     handleCloseModal()
   }
 
-  const handleDelete = (index: number) => {
+  const handleDelete = async (index: number) => {
+    const item = educations[index]
+    if (isEditMode && item.id) {
+      setIsDeleting(true)
+      try {
+        const res = await AppSdk.deleteData(`/api/profile/education/${item.id}`, null)
+        if (res.error) { toast.error(res.error); return }
+        toast.success('Education deleted')
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong')
+      } finally {
+        setIsDeleting(false)
+      }
+    }
     const updated = educations.filter((_, i) => i !== index)
     setValue('education', updated, { shouldValidate: true })
   }
@@ -131,7 +181,8 @@ const Step4Education = ({
         type="button"
         onClick={() => handleOpenModal()}
         className="inline-flex items-center gap-2"
-        disabled={disabled}
+        disabled={disabled || isSaving}
+
 
       >
         <Plus className="h-4 w-4" />
@@ -152,7 +203,7 @@ const Step4Education = ({
         <div className="space-y-4">
           {educations.map((edu, index) => (
             <div
-              key={index}
+              key={edu.id || index}
               className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -187,7 +238,7 @@ const Step4Education = ({
                     variant="ghost"
                     onClick={() => handleOpenModal(index)}
                     className="p-2!"
-                    disabled={disabled}
+                    disabled={disabled || isSaving}
                     aria-label="Edit"
                   >
                     <Edit className="h-4 w-4 text-primary" />
@@ -197,10 +248,10 @@ const Step4Education = ({
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     className="p-2!"
-                    disabled={disabled}
+                    disabled={disabled || isSaving}
                     aria-label="Delete"
                   >
-                    <Trash2 className="h-4 w-4 text-destructive" />
+                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
                   </Button>
                 </div>
               </div>
@@ -223,13 +274,14 @@ const Step4Education = ({
                 required: 'Degree is required',
               })}
               error={eduErrors.degree}
-              disabled={disabled}
+              disabled={disabled || isSaving}
+
             />
             <FormInput
               label="Institution"
               register={eduRegister('institution', { required: 'Institution is required' })}
               error={eduErrors.institution}
-              disabled={disabled}
+              disabled={disabled || isSaving}
             />
           </div>
 
@@ -239,7 +291,7 @@ const Step4Education = ({
             register={eduRegister('fieldOfStudy', {
               required: 'Field of study is required',
             })}
-            disabled={disabled}
+            disabled={disabled || isSaving}
             error={eduErrors.fieldOfStudy}
           />
 
@@ -247,7 +299,7 @@ const Step4Education = ({
             <FormInput
               type="number"
               label="Start Year"
-              disabled={disabled}
+              disabled={disabled || isSaving}
               register={eduRegister('startYear', { required: true })}
               error={eduErrors.startYear}
               minLength={2000}
@@ -257,7 +309,7 @@ const Step4Education = ({
             {!isCurrent && (
               <FormInput
                 type="number"
-                disabled={disabled}
+                disabled={disabled || isSaving}
                 label="End Year"
                 register={eduRegister('endYear')}
                 error={eduErrors.endYear}
@@ -271,7 +323,7 @@ const Step4Education = ({
             <input
               type="checkbox"
               id="isCurrentEdu"
-              disabled={disabled}
+              disabled={disabled || isSaving}
               {...eduRegister('isCurrent')}
               className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
             />
@@ -284,19 +336,28 @@ const Step4Education = ({
             label="Grade (Optional)"
             register={eduRegister('grade')}
             error={eduErrors.grade}
-            disabled={disabled}
+            disabled={disabled || isSaving}
           />
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={handleCloseModal}
-              disabled={disabled}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCloseModal}
+              disabled={disabled || isSaving}
             >
               Cancel
             </Button>
-            <Button type="submit"
-              disabled={disabled}
+            <Button
+              type="submit"
+              disabled={disabled || isSaving}
             >
-              {editingIndex !== null ? 'Update' : 'Add'} Education
+              {
+                isSaving ?
+                  'Saving...' : editingIndex !== null
+                    ? 'Update Education'
+                    : 'Add Education'
+              }
             </Button>
           </div>
         </form>
