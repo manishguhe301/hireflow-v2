@@ -17,7 +17,6 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { Spinner } from '../elements/Loader'
 import { useTheme } from 'next-themes'
 import { Button } from '../ui/Button'
 import { signOut } from 'next-auth/react'
@@ -80,8 +79,8 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
     )
   }
 
-  const role = session?.user?.role as Role | undefined
-  if (!role) return null
+  const role = session?.user?.role
+  if (!role || !SIDEBAR_LINKS[role]) return null
 
   const links = SIDEBAR_LINKS[role]
 
@@ -137,6 +136,8 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
           <img
             src='/logo-hireflow.png'
             alt='logo'
+            width={32}
+            height={32}
           />
         </Link>
 

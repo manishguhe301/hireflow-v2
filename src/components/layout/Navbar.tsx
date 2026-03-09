@@ -12,16 +12,10 @@ import NotificationBell from './NotificationBell'
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const { data: session } = useSession()
   const user = session?.user
-  // const dispatch = useAppDispatch()
 
-  // const handleLogout = async () => {
-  //   const toastId = toast.loading('Logging out...')
-  //   await signOut({
-  //     callbackUrl: '/',
-  //   })
-  //   dispatch(clearCompany())
-  //   toast.dismiss(toastId)
-  // }
+  const profileRoute = user?.role === 'JOB_SEEKER'
+    ? "/dashboard/profile" : user?.role === 'COMPANY_ADMIN'
+      ? '/company/profile' : '/admin'
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
@@ -47,12 +41,10 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
         {user && (
           <div className="flex items-center gap-4 max-sm:relative">
             <NotificationBell />
-            <Link href={user.role === 'JOB_SEEKER'
-              ? "/dashboard/profile" : user.role === 'COMPANY_ADMIN'
-                ? '/company/profile' : '/admin'} className="flex flex-row gap-1 items-center">
+            <Link href={profileRoute} className="flex flex-row gap-1 items-center  hover:bg-muted/50 transition rounded-xl px-2 py-1">
               <div className="h-10 w-10 flex items-center justify-center rounded-full overflow-hidden border border-border/40 bg-muted">
                 <span className="text-sm font-semibold text-primary">
-                  {user.name?.charAt(0)?.toUpperCase()}
+                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="hidden sm:flex flex-col items-start text-center gap-1">
@@ -64,13 +56,6 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
                 </span>
               </div>
 
-              {/* <Button
-              onClick={handleLogout}
-              variant="danger"
-              className="rounded-full px-4 py-1.5 text-sm border-border/60"
-            >
-              Logout
-            </Button> */}
             </Link>
           </div>
 
