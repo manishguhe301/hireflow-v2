@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Briefcase } from 'lucide-react'
-import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
+import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import { ApplicationStatus } from '@prisma/client'
 import Link from 'next/link'
 import { ApplicationWithPagination } from './ApplicationsPage'
 import { Button } from '../../ui/Button'
 import WithdrawModal from './WithdrawModal'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   APPLIED: 'bg-blue-500/10 text-blue-600',

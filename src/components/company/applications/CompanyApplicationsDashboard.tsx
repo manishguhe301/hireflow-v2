@@ -14,12 +14,13 @@ import {
   CheckCircle,
   FileText,
 } from 'lucide-react'
-import { formatDate, formatRelativeTime, getLabel, JOB_STATUSES } from '@/src/utils/helper'
+import { formatDate, formatRelativeTime, getLabel } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
 import clsx from 'clsx'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import TableSkeleton from '../../skeletons/TableSkeleton'
+import { JOB_STATUSES } from '@/src/utils/constants'
 
 interface JobRow {
   id: string

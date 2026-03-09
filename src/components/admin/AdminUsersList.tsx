@@ -1,6 +1,5 @@
 'use client'
 import { AppSdk } from "@/src/utils/AppSdk"
-import { ADMIN_USERS_TABS, } from "@/src/utils/helper"
 import { Role, User } from "@prisma/client"
 import clsx from "clsx"
 import { Search, UserPlus, Users, } from "lucide-react"
@@ -15,6 +14,7 @@ import Pagination from "../ui/Pagination"
 import useDebounce from "@/src/store/hooks/useDebounce"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import AdminUsersTableSkeleton from "../skeletons/AdminUsersTableSkeleton"
+import { ADMIN_USERS_TABS } from "@/src/utils/constants"
 
 type Pagination = {
   total: number

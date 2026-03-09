@@ -3,7 +3,7 @@ import {
   MessageCircle,
 } from "lucide-react"
 import { Applications } from "./JobApplicants"
-import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from "@/src/utils/helper"
+import { formatRelativeTime, getLabel } from "@/src/utils/helper"
 import { STATUS_STYLE } from "../../job-seeker/profile/ApplicationsTable"
 import Link from "next/link"
 import clsx from "clsx"
@@ -14,6 +14,7 @@ import { useState } from "react"
 import { AppSdk } from "@/src/utils/AppSdk"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
+import { APPLICATIONS_TABS } from "@/src/utils/constants"
 
 const ApplicationsTableForJob = ({
   applications,

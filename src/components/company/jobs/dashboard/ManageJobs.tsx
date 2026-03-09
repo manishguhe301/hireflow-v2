@@ -1,6 +1,5 @@
 'use client'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { JOB_TABS } from '@/src/utils/helper'
 import { JobStatus } from '@prisma/client'
 import clsx from 'clsx'
 import { Briefcase } from 'lucide-react'
@@ -12,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import TableSkeleton from '@/src/components/skeletons/TableSkeleton'
 import Link from 'next/link'
 import { Button } from '@/src/components/ui/Button'
+import { JOB_TABS } from '@/src/utils/constants'
 
 const ManageJobs = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')

@@ -4,9 +4,9 @@ import { Menu, } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Button } from '../ui/Button'
-import { labels } from '@/src/utils/helper'
 import { Breadcrumb } from '../ui/Breadcrumb'
 import NotificationBell from './NotificationBell'
+import { labels } from '@/src/utils/constants'
 
 
 const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {

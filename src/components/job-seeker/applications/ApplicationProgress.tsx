@@ -4,8 +4,9 @@ import {
   Circle,
   XCircle,
 } from 'lucide-react'
-import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
+import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 const STATUS_FLOW = [
   'APPLIED',

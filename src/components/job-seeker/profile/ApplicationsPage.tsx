@@ -5,9 +5,9 @@ import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '../../ui/Button'
 import ApplicationsTable from './ApplicationsTable'
 import Pagination from '../../ui/Pagination'
-import { APPLICATIONS_TABS } from '@/src/utils/helper'
 import { useQuery } from '@tanstack/react-query'
 import TableSkeleton from '../../skeletons/TableSkeleton'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 interface Application {
   job: {

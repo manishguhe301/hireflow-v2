@@ -21,13 +21,14 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ApplicationStatus, EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client'
-import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
+import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import JobCard from '../../public/jobs-dir/JobCard'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
 import { ActivitySkeleton } from '../../skeletons/ActivitySkeleton'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 interface DashboardStats {
   total: number

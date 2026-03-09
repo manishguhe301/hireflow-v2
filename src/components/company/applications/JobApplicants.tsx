@@ -9,7 +9,7 @@ import { Button } from '../../ui/Button';
 import { StatCard } from './CompanyApplicationsDashboard';
 import { CalendarClock, CheckCircle, Eye, FileText, Layers, RefreshCw, Search, UserCheck, XCircle } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
-import { APPLICATION_TABS_WITH_SORT, APPLICATIONS_TABS, getLabel } from '@/src/utils/helper';
+import { getLabel } from '@/src/utils/helper';
 import { FormSelect } from '../../ui/FormSelect';
 import ApplicationsTableForJob from './ApplicationsTableForJob';
 import Modal from '../../ui/Modal';
@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton';
 import TableSkeleton from '../../skeletons/TableSkeleton';
 import clsx from 'clsx';
+import { APPLICATION_TABS_WITH_SORT, APPLICATIONS_TABS } from '@/src/utils/constants';
 
 interface Stats {
   total: number,

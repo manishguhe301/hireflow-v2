@@ -10,7 +10,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import Link from 'next/link'
-import { formatRelativeTime, getLabel, APPLICATIONS_TABS, STATUS_STYLES } from '@/src/utils/helper'
+import { formatRelativeTime, getLabel, } from '@/src/utils/helper'
 import clsx from 'clsx'
 import { Button } from '../ui/Button'
 import ApplicationOverTime from './ApplicationOverTime'
@@ -19,6 +19,7 @@ import ApplicantionFunnel from './ApplicantionFunnel'
 import { useQuery } from '@tanstack/react-query'
 import AdminDashboardSkeleton from '../skeletons/DashboardSkeleton'
 import { ApplicationStatus } from '@prisma/client'
+import { APPLICATIONS_TABS, STATUS_STYLES } from '@/src/utils/constants'
 
 export interface DashboardStats {
   totalJobs: number

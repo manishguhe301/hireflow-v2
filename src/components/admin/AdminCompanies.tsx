@@ -9,7 +9,6 @@ import clsx from 'clsx'
 import { Company, CompanyStatus } from '@prisma/client'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
-import { TABS } from '@/src/utils/helper'
 import DeleteCompanyModal from './DeleteCompanyModal'
 import RejectCompanyModal from './RejectCompanyModal'
 import CompaniesTable from './CompaniesTable'
@@ -17,6 +16,7 @@ import Pagination from '../ui/Pagination'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AdminCompaniesTableSkeleton from '../skeletons/AdminCompaniesTableSkeleton'
+import { TABS } from '@/src/utils/constants'
 
 type Pagination = {
   total: number

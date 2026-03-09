@@ -1,5 +1,5 @@
 'use client'
-import { formatDate, labels } from '@/src/utils/helper'
+import { formatDate } from '@/src/utils/helper'
 import { Role, User } from '@prisma/client'
 import { Check, Trash2, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -7,6 +7,7 @@ import React from 'react'
 import { Button } from '../ui/Button'
 import { Spinner } from '../elements/Loader'
 import Link from 'next/link'
+import { labels } from '@/src/utils/constants'
 
 type UsersTableProps = {
   filteredUsers: User[],

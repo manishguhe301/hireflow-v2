@@ -8,7 +8,7 @@ import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
 import { ArrowLeft, CircleUser, FileText, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { APPLICATIONS_TABS, formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
@@ -28,6 +28,7 @@ import Modal from '../../ui/Modal'
 import clsx from 'clsx'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 const PublicProfile = () => {
   const { id } = useParams<{ id: string }>()

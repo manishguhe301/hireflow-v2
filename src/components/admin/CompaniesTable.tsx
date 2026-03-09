@@ -1,4 +1,3 @@
-import { STATUS_STYLE } from '@/src/utils/helper'
 import clsx from 'clsx'
 import {
   CheckCircle,

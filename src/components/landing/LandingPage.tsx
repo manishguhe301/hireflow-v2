@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DirJobType } from '../public/jobs-dir/JobsDirectory';
-import { features, formatRelativeTime, getLabel, isNewJob } from '@/src/utils/helper';
+import { formatRelativeTime, getLabel, isNewJob } from '@/src/utils/helper';
 import { employmentTypes, jobCategories } from '@/src/utils/utils';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
 import { AppSdk } from '@/src/utils/AppSdk';
@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import LandingPageSkeleton from '../skeletons/LandingPageSkeleton';
 import { Button } from '../ui/Button';
+import { features } from '@/src/utils/constants';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
