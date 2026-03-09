@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { Spinner } from '@/src/components/elements/Loader'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { Button } from '../ui/Button'
 import { Company } from '@prisma/client'
+import PageLoader from '../ui/PageLoader'
 
 export function StateWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -107,17 +107,7 @@ export default function CompanyProfileGuard({ children }: { children: React.Reac
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center text-center px-4">
-        <Spinner className="h-8 w-8 mb-4" />
-
-        <p className="text-sm font-medium">
-          Preparing your workspace
-        </p>
-
-        <p className="text-xs text-muted-foreground mt-1">
-          Checking your company profile
-        </p>
-      </div>
+      <PageLoader title="Preparing your workspace" subtitle='Checking your company profile' />
     )
   }
 

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
-import { toast } from 'sonner'
 import Link from 'next/link'
 import {
   Layers,
@@ -15,12 +14,13 @@ import {
   CheckCircle,
   FileText,
 } from 'lucide-react'
-import { formatDate, formatRelativeTime } from '@/src/utils/helper'
+import { formatDate, formatRelativeTime, getLabel } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
 import clsx from 'clsx'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import TableSkeleton from '../../skeletons/TableSkeleton'
+import { JOB_STATUSES } from '@/src/utils/constants'
 
 interface JobRow {
   id: string
@@ -32,15 +32,6 @@ interface JobRow {
   _count: {
     applications: number
   }
-}
-
-interface Stats {
-  total: number
-  reviewing: number
-  shortlisted: number
-  interviewScheduled: number
-  rejected: number
-  hired: number
 }
 
 interface CompanyApplicationsResponse {
@@ -64,7 +55,7 @@ export const StatCard = ({
   icon: React.ReactNode
   color: string
 }) => (
-  <div className="bg-card border border-border/60 rounded-2xl p-6 flex items-center justify-between hover:shadow-md transition">
+  <div className="bg-card border border-border/60 rounded-2xl p-6 flex items-center justify-between hover:shadow-md hover:border-primary/30 transition">
     <div>
       <p className="text-sm text-muted-foreground">{title}</p>
       <p className="text-3xl font-bold mt-2">{value}</p>
@@ -76,41 +67,8 @@ export const StatCard = ({
 )
 
 export default function CompanyApplicationsPage() {
-  // const [data, setData] = useState<CompanyApplicationsResponse | null>(null)
-  // const [applicationsLoading, setApplicationsLoading] = useState(true)
-  // const [statsLoading, setStatsLoading] = useState(true)
-  // const [stats, setStats] = useState<Stats | null>(null)
-  // const [pageChangeLoading, setPageChangeLoading] = useState(false)
   const [page, setPage] = useState(1)
   const queryClient = useQueryClient()
-
-  // const fetchApplications = async () => {
-  //   // setApplicationsLoading(true)
-  //   setPageChangeLoading(true)
-  //   try {
-  //     const params = new URLSearchParams()
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
-
-  //     const res = await AppSdk.getData(
-  //       `/api/company/applications?${params.toString()}`,
-  //       null,
-  //     )
-
-  //     if (res.error) {
-  //       toast.error(res.error)
-  //       return
-  //     }
-
-  //     setData(res)
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to load applications')
-  //   } finally {
-  //     setApplicationsLoading(false)
-  //     setPageChangeLoading(false)
-  //   }
-  // }
 
   const {
     data: applicationsData,
@@ -141,29 +99,6 @@ export default function CompanyApplicationsPage() {
     staleTime: 1000 * 60 * 5
   })
 
-  // const fetchStats = async () => {
-  //   setStatsLoading(true)
-  //   try {
-
-  //     const res = await AppSdk.getData(
-  //       `/api/company/applications/stats`,
-  //       null,
-  //     )
-
-  //     if (res.error) {
-  //       toast.error(res.error)
-  //       return
-  //     }
-
-  //     setStats(res.stats)
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to load applications stats')
-  //   } finally {
-  //     setStatsLoading(false)
-  //   }
-  // }
-
   const {
     data: statsData,
     isLoading: statsLoading,
@@ -186,14 +121,6 @@ export default function CompanyApplicationsPage() {
 
     staleTime: 1000 * 60 * 5
   })
-
-  // useEffect(() => {
-  //   fetchApplications()
-  // }, [page])
-
-  // useEffect(() => {
-  //   fetchStats()
-  // }, [])
 
   useEffect(() => {
     if (!applicationsData) return
@@ -230,9 +157,6 @@ export default function CompanyApplicationsPage() {
           </p>
           <Button onClick={
             () => {
-              // fetchApplications()
-              // fetchStats()
-
               applicationRefetch()
               statsRefetch()
             }
@@ -310,7 +234,7 @@ export default function CompanyApplicationsPage() {
       }
       {
         !applicationsLoading && pageChangeLoading && (
-          <div className="flex items-center justify-center min-h-[200px]">
+          <div className="flex items-center justify-center py-6">
             <Spinner className="h-8 w-8" />
           </div>
         )}
@@ -337,13 +261,13 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm">
-        <thead className="bg-muted/40 border-b border-border/60">
+        <thead className="bg-muted/50 border-b border-border/60 text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
-            <th className="px-6 py-4 text-left">Job Title</th>
-            <th className="px-6 py-4 text-left">Created At</th>
-            <th className="px-6 py-4 text-left"> Application Deadline</th>
-            <th className="px-6 py-4 text-left">Applications</th>
-            <th className="px-6 py-4 text-right">Actions</th>
+            <th scope='col' className="px-6 py-5 text-left">Job Title</th>
+            <th scope='col' className="px-6 py-5 text-left">Created At</th>
+            <th scope='col' className="px-6 py-5 text-left"> Application Deadline</th>
+            <th scope='col' className="px-6 py-5 text-left">Applications</th>
+            <th scope='col' className="px-6 py-5 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -362,24 +286,34 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
           {data.jobs.map((job) => {
             const isDeadlinePassed = getIsDeadlinePassed(job.applicationDeadline)
             return (
-              <tr key={job.id} className="hover:bg-muted/30 transition">
-                <td className="px-6 py-4 font-medium">
-                  {job.title}
+              <tr
+                key={job.id}
+                className="hover:bg-muted/30 transition border-b border-border/40 last:border-none"
+              >
+                <td className="px-6 py-5">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-semibold">{job.title}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {getLabel(JOB_STATUSES, job.status)}
+                    </span>
+                  </div>
                 </td>
 
-                <td className="px-6 py-4 text-xs text-muted-foreground">
+                <td className="px-6 py-5 text-xs text-muted-foreground">
                   {job.createdAt
                     ? formatRelativeTime(job.createdAt)
                     : '—'}
                 </td>
 
 
-                <td className='px-6 py-4 font-semibold'
+                <td className='px-6 py-5 font-semibold'
                 >
                   <span
                     className={clsx(
-                      'text-xs font-medium',
-                      isDeadlinePassed ? ' text-red-500' : ' text-primary'
+                      "text-xs px-2 py-1 rounded-full font-medium",
+                      isDeadlinePassed
+                        ? "bg-red-500/10 text-destructive"
+                        : "bg-primary/10 text-primary"
                     )}
                   >
                     {job.applicationDeadline
@@ -388,14 +322,16 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
                   </span>
                 </td>
 
-                <td className="px-6 py-4 font-semibold">
-                  {job._count.applications}
+                <td className="px-6 py-5">
+                  <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary font-semibold">
+                    {job._count.applications}
+                  </span>
                 </td>
 
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-5 text-right">
                   <Link
                     href={`/company/applications/${job.slug}`}
-                    className="text-primary text-xs hover:underline font-semibold"
+                    className="text-primary text-sm hover:underline font-semibold"
                   >
                     View →
                   </Link>

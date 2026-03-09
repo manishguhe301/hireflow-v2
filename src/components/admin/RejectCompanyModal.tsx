@@ -27,7 +27,7 @@ const RejectCompanyModal = ({
       open={isOpen}
       onClose={() => {
         if (!isLoading)
-        setRejectCompanyId(null)
+          setRejectCompanyId(null)
         setRejectReason('')
       }}
       className="max-w-md"
@@ -46,11 +46,12 @@ const RejectCompanyModal = ({
           onChange={(e) => setRejectReason(e.target.value)}
           placeholder="Enter rejection reason..."
           rows={4}
-          className="w-full rounded-xl border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 resize-none "
+          className="w-full rounded-xl border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 resize-none min-h-[100px] focus:ring-1 focus:ring-primary/30 "
         />
 
         <div className="flex justify-end gap-3 pt-4">
           <Button
+            variant="outline"
             onClick={() => {
               setRejectCompanyId(null)
               setRejectReason('')
@@ -65,7 +66,8 @@ const RejectCompanyModal = ({
             onClick={() =>
               rejectCompanyId && onReject(rejectCompanyId, rejectReason)
             }
-            className="px-4! py-2! rounded-xl bg-red-500 text-white hover:opacity-90 disabled:opacity-50 w-full border-red-500"
+            variant="danger"
+            className="px-4! py-2! rounded-xl text-white hover:opacity-90 disabled:opacity-50 w-full "
           >
             {isLoading ? <Spinner className="h-4 w-4" /> : 'Reject'}
           </Button>

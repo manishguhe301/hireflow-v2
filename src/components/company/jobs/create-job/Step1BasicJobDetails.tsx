@@ -5,8 +5,8 @@ import { JobFormInputs } from './CreateJobForm'
 import { FormInput } from '@/src/components/ui/FormInput'
 import RichTextEditor from '@/src/components/ui/RichTextEditor'
 import { FormSelect } from '@/src/components/ui/FormSelect'
-import { jobCategories } from '@/src/utils/utils'
 import StepHeader from '@/src/components/ui/StepHeader'
+import { jobCategories } from '@/src/utils/constants'
 
 const Step1BasicJobDetails = ({
   register,

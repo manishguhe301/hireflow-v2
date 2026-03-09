@@ -8,7 +8,7 @@ import clsx from "clsx"
 export default function JobsDirectorySkeleton() {
   const { data: session } = useSession()
   return (
-    <div className={clsx("mx-auto max-w-5xl px-4 py-10 space-y-10", session && 'w-full max-w-full mx-0')}>
+    <div className={clsx("mx-auto max-w-5xl px-4 py-10 space-y-10", session && 'w-full max-w-full mx-0', 'max-sm:p-0')}>
       <div className={clsx("space-y-2 text-center", session && 'text-left! w-fit!')}>
         <Skeleton width={250} height={34} animation="wave" className={clsx("mx-auto", session && 'mx-0!')} />
         <Skeleton width={350} height={16} animation="wave" className={clsx("mx-auto", session && 'mx-0')} />

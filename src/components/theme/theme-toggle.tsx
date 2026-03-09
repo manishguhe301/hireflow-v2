@@ -32,25 +32,6 @@ export function ThemeToggle() {
 
     await transition.ready;
 
-    const x = window.innerWidth;
-    const y = window.innerHeight;
-
-    // Radial Circle Effect
-    // document.documentElement.animate(
-    //   {
-    //     clipPath: [
-    //       `circle(0px at ${x}px ${y}px)`,
-    //       `circle(150% at ${x}px ${y}px)`,
-    //     ],
-    //   },
-    //   {
-    //     duration: 600,
-    //     easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    //     pseudoElement: '::view-transition-new(root)',
-    //   }
-    // );
-
-    // Diagonal Slice Effect
     document.documentElement.animate(
       {
         clipPath: [

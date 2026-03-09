@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { Building2, MapPin, Briefcase } from 'lucide-react'
-import { useState } from 'react'
 import clsx from 'clsx'
 
 type CompanyCardProps = {
@@ -21,27 +20,26 @@ type CompanyCardProps = {
 export default function CompanyCard({ company }: CompanyCardProps) {
   return (
     <Link href={`/explore/companies/${company.id}`} className="h-full block w-full">
-      <div className="group flex w-full h-full min-h-[220px] flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-xl">
+      <div className="group flex w-full h-full min-h-[220px] flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:-translate-y-[2px]">
         <div className="mb-5 flex justify-center">
           <div className=" relative flex h-20 w-20 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden transition group-hover:border-primary/40">
-            <>
-              {company.logo ? (
-                <>
+            {company.logo ? (
+              <>
 
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={company.logo}
-                    alt={company.name}
-                    className={clsx(
-                      "h-full w-full object-cover transition-opacity duration-300",
-                    )} />
-                </>
-              ) : (
-                <span className="text-2xl font-bold text-muted-foreground">
-                  {company.name.charAt(0)}
-                </span>
-              )}
-            </>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={company.logo}
+                  alt={`${company.name} logo`}
+                  className={clsx(
+                    "h-full w-full object-cover transition-opacity duration-300",
+                  )}
+                />
+              </>
+            ) : (
+              <span className="text-2xl font-bold text-muted-foreground">
+                {company.name.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
         </div>
 
@@ -52,13 +50,15 @@ export default function CompanyCard({ company }: CompanyCardProps) {
         <div className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-center justify-center gap-1.5 capitalize">
             <Building2 className="h-4 w-4 shrink-0" />
-            <span className="line-clamp-1">{company.industry}</span>
+            <span className="line-clamp-1 capitalize">{company.industry}</span>
           </div>
 
           <div className="flex items-center justify-center gap-1.5">
             <MapPin className="h-4 w-4 shrink-0" />
             <span className="line-clamp-1">
-              {company.city && ` ${company.city}` + ', '}{company.country}
+              {company.city
+                ? `${company.city}, ${company.country}`
+                : company.country}
             </span>
           </div>
         </div>

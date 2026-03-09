@@ -3,7 +3,8 @@ import prisma from '@/src/lib/prisma';
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import { Role, ApplicationStatus } from '@prisma/client';
 import { notifyUser } from '@/src/lib/notificationService';
-import { APPLICATIONS_TABS, getLabel } from '@/src/utils/helper';
+import { getLabel } from '@/src/utils/helper';
+import { APPLICATIONS_TABS } from '@/src/utils/constants';
 
 export async function PATCH(
   req: NextRequest,

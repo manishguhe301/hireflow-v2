@@ -17,7 +17,6 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { Spinner } from '../elements/Loader'
 import { useTheme } from 'next-themes'
 import { Button } from '../ui/Button'
 import { signOut } from 'next-auth/react'
@@ -65,14 +64,23 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
 
   if (status === 'loading') {
     return (
-      <div className='hidden md:flex w-64 flex-col items-center justify-center border-r border-border/60 bg-card px-4 py-6'>
-        <Spinner className="h-8 w-8" />
-      </div>
+      <aside className="hidden md:flex w-64 flex-col border-r border-border/60 bg-background px-4 py-6">
+        <div className="h-6 w-32 bg-muted rounded mb-8 animate-pulse" />
+
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-10 rounded-lg bg-muted animate-pulse"
+            />
+          ))}
+        </div>
+      </aside>
     )
   }
 
-  const role = session?.user?.role as Role | undefined
-  if (!role) return null
+  const role = session?.user?.role
+  if (!role || !SIDEBAR_LINKS[role]) return null
 
   const links = SIDEBAR_LINKS[role]
 
@@ -128,6 +136,8 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
           <img
             src='/logo-hireflow.png'
             alt='logo'
+            width={32}
+            height={32}
           />
         </Link>
 

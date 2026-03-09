@@ -2,11 +2,11 @@
 
 import { useProfile } from '@/src/store/hooks/useProfile'
 import React from 'react'
-import { Spinner } from '../elements/Loader'
 import { StateWrapper } from '../company/CompanyProfileGuard'
 import { CircleUserRound, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '../ui/Button'
+import PageLoader from '../ui/PageLoader'
 
 function NoProfileUI() {
   return (
@@ -68,17 +68,7 @@ const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-        <Spinner className="h-8 w-8 mb-4" />
-
-        <p className="text-sm font-medium">
-          Setting things up for you
-        </p>
-
-        <p className="text-xs text-muted-foreground mt-1">
-          Just a moment
-        </p>
-      </div>
+      <PageLoader title="Setting things up for you" subtitle='Just a moment' />
     )
   }
 

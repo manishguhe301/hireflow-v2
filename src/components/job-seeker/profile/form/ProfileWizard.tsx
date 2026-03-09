@@ -24,6 +24,9 @@ import { Button } from '@/src/components/ui/Button'
 import { toast } from 'sonner'
 import { buildProfileFormData } from '@/src/utils/helper'
 import { setProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
+import PageLoader from '@/src/components/ui/PageLoader'
+import StepSidebar from '@/src/components/layout/StepSidebar'
+import MobileTabs from '@/src/components/layout/MobileTabs'
 
 export type WorkExperienceInput = {
   company: string
@@ -265,9 +268,7 @@ const ProfileWizard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
+      <PageLoader title="Loading your profile" subtitle="Preparing the profile editor" />
     )
   }
 
@@ -397,7 +398,7 @@ const ProfileWizard = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       {jobSeekerProfile && (
         <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
           <p className="text-sm text-primary font-medium">
@@ -409,163 +410,185 @@ const ProfileWizard = () => {
           </p>
         </div>
       )}
-      <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
-        <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
-          <FormHeader
-            currentStep={currentStep}
-            handleNext={handleNext}
-            handlePrev={handlePrev}
-            disabled={isSubmitting}
-            steps={steps}
-          />
-        </div>
-        <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-          {currentStep === 0 &&
-            <Step1BasicFormInfo
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              selectedCountry={selectedCountry}
-              disabled={isSubmitting}
+
+      {isEditMode && (
+        <MobileTabs
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={setCurrentStep}
+          isEditMode={isEditMode}
+        />
+      )}
+
+      <div className="flex gap-6 items-start w-full">
+
+        {isEditMode && (
+          <div className="hidden lg:block sticky top-24">
+            <StepSidebar
+              steps={steps}
+              currentStep={currentStep}
+              onStepClick={setCurrentStep}
+              isEditMode={isEditMode}
             />
-          }
-          {currentStep === 1 &&
-            <Step2Professional
-              register={register}
-              errors={errors}
-              watch={watch}
-              disabled={isSubmitting}
-              setValue={setValue}
-            />
-          }
-          {currentStep === 2 &&
-            <Step3Experience
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              disabled={isSubmitting}
-            />
-          }
-          {currentStep === 3 &&
-            <Step4Education
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              disabled={isSubmitting}
-            />
-          }
-          {currentStep === 4 &&
-            <Step5Skills
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              disabled={isSubmitting}
-            />
-          }
-          {currentStep === 5 &&
-            <Step6Resume
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              disabled={isSubmitting}
-            />
-          }
-          {currentStep === 6 &&
-            <Step7Certifications
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              disabled={isSubmitting}
-            />
-          }
-          {currentStep === 7 &&
-            <Step8AdditionalInfo
-              register={register}
-              errors={errors}
-              watch={watch}
-              disabled={isSubmitting}
-              setValue={setValue}
-            />
-          }
-          {currentStep === 8 &&
-            <Step9Review
-              // register={register}
-              // errors={errors}
-              watch={watch}
-              setCurrentStep={setCurrentStep}
-              disabled={isSubmitting}
-            // setValue={setValue}
-            />
-          }
-        </div>
+          </div>
+        )}
 
 
-        <div
-          className={clsx(
-            "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
-            currentStep === 0 && "justify-end"
-          )}
-        >
-          {currentStep > 0 && (
-            <Button
-              type="button"
-              onClick={handlePrev}
-              variant="outline"
+        <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none w-full">
+          <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
+            <FormHeader
+              currentStep={currentStep}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
               disabled={isSubmitting}
-              className="max-md:w-full"
-            >
-              Previous
-            </Button>
-          )}
+              steps={steps}
+            />
+          </div>
+          <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+            {currentStep === 0 &&
+              <Step1BasicFormInfo
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                selectedCountry={selectedCountry}
+                disabled={isSubmitting}
+              />
+            }
+            {currentStep === 1 &&
+              <Step2Professional
+                register={register}
+                errors={errors}
+                watch={watch}
+                disabled={isSubmitting}
+                setValue={setValue}
+              />
+            }
+            {currentStep === 2 &&
+              <Step3Experience
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                disabled={isSubmitting}
+              />
+            }
+            {currentStep === 3 &&
+              <Step4Education
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                disabled={isSubmitting}
+              />
+            }
+            {currentStep === 4 &&
+              <Step5Skills
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                disabled={isSubmitting}
+              />
+            }
+            {currentStep === 5 &&
+              <Step6Resume
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                disabled={isSubmitting}
+              />
+            }
+            {currentStep === 6 &&
+              <Step7Certifications
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                disabled={isSubmitting}
+              />
+            }
+            {currentStep === 7 &&
+              <Step8AdditionalInfo
+                register={register}
+                errors={errors}
+                watch={watch}
+                disabled={isSubmitting}
+                setValue={setValue}
+              />
+            }
+            {currentStep === 8 &&
+              <Step9Review
+                watch={watch}
+                setCurrentStep={setCurrentStep}
+                disabled={isSubmitting}
+              />
+            }
+          </div>
 
-          <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
-            {currentStep !== 8 && < Button
-              type="button"
-              disabled={isSubmitting}
-              onClick={handleDraftSave}
-              variant="outline"
-              className="max-md:w-full"
-            >
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>}
 
-            {currentStep < 8 && (
+          <div
+            className={clsx(
+              "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
+              currentStep === 0 && "justify-end"
+            )}
+          >
+            {currentStep > 0 && (
               <Button
                 type="button"
+                onClick={handlePrev}
+                variant="outline"
                 disabled={isSubmitting}
-                onClick={handleNext}
                 className="max-md:w-full"
               >
-                Next
+                Previous
               </Button>
             )}
 
-            {currentStep === 8 && (
-              <Button
+            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+              {currentStep !== 8 && < Button
                 type="button"
                 disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit)}
-                variant="primary"
+                onClick={handleDraftSave}
+                variant="outline"
                 className="max-md:w-full"
               >
-                {isSubmitting ? (
-                  <span className="flex items-center gap-2">
-                    <Spinner className="h-4 w-4" />
-                    {isEditMode ? "Updating..." : "Publishing..."}
-                  </span>
-                ) : isEditMode ? (
-                  "Update Profile"
-                ) : (
-                  "Publish Profile"
-                )}
-              </Button>
-            )}
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>}
+
+              {currentStep < 8 && (
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleNext}
+                  className="max-md:w-full"
+                >
+                  Next
+                </Button>
+              )}
+
+              {currentStep === 8 && (
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(handleFormSubmit)}
+                  variant="primary"
+                  className="max-md:w-full flex items-center justify-center"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <Spinner className="h-4 w-4" />
+                      {isEditMode ? "Updating..." : "Publishing..."}
+                    </span>
+                  ) : isEditMode ? (
+                    "Update Profile"
+                  ) : (
+                    "Publish Profile"
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

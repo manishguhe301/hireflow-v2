@@ -1,10 +1,9 @@
 'use client'
 import { Briefcase, Search } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FormSelect } from '../../ui/FormSelect'
-import { jobCategories } from '@/src/utils/utils'
-import { Spinner } from '../../elements/Loader'
+import { jobCategories } from '@/src/utils/constants'
 import Pagination from '../../ui/Pagination'
 import JobCard from './JobCard'
 import FilterSidebar from './FilterSidebar'
@@ -67,10 +66,6 @@ const JobsDirectory = () => {
   const [category, setCategory] = useState(searchParams.get('category') || '')
   const [location, setLocation] = useState(searchParams.get('location') || '')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
-  // const [pagination, setPagination] = useState<Pagination | null>(null)
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [jobs, setJobs] = useState<DirJobType[]>([])
-  // const [saving, setSaving] = useState(false)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const { data: session } = useSession()
   const isLoggedIn = session?.user?.id
@@ -90,40 +85,6 @@ const JobsDirectory = () => {
   const debouncedLocation = useDebounce(location, 500)
   const debouncedCategory = useDebounce(category, 500)
   const debouncedFilters = useDebounce(filters, 500)
-
-  // const fetchJobs = useCallback(async (isLoadingNeeded: boolean = true) => {
-  //   if (isLoadingNeeded) {
-  //     setIsLoading(true)
-  //   }
-  //   try {
-  //     const params = new URLSearchParams()
-  //     if (search) params.set('search', search)
-  //     if (category) params.set('category', category)
-  //     if (location) params.set('country', location)
-  //     if (filters.workModes.length) params.set('workModes', filters.workModes.join(','))
-  //     if (filters.employmentTypes.length) params.set('employmentTypes', filters.employmentTypes.join(','))
-  //     if (filters.experienceLevels.length) params.set('experienceLevels', filters.experienceLevels.join(','))
-  //     if (filters.salaryMin > 0) params.set('salaryMin', filters.salaryMin.toString())
-  //     if (filters.salaryMax < 10000000) params.set('salaryMax', filters.salaryMax.toString())
-  //     if (filters.datePosted) params.set('datePosted', filters.datePosted)
-  //     if (filters.sortBy) params.set('sortBy', filters.sortBy)
-
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
-
-  //     const res = await fetch(
-  //       `/api/jobs?${params.toString()}`
-  //     )
-  //     const data = await res.json()
-
-  //     setJobs(data.jobs || [])
-  //     setPagination(data.pagination)
-  //   } catch (error) {
-  //     console.error('Error fetching companies:', error)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }, [search, category, location, page, filters])
 
   const queryParams = useMemo(() => {
     const params = new URLSearchParams()
@@ -161,8 +122,8 @@ const JobsDirectory = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ['jobs', queryParams],
-    queryFn: async () => {
-      const res = await fetch(`/api/jobs?${queryParams}`)
+    queryFn: async ({ signal }) => {
+      const res = await fetch(`/api/jobs?${queryParams}`, { signal })
       if (!res.ok) throw new Error('Failed to fetch jobs')
       return res.json()
     },
@@ -176,15 +137,15 @@ const JobsDirectory = () => {
 
   useEffect(() => {
     if (!pagination || page >= pagination.totalPages) return
-
+    const nextPageParams = queryParams.replace(`page=${page}`, `page=${page + 1}`)
     queryClient.prefetchQuery({
-      queryKey: ['jobs', queryParams.replace(`page=${page}`, `page=${page + 1}`)],
+      queryKey: ['jobs', nextPageParams],
       queryFn: async () => {
-        const res = await fetch(`/api/jobs?${queryParams.replace(`page=${page}`, `page=${page + 1}`)}`)
+        const res = await fetch(`/api/jobs?${nextPageParams}`)
         return res.json()
       }
     })
-  }, [pagination, page, queryParams])
+  }, [pagination, page, queryParams, queryClient])
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -205,59 +166,17 @@ const JobsDirectory = () => {
       ? `${basePath}?${queryString}`
       : basePath
 
-    if (newUrl !== `${pathName}?${searchParams.toString()}`) {
-      router.push(newUrl, { scroll: false })
+    const currentURL = `${pathName}?${searchParams.toString()}`
+
+    if (newUrl !== currentURL) {
+      router.replace(newUrl, { scroll: false })
     }
   }, [search, category, location, page, session, pathName])
 
   useEffect(() => {
     // eslint-disable-next-line
-    setPage(1)
+    if (page !== 1) setPage(1)
   }, [filters])
-
-  // useEffect(() => {
-  //   const shouldDebounce = search.length > 0 || location.length > 0 || filters.workModes.length > 0 || filters.employmentTypes.length > 0 || filters.experienceLevels.length > 0 || filters.salaryMin > 0 || filters.salaryMax < 10000000 || filters.datePosted || filters.sortBy
-  //   const delay = shouldDebounce ? 500 : 0
-
-  //   const timer = setTimeout(() => {
-  //     fetchJobs()
-  //   }, delay)
-  //   if (isMobileFilterOpen) setIsMobileFilterOpen(false)
-
-  //   return () => clearTimeout(timer)
-  // }, [search, category, location, page, fetchJobs])
-
-
-  // const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-  //   setSaving(true)
-  //   try {
-  //     if (currentlySaved) {
-  //       const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-  //       if (res.error) {
-  //         toast.error(res.error || 'Failed to remove saved job')
-  //         return
-  //       }
-  //       toast.success('Job removed from saved')
-  //     } else {
-  //       const res = await AppSdk.postData(`/api/jobs/saved`, {
-  //         jobId
-  //       })
-
-  //       if (res.error) {
-  //         toast.error(res.error || 'Failed to save job')
-  //         return
-  //       }
-
-  //       toast.success('Job saved successfully')
-  //     }
-  //     // fetchJobs(false)
-  //     queryClient.invalidateQueries({ queryKey: ['jobs'] })
-  //   } catch (error) {
-  //     toast.error('Something went wrong')
-  //   } finally {
-  //     setSaving(false)
-  //   }
-  // }
 
   const saveJobMutation = useMutation({
     mutationFn: async ({ jobId, currentlySaved }: { jobId: string, currentlySaved: boolean }) => {
@@ -319,15 +238,19 @@ const JobsDirectory = () => {
 
   useEffect(() => {
     if (isMobileFilterOpen) {
-      document.body.style.overflow = 'hidden'
+      document.documentElement.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
     }
   }, [isMobileFilterOpen])
+
 
   if (isLoading) {
     return <JobsDirectorySkeleton />
   }
+
+  const start = (page - 1) * (pagination?.limit ?? 0) + 1;
+  const end = Math.min(page * (pagination?.limit ?? 0), pagination?.total ?? 0);
 
   return (
     <div className={clsx(isLoggedIn
@@ -346,7 +269,7 @@ const JobsDirectory = () => {
         </div>
       }
 
-      <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="relative md:col-span-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -400,12 +323,12 @@ const JobsDirectory = () => {
 
       </div>
 
-      {!isLoading && pagination ? (
+      {pagination && (
         <p className="text-sm text-muted-foreground">
-          Showing <span className="font-medium text-foreground">{jobs.length}</span> of{' '}
+          Showing <span className="font-medium text-foreground">{start} - {end}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
         </p>
-      ) : <p className="text-sm text-muted-foreground ">Loading Results...</p>}
+      )}
 
       <div className="relative flex gap-6">
         <div className="hidden lg:block">
@@ -449,14 +372,9 @@ const JobsDirectory = () => {
         )}
 
         <main className="flex-1 min-w-0">
-          {isLoading && (
-            <div className="flex justify-center py-24">
-              <Spinner className="h-8 w-8" />
-            </div>
-          )}
 
           {!isLoading && jobs.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {jobs.map((job) => (
                 <JobCard
                   key={job.id}

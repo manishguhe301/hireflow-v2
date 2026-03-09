@@ -113,7 +113,7 @@ const SignUpForm = () => {
       </Link>
 
       <div className="mb-10 text-center lg:text-left">
-        <h2 className="text-3xl font-semibold tracking-tight">
+        <h2 className="text-3xl font-bold tracking-tight">
           Create your account
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -135,7 +135,11 @@ const SignUpForm = () => {
             label="Email"
             type="email"
             placeholder="john@email.com"
-            register={register('email', { required: true })}
+            register={register('email', {
+              required: 'Email is required',
+              validate: (value) =>
+                isValidEmail(value) || 'Invalid email format',
+            })}
             error={errors.email}
             disabled={isLoading}
           />
@@ -145,7 +149,11 @@ const SignUpForm = () => {
           label="Password"
           type="password"
           placeholder="••••••••"
-          register={register('password', { required: true })}
+          register={register('password', {
+            required: 'Password is required',
+            validate: (value) =>
+              isPasswordValid(value) || 'Password must be at least 8 characters',
+          })}
           error={errors.password}
           disabled={isLoading}
         />
@@ -163,20 +171,22 @@ const SignUpForm = () => {
         />
 
         <FormRadioGroup label="What best describes you?" error={errors.role}>
-          <FormRadioCard
-            value={Role.JOB_SEEKER}
-            title="Job Seeker"
-            description="Discover and apply to relevant roles"
-            register={register('role', { required: true })}
-            disabled={isLoading}
-          />
-          <FormRadioCard
-            value={Role.COMPANY_ADMIN}
-            title="Company Admin"
-            description="Post jobs and manage applicants"
-            register={register('role', { required: true })}
-            disabled={isLoading}
-          />
+          <div className="grid gap-3 sm:grid-cols-2 mt-0.5">
+            <FormRadioCard
+              value={Role.JOB_SEEKER}
+              title="Job Seeker"
+              description="Discover and apply to relevant roles"
+              register={register('role', { required: true })}
+              disabled={isLoading}
+            />
+            <FormRadioCard
+              value={Role.COMPANY_ADMIN}
+              title="Company Admin"
+              description="Post jobs and manage applicants"
+              register={register('role', { required: true })}
+              disabled={isLoading}
+            />
+          </div>
         </FormRadioGroup>
 
         {error && (

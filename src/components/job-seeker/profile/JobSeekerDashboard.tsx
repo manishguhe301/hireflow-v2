@@ -2,9 +2,8 @@
 
 import { AppSdk } from '@/src/utils/AppSdk'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { toast } from 'sonner'
-import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
 import {
   Layers,
@@ -22,13 +21,14 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ApplicationStatus, EmploymentType, ExperienceLevel, WorkMode } from '@prisma/client'
-import { APPLICATIONS_TABS, formatRelativeTime, getLabel } from '@/src/utils/helper'
+import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import JobCard from '../../public/jobs-dir/JobCard'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
 import { ActivitySkeleton } from '../../skeletons/ActivitySkeleton'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 interface DashboardStats {
   total: number
@@ -79,7 +79,7 @@ interface RecommendedJob {
   isSaved: boolean
 }
 
-const APPLICTION_TABS_STATUS_COLORS = {
+const APPLICATION_TABS_STATUS_COLORS = {
   applied: 'bg-blue-500/10 text-blue-600',
   reviewing: 'bg-yellow-500/10 text-yellow-600',
   shortlisted: 'bg-purple-500/10 text-purple-600',
@@ -96,11 +96,11 @@ const DashboardStatCard = ({ title, value, description, icon, colorClass }:
     <div className="flex items-center justify-between">
       <div className="flex-1">
         <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <p className="text-4xl font-bold mt-3 mb-2">{value}</p>
+        <p className="text-3xl font-bold my-2">{value}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
       {icon &&
-        <div className={`h-14 w-14 rounded-2xl ${colorClass} flex items-center justify-center flex-shrink-0 ml-4`}>
+        <div className={`h-12 w-12 rounded-xl ${colorClass} flex items-center justify-center flex-shrink-0 ml-4`}>
           {icon}
         </div>
       }
@@ -138,50 +138,7 @@ const QuickActionCard = ({ href, icon, colorClass, label, desc }:
 }
 
 const JobSeekerDashboard = () => {
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [stats, setStats] = useState<DashboardStats | null>(null)
-  // const [recentActivity, setRecentActivity] = useState<Activities[]>([])
-  // const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([])
-  // const [saving, setSaving] = useState(false)
   const queryClient = useQueryClient()
-
-  // const fetchDashboardData = async () => {
-  //   try {
-
-  //     const [statsRes, activityRes, recommendedRes] = await Promise.all([
-  //       AppSdk.getData('/api/applications/stats', null),
-  //       AppSdk.getData('/api/applications/recent-activity', null),
-  //       AppSdk.getData('/api/jobs/recommended', null),
-  //     ])
-
-  //     if (statsRes.error) {
-  //       toast.error(statsRes.error)
-  //     } else {
-  //       setStats(statsRes.stats)
-  //     }
-
-  //     if (activityRes.error) {
-  //       toast.error(activityRes.error)
-  //     } else {
-  //       setRecentActivity(activityRes.activities)
-  //     }
-
-  //     if (recommendedRes.error) {
-  //       toast.error(recommendedRes.error)
-  //     } else {
-  //       setRecommendedJobs(recommendedRes.jobs)
-  //     }
-  //   } catch (err) {
-  //     console.error(err)
-  //     toast.error('Failed to load dashboard data')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchDashboardData()
-  // }, [])
 
   const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery({
     queryKey: ['dashboard-stats'],
@@ -234,43 +191,8 @@ const JobSeekerDashboard = () => {
 
 
   const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    // setSaving(true)
-    // try {
-    //   if (currentlySaved) {
-    //     const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-    //     if (res.error) {
-    //       toast.error(res.error || 'Failed to remove saved job')
-    //       return
-    //     }
-    //     toast.success('Job removed from saved')
-    //   } else {
-    //     const res = await AppSdk.postData(`/api/jobs/saved`, {
-    //       jobId
-    //     })
-
-    //     if (res.error) {
-    //       toast.error(res.error || 'Failed to save job')
-    //       return
-    //     }
-
-    //     toast.success('Job saved successfully')
-    //   }
-    //   fetchDashboardData()
-    // } catch (error) {
-    //   toast.error('Something went wrong')
-    // } finally {
-    //   setSaving(false)
-    // }
     saveMutation.mutate({ jobId, currentlySaved })
   }
-
-  // if (statsLoading || activityLoading || recommendedLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-[400px]">
-  //       <Spinner className="h-8 w-8" />
-  //     </div>
-  //   )
-  // }
 
   if ((!statsData || !activityData || !recommendedData) && !statsLoading && !activityLoading && !recommendedLoading) {
     return (
@@ -293,7 +215,7 @@ const JobSeekerDashboard = () => {
   }
 
   return (
-    <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
+    <div className="p-4 md:p-8 space-y-12 max-w-[1400px] mx-auto">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
           Dashboard
@@ -304,7 +226,7 @@ const JobSeekerDashboard = () => {
       </div>
 
       <section className="space-y-6">
-        <h2 className="text-xl font-semibold">Applications Overview</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Applications Overview</h2>
         <div className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
           {statsLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
@@ -316,7 +238,7 @@ const JobSeekerDashboard = () => {
                 title="Total"
                 value={statsData.total}
                 description="All your applications"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.total}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.total}
                 icon={<Layers className="h-5 w-5" />}
               />
 
@@ -324,7 +246,7 @@ const JobSeekerDashboard = () => {
                 title="Applied"
                 value={statsData.applied}
                 description="Submitted applications"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.applied}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.applied}
                 icon={<Send className="h-5 w-5" />}
               />
 
@@ -332,7 +254,7 @@ const JobSeekerDashboard = () => {
                 title="Reviewing"
                 value={statsData.reviewing}
                 description="Under review"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.reviewing}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.reviewing}
                 icon={<Eye className="h-5 w-5" />}
               />
 
@@ -340,7 +262,7 @@ const JobSeekerDashboard = () => {
                 title="Shortlisted"
                 value={statsData.shortlisted}
                 description="Selected for interview"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.shortlisted}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.shortlisted}
                 icon={<UserCheck className="h-5 w-5" />}
               />
 
@@ -348,7 +270,7 @@ const JobSeekerDashboard = () => {
                 title="Interview"
                 value={statsData.interviewScheduled}
                 description="Interview scheduled"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.interviewScheduled}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.interviewScheduled}
                 icon={<CalendarClock className="h-5 w-5" />}
               />
 
@@ -356,7 +278,7 @@ const JobSeekerDashboard = () => {
                 title="Rejected"
                 value={statsData.rejected}
                 description="Not selected"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.rejected}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.rejected}
                 icon={<XCircle className="h-5 w-5" />}
               />
 
@@ -364,7 +286,7 @@ const JobSeekerDashboard = () => {
                 title="Offered"
                 value={statsData.offered}
                 description="Offer received"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.offered}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.offered}
                 icon={<Gift className="h-5 w-5" />}
               />
 
@@ -372,7 +294,7 @@ const JobSeekerDashboard = () => {
                 title="Hired"
                 value={statsData.hired}
                 description="Successfully hired"
-                colorClass={APPLICTION_TABS_STATUS_COLORS.hired}
+                colorClass={APPLICATION_TABS_STATUS_COLORS.hired}
                 icon={<CheckCircle className="h-5 w-5" />}
               />
             </>
@@ -382,7 +304,7 @@ const JobSeekerDashboard = () => {
       </section>
       <section className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Recommended For You</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Recommended For You</h2>
           <Link href="/jobs" className="text-sm text-primary hover:underline">
             View All →
           </Link>
@@ -409,39 +331,50 @@ const JobSeekerDashboard = () => {
         ) : (
           <div className="text-center py-8 text-muted-foreground border border-border/60 rounded-xl">
             <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No recommendations yet</p>
-            <p className="text-xs mt-1">Complete your profile to get personalized job recommendations</p>
+            <p className="text-sm font-medium">
+              No recommendations yet
+            </p>
+
+            <p className="text-xs mt-1 text-muted-foreground">
+              Complete your profile to improve job matches
+            </p>
+
+            <Link href="/dashboard/profile">
+              <Button size="sm" className="mt-3">
+                Complete Profile
+              </Button>
+            </Link>
           </div>
         )}
       </section>
       <section className="space-y-6">
-        <h2 className="text-xl font-semibold">Quick Actions</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
           <QuickActionCard
             href='/jobs'
-            label='Browse Jobs'
+            label="Browse Jobs"
+            desc="Explore new job openings"
             icon={
               <Briefcase className="h-6 w-6 " />
             }
-            desc='Discover new opportunities'
             colorClass='bg-primary/10 text-primary'
           />
           <QuickActionCard
             href='/dashboard/applications'
-            label='My Applications'
+            label="Saved Jobs"
+            desc="View bookmarked jobs"
             icon={
               <FileText className="h-6 w-6 " />
             }
-            desc='Discover new opportunities'
             colorClass='bg-blue-500/10 text-blue-600'
           />
           <QuickActionCard
             href='/dashboard/saved-jobs'
-            label='Saved Jobs'
+            label="My Profile"
+            desc="Update your profile"
             icon={
               <Bookmark className="h-6 w-6 " />
             }
-            desc='Discover new opportunities'
             colorClass='bg-yellow-500/10 text-yellow-600'
           />
           <QuickActionCard
@@ -456,7 +389,7 @@ const JobSeekerDashboard = () => {
         </div>
       </section>
       <section className="space-y-6">
-        <h2 className="text-xl font-semibold">Recent Activity</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Recent Activity</h2>
         {activityLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -471,7 +404,10 @@ const JobSeekerDashboard = () => {
                 href={`/jobs/${activity.job.slug}`}
                 className="block rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 hover:shadow-lg transition"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium line-clamp-1">{activity.job.title}</p>
                     <p className="text-sm text-muted-foreground">
@@ -482,7 +418,7 @@ const JobSeekerDashboard = () => {
                     <span
                       className={clsx(
                         'inline-block px-3 py-1 rounded-full text-xs font-medium',
-                        APPLICTION_TABS_STATUS_COLORS[activity.status.toLowerCase() as keyof typeof APPLICTION_TABS_STATUS_COLORS],
+                        APPLICATION_TABS_STATUS_COLORS[activity.status.toLowerCase() as keyof typeof APPLICATION_TABS_STATUS_COLORS],
                       )}
                     >
                       {getLabel(APPLICATIONS_TABS, activity.status)}

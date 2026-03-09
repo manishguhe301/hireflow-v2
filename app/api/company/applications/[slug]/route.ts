@@ -1,8 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-// import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
-import { profile } from 'console';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -150,36 +148,11 @@ export async function GET(
       hired: statusStats.find((s) => s.status === 'HIRED')?._count || 0,
     };
 
-    // const applicationsWithAvatars = await Promise.all(
-    //   applications.map(async (application) => {
-    //     let signedUrl = null;
-
-    //     if (application?.user?.profile?.avatar) {
-    //       signedUrl = await getSignedUrl(
-    //         application.user.profile.avatar,
-    //         60 * 60 * 24 * 7,
-    //       );
-    //     }
-
-    //     return {
-    //       ...application,
-    //       user: {
-    //         ...application.user,
-    //         profile: {
-    //           ...application.user.profile,
-    //           avatar: signedUrl,
-    //         },
-    //       },
-    //     };
-    //   }),
-    // );
-
     return NextResponse.json({
       job: {
         id: job.id,
         title: job.title,
       },
-      // applications: applicationsWithAvatars,
       applications,
       stats,
       pagination: {

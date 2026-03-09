@@ -37,9 +37,6 @@ export async function GET(
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    // const signedLogo = await getSignedUrl(company?.logo as string, 604800);
-
-    // return NextResponse.json({ company: { ...company, logo: signedLogo } });
     return NextResponse.json({ company });
   } catch (error) {
     console.error(error);

@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Spinner } from '../elements/Loader'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
@@ -23,11 +23,11 @@ import { Button } from '../ui/Button'
 import { Company, Job } from '@prisma/client'
 import InfoCard from '../admin/InfoCard'
 import InfoRow from '../admin/InfoRow'
-import { formatDate, getLabel, isRichTextEmpty, JOB_STATUS_STYLE } from '@/src/utils/helper'
-import { jobCategories } from '@/src/utils/utils'
+import { formatDate, getLabel, isRichTextEmpty, } from '@/src/utils/helper'
 import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import JobDetailPageSkeleton from '../skeletons/JobDetailPageSkeleton'
+import { APPLICATIONS_TABS, JOB_STATUS_STYLE, jobCategories } from '@/src/utils/constants'
 
 interface JobDetails extends Job {
   _count: {
@@ -47,30 +47,8 @@ const JobDetails = () => {
   const router = useRouter()
   const slug = params.slug as string | undefined
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
-  // const [loading, setLoading] = useState(true)
-  // const [job, setJob] = useState<JobDetails | null>(null)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
   const queryClient = useQueryClient()
-
-  // const fetchJobDetails = async () => {
-  //   try {
-  //     const res = await AppSdk.getData(
-  //       `/api/company/jobs/${slug}?company=true&counts=true&applications=true&savedJobs=true`,
-  //       null,
-  //     )
-  //     if (res.job) setJob(res.job)
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to fetch job details')
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!slug) return
-  //   fetchJobDetails()
-  // }, [slug])
 
   const { data, isLoading } = useQuery({
     queryKey: ['company-job', slug],
@@ -118,6 +96,7 @@ const JobDetails = () => {
     },
 
     onSuccess: () => {
+      toast.success('Job status updated')
       queryClient.invalidateQueries({
         queryKey: ['company-job', slug]
       })
@@ -139,29 +118,6 @@ const JobDetails = () => {
     if (!job) return
 
     setLoadingAction(`status-${job.id}`)
-
-    // try {
-    //   const res = await fetch(`/api/company/jobs/${job.slug}/status`, {
-    //     method: 'PATCH',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ status: newStatus })
-    //   })
-
-    //   const data = await res.json()
-
-    //   if (!res.ok) {
-    //     toast.error(data.error || 'Failed to update job status')
-    //     return
-    //   }
-
-    //   toast.success(data.message)
-    //   refetch()
-    // } catch (error) {
-    //   console.error(error)
-    //   toast.error('Something went wrong')
-    // } finally {
-    //   setLoadingAction(null)
-    // }
 
     statusMutation.mutate({
       slug: job.slug,
@@ -217,32 +173,6 @@ const JobDetails = () => {
 
     setLoadingAction(`delete-${job.id}`)
 
-    // try {
-    //   const res = await fetch(`/api/company/jobs/${job.slug}`, {
-    //     method: 'DELETE'
-    //   })
-
-    //   const data = await res.json()
-
-    //   if (!res.ok) {
-    //     toast.error(data.error || 'Failed to delete job')
-    //     return
-    //   }
-
-    //   if (data.action === 'closed') {
-    //     toast.warning(data.message)
-    //     refetch()
-    //   } else {
-    //     toast.success(data.message)
-    //     router.push('/company/jobs')
-    //   }
-    // } catch (error) {
-    //   console.error(error)
-    //   toast.error('Something went wrong')
-    // } finally {
-    //   setLoadingAction(null)
-    // }
-
     deleteMutation.mutate(job.slug)
   }
 
@@ -284,8 +214,9 @@ const JobDetails = () => {
                     />
                   </div>
                 ) :
-                  <Briefcase className="h-6 w-6 text-muted-foreground" />
-              }
+                  <span className="text-lg font-semibold text-muted-foreground">
+                    {job.company.name.charAt(0).toUpperCase()}
+                  </span>}
             </div>
 
             <div>
@@ -360,7 +291,7 @@ const JobDetails = () => {
             <InfoRow
               key={status}
               icon={<Users />}
-              label={status}
+              label={getLabel(APPLICATIONS_TABS, status) as string}
               value={String(count)}
             />
           ))}
@@ -372,7 +303,7 @@ const JobDetails = () => {
           variant="outline"
           onClick={() => router.push(`/company/jobs/edit/${job.slug}`)}
           disabled={!!loadingAction}
-          className='flex items-center justify-center gap-1 text-success border-success '
+          className='flex items-center justify-center gap-1 '
 
         >
           <Edit className="h-4 w-4 mr-1" />
@@ -446,6 +377,7 @@ const JobDetails = () => {
         setDeleteJobId={setDeleteJobId}
         handleDelete={handleDelete}
         loadingAction={loadingAction}
+        jobTitle={job.title}
       />
 
     </div >

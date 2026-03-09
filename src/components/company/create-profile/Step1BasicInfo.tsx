@@ -5,7 +5,7 @@ import { ProfileFormInputs } from './ProfileSetup'
 import { FormTextarea } from '../../ui/FormTextarea'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
-import { companyIndustries, companySizes } from '@/src/utils/utils'
+import { companyIndustries, companySizes } from '@/src/utils/constants'
 import StepHeader from '../../ui/StepHeader'
 
 const currentYear = new Date().getFullYear()

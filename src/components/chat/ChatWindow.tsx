@@ -10,6 +10,7 @@ import { useChatPusher } from '@/src/store/hooks/useChatPusher';
 import { MessageWithSender } from '@/src/types';
 import ChatMessage from './ChatMessage';
 import { useMutation } from '@tanstack/react-query';
+import PageLoader from '../ui/PageLoader';
 
 interface ChatWindowProps {
   conversationId: string | null;
@@ -31,7 +32,6 @@ export default function ChatWindow({
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -157,7 +157,7 @@ export default function ChatWindow({
     },
     onError: (_error, content) => {
       toast.error('Failed to send message');
-      setNewMessage(content); // restore on network error
+      setNewMessage(content);
     },
   });
 
@@ -166,32 +166,7 @@ export default function ChatWindow({
 
     const tempMessage = newMessage;
     setNewMessage('');
-    // setIsSending(true);
     sendMutation.mutate(tempMessage);
-
-
-    // try {
-    //   const res = await AppSdk.postData('/api/chat/messages/send', {
-    //     conversationId,
-    //     content: tempMessage,
-    //   });
-
-    //   if (res.error) {
-    //     toast.error(res.error);
-    //     setNewMessage(tempMessage);
-    //     return;
-    //   }
-
-    //   onMessageSent();
-    //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    //   //eslint-disable-next-line
-    // } catch (error: any) {
-    //   console.error(error, 'asdsad');
-    //   toast.error(error.error as string || 'Failed to send message');
-    //   setNewMessage(tempMessage);
-    // } finally {
-    //   setIsSending(false);
-    // }
   };
 
   if (!conversationId) {
@@ -206,13 +181,11 @@ export default function ChatWindow({
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Spinner className="h-8 w-8" />
+      <div className='w-full h-full flex items-center justify-center'>
+        <PageLoader title='Loading messages' subtitle='This may take a few seconds' />
       </div>
     );
   }
-
-
 
   return (
     <div className="flex-1 flex flex-col bg-background w-full">
@@ -237,25 +210,67 @@ export default function ChatWindow({
           </div>
         </div>
       )}
-      <div ref={scrollContainerRef}
+      <div className="hidden sm:flex items-center justify-between border-b border-border px-4 py-3 bg-card">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center">
+            {chatPartnerName?.charAt(0).toUpperCase()}
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-sm font-semibold truncate">{chatPartnerName}</p>
+
+            {jobTitle && (
+              <p className="text-xs text-muted-foreground truncate">
+                Re: {jobTitle}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+      <div
+        ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-4 space-y-4">
+        className="flex-1 overflow-y-auto px-6 py-6 space-y-3 bg-muted/10"
+      >
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center text-muted-foreground py-10">
+            <MessageSquare className="h-10 w-10 mb-2 opacity-50" />
+            <p className="text-sm">Start the conversation</p>
+          </div>
+        )}
         {isLoadingMore && page > 1 && (
-          <div className="text-center py-2">
-            <Spinner className="h-6 w-6 mx-auto" />
+          <div className="flex justify-center py-4">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Spinner className="h-4 w-4" />
+              Loading earlier messages...
+            </div>
           </div>
         )}
         {messages.map((message, index) => {
           const isOwnMessage =
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
+          const messageDate = new Date(message.createdAt).toDateString()
+          const prevDate =
+            index > 0
+              ? new Date(messages[index - 1].createdAt).toDateString()
+              : null
+
+          const showDateDivider = messageDate !== prevDate
+
           return (
             <div
               id={`msg-${message.id}`}
               key={`${message.id}-${message.createdAt}-${index}`}
             >
+              {showDateDivider && (
+                <div className="flex justify-center my-4">
+                  <span className="text-xs bg-muted px-3 py-1 rounded-full text-muted-foreground">
+                    {messageDate}
+                  </span>
+                </div>
+              )}
               <ChatMessage
-                // key={`${message.id}-${message.createdAt}-${index}`}
                 message={message}
                 isOwnMessage={isOwnMessage}
               />
@@ -285,7 +300,6 @@ export default function ChatWindow({
               'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
             )}
             rows={2}
-          // disabled={sendMutation.isPending}
           />
           <Button
             onClick={handleSendMessage}
@@ -293,7 +307,11 @@ export default function ChatWindow({
             className="px-4 self-end"
             aria-label='Send Message'
           >
-            <Send className="h-4 w-4" />
+            {sendMutation.isPending ? (
+              <Spinner className="h-4 w-4" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

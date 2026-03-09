@@ -3,29 +3,46 @@
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
 import { Button } from '../ui/Button'
-import { links } from '@/src/utils/utils'
+import { links } from '@/src/utils/constants'
+import { usePathname } from 'next/navigation'
+import clsx from 'clsx'
 
 export default function PublicHeader() {
   const handleMenuClose = (e: React.MouseEvent) => {
     e.currentTarget.closest('details')?.removeAttribute('open')
   }
+  const pathname = usePathname()
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+      <div className="mx-auto max-w-7xl px-6 py-3.5 flex items-center justify-between">
         <Link href="/" className="text-xl font-semibold tracking-tight">
           HireFlow<span className="text-primary">.</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/explore/jobs" className="hover:text-primary transition">Jobs</Link>
-          <Link href="/explore/companies" className="hover:text-primary transition">Companies</Link>
-          <Link href="/#how-it-works" className="hover:text-primary transition">How it works</Link>
+          <Link href="/explore/jobs" className={clsx("hover:text-primary transition",
+            pathname === "/explore/jobs"
+              ? "text-primary"
+              : "text-muted-foreground hover:text-primary"
+          )}>
+            Jobs
+          </Link>
+          <Link href="/explore/companies" className={clsx("hover:text-primary transition",
+            pathname === "/explore/companies"
+              ? "text-primary"
+              : "text-muted-foreground hover:text-primary"
+          )}>
+            Companies
+          </Link>
+          <Link href="/#how-it-works" className={clsx("hover:text-primary transition")}>How it works</Link>
           <Link
             href="/login"
-            className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-primary hover:bg-primary/20 transition"
+            className="rounded-full border border-primary/30 bg-primary/10 hover:bg-primary/20 transition"
           >
-            Login
+            <Button size="sm" variant="outline">
+              Login
+            </Button>
           </Link>
         </nav>
 
@@ -49,11 +66,11 @@ export default function PublicHeader() {
               ))}
 
               <div className="border-t border-border/60 pt-3">
-                <Button className="w-full">
-                  <Link href="/login" className="block w-full">
+                <Link href="/login" className="block w-full">
+                  <Button className="w-full">
                     Login
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </div>
           </details>

@@ -105,7 +105,6 @@ const RichTextEditor = ({
 
             <div className="w-px bg-border/60 mx-1" />
 
-            {/* Bold */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
@@ -117,7 +116,6 @@ const RichTextEditor = ({
               <Bold size={16} />
             </button>
 
-            {/* Italic */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -129,7 +127,6 @@ const RichTextEditor = ({
               <Italic size={16} />
             </button>
 
-            {/* Underline */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -141,7 +138,6 @@ const RichTextEditor = ({
               <UnderlineIcon size={16} />
             </button>
 
-            {/* Bullet list */}
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}

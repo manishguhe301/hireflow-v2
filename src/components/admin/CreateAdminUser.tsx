@@ -39,7 +39,6 @@ const CreateAdminUser = () => {
   const router = useRouter()
 
   const [error, setError] = useState('')
-  // const [isLoading, setIsLoading] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -60,8 +59,9 @@ const CreateAdminUser = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
     },
-    onError: () => {
-      toast.error('Something went wrong. Please try again.')
+    //eslint-disable-next-line
+    onError: (error: any) => {
+      toast.error(error?.message || 'Failed to create admin')
     },
   })
 
@@ -76,33 +76,12 @@ const CreateAdminUser = () => {
       return
     }
 
-    // setIsLoading(true)
-
     const payload = {
       name: data.name.trim(),
       email: data.email.trim(),
       password: data.password.trim(),
       role: Role.PLATFORM_ADMIN,
     }
-
-    // try {
-    //   const res = await AppSdk.postData('/api/admin/create-admin', payload)
-
-    //   if (res.error) {
-    //     toast.error(res.error || 'Something went wrong')
-    //     return
-    //   }
-
-    //   toast.success('Platform admin created successfully')
-    //   reset()
-    //   setError('')
-    //   // router.push('/admin/users')
-    // } catch (error) {
-    //   console.error(error)
-    //   toast.error('Something went wrong. Please try again.')
-    // } finally {
-    //   setIsLoading(false)
-    // }
 
     createAdminMutation.mutate(payload)
   }
@@ -144,7 +123,11 @@ const CreateAdminUser = () => {
           label="Email"
           type="email"
           placeholder="admin@email.com"
-          register={register('email', { required: true })}
+          register={register('email', {
+            required: true,
+            validate: (value) =>
+              isValidEmail(value) || 'Invalid email format'
+          })}
           error={errors.email}
           disabled={isLoading}
         />
@@ -154,11 +137,14 @@ const CreateAdminUser = () => {
           label="Password"
           type="password"
           placeholder="••••••••"
-          register={register('password', { required: true })}
+          register={register('password', {
+            required: true,
+            validate: (value) =>
+              isPasswordValid(value) || 'Password must be at least 8 characters'
+          })}
           error={errors.password}
           disabled={isLoading}
         />
-
 
         <FormInput
           label="Confirm password"

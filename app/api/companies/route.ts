@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/src/lib/prisma';
-// import { getSignedUrl } from '@/src/lib/fileUpload';
 
 export async function GET(req: NextRequest) {
   try {
@@ -77,23 +76,7 @@ export async function GET(req: NextRequest) {
       jobCount: company._count.jobs,
     }));
 
-    // const companiesWithSignedURLS = await Promise.all(
-    //   companiesWithJobCount.map(async (company) => {
-    //     let logoUrl = null;
-
-    //     if (company.logo) {
-    //       logoUrl = await getSignedUrl(company.logo, 604800);
-    //     }
-
-    //     return {
-    //       ...company,
-    //       logo: logoUrl,
-    //     };
-    //   }),
-    // );
-
     return NextResponse.json({
-      // companies: companiesWithSignedURLS,
       companies: companiesWithJobCount,
       pagination: {
         total,

@@ -1,5 +1,4 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-// import { getSignedUrl } from '@/src/lib/fileUpload';
 import prisma from '@/src/lib/prisma';
 import { Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
@@ -77,32 +76,6 @@ export async function GET(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
-    // const jobWithSignedLogo = (async () => {
-    //   if (
-    //     'company' in job &&
-    //     job.company &&
-    //     typeof job.company === 'object' &&
-    //     'logo' in job.company &&
-    //     job.company.logo
-    //   ) {
-    //     const signedLogo = await getSignedUrl(
-    //       job.company.logo as string,
-    //       60 * 60 * 24 * 7,
-    //     );
-
-    //     return {
-    //       ...job,
-    //       company: {
-    //         ...job.company,
-    //         logo: signedLogo,
-    //       },
-    //     };
-    //   }
-
-    //   return job;
-    // })();
-
-    // return NextResponse.json({ job: await jobWithSignedLogo });
     return NextResponse.json({ job });
   } catch (error) {
     console.error('Error fetching company:', error);

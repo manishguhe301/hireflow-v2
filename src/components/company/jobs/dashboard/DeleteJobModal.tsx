@@ -7,24 +7,20 @@ type DeleteJobModalProps = {
   setDeleteJobId: React.Dispatch<React.SetStateAction<string | null>>
   handleDelete: () => Promise<void>
   loadingAction: string | null
+  jobTitle: string
 }
 
 const DeleteJobModal = ({
   deleteJobId,
   setDeleteJobId,
   handleDelete,
-  loadingAction
+  loadingAction,
+  jobTitle
 }: DeleteJobModalProps) => {
   return (
     <Modal
       open={!!deleteJobId}
-      onClose={() => {
-        if (!loadingAction) {
-          setDeleteJobId(null)
-        }
-      }
-
-      }
+      onClose={() => !loadingAction && setDeleteJobId(null)}
       className="max-w-md"
     >
       <div className="space-y-4">
@@ -32,15 +28,24 @@ const DeleteJobModal = ({
           Delete Job?
         </h3>
 
-        <p className="text-sm text-muted-foreground">
-          This action cannot be undone. The job posting will be permanently removed.
-          {' '}<span className="font-medium text-foreground">Note: Jobs with applications cannot be deleted.</span>
-        </p>
+        <div className="space-y-2 text-sm">
+          <p className="text-muted-foreground">
+            Are you sure you want to delete
+            <span className="font-medium text-foreground">
+              {' '}{jobTitle}
+            </span>?  This action cannot be undone. The job posting will be permanently removed.
+          </p>
+
+          <p className="text-warning font-medium">
+            Jobs with existing applications cannot be deleted.
+          </p>
+        </div>
 
         <div className="flex justify-end gap-3 pt-4">
           <Button
             onClick={() => setDeleteJobId(null)}
             variant="outline"
+            disabled={loadingAction === `delete-${deleteJobId}`}
             className="px-4 py-2 rounded-xl w-full"
           >
             Cancel
@@ -53,7 +58,10 @@ const DeleteJobModal = ({
             className="px-4 py-2 disabled:opacity-70 w-full"
           >
             {loadingAction === `delete-${deleteJobId}` ? (
-              <Spinner className="h-4 w-4" />
+              <span className="flex items-center justify-center gap-2">
+                Deleting
+                <Spinner className="h-4 w-4" />
+              </span>
             ) : (
               'Delete Job'
             )}

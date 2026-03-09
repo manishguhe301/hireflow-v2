@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
-import { degrees, fieldOfStudies } from '@/src/utils/utils'
+import { degrees, fieldOfStudies } from '@/src/utils/constants'
 import { useSession } from 'next-auth/react'
 import { getLabel } from '@/src/utils/helper'
 

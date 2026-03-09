@@ -1,7 +1,6 @@
 import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
 import { formatDate, isRichTextEmpty } from '@/src/utils/helper'
-import { jobCategories } from '@/src/utils/utils'
 import { Job } from '@prisma/client'
 import clsx from 'clsx'
 import { CheckCircle, Clock, Pencil, Trash2, XCircle } from 'lucide-react'
@@ -49,31 +48,30 @@ const JobsTable = ({
     <table className="w-full text-sm">
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
-          <th className="px-6 py-4 text-left">Title</th>
-          <th className="px-6 py-4 text-left">Deadline</th>
-          <th className="px-6 py-4 text-left">Status</th>
-          <th className="px-6 py-4 text-left">Views</th>
-          <th className="px-6 py-4 text-left">Applications</th>
-          <th className="px-6 py-4 text-right">Actions</th>
+          <th scope='col' className="px-6 py-5 text-left">Title</th>
+          <th scope='col' className="px-6 py-5 text-left">Deadline</th>
+          <th scope='col' className="px-6 py-5 text-left">Status</th>
+          <th scope='col' className="px-6 py-5 text-left">Views</th>
+          <th scope='col' className="px-6 py-5 text-left">Applications</th>
+          <th scope='col' className="px-6 py-5 text-right">Actions</th>
         </tr>
       </thead>
       <tbody>
         {jobs.map((job: JobWithCount) => {
-          // const jobCategory = jobCategories.filter((ind) => ind.value === job.category)[0]?.label
           const isDeadlinePassed = getIsDeadlinePassed(job.applicationDeadline)
           return (
             <tr
               key={job.id}
               className='w-full hover:bg-muted/30 transition'
             >
-              <td className="px-6 py-4">
-                <div className="font-medium capitalize">{job.title}</div>
+              <td className="px-6 py-5">
+                <div className="font-medium line-clamp-1">{job.title}</div>
               </td>
-              <td className="px-6 py-4">
+              <td className="px-6 py-5">
                 <span
                   className={clsx(
                     'text-xs font-medium',
-                    isDeadlinePassed ? ' text-red-500' : ' text-primary'
+                    isDeadlinePassed ? ' text-destructive' : ' text-primary'
                   )}
                 >
                   {job.applicationDeadline
@@ -81,7 +79,7 @@ const JobsTable = ({
                     : '—'}
                 </span>
               </td>
-              <td className="px-6 py-4">
+              <td className="px-6 py-5">
                 <span
                   className={clsx(
                     'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
@@ -99,15 +97,14 @@ const JobsTable = ({
                   {job.status}
                 </span>
               </td>
-              <td className="px-6 py-4">{job.views}</td>
-              <td className="px-6 py-4">{job._count.applications}</td>
-              <td className="px-6 py-4 text-right">
+              <td className="px-6 py-5">{job.views}</td>
+              <td className="px-6 py-5">{job._count.applications}</td>
+              <td className="px-6 py-5 text-right">
                 <div className="inline-flex items-center gap-3">
-
                   {job.status !== 'DRAFT' && (
                     <Link
                       href={`/company/jobs/${job.slug}`}
-                      className={clsx("text-xs text-muted-foreground hover:underline", loadingAction && 'pointer-events-none opacity-50')}
+                      className={clsx("text-xs text-primary hover:underline", loadingAction && 'pointer-events-none opacity-50')}
                     >
                       View
                     </Link>
@@ -129,7 +126,10 @@ const JobsTable = ({
                         disabled={loadingAction === `publish-${job.id}`}
                       >
                         {loadingAction === `publish-${job.id}` ? (
-                          <Spinner className="h-3 w-3" />
+                          <span className="flex items-center gap-1">
+                            <Spinner className="h-3 w-3" />
+                            Publishing
+                          </span>
                         ) : (
                           'Publish'
                         )}

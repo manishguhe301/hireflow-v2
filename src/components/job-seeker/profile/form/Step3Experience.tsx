@@ -1,4 +1,3 @@
-// Step3Experience.tsx
 'use client'
 
 import React, { useState } from 'react'
@@ -16,7 +15,7 @@ import { formatDate, getLabel } from '@/src/utils/helper'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormTextarea } from '@/src/components/ui/FormTextarea'
-import { workModes } from '@/src/utils/utils'
+import { workModes } from '@/src/utils/constants'
 
 type WorkExperienceForm = {
   company: string
@@ -30,8 +29,6 @@ type WorkExperienceForm = {
 }
 
 const Step3Experience = ({
-  register,
-  errors,
   watch,
   setValue,
   disabled

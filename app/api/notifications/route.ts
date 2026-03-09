@@ -119,7 +119,17 @@ export async function DELETE(req: NextRequest) {
       return guard.response;
     }
 
-    const { notificationIds } = await req.json();
+    const { notificationIds, deleteAll } = await req.json();
+
+    if (deleteAll) {
+      await prisma.notification.deleteMany({
+        where: { userId: guard.session.user.id },
+      });
+      return NextResponse.json({
+        success: true,
+        message: 'All notifications deleted',
+      });
+    }
 
     if (!notificationIds || !Array.isArray(notificationIds)) {
       return NextResponse.json(
