@@ -317,7 +317,7 @@ const ProfileSetup = () => {
             )}
             <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
 
-              {currentStep !== 3 && < Button
+              {currentStep !== 3 && isEditMode && company?.status === CompanyStatus.APPROVED && < Button
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleSubmit(handleFormSubmit)}

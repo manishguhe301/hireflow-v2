@@ -88,7 +88,7 @@ export default function HomePage() {
 
             <div className="mt-10 flex gap-4">
               <Link href="/signup" className='flex items-center justify-center  gap-2 '>
-                <Button size="md" className='' >
+                <Button size="md" className='flex items-center justify-center' >
                   Get Started <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
