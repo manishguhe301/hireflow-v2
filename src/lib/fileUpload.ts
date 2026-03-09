@@ -28,8 +28,6 @@ export async function uploadFileToB2(
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // console.log('UPLOADING FILE+++++++++++++++++++');
-
     const res = await b2Client.send(
       new PutObjectCommand({
         Bucket: bucketName,
@@ -42,10 +40,6 @@ export async function uploadFileToB2(
             : 'no-cache',
       }),
     );
-
-    // console.log(res);
-
-    // console.log('UPLOADING COMPLETE+++++++++++++++++++');
 
     const shouldGenerateSignedUrl =
       bucket === 'company-logos' || bucket === 'user-avatars';
@@ -78,18 +72,12 @@ export async function uploadFileToB2(
 
 export async function deleteFileFromB2(filePath: string): Promise<void> {
   try {
-    // console.log('DELETING FILE+++++++++++++++++++ ');
-
     const deleteres = await b2Client.send(
       new DeleteObjectCommand({
         Bucket: bucketName,
         Key: filePath,
       }),
     );
-
-    // console.log(deleteres);
-
-    // console.log('DELETING COMPLETE+++++++++++++++++++ ');
   } catch (error) {
     console.error('Delete error:', error);
     throw new Error('Failed to delete file');

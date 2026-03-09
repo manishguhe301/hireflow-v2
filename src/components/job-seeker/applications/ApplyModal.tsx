@@ -8,7 +8,7 @@ import { useProfile } from '@/src/store/hooks/useProfile'
 import { Building2, MapPin, Briefcase } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { getLabel } from '@/src/utils/helper'
-import { workModes, employmentTypes } from '@/src/utils/utils'
+import { workModes, employmentTypes } from '@/src/utils/constants'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
@@ -227,7 +227,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40">
           <Button
             type="button"
-            variant="danger"
+            variant="outline"
             onClick={onClose}
             disabled={isSubmitting}
             className='w-full'

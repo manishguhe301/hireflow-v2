@@ -12,8 +12,11 @@ export default function CompaniesPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex justify-center py-24">
-          <Spinner className="h-8 w-8" />
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <Spinner className="h-8 w-8 mb-3" />
+          <p className="text-sm text-muted-foreground">
+            Loading companies...
+          </p>
         </div>
       }
     >

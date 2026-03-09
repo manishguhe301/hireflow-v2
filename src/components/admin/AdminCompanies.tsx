@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Building2,
   Search,
@@ -9,8 +9,6 @@ import clsx from 'clsx'
 import { Company, CompanyStatus } from '@prisma/client'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
-import { Spinner } from '../elements/Loader'
-import { TABS } from '@/src/utils/helper'
 import DeleteCompanyModal from './DeleteCompanyModal'
 import RejectCompanyModal from './RejectCompanyModal'
 import CompaniesTable from './CompaniesTable'
@@ -18,6 +16,7 @@ import Pagination from '../ui/Pagination'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AdminCompaniesTableSkeleton from '../skeletons/AdminCompaniesTableSkeleton'
+import { TABS } from '@/src/utils/constants'
 
 type Pagination = {
   total: number
@@ -34,59 +33,20 @@ const AdminCompanies = () => {
   const [rejectReason, setRejectReason] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  // const [pagination, setPagination] = useState<Pagination | null>(null)
-  // const [companies, setCompanies] = useState<Company[]>([])
-  // const [isLoading, setIsLoading] = useState(true)
   const debouncedSearch = useDebounce(search, 500)
   const queryClient = useQueryClient()
 
-  // const fetchCompanies = async (status?: string, isLoadingNeeded: boolean = true) => {
-  //   if (isLoadingNeeded) {
-  //     setIsLoading(true)
-  //   }
-  //   try {
-  //     const params = new URLSearchParams()
-  //     if (status) params.set('status', status)
-  //     if (search) params.set('search', search)
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams()
 
-  //     const url =
-  //       `/api/admin/companies?${params.toString()}`
+    if (activeTab !== 'ALL') params.set('status', activeTab)
+    if (debouncedSearch) params.set('search', debouncedSearch)
 
-  //     const res = await AppSdk.getData(url, null)
+    params.set('page', page.toString())
+    params.set('limit', '12')
 
-  //     if (res.companies) {
-  //       setCompanies(res.companies)
-  //       setPagination(res.pagination)
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error('Failed to fetch companies, please try again.')
-  //   }
-  //   finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const shouldDebounce = search.length > 0
-  //   const delay = shouldDebounce ? 500 : 0
-
-  //   const timer = setTimeout(() => {
-  //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab)
-  //   }, delay)
-
-  //   return () => clearTimeout(timer)
-  // }, [activeTab, search, page])
-
-  const queryParams = new URLSearchParams()
-
-  if (activeTab !== 'ALL') queryParams.set('status', activeTab)
-  if (debouncedSearch) queryParams.set('search', debouncedSearch)
-
-  queryParams.set('page', page.toString())
-  queryParams.set('limit', '12')
+    return params.toString()
+  }, [activeTab, debouncedSearch, page])
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-companies', activeTab, debouncedSearch, page],
@@ -128,25 +88,7 @@ const AdminCompanies = () => {
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
-    // try {
-    //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
-    //     status: 'APPROVED'
-    //   })
-
-    //   if (res.success) {
-    //     toast.success('Company approved successfully')
-    //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to approve company')
-    // }
-    // finally {
-    // setLoadingAction(null)
-    // }
-
     approveMutation.mutate(id)
-
-
   }
 
   const rejectMutation = useMutation({
@@ -186,25 +128,6 @@ const AdminCompanies = () => {
     setLoadingAction(`reject-${id}`)
 
     rejectMutation.mutate({ id, reason })
-
-    // try {
-    //   const res = await AppSdk.patchData(`/api/admin/companies/${id}`, {
-    //     status: 'REJECTED',
-    //     rejectionReason: reason
-    //   })
-
-    //   if (res.success) {
-    //     toast.success('Company rejected')
-    //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to reject company')
-    // }
-    // finally {
-    //   setLoadingAction(null)
-    //   setRejectCompanyId(null)
-    //   setRejectReason('')
-    // }
   }
 
 
@@ -233,21 +156,6 @@ const AdminCompanies = () => {
     deleteMutation.mutate(deleteCompanyId)
 
     setDeleteCompanyId(null)
-
-    // try {
-    //   const res = await AppSdk.deleteData(`/api/admin/companies/${deleteCompanyId}`, null)
-
-    //   if (res.success) {
-    //     toast.success('Company deleted')
-    //     fetchCompanies(activeTab === 'ALL' ? undefined : activeTab, false)
-    //   }
-    // } catch (error) {
-    //   toast.error('Failed to delete company')
-    // }
-    // finally {
-    //   setLoadingAction(null)
-    //   setDeleteCompanyId(null)
-    // }
   }
 
   useEffect(() => {
@@ -309,8 +217,7 @@ const AdminCompanies = () => {
         </div>
       </div>
       {isLoading ?
-        <AdminCompaniesTableSkeleton />
-        :
+        <AdminCompaniesTableSkeleton /> :
         <>
           <div>
             {companies.length === 0 ? (
@@ -341,12 +248,14 @@ const AdminCompanies = () => {
               </div>
             )}
           </div>
-        </>}
+        </>
+      }
       <DeleteCompanyModal
         deleteCompanyId={deleteCompanyId}
         setDeleteCompanyId={setDeleteCompanyId}
         handleDelete={handleDelete}
         loadingAction={loadingAction}
+        companyName={companies.find((company) => company.id === deleteCompanyId)?.name || ''}
       />
       <RejectCompanyModal
         rejectCompanyId={rejectCompanyId}

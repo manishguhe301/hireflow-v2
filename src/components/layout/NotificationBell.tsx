@@ -1,11 +1,12 @@
 'use client'
 import { Bell, BellRing } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
 import NotificationDropdown from './NotificationDropdown'
 import { usePusherNotifications } from '@/src/store/hooks/usePusherNotifications'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { usePathname } from 'next/navigation'
 
 interface Notification {
   id: string
@@ -18,31 +19,13 @@ interface Notification {
 }
 
 const NotificationBell = () => {
-  // const [notifications, setNotifications] = useState<Notification[]>([])
-  // const [unreadCount, setUnreadCount] = useState(0)
-  // const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  // const fetchNotifications = useCallback(async (isLoaderNeeded: boolean = true) => {
-  //   if (isLoaderNeeded) {
-  //     setIsLoading(true)
-  //   }
-  //   try {
-  //     const res = await AppSdk.getData('/api/notifications?limit=10', null)
-  //     if (res.error) {
-  //       toast.error(res.error)
-  //       return
-  //     }
-  //     setNotifications(res.notifications)
-  //     setUnreadCount(res.unreadCount)
-  //   } catch (error) {
-  //     console.error(error)
-  //     toast.error('Failed to load notifications')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }, [])
+  const pathname = usePathname()
+
+
 
   const {
     data,
@@ -65,16 +48,17 @@ const NotificationBell = () => {
   const notifications: Notification[] = data?.notifications || []
   const unreadCount: number = data?.unreadCount || 0
 
+  useEffect(() => {
+    audioRef.current = new Audio('/notification.mp3')
+  }, [])
+
+
   const handleNewNotification = useCallback((newNotification: Notification) => {
-    // setNotifications((prev) => [newNotification, ...prev.slice(0, 9)])
 
-    // setUnreadCount((prev) => prev + 1)
-
-    if (typeof window !== 'undefined' && 'Audio' in window) {
-      const audio = new Audio('/notification.mp3')
-      audio.play().catch(() => { })
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+      audioRef.current.play().catch(() => { })
     }
-
     //eslint-disable-next-line
     queryClient.setQueryData(['notifications'], (old: any) => {
       if (!old) return old
@@ -103,10 +87,6 @@ const NotificationBell = () => {
     }
   }, [unreadCount])
 
-  // useEffect(() => {
-  //   fetchNotifications()
-  // }, [fetchNotifications])
-
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationIds: string[]) => {
       return AppSdk.patchData('/api/notifications', { notificationIds })
@@ -117,12 +97,6 @@ const NotificationBell = () => {
   })
 
   const markAsRead = async (notificationIds: string[]) => {
-    // try {
-    //   await AppSdk.patchData('/api/notifications', { notificationIds })
-    //   fetchNotifications(false)
-    // } catch (error) {
-    //   console.error(error)
-    // }
     markAsReadMutation.mutate(notificationIds)
   }
 
@@ -137,22 +111,13 @@ const NotificationBell = () => {
   })
 
   const markAllAsRead = async () => {
-    // try {
-    //   await AppSdk.patchData('/api/notifications', { markAllAsRead: true })
-    //   fetchNotifications(false)
-    //   toast.success('All notifications marked as read')
-    // } catch (error) {
-    //   console.error(error)
-    // }
     markAllReadMutation.mutate()
   }
 
   const deleteMutation = useMutation({
     mutationFn: async ({ notificationId, isALL }: { notificationId?: string, isALL?: boolean }) => {
       return AppSdk.deleteData(`/api/notifications`, {
-        notificationIds: !isALL && notificationId
-          ? [notificationId]
-          : notifications.map(n => n.id),
+        ...(isALL ? { deleteAll: true } : { notificationIds: [notificationId] }),
       })
     },
     onSuccess: () => {
@@ -162,17 +127,14 @@ const NotificationBell = () => {
   })
 
   const deleteNotification = async (notificationId?: string, isALL: boolean = false) => {
-    // try {
-    //   await AppSdk.deleteData(`/api/notifications`, {
-    //     notificationIds: !isALL && notificationId ? [notificationId] : notifications.map(n => n.id),
-    //   })
-    //   fetchNotifications(false)
-    //   toast.success('Notification deleted')
-    // } catch (error) {
-    //   console.error(error)
-    // }
     deleteMutation.mutate({ notificationId, isALL })
   }
+
+
+  useEffect(() => {
+    //eslint-disable-next-line
+    setIsOpen(false)
+  }, [pathname])
 
   return (
     <div className="relative max-sm:static">
@@ -196,7 +158,6 @@ const NotificationBell = () => {
           onClose={() => setIsOpen(false)}
           onMarkAsRead={markAsRead}
           onMarkAllAsRead={markAllAsRead}
-          // onRefresh={fetchNotifications}
           onRefresh={refetch}
           deleteNotification={deleteNotification}
         />

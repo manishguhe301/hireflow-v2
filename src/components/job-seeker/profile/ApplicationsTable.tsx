@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Briefcase } from 'lucide-react'
-import { APPLICATIONS_TABS, formatRelativeTime, formatSalary, getLabel } from '@/src/utils/helper'
-import { employmentTypes, experienceLevels, workModes } from '@/src/utils/utils'
+import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import { ApplicationStatus } from '@prisma/client'
 import Link from 'next/link'
 import { ApplicationWithPagination } from './ApplicationsPage'
 import { Button } from '../../ui/Button'
 import WithdrawModal from './WithdrawModal'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   APPLIED: 'bg-blue-500/10 text-blue-600',
@@ -31,14 +31,13 @@ const ApplicationsTable = ({ data, refetch }:
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
       <table className="w-full text-sm max-sm:w-[1400px]">
-        <thead className="bg-muted/40 border-b border-border/60">
+        <thead className="bg-muted/50 border-b border-border/60 text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
-            <th className="px-6 py-4 text-left">Job</th>
-            {/* <th className="px-6 py-4 text-left">Details</th> */}
-            <th className="px-6 py-4 text-left">Status</th>
-            <th className="px-6 py-4 text-left">Applied</th>
-            <th className="px-6 py-4 text-left">Last Updated</th>
-            <th className="px-6 py-4 text-right">Actions</th>
+            <th scope='col' className="px-6 py-5 text-left">Job</th>
+            <th scope='col' className="px-6 py-5 text-left">Status</th>
+            <th scope='col' className="px-6 py-5 text-left">Applied</th>
+            <th scope='col' className="px-6 py-5 text-left">Last Updated</th>
+            <th scope='col' className="px-6 py-5 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -48,8 +47,14 @@ const ApplicationsTable = ({ data, refetch }:
                 <div className="flex flex-col items-center gap-3">
                   <Briefcase className="h-10 w-10 text-muted-foreground" />
                   <p className="text-muted-foreground">
-                    No applications found
+                    You haven&apos;t applied to any jobs yet
                   </p>
+
+                  <Link href="/jobs">
+                    <Button size="sm" className="mt-4">
+                      Browse Jobs
+                    </Button>
+                  </Link>
                 </div>
               </td>
             </tr>
@@ -60,7 +65,7 @@ const ApplicationsTable = ({ data, refetch }:
               key={app.id}
               className="hover:bg-muted/30 transition"
             >
-              <td className="px-6 py-4">
+              <td className="px-6 py-5">
                 <div className="font-medium">
                   {app.job.title}
                 </div>
@@ -70,26 +75,7 @@ const ApplicationsTable = ({ data, refetch }:
                 </Link>
               </td>
 
-              {/* <td className="px-6 py-4 text-xs text-muted-foreground">
-                {getLabel(workModes, app.job.workMode)} •{' '}
-                {getLabel(employmentTypes, app.job.employmentType)} 
-                •{' '}
-                {getLabel(
-                  experienceLevels,
-                  app.job.experienceLevel,
-                )}
-
-                <>
-                  {' '}
-                  •{' '}
-                  {formatSalary(
-                    app.job.salaryMin,
-                    app.job.salaryMax,
-                  )}
-                </>
-              </td> */}
-
-              <td className="px-6 py-4">
+              <td className="px-6 py-5">
                 <span
                   className={clsx(
                     'px-3 py-1 rounded-full text-xs font-medium',
@@ -100,11 +86,11 @@ const ApplicationsTable = ({ data, refetch }:
                 </span>
               </td>
 
-              <td className="px-6 py-4 text-xs text-muted-foreground">
+              <td className="px-6 py-5 text-xs text-muted-foreground">
                 {formatRelativeTime(app.createdAt)}
               </td>
 
-              <td className="px-6 py-4 text-xs text-muted-foreground">
+              <td className="px-6 py-5 text-xs text-muted-foreground">
                 {formatRelativeTime(app.updatedAt)}
               </td>
 
@@ -125,7 +111,7 @@ const ApplicationsTable = ({ data, refetch }:
                       setIsWithDrawModalOpen(true)
                     }}
                   >
-                    Withdraw
+                    Withdraw Application
                   </Button>}
               </td>
             </tr>

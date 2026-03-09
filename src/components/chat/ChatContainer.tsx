@@ -3,7 +3,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
-import { Spinner } from '../elements/Loader';
 import ChatSidebar from './ChatSidebar';
 import ChatWindow from './ChatWindow';
 import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
@@ -12,6 +11,7 @@ import clsx from 'clsx';
 import { useChatSidebarUpdate } from '@/src/store/hooks/useChatSidebarUpdate';
 import useDebounce from '@/src/store/hooks/useDebounce';
 import ChatSidebarSkeleton from '../skeletons/ChatSidebarSkeleton';
+import Skeleton from '../ui/Skeleton';
 
 export default function ChatContainer({ userType }: { userType: 'company' | 'jobseeker' }) {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -21,6 +21,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const conversationFromUrl = searchParams.get('conversation');
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const hasAutoSelectedFromUrl = useRef(false);
 
@@ -50,6 +51,20 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   });
 
   const conversations = useMemo(() => data?.pages.flatMap((p) => p.conversations) ?? [], [data]);
+
+  useEffect(() => {
+    if (!isLoading && !hasLoadedOnce) {
+      //eslint-disable-next-line
+      setHasLoadedOnce(true);
+    }
+  }, [isLoading, hasLoadedOnce]);
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      //eslint-disable-next-line
+      setSelectedConversation(null);
+    }
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -111,19 +126,28 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
 
   useChatSidebarUpdate(handleSidebarUpdate);
 
-  if (isLoading) {
+  const selectedConversationData = useMemo(
+    () => conversations.find((c) => c.id === selectedConversation),
+    [conversations, selectedConversation]
+  )
+
+  if (isLoading && !hasLoadedOnce) {
     return (
       <div className="flex h-[calc(100vh-8rem)] border border-border rounded-2xl overflow-hidden m-4">
         <ChatSidebarSkeleton />
 
-        <div className="flex-1 flex items-center justify-center text-muted-foreground">
-          Select a conversation
+        <div className="flex-1 overflow-hidden flex flex-col text-muted-foreground border border-border rounded-lg m-4 p-4 max-sm:hidden">
+          {
+            Array.from({ length: 8 }).map((_, i) =>
+              <Skeleton key={i} width={'300px'} height={'100px'}
+                className={clsx("mb-4 last:mb-0", i % 2 === 0 ? "self-start" : "self-end")} />
+            )
+          }
         </div>
       </div>
     );
   }
 
-  const selectedConversationData = conversations.find((c) => c.id === selectedConversation);
 
   return (
     <div>

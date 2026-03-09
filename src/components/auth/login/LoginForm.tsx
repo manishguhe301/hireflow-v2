@@ -77,7 +77,7 @@ const LoginForm = () => {
       </Link>
 
       <div className="mb-10 text-center lg:text-left">
-        <h2 className="text-3xl font-semibold tracking-tight">
+        <h2 className="text-3xl font-bold tracking-tight">
           Login
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -90,7 +90,11 @@ const LoginForm = () => {
           label="Email"
           type="email"
           placeholder="john@email.com"
-          register={register('email', { required: true })}
+          register={register('email', {
+            required: 'Email is required',
+            validate: (value) =>
+              isValidEmail(value) || 'Invalid email format',
+          })}
           error={errors.email}
           focused
           disabled={isLoading}

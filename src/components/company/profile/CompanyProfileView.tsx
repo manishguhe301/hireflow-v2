@@ -16,13 +16,11 @@ import {
   Linkedin,
 } from 'lucide-react'
 import { useCompany } from '@/src/store/hooks/useCompany'
-import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
 import { CompanyStatus } from '@prisma/client'
 import InfoCard from '../../admin/InfoCard'
 import InfoRow from '../../admin/InfoRow'
 import DocumentCard from '../../admin/DocumentCard'
-import { useState } from 'react'
 import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
 
 const statusStyles: Record<CompanyStatus, string> = {
@@ -55,7 +53,7 @@ const CompanyProfileView = () => {
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden shadow-sm">
               {company.logo ? (
                 <>
 
@@ -70,7 +68,7 @@ const CompanyProfileView = () => {
                 </>
               ) : (
                 <span className="text-lg font-semibold text-muted-foreground">
-                  {company.name.charAt(0)}
+                  {company.name.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
@@ -78,16 +76,19 @@ const CompanyProfileView = () => {
             <div>
               <h1 className="text-2xl font-bold">{company.name}</h1>
               <p className="text-sm text-muted-foreground capitalize">
-                {company.industry} •
-                {company.city && ` ${company.city}` + ', '}
-                {company.country}
+                {company.industry} • {company.companySize}
+              </p>
+
+              <p className="text-xs text-muted-foreground mt-1">
+                {company.city && `${company.city}, `}{company.country}
+                {company.foundedYear && ` • Founded ${company.foundedYear}`}
               </p>
             </div>
           </div>
 
           <div
             className={clsx(
-              'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold',
+              'inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide',
               statusStyles[company.status],
             )}
           >
@@ -101,7 +102,8 @@ const CompanyProfileView = () => {
 
       {company.status === 'REJECTED' && company.rejectionReason && (
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6">
-          <h3 className="text-sm font-semibold text-destructive">
+          <h3 className="text-sm font-semibold text-destructive flex items-center gap-2">
+            <XCircle className="h-4 w-4" />
             Rejection Reason
           </h3>
           <p className="mt-2 text-sm text-muted-foreground whitespace-pre-line">
@@ -112,16 +114,17 @@ const CompanyProfileView = () => {
 
       <div className="rounded-2xl border border-border/40 bg-card p-6">
         <h2 className="text-lg font-semibold">About the Company</h2>
-        <p
-          className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap wrap-break-word"
-
-        >
-          {company.description}
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words max-w-3xl">
+          {company.description || (
+            <span className="text-muted-foreground">
+              No company description provided.
+            </span>
+          )}
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <InfoCard title="Company Information">
+        <InfoCard title="Company Information" className="space-y-3">
           <InfoRow icon={<Building2 />} label="Industry" value={company.industry} />
           <InfoRow icon={<MapPin />} label="Location" value={`${company.city && `${company.city}, `}` + company.country} />
           <InfoRow icon={<Users />} label="Company Size" value={company.companySize} />
@@ -132,7 +135,7 @@ const CompanyProfileView = () => {
           />
         </InfoCard>
 
-        <InfoCard title="Contact Information">
+        <InfoCard title="Contact Information" className="space-y-3">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
           <InfoRow icon={<Phone />} label="Phone" value={`${company.countryPhoneCode} ${company.contactPhone}` || '—'} />
           <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
@@ -148,7 +151,7 @@ const CompanyProfileView = () => {
         </InfoCard>
       </div>
 
-      <div className="space-y-4">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold">Documents</h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -166,7 +169,7 @@ const CompanyProfileView = () => {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-2 border-t border-border/40">
         <Link href="/company/profile-setup">
           <Button>Edit Profile</Button>
         </Link>

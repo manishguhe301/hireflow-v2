@@ -3,11 +3,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Search, Briefcase } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Spinner } from '../../elements/Loader'
 import { FormSelect } from '../../ui/FormSelect'
 import CompanyCard from './CompanyCard'
 import Pagination from '../../ui/Pagination'
-import { companyIndustries } from '@/src/utils/utils'
+import { companyIndustries } from '@/src/utils/constants'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import CompaniesDirectorySkeleton from '../../skeletons/CompaniesDirectorySkeleton'
@@ -32,11 +31,6 @@ type Pagination = {
 export default function CompaniesDirectory() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
-  // const [companies, setCompanies] = useState<Company[]>([])
-  // const [pagination, setPagination] = useState<Pagination | null>(null)
-  // const [isLoading, setIsLoading] = useState(true)
-
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [industry, setIndustry] = useState(searchParams.get('industry') || '')
   const [location, setLocation] = useState(searchParams.get('location') || '')
@@ -47,28 +41,6 @@ export default function CompaniesDirectory() {
   const debouncedLocation = useDebounce(location, 500)
   const queryClient = useQueryClient()
 
-  // const fetchCompanies = useCallback(async () => {
-  //   setIsLoading(true)
-  //   try {
-  //     const params = new URLSearchParams()
-  //     if (search) params.set('search', search)
-  //     if (industry) params.set('industry', industry)
-  //     if (location) params.set('country', location)
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
-
-  //     const res = await fetch(`/api/companies?${params.toString()}`)
-  //     const data = await res.json()
-
-  //     setCompanies(data.companies || [])
-  //     setPagination(data.pagination)
-  //   } catch (error) {
-  //     console.error('Error fetching companies:', error)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }, [search, industry, location, page])
-
   useEffect(() => {
     const params = new URLSearchParams()
     if (search) params.set('search', search)
@@ -76,19 +48,13 @@ export default function CompaniesDirectory() {
     if (location) params.set('location', location)
     if (page > 1) params.set('page', page.toString())
 
-    router.push(`/explore/companies?${params.toString()}`, { scroll: false })
+    const query = params.toString()
+
+    router.replace(
+      query ? `/explore/companies?${query}` : `/explore/companies`,
+      { scroll: false }
+    )
   }, [search, industry, location, page, router])
-
-  // useEffect(() => {
-  //   const shouldDebounce = search.length > 0 || location.length > 0
-  //   const delay = shouldDebounce ? 500 : 0
-
-  //   const timer = setTimeout(() => {
-  //     fetchCompanies()
-  //   }, delay)
-
-  //   return () => clearTimeout(timer)
-  // }, [search, industry, location, page])
 
   const queryParams = useMemo(() => {
     const params = new URLSearchParams()
@@ -131,7 +97,7 @@ export default function CompaniesDirectory() {
         return res.json()
       }
     })
-  }, [pagination, page, queryParams])
+  }, [pagination, page, queryParams, queryClient])
 
   if (isLoading) {
     return <CompaniesDirectorySkeleton />
@@ -146,7 +112,7 @@ export default function CompaniesDirectory() {
         </p>
       </div>
 
-      <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="relative md:col-span-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -195,12 +161,6 @@ export default function CompaniesDirectory() {
           Showing <span className="font-medium text-foreground">{companies.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> companies
         </p>
-      )}
-
-      {isLoading && (
-        <div className="flex justify-center py-24">
-          <Spinner className="h-8 w-8" />
-        </div>
       )}
 
       {!isLoading && companies.length > 0 && (

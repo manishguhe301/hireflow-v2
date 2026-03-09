@@ -136,7 +136,7 @@ const NotificationDropdown = ({
                     </div>
                   )}
                 </div>
-                {notification.isRead && (
+                {!notification.isRead && (
                   <button
                     onClick={() => onMarkAsRead([notification.id])}
                     className="text-primary hover:text-primary/80"

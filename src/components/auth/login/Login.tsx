@@ -5,7 +5,10 @@ import LoginForm from './LoginForm'
 const Login = () => {
   return (
     <main className="min-h-screen bg-background text-foreground grid lg:grid-cols-5">
-      <aside className="hidden lg:flex lg:col-span-2 flex-col justify-between px-20 py-16 border-r border-border/60 bg-muted/30">
+      <aside className="hidden lg:flex lg:col-span-2 flex-col justify-between px-20 py-16 border-r border-border/60 bg-muted/30 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-[-120px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full" />
+        </div>
         <Link
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition"

@@ -1,4 +1,3 @@
-import { STATUS_STYLE } from '@/src/utils/helper'
 import clsx from 'clsx'
 import {
   CheckCircle,
@@ -10,7 +9,7 @@ import Link from 'next/link'
 import { Button } from '../ui/Button'
 import { Spinner } from '../elements/Loader'
 import { Company } from '@prisma/client'
-import { companyIndustries } from '@/src/utils/utils'
+import { companyIndustries } from '@/src/utils/constants'
 
 type CompaniesTableProps = {
   filteredCompanies: Company[],
@@ -33,34 +32,39 @@ const CompaniesTable = ({
     <table className="w-full text-sm">
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
-          <th className="px-6 py-4 text-left">Company</th>
-          <th className="px-6 py-4 text-left">Industry</th>
-          <th className="px-6 py-4 text-left">Location</th>
-          <th className="px-6 py-4 text-left">Status</th>
-          <th className="px-6 py-4 text-right">Actions</th>
+          <th scope="col" className="px-6 py-4 text-left">Company</th>
+          <th scope="col" className="px-6 py-4 text-left">Industry</th>
+          <th scope="col" className="px-6 py-4 text-left">Location</th>
+          <th scope="col" className="px-6 py-4 text-left">Status</th>
+          <th scope="col" className="px-6 py-5 text-right">Actions</th>
         </tr>
       </thead>
       <tbody>
         {filteredCompanies.map((company: Company) => {
-          const companyIndustry = companyIndustries.filter((ind) => ind.value === company.industry)[0]?.label
+          const companyIndustry =
+            companyIndustries.find((ind) => ind.value === company.industry)?.label
+
+          const location = company.city
+            ? `${company.city}, ${company.country}`
+            : company.country
+
           return (
             <tr
               key={company.id}
               className='w-full hover:bg-muted/30 transition'
             >
-              <td className="px-6 py-4">
+              <td className="px-6 py-5">
                 <div className="font-medium capitalize">{company.name}</div>
                 <div className="text-xs text-muted-foreground">
                   {company.contactEmail}
                 </div>
               </td>
-              <td className="px-6 py-4 capitalize">{companyIndustry}</td>
-              <td className="px-6 py-4">{company.city && ` ${company.city}` + ', '}
-                {company.country} </td>
-              <td className="px-6 py-4">
+              <td className="px-6 py-5 capitalize">{companyIndustry}</td>
+              <td className="px-6 py-5">{location} </td>
+              <td className="px-6 py-5">
                 <span
                   className={clsx(
-                    'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
+                    'inline-flex items-center gap-1 px-3 py-1.25 rounded-full text-xs font-medium',
                     company.status === 'PENDING'
                       ? 'bg-warning/10 text-warning'
                       : company.status === 'APPROVED'
@@ -75,8 +79,8 @@ const CompaniesTable = ({
                   {company.status}
                 </span>
               </td>
-              <td className="px-6 py-4 text-right">
-                <div className="inline-flex items-center gap-2">
+              <td className="px-6 py-5 text-right">
+                <div className="inline-flex items-center gap-3">
                   <Link
                     href={`/admin/companies/${company.id}`}
                     className="text-muted-foreground hover:underline text-xs"
@@ -117,20 +121,6 @@ const CompaniesTable = ({
 
                     </>
                   )}
-
-                  {/* {company.status === 'APPROVED' && (
-                  <Button
-                    onClick={() => {
-                      setDeleteCompanyId(null)
-                      setRejectCompanyId(company.id)
-                    }}
-                    className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent" disabled={
-                      !!loadingAction && loadingAction !== `reject-${company.id}`
-                    }                              >
-                    {loadingAction === `reject-${company.id}` ?
-                      'Rejecting...' : 'Reject'}
-                  </Button>
-                )} */}
 
                   <Button
                     className="p-0! border-none text-destructive! bg-transparent hover:text-destructive/80"

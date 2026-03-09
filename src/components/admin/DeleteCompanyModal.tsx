@@ -7,13 +7,15 @@ type DeleteCompanyModalProps = {
   setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
   handleDelete: () => Promise<void>,
   loadingAction: string | null
+  companyName: string
 }
 
 const DeleteCompanyModal = ({
   deleteCompanyId,
   setDeleteCompanyId,
   handleDelete,
-  loadingAction
+  loadingAction,
+  companyName
 }: DeleteCompanyModalProps) => {
   return (
     <Modal
@@ -27,7 +29,7 @@ const DeleteCompanyModal = ({
         </h3>
 
         <p className="text-sm text-muted-foreground">
-          This action is irreversible. The company and all related data will be permanently removed.
+          Are you sure you want to delete <strong>{companyName}</strong>?  This action is irreversible. The company and all related data will be permanently removed.
         </p>
 
         <div className="flex justify-end gap-3 pt-4">

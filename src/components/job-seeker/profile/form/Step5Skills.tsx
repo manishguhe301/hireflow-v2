@@ -3,10 +3,9 @@ import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'rea
 import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import MultiSelect from '@/src/components/ui/MultiSelect'
-import { jobSkills } from '@/src/utils/utils'
+import { jobSkills } from '@/src/utils/constants'
 
 const Step5Skills = ({
-  register,
   errors,
   watch,
   setValue,

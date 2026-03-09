@@ -8,7 +8,7 @@ import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { formatDate, formatSalary, getFileNameFromPath, getLabel } from '@/src/utils/helper'
 import { useProfile } from '@/src/store/hooks/useProfile'
-import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
+import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
 
 type Props = {
   watch: UseFormWatch<JobSeekerFormInputs>

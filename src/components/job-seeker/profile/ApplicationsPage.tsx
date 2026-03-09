@@ -1,15 +1,13 @@
 'use client'
 import { ApplicationStatus, EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client'
-import React, { useEffect, useState } from 'react'
-import { Spinner } from '../../elements/Loader'
-import { toast } from 'sonner'
+import { useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '../../ui/Button'
 import ApplicationsTable from './ApplicationsTable'
 import Pagination from '../../ui/Pagination'
-import { APPLICATIONS_TABS } from '@/src/utils/helper'
 import { useQuery } from '@tanstack/react-query'
 import TableSkeleton from '../../skeletons/TableSkeleton'
+import { APPLICATIONS_TABS } from '@/src/utils/constants'
 
 interface Application {
   job: {
@@ -49,44 +47,9 @@ export interface ApplicationWithPagination {
 }
 
 const ApplicationsPage = () => {
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [data, setData] = useState
-  //   <ApplicationWithPagination | null>(null)
   const [activeTab, setActiveTab] =
     useState<ApplicationStatus | 'ALL'>('ALL')
   const [page, setPage] = useState(1)
-
-  // const fetchApplications = async (
-  //   isLoadingNeeded: boolean = true
-  // ) => {
-  //   if (isLoadingNeeded) { setIsLoading(true) }
-  //   try {
-  //     const params = new URLSearchParams()
-  //     if (activeTab !== 'ALL') params.set('status', activeTab)
-  //     params.set('page', page.toString())
-  //     params.set('limit', '12')
-
-  //     const res = await AppSdk.getData(
-  //       `/api/applications?${params.toString()}`,
-  //       null,
-  //     )
-
-  //     if (res.error) {
-  //       toast.error(res.error)
-  //       return
-  //     }
-  //     setData(res)
-  //   } catch (err) {
-  //     console.error(err)
-  //     toast.error('Failed to load applications')
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchApplications()
-  // }, [page, activeTab])
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['applications', activeTab, page],
@@ -102,7 +65,7 @@ const ApplicationsPage = () => {
     placeholderData: (prev) => prev,
   })
 
-  if (!isLoading && !data && !isError) {
+  if (isError) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="text-center">

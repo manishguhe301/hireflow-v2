@@ -1,7 +1,7 @@
 'use client'
 
 import { formatRelativeTime, formatSalary, getLabel } from "@/src/utils/helper"
-import { employmentTypes, experienceLevels, workModes } from "@/src/utils/utils"
+import { employmentTypes, experienceLevels, workModes } from "@/src/utils/constants"
 import { Job } from "@prisma/client"
 import { Briefcase, Clock, MapPin } from "lucide-react"
 import { useSession } from "next-auth/react"

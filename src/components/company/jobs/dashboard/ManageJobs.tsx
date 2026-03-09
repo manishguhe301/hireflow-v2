@@ -1,8 +1,6 @@
 'use client'
-import { Spinner } from '@/src/components/elements/Loader'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { JOB_TABS } from '@/src/utils/helper'
-import { Job, JobStatus } from '@prisma/client'
+import { JobStatus } from '@prisma/client'
 import clsx from 'clsx'
 import { Briefcase } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
@@ -11,41 +9,15 @@ import JobsTable, { JobWithCount } from './JobsTable'
 import DeleteJobModal from './DeleteJobModal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import TableSkeleton from '@/src/components/skeletons/TableSkeleton'
+import Link from 'next/link'
+import { Button } from '@/src/components/ui/Button'
+import { JOB_TABS } from '@/src/utils/constants'
 
 const ManageJobs = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [jobs, setJobs] = useState<JobWithCount[]>([])
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const queryClient = useQueryClient()
-
-  // const fetchJobs = async (status?: string, isLoadingNeeded: boolean = true) => {
-  //   if (isLoadingNeeded) {
-  //     setIsLoading(true)
-  //   }
-  //   try {
-  //     const url = status
-  //       ? `/api/company/jobs?status=${status}`
-  //       : '/api/company/jobs'
-
-  //     const res = await AppSdk.getData(url, null)
-
-  //     if (res.jobs) {
-  //       setJobs(res.jobs)
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error('Failed to fetch jobs, please try again.')
-  //   }
-  //   finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchJobs(activeTab === 'ALL' ? undefined : activeTab)
-  // }, [activeTab])
 
   const { data, isLoading } = useQuery({
     queryKey: ['company-jobs', activeTab],
@@ -111,28 +83,6 @@ const ManageJobs = () => {
 
     setLoadingAction(`${actionType}-${job.id}`)
 
-    // try {
-    //   const res = await fetch(`/api/company/jobs/${slug}/status`, {
-    //     method: 'PATCH',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ status: newStatus })
-    //   })
-
-    //   const data = await res.json()
-
-    //   if (!res.ok) {
-    //     toast.error(data.error || 'Failed to update job status')
-    //     return
-    //   }
-
-    //   toast.success(data.message)
-    //   await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false)
-    // } catch (error) {
-    //   console.error(error)
-    //   toast.error('Something went wrong')
-    // } finally {
-    //   setLoadingAction(null)
-    // }
     statusMutation.mutate({
       slug,
       status: newStatus,
@@ -180,38 +130,20 @@ const ManageJobs = () => {
 
     setLoadingAction(`delete-${deleteJobId}`);
 
-    // try {
-    //   const res = await fetch(`/api/company/jobs/${job.slug}`, {
-    //     method: 'DELETE'
-    //   });
-
-    //   const data = await res.json();
-
-    //   if (!res.ok) {
-    //     toast.error(data.error || 'Failed to delete job');
-    //     return;
-    //   }
-
-    //   if (data.action === 'closed') {
-    //     toast.warning(data.message);
-    //   } else {
-    //     toast.success(data.message);
-    //   }
-
-    //   setDeleteJobId(null);
-    //   await fetchJobs(activeTab === 'ALL' ? undefined : activeTab, false);
-    // } catch (error) {
-    //   console.error(error);
-    //   toast.error('Something went wrong');
-    // } finally {
-    //   setLoadingAction(null);
-    // }
-
     deleteMutation.mutate({
       id: job.id,
       slug: job.slug
     })
   };
+
+  useEffect(() => {
+    ['ACTIVE', 'CLOSED', 'DRAFT'].forEach((status) => {
+      queryClient.prefetchQuery({
+        queryKey: ['company-jobs', status],
+        queryFn: () => AppSdk.getData(`/api/company/jobs?status=${status}`, null),
+      })
+    })
+  }, [])
 
 
   return (
@@ -222,6 +154,7 @@ const ManageJobs = () => {
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
+              disabled={!!loadingAction}
               className={clsx(
                 'px-4 py-2 rounded-xl text-sm font-medium border transition cursor-pointer',
                 activeTab === tab.value
@@ -244,9 +177,18 @@ const ManageJobs = () => {
         <TableSkeleton columns={5} rows={6} /> :
         <>
           {jobs.length === 0 ? (
-            <div className="py-20 text-center">
+            <div className="py-20 text-center space-y-4">
               <Briefcase className="h-10 w-10 mx-auto text-muted-foreground" />
-              <p className="mt-4 text-muted-foreground">No Jobs found</p>
+
+              <p className="text-muted-foreground">
+                No jobs found
+              </p>
+
+              <Link href="/company/jobs/create">
+                <Button>
+                  Post Your First Job
+                </Button>
+              </Link>
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
@@ -265,6 +207,7 @@ const ManageJobs = () => {
         setDeleteJobId={setDeleteJobId}
         handleDelete={handleDelete}
         loadingAction={loadingAction}
+        jobTitle={jobs.find((j) => j.id === deleteJobId)?.title || ''}
       />
     </div >
   )
