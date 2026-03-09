@@ -265,7 +265,7 @@ const CompanyDetails = () => {
                 </>
               ) : (
                 <span className="text-sm font-semibold text-muted-foreground">
-                  {company.name.charAt(0)}
+                  {company.name.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>

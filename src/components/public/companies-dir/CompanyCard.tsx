@@ -38,7 +38,7 @@ export default function CompanyCard({ company }: CompanyCardProps) {
               </>
             ) : (
               <span className="text-2xl font-bold text-muted-foreground">
-                {company.name.charAt(0)}
+                {company.name.charAt(0).toUpperCase()}
               </span>
             )}
           </div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useProfile } from '@/src/store/hooks/useProfile'
-import { Spinner } from '@/src/components/elements/Loader'
 import { Button } from '@/src/components/ui/Button'
 import DocumentCard from '@/src/components/admin/DocumentCard'
 import Link from 'next/link'
@@ -12,20 +11,23 @@ import {
   Globe,
   Github,
   Linkedin,
-  Calendar,
   Briefcase,
-  GraduationCap,
   Award,
   Link2,
   Twitter,
   ExternalLink,
 } from 'lucide-react'
 import { formatSalary, getLabel } from '@/src/utils/helper'
-import { currentEmploymentStatuses, degrees, employmentTypes, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
-import { useState } from 'react'
+import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/utils'
 import clsx from 'clsx'
-import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
+
+const ProfileSection = ({ title, children, className }: { title: string, children: React.ReactNode, className?: string }) => (
+  <div className={clsx("rounded-2xl border border-border/40 bg-card p-6", className!)}>
+    <h2 className="text-lg font-semibold mb-6">{title}</h2>
+    {children}
+  </div>
+)
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
@@ -69,7 +71,7 @@ const Profile = () => {
                 </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-muted-foreground">
-                  {profile.name.charAt(0)}
+                  {profile.name.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
@@ -107,18 +109,16 @@ const Profile = () => {
       </div>
 
       {profile.bio && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
-          <h2 className="text-lg font-semibold">About</h2>
+        <ProfileSection title="About" >
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
             {profile.bio}
           </p>
-        </div>
+        </ProfileSection>
       )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
-        <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
-          <h2 className="text-lg font-semibold">Contact Information</h2>
+        <ProfileSection title='Contact Information' className="space-y-4">
 
           <div className="space-y-3 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ const Profile = () => {
             {profile.githubUrl && (
               <div className="flex items-center gap-2">
                 <Github className="h-4 w-4" />
-                <Link href={profile.githubUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
+                <Link href={profile.githubUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 ">
                   GitHub
                 </Link>
               </div>
@@ -178,36 +178,32 @@ const Profile = () => {
               })
             }
           </div>
-        </div>
+        </ProfileSection>
 
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
-          <h2 className="text-lg font-semibold mb-4">Resume</h2>
+        <ProfileSection title='Resume'>
 
           <DocumentCard
             label="My Resume"
             hasDocument={!!profile.resumePath}
             apiUrl={`/api/profile/resume`}
           />
-        </div>
+        </ProfileSection>
       </div>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold">Skills</h2>
-
+      <ProfileSection title='Skills'>
         <div className="mt-4 flex flex-wrap gap-2">
-          {profile.skills.map((skill, index) => (
+          {profile.skills.map((skill) => (
             <span
-              key={index}
+              key={skill}
               className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
             >
               {getLabel(jobSkills, skill)}
             </span>
           ))}
         </div>
-      </div>
+      </ProfileSection>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Professional Preferences</h2>
+      <ProfileSection title='Professional Preferences'>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
           <div>
@@ -259,12 +255,9 @@ const Profile = () => {
             {profile.isPublic ? 'Public' : 'Private'} (You can&apos;t change this)
           </div>
         </div>
-      </div>
+      </ProfileSection>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Preferred Job Categories
-        </h2>
-
+      <ProfileSection title='Preferred Job Categories'>
         {profile.jobCategories.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {profile.jobCategories.map((category) => (
@@ -279,11 +272,9 @@ const Profile = () => {
         ) : (
           <p className="text-sm text-muted-foreground">—</p>
         )}
-      </div>
+      </ProfileSection>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Preferred Locations</h2>
-
+      <ProfileSection title='Preferred Locations'>
         {profile.preferredLocations.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {profile.preferredLocations.map((location) => (
@@ -298,38 +289,37 @@ const Profile = () => {
         ) : (
           <p className="text-sm text-muted-foreground">—</p>
         )}
-      </div>
+      </ProfileSection>
 
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Work Experience</h2>
-
+      <ProfileSection title='Work Experience'>
         <div className="space-y-6">
-          {profile.workExperience.map((exp) => (
-            <div key={exp.id} className="border-l-2 border-primary/40 pl-4">
-              <h3 className="font-semibold">{exp.title}</h3>
-              <p className="text-sm text-muted-foreground">
-                {exp.company} • {exp.location}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {new Date(exp.startDate).getFullYear()} —{' '}
-                {exp.endDate
-                  ? new Date(exp.endDate).getFullYear()
-                  : 'Present'}
-              </p>
-              {exp.description && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {exp.description}
+          {profile.workExperience.length > 0 ?
+            profile.workExperience.map((exp) => (
+              <div key={exp.id} className="border-l-2 border-primary/40 pl-4">
+                <h3 className="font-semibold">{exp.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {exp.company} • {exp.location}
                 </p>
-              )}
-            </div>
-          ))}
+                <p className="text-xs text-muted-foreground mt-1">
+                  {new Date(exp.startDate).getFullYear()} —{' '}
+                  {exp.endDate
+                    ? new Date(exp.endDate).getFullYear()
+                    : 'Present'}
+                </p>
+                {exp.description && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {exp.description}
+                  </p>
+                )}
+              </div>
+            )) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
         </div>
-      </div>
+      </ProfileSection>
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
-        <h2 className="text-lg font-semibold mb-6">Education</h2>
-
+      <ProfileSection title='Education'>
         <div className="space-y-4">
           {profile.education.map((edu) => (
             <div key={edu.id}>
@@ -343,11 +333,10 @@ const Profile = () => {
             </div>
           ))}
         </div>
-      </div>
+      </ProfileSection>
 
       {profile.certifications.length > 0 && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
-          <h2 className="text-lg font-semibold mb-6">Certifications</h2>
+        <ProfileSection title='Certifications'>
 
           <div className="space-y-4">
             {profile.certifications.map((cert) => (
@@ -368,7 +357,7 @@ const Profile = () => {
               </div>
             ))}
           </div>
-        </div>
+        </ProfileSection>
       )}
     </div>
   )

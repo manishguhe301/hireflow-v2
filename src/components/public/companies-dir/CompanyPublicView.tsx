@@ -44,7 +44,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
                 </>
               ) : (
                 <span className="text-lg font-semibold tracking-tight text-muted-foreground">
-                  {company.name.charAt(0)}
+                  {company.name.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>

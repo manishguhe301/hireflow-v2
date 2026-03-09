@@ -201,7 +201,7 @@ const PublicProfile = () => {
                 </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-muted-foreground">
-                  {profile.name.charAt(0)}
+                  {profile.name.charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
