@@ -203,7 +203,7 @@ const Step4Education = ({
         <div className="space-y-4">
           {educations.map((edu, index) => (
             <div
-              key={index}
+              key={edu.id || index}
               className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
