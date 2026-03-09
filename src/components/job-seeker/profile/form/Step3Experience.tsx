@@ -173,13 +173,20 @@ const Step3Experience = ({
 
     if (isEditMode && item.id) {
       setIsDeleting(true)
-      const res = await AppSdk.deleteData(`/api/profile/experience/${item.id}`, null)
-      if (res.error) {
-        toast.error(res.error)
-        return
+      try {
+        const res = await AppSdk.deleteData(`/api/profile/experience/${item.id}`, null)
+        if (res.error) {
+          toast.error(res.error)
+          return
+        }
+        toast.success('Experience deleted')
+      } catch (error) {
+        toast.error('Something went wrong')
+        console.error(error)
+      } finally {
+        setIsDeleting(false)
       }
-      toast.success('Experience deleted')
-      setIsDeleting(false)
+
     }
 
     const updated = workExperiences.filter((_, i) => i !== index)

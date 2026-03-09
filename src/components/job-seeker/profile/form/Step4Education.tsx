@@ -155,10 +155,16 @@ const Step4Education = ({
     const item = educations[index]
     if (isEditMode && item.id) {
       setIsDeleting(true)
-      const res = await AppSdk.deleteData(`/api/profile/education/${item.id}`, null)
-      if (res.error) { toast.error(res.error); return }
-      toast.success('Education deleted')
-      setIsDeleting(false)
+      try {
+        const res = await AppSdk.deleteData(`/api/profile/education/${item.id}`, null)
+        if (res.error) { toast.error(res.error); return }
+        toast.success('Education deleted')
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong')
+      } finally {
+        setIsDeleting(false)
+      }
     }
     const updated = educations.filter((_, i) => i !== index)
     setValue('education', updated, { shouldValidate: true })

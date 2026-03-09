@@ -151,10 +151,16 @@ const Step7Certifications = ({
     const item = certifications[index]
     if (isEditMode && item.id) {
       setIsDeleting(true)
-      const res = await AppSdk.deleteData(`/api/profile/certification/${item.id}`, null)
-      if (res.error) { toast.error(res.error); return }
-      toast.success('Certification deleted')
-      setIsDeleting(false)
+      try {
+        const res = await AppSdk.deleteData(`/api/profile/certification/${item.id}`, null)
+        if (res.error) { toast.error(res.error); return }
+        toast.success('Certification deleted')
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong')
+      } finally {
+        setIsDeleting(false)
+      }
     }
     const updated = certifications.filter((_, i) => i !== index)
     setValue('certifications', updated, { shouldValidate: true, shouldDirty: true })
