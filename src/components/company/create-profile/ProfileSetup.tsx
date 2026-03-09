@@ -15,6 +15,8 @@ import { setCompany } from '@/src/store/slices/companySlice'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { CompanyStatus } from '@prisma/client'
 import clsx from 'clsx'
+import MobileTabs from '../../layout/MobileTabs'
+import StepSidebar from '../../layout/StepSidebar'
 
 export type ProfileFormInputs = {
   name: string,
@@ -103,6 +105,7 @@ const ProfileSetup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const dispatch = useDispatch()
   const { company } = useCompany();
+  const isEditMode = company ? true : false
   const hasCheckedRedirect = useRef(false)
   const selectedCountry = watch('country')
 
@@ -224,7 +227,7 @@ const ProfileSetup = () => {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       {company?.status === CompanyStatus.REJECTED && company.rejectionReason && (
         <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
           <h3 className="text-sm font-semibold text-destructive mb-1">
@@ -251,84 +254,106 @@ const ProfileSetup = () => {
         </div>
       )}
 
-      <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
-        <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
-          <FormHeader
-            currentStep={currentStep}
-            handleNext={handleNext}
-            handlePrev={handlePrev}
-            disabled={isSubmitting}
-            steps={steps}
-          />
-        </div>
+      {isEditMode && (
+        <MobileTabs
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={setCurrentStep}
+          isEditMode={isEditMode}
+        />
+      )}
 
-        <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-          {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} isLoading={isSubmitting} />}
-          {currentStep === 1 && <Step2Contact register={register} errors={errors}
-            selectedCountry={selectedCountry} watch={watch} setValue={setValue} isLoading={isSubmitting} />}
-          {currentStep === 2 && <Step3Documents register={register} errors={errors}
-            isLoading={isSubmitting}
-          />}
-          {currentStep === 3 &&
-            <Step4Review
-              setCurrentStep={setCurrentStep}
-              watch={watch}
-              isLoading={isSubmitting}
+      <div className="flex gap-6 items-start w-full">
+        {isEditMode && (
+          <div className="hidden lg:block sticky top-24">
+            <StepSidebar
+              steps={steps}
+              currentStep={currentStep}
+              onStepClick={setCurrentStep}
+              isEditMode={isEditMode}
             />
-          }
-        </form>
+          </div>
+        )}
 
-        <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0 max-md:flex-col max-md:gap-4",
-          currentStep === 0 && 'justify-end'
-        )}>
-          {currentStep > 0 && (
-            <Button
-              onClick={handlePrev}
-              variant="outline"
+        <div className=" w-full rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none">
+          <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
+            <FormHeader
+              currentStep={currentStep}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
               disabled={isSubmitting}
-              className="max-md:w-1/2 max-sm:w-full"
-            >
-              Previous
-            </Button>
-          )}
-          <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+              steps={steps}
+            />
+          </div>
 
-            {currentStep !== 3 && < Button
-              type="button"
-              disabled={isSubmitting}
-              onClick={handleSubmit(handleFormSubmit)}
-              variant="outline"
-              className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
-            >
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
+          <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+            {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} isLoading={isSubmitting} />}
+            {currentStep === 1 && <Step2Contact register={register} errors={errors}
+              selectedCountry={selectedCountry} watch={watch} setValue={setValue} isLoading={isSubmitting} />}
+            {currentStep === 2 && <Step3Documents register={register} errors={errors}
+              isLoading={isSubmitting}
+            />}
+            {currentStep === 3 &&
+              <Step4Review
+                setCurrentStep={setCurrentStep}
+                watch={watch}
+                isLoading={isSubmitting}
+              />
             }
+          </form>
 
-            {currentStep < 3 ? (
+          <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0 max-md:flex-col max-md:gap-4",
+            currentStep === 0 && 'justify-end'
+          )}>
+            {currentStep > 0 && (
               <Button
+                onClick={handlePrev}
+                variant="outline"
                 disabled={isSubmitting}
-                onClick={handleNext}
                 className="max-md:w-1/2 max-sm:w-full"
               >
-                Next
-              </Button>
-            ) : (
-              <Button
-                disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit)}
-                variant="primary"
-                className="max-md:w-1/2 max-sm:w-full"
-              >
-                {isSubmitting
-                  ? 'Submitting...'
-                  : company?.status === CompanyStatus.REJECTED
-                    ? 'Resubmit for Approval'
-                    : company?.status === CompanyStatus.APPROVED
-                      ? 'Save Changes'
-                      : 'Submit for Approval'
-                }
+                Previous
               </Button>
             )}
+            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+
+              {currentStep !== 3 && < Button
+                type="button"
+                disabled={isSubmitting}
+                onClick={handleSubmit(handleFormSubmit)}
+                variant="outline"
+                className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
+              >
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+              }
+
+              {currentStep < 3 ? (
+                <Button
+                  disabled={isSubmitting}
+                  onClick={handleNext}
+                  className="max-md:w-1/2 max-sm:w-full"
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(handleFormSubmit)}
+                  variant="primary"
+                  className="max-md:w-1/2 max-sm:w-full"
+                >
+                  {isSubmitting
+                    ? 'Submitting...'
+                    : company?.status === CompanyStatus.REJECTED
+                      ? 'Resubmit for Approval'
+                      : company?.status === CompanyStatus.APPROVED
+                        ? 'Save Changes'
+                        : 'Submit for Approval'
+                  }
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
