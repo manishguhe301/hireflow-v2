@@ -777,4 +777,4 @@ Project Link: [https://github.com/yourusername/hireflow](https://github.com/your
 
 ---
 
-**Status:** 🚧 In Development | **Version:** 1.0.0
+**Status:** 🚧 In Development | **Version:** 2.0.0
