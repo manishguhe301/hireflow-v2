@@ -31,6 +31,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (startYear < 1900 || startYear > new Date().getFullYear()) {
+      return NextResponse.json(
+        { error: 'Invalid start year' },
+        { status: 400 },
+      );
+    }
+
+    if (endYear && endYear < startYear) {
+      return NextResponse.json(
+        { error: 'End year cannot be before start year' },
+        { status: 400 },
+      );
+    }
+
+    if (isCurrent && endYear) {
+      return NextResponse.json(
+        { error: 'Current education cannot have an end year' },
+        { status: 400 },
+      );
+    }
+
     const education = await prisma.education.create({
       data: {
         profileId: profile.id,
