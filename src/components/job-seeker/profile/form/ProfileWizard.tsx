@@ -336,6 +336,11 @@ const ProfileWizard = () => {
         return;
       }
 
+      if (!result?.profile) {
+        toast.error('Invalid server response')
+        return
+      }
+
       dispatch(setProfile({ profile: result.profile }))
 
       if (!isEditMode) { toast.success('Draft saved successfully') } else {
@@ -399,6 +404,12 @@ const ProfileWizard = () => {
         : 'Profile created successfully';
 
       toast.success(successMessage);
+
+      if (!result?.profile) {
+        toast.error('Invalid server response')
+        return
+      }
+
       dispatch(setProfile({ profile: result.profile }))
       reset();
       setTimeout(() => router.push('/dashboard/profile'), 100);
