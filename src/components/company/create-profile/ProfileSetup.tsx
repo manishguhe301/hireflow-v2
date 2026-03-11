@@ -203,11 +203,6 @@ const ProfileSetup = () => {
         return
       }
 
-      if (!result?.company) {
-        toast.error('Invalid server response')
-        return
-      }
-
       dispatch(setCompany({ company: result.company }))
 
       if (company?.status === CompanyStatus.REJECTED) {

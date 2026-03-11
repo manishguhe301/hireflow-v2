@@ -19,7 +19,7 @@ export function useCompany() {
           return;
         }
 
-        if (!res || !res.company) {
+        if (!('company' in res)) {
           dispatch(setError('Invalid server response'));
           return;
         }

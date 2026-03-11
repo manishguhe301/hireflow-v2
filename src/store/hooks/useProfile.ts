@@ -25,7 +25,7 @@ export function useProfile() {
           return;
         }
 
-        if (!res || !res.profile) {
+        if (!('profile' in res)) {
           dispatch(setError('Invalid server response'));
           return;
         }
