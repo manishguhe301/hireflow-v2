@@ -15,9 +15,15 @@ export async function GET() {
         userId: guard.session.user.id,
       },
       include: {
-        workExperience: true,
-        education: true,
-        certifications: true,
+        workExperience: {
+          orderBy: { startDate: 'desc' },
+        },
+        education: {
+          orderBy: { startYear: 'desc' },
+        },
+        certifications: {
+          orderBy: { issueDate: 'desc' },
+        },
       },
     });
 
