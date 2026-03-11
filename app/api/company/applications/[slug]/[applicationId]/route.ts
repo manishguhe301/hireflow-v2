@@ -46,6 +46,13 @@ export async function GET(
       },
     });
 
+    if (!application || application.jobId !== job.id) {
+      return NextResponse.json(
+        { error: 'Application not found for this job' },
+        { status: 404 },
+      );
+    }
+
     const profile = await prisma.profile.findUnique({
       where: {
         userId: application?.userId || '',
@@ -56,13 +63,6 @@ export async function GET(
         certifications: true,
       },
     });
-
-    if (!application || application.jobId !== job.id) {
-      return NextResponse.json(
-        { error: 'Application not found for this job' },
-        { status: 404 },
-      );
-    }
 
     return NextResponse.json({
       job: {
