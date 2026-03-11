@@ -32,6 +32,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : null;
+
+    if (isNaN(start.getTime())) {
+      return NextResponse.json(
+        { error: 'Invalid start date' },
+        { status: 400 },
+      );
+    }
+
+    if (end && end < start) {
+      return NextResponse.json(
+        { error: 'End date cannot be before start date' },
+        { status: 400 },
+      );
+    }
+
+    if (isCurrent && endDate) {
+      return NextResponse.json(
+        { error: 'Current job cannot have end date' },
+        { status: 400 },
+      );
+    }
+
+    const current = isCurrent ?? false;
+
+    if (!current && !endDate) {
+      return NextResponse.json(
+        { error: 'End date required if job is not current' },
+        { status: 400 },
+      );
+    }
+
+    if (!Object.values(WorkMode).includes(workMode)) {
+      return NextResponse.json({ error: 'Invalid work mode' }, { status: 400 });
+    }
+
     const experience = await prisma.workExperience.create({
       data: {
         profileId: profile.id,
@@ -39,10 +76,10 @@ export async function POST(req: NextRequest) {
         title,
         location: location || null,
         workMode: workMode as WorkMode,
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: start,
+        endDate: end,
         description: description || null,
-        isCurrent: isCurrent ?? false,
+        isCurrent: current,
       },
     });
 
