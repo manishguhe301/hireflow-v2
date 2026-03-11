@@ -35,7 +35,7 @@ export default function PublicHeader() {
           )}>
             Companies
           </Link>
-          <Link href="/#how-it-works" className={clsx("hover:text-primary transition")}>How it works</Link>
+          <Link href="/how-it-works" className={clsx("hover:text-primary transition")}>How it works</Link>
           <Link
             href="/login"
             className="rounded-full border border-primary/30 bg-primary/10 hover:bg-primary/20 transition"
