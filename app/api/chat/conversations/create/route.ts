@@ -18,6 +18,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const jobSeeker = await prisma.user.findUnique({
+      where: { id: jobSeekerId, role: Role.JOB_SEEKER },
+    });
+
+    if (!jobSeeker) {
+      return NextResponse.json(
+        { error: 'Job seeker not found' },
+        { status: 404 },
+      );
+    }
+
     const company = await prisma.company.findUnique({
       where: { userId: guard.session.user.id },
       select: { id: true, name: true },
