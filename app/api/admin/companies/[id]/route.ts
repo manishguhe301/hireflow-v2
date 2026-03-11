@@ -54,9 +54,10 @@ export async function PATCH(
   try {
     const { id } = await params;
 
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+
+    if (!guard.ok) {
+      return guard.response;
     }
 
     const body = await req.json();
@@ -154,9 +155,10 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== Role.PLATFORM_ADMIN) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const guard = await apiAuthGuard([Role.PLATFORM_ADMIN]);
+
+    if (!guard.ok) {
+      return guard.response;
     }
 
     const company = await prisma.company.findUnique({
