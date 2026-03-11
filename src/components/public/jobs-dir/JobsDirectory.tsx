@@ -303,7 +303,7 @@ const JobsDirectory = () => {
           <input
             aria-label="Location"
             type="text"
-            placeholder="Location"
+            placeholder="Search by city or country..."
             value={location}
             onChange={(e) => {
               setLocation(e.target.value)

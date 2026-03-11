@@ -33,7 +33,7 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
-    const email = data.email.trim()
+    const email = data.email.trim().toLowerCase()
     const password = data.password.trim()
 
     if (!isValidEmail(data.email)) {
@@ -92,6 +92,7 @@ const LoginForm = () => {
           placeholder="john@email.com"
           register={register('email', {
             required: 'Email is required',
+            setValueAs: (value) => value.toLowerCase().trim(),
             validate: (value) =>
               isValidEmail(value) || 'Invalid email format',
           })}
