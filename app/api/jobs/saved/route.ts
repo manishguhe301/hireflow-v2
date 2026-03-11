@@ -14,8 +14,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
     }
 
-    const job = await prisma.job.findUnique({
-      where: { id: jobId, status: 'ACTIVE' },
+    const job = await prisma.job.findFirst({
+      where: {
+        id: jobId,
+        status: 'ACTIVE',
+        OR: [
+          { applicationDeadline: null },
+          { applicationDeadline: { gte: new Date() } },
+        ],
+      },
     });
 
     if (!job) {
@@ -48,7 +55,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Job saved successfully',
-      savedJob,
+      // savedJob,
     });
   } catch (error) {
     console.error('Error saving job:', error);
