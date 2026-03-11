@@ -1,3 +1,4 @@
+import { Github } from 'lucide-react'
 import Link from 'next/link'
 
 export default function PublicFooter() {
@@ -33,8 +34,24 @@ export default function PublicFooter() {
         </div>
       </div>
 
-      <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
+      <div className="border-t border-border/60 py-6">
+        <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-xs text-muted-foreground">
+
+          <span>
+            © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
+          </span>
+
+          <a
+            href="https://github.com/manishguhe301/hireflow-v2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:text-primary transition"
+          >
+            <Github className="w-4 h-4" />
+            View on GitHub
+          </a>
+
+        </div>
       </div>
     </footer>
   )

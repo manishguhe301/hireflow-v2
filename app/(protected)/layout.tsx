@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
 import { useSession } from 'next-auth/react'
-import { Spinner } from '@/src/components/elements/Loader'
+
 import { useRouter } from 'next/navigation'
-import clsx from 'clsx'
 import PageLoader from '@/src/components/ui/PageLoader'
 import MobileSidebar from '@/src/components/layout/MobileSidebar'
+import { Github } from 'lucide-react'
 
 export default function ProtectedLayout({
   children,
@@ -70,8 +70,22 @@ export default function ProtectedLayout({
         </div>
       </div>
       <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground lg:pl-64 md:pl-20 pl-0">
-        © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
+        <div className=" px-6 flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
+          </span>
+          <a
+            href="https://github.com/manishguhe301/hireflow-v2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:text-primary transition"
+          >
+            <Github className="w-4 h-4" />
+            View on GitHub
+          </a>
+
+        </div>
       </div>
-    </div>
+    </div >
   )
 }
