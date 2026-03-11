@@ -153,6 +153,7 @@ const PublicProfile = () => {
   const isAdmin =
     session?.user?.role === 'PLATFORM_ADMIN'
     || session?.user?.role === 'COMPANY_ADMIN'
+  const isPlatFormAdmin = session?.user?.role === 'PLATFORM_ADMIN'
 
   const canView =
     profile.isPublic || isOwner || isAdmin
@@ -185,7 +186,7 @@ const PublicProfile = () => {
         Back
       </Button>
       <div className="rounded-3xl border border-border/40 bg-card p-6 space-y-4 shadow-sm">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between!">
           <div className="flex items-center gap-5">
             <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
               {profile.avatar ? (
@@ -215,7 +216,7 @@ const PublicProfile = () => {
               <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-3 w-3" />
-                  {profile.city}, {profile.country}
+                  {profile.city && `${profile.city}, `} {profile.country}
                 </span>
                 <span className="flex items-center gap-1">
                   <Briefcase className="h-3 w-3" />
@@ -234,8 +235,10 @@ const PublicProfile = () => {
             </Button>
           )}
 
-          <div className="flex gap-2 flex-wrap">
-            {!isOwner && (
+          <div className={clsx("flex gap-2 flex-wrap",
+            session?.user.role === 'JOB_SEEKER' && 'hidden'
+          )}>
+            {!isOwner && !isPlatFormAdmin && (
               <Button
                 variant="outline"
                 className="flex items-center gap-1 border-primary text-primary"
@@ -461,7 +464,7 @@ const PublicProfile = () => {
               <div key={exp.id} className="border-l-2 border-primary/40 pl-4">
                 <h3 className="font-semibold">{exp.title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {exp.company} • {exp.location}
+                  {exp.company} {exp.location && `• ${exp.location}`}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {new Date(exp.startDate).getFullYear()} —{' '}
