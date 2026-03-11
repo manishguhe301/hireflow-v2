@@ -93,6 +93,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    try {
+      new URL(data.website);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid website URL' },
+        { status: 400 },
+      );
+    }
+
+    try {
+      new URL(data.linkedinProfile);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid LinkedIn profile URL' },
+        { status: 400 },
+      );
+    }
+
     const logoResult = await uploadFileToB2(logo, 'company-logos');
     const businessDocResult = await uploadFileToB2(
       businessDocument,
@@ -102,6 +120,15 @@ export async function POST(req: NextRequest) {
       ? await uploadFileToB2(taxDocument, 'company-documents')
       : null;
 
+    const year = parseInt(data.foundedYear);
+
+    if (isNaN(year) || year < 1800 || year > new Date().getFullYear()) {
+      return NextResponse.json(
+        { error: 'Invalid founded year' },
+        { status: 400 },
+      );
+    }
+
     const company = await prisma.company.create({
       data: {
         userId: guard.session.user.id,
@@ -109,7 +136,7 @@ export async function POST(req: NextRequest) {
         description: data.description,
         industry: data.industry,
         companySize: data.companySize,
-        foundedYear: parseInt(data.foundedYear),
+        foundedYear: year,
         website: data.website,
         linkedinProfile: data.linkedinProfile || null,
         contactEmail: data.contactEmail,
@@ -214,6 +241,24 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    try {
+      new URL(data.website);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid website URL' },
+        { status: 400 },
+      );
+    }
+
+    try {
+      new URL(data.linkedinProfile);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid LinkedIn profile URL' },
+        { status: 400 },
+      );
+    }
+
     const logo = formData.get('logo') as File | null;
     const businessDocument = formData.get('businessDocument') as File | null;
     const taxDocument = formData.get('taxDocument') as File | null;
@@ -261,6 +306,15 @@ export async function PATCH(req: NextRequest) {
       newStatus = 'PENDING';
     }
 
+    const year = parseInt(data.foundedYear);
+
+    if (isNaN(year) || year < 1800 || year > new Date().getFullYear()) {
+      return NextResponse.json(
+        { error: 'Invalid founded year' },
+        { status: 400 },
+      );
+    }
+
     const updatedCompany = await prisma.company.update({
       where: { id: existingCompany.id },
       data: {
@@ -268,7 +322,7 @@ export async function PATCH(req: NextRequest) {
         description: data.description,
         industry: data.industry,
         companySize: data.companySize,
-        foundedYear: parseInt(data.foundedYear),
+        foundedYear: year,
         website: data.website,
         linkedinProfile: data.linkedinProfile || null,
         contactEmail: data.contactEmail,
