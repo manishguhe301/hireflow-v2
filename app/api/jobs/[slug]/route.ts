@@ -107,15 +107,15 @@ export async function GET(
       })
       .catch((err) => console.error('Failed to increment views:', err));
 
-    let appliedJobIds: string[] = [];
-    if (session?.user?.id) {
-      appliedJobIds = (
-        await prisma.application.findMany({
-          where: { userId: session.user.id },
-          select: { jobId: true },
-        })
-      ).map((a) => a.jobId);
-    }
+    // let appliedJobIds: string[] = [];
+    // if (session?.user?.id) {
+    //   appliedJobIds = (
+    //     await prisma.application.findMany({
+    //       where: { userId: session.user.id },
+    //       select: { jobId: true },
+    //     })
+    //   ).map((a) => a.jobId);
+    // }
 
     const similarJobs = await prisma.job.findMany({
       where: {
@@ -124,8 +124,18 @@ export async function GET(
           gte: new Date(),
         },
         id: {
-          notIn: [job.id, ...appliedJobIds],
+          // notIn: [job.id, ...appliedJobIds],
+          not: job.id,
         },
+
+        applications: session?.user?.id
+          ? {
+              none: {
+                userId: session.user.id,
+              },
+            }
+          : undefined,
+
         OR: [{ category: job.category }, { companyId: job.company.id }],
       },
       select: {
