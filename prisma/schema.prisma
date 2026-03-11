@@ -204,6 +204,8 @@ model Company {
 
   // Approval
   approvedAt DateTime?
+  rejectedAt DateTime?
+  rejectedBy String?
   approvedBy String? 
 
   createdAt         DateTime       @default(now())

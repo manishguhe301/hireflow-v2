@@ -107,6 +107,8 @@ export async function PATCH(
         status,
         rejectionReason:
           status === CompanyStatus.REJECTED ? rejectionReason : null,
+        approvedAt: status === CompanyStatus.APPROVED ? new Date() : null,
+        rejectedAt: status === CompanyStatus.REJECTED ? new Date() : null,
       },
       include: {
         user: {

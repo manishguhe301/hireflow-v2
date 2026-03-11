@@ -73,7 +73,7 @@ export default function JobCard({ job,
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold leading-snug group-hover:text-primary transition line-clamp-2">
+              <h3 className={clsx("text-base font-semibold leading-snug group-hover:text-primary transition line-clamp-2", session?.user.id && "max-w-[calc(100%-2.5rem)]")}>
                 {job.title}
               </h3>
               <p className="text-sm font-medium text-muted-foreground line-clamp-1">              {job.company.name}
