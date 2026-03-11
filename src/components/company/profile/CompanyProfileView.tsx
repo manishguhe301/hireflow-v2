@@ -137,7 +137,7 @@ const CompanyProfileView = () => {
 
         <InfoCard title="Contact Information" className="space-y-3">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
-          <InfoRow icon={<Phone />} label="Phone" value={`${company.countryPhoneCode} ${company.contactPhone}` || '—'} />
+          <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone && `${company.countryPhoneCode} ${company.contactPhone}` || '—'} />
           <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
           <InfoRow
             icon={<Linkedin />}

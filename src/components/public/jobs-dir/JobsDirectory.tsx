@@ -134,6 +134,7 @@ const JobsDirectory = () => {
 
   const jobs: DirJobType[] = data?.jobs ?? []
   const pagination: Pagination | null = data?.pagination ?? null
+  const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 10000000
 
   useEffect(() => {
     if (!pagination || page >= pagination.totalPages) return
@@ -323,7 +324,7 @@ const JobsDirectory = () => {
 
       </div>
 
-      {pagination && (
+      {pagination && jobs?.length > 0 && (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{start} - {end}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
@@ -394,14 +395,14 @@ const JobsDirectory = () => {
               </div>
               <h3 className="text-xl font-semibold mb-1">No jobs found</h3>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                Try adjusting your search or filters to find what you&apos;re looking for.
+                {isFiltersSelected ? 'Try adjusting your search or filters to find what you&apos;re looking for.' : 'No jobs posted on our platform yet.'}
               </p>
-              <button
+              {isFiltersSelected && <button
                 onClick={handleClearAllFilters}
                 className="text-sm font-medium text-primary hover:underline"
               >
                 Clear all filters
-              </button>
+              </button>}
             </div>
           )}
 

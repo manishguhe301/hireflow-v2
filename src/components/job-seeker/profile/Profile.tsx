@@ -58,11 +58,11 @@ const Profile = () => {
 
           <div className="flex items-center gap-5 max-sm:flex-col">
             <div className="relative  h-20 w-20 overflow-hidden rounded-2xl border border-border/40 bg-muted">
-              {profile.avatar ? (
+              {profile?.avatar ? (
                 <>
                   {/*  eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={profile.avatar}
+                    src={profile?.avatar}
                     alt={profile.name}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
@@ -85,7 +85,7 @@ const Profile = () => {
               <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-3 w-3" />
-                  {profile.city}, {profile.country}
+                  {profile.city && `${profile.city}, `} {profile.country}
                 </span>
 
                 <span className="flex items-center gap-1">
@@ -299,7 +299,7 @@ const Profile = () => {
               <div key={exp.id} className="border-l-2 border-primary/40 pl-4">
                 <h3 className="font-semibold">{exp.title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {exp.company} • {exp.location}
+                  {exp.company} {exp.location && `• ${exp.location}`}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {new Date(exp.startDate).getFullYear()} —{' '}

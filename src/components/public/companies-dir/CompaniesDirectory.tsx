@@ -156,7 +156,7 @@ export default function CompaniesDirectory() {
         </div>
       </div>
 
-      {!isLoading && pagination && (
+      {!isLoading && pagination && companies.length > 0 && (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{companies.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> companies
@@ -178,9 +178,9 @@ export default function CompaniesDirectory() {
           </div>
           <h3 className="text-xl font-semibold mb-1">No companies found</h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-            Try adjusting your search or filters to find what you’re looking for.
+            {search || industry || location ? 'Try adjusting your search or filters to find what you’re looking for.' : 'No companies have joined HireFlow yet.'}
           </p>
-          <button
+          {(search || industry || location) && <button
             onClick={() => {
               setSearch('')
               setIndustry('')
@@ -190,7 +190,7 @@ export default function CompaniesDirectory() {
             className="text-sm font-medium text-primary hover:underline"
           >
             Clear all filters
-          </button>
+          </button>}
         </div>
       )}
 
