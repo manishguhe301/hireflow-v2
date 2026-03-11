@@ -139,11 +139,11 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         <div className="rounded-xl border border-border/40 bg-muted/30 p-4 space-y-3">
           <div className="flex items-center gap-3">
             <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
-              {job.company.logo ? (
+              {job.company?.logo ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={job.company.logo}
+                    src={job.company?.logo}
                     alt={job.company.name}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",

@@ -201,11 +201,11 @@ const JobDetails = () => {
           <div className="flex items-start gap-4">
             <div className="  flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-muted">
               {
-                job.company.logo ? (
+                job.company?.logo ? (
                   <div className='relative'>
                     {/*  eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={job.company.logo}
+                      src={job?.company?.logo}
                       alt={job.company.name}
                       // className="h-12 w-12 rounded-full"
                       className={clsx(

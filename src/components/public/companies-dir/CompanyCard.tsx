@@ -23,12 +23,12 @@ export default function CompanyCard({ company }: CompanyCardProps) {
       <div className="group flex w-full h-full min-h-[220px] flex-col rounded-3xl border border-border/40 bg-card p-6 transition-all duration-200 hover:border-primary/40 hover:shadow-lg hover:-translate-y-[2px]">
         <div className="mb-5 flex justify-center">
           <div className=" relative flex h-20 w-20 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden transition group-hover:border-primary/40">
-            {company.logo ? (
+            {company?.logo ? (
               <>
 
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={company.logo}
+                  src={company?.logo}
                   alt={`${company.name} logo`}
                   className={clsx(
                     "h-full w-full object-cover transition-opacity duration-300",

@@ -32,11 +32,11 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
             <div className=" relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
-              {company.logo ? (
+              {company?.logo ? (
                 <>
                   {/*  eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={company.logo}
+                    src={company?.logo}
                     alt={`${company.name} logo`}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",

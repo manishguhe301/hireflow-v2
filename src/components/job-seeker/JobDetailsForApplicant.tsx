@@ -362,11 +362,11 @@ const JobDetailsForApplicant = () => {
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
               <div className="flex items-center gap-4 ">
-                {job.company.logo ? (
+                {job.company?.logo ? (
                   <div className='relative'>
                     {/* eslint-disable-next-line */}
                     <img
-                      src={job.company.logo}
+                      src={job.company?.logo}
                       alt={job.company.name}
                       className={clsx("h-14 w-14 rounded-lg object-cover border border-border",
                         'transition-opacity duration-300',
@@ -425,7 +425,7 @@ const JobDetailsForApplicant = () => {
           employmentType: job.employmentType,
           company: {
             name: job.company.name,
-            logo: job.company.logo,
+            logo: job.company?.logo,
           },
           country: job.country,
           city: job.city || null,

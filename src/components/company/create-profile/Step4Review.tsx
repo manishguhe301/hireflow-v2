@@ -154,7 +154,7 @@ const Step4Review = ({ watch, setCurrentStep, isLoading }: Props) => {
       >
         <FileItem
           label="Company Logo"
-          file={data.logo}
+          file={data?.logo}
           existingFileUrl={existingCompany?.logo}
           required
         />

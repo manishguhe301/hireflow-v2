@@ -55,11 +55,11 @@ export default function JobCard({ job,
         >
           <div className="flex items-start gap-4 relative">
             <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
-              {job.company.logo ? (
+              {job.company?.logo ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={job.company.logo}
+                    src={job.company?.logo}
                     alt={`${job.company.name} logo`}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
@@ -175,7 +175,7 @@ export default function JobCard({ job,
           employmentType: job.employmentType,
           company: {
             name: job.company.name,
-            logo: job.company.logo,
+            logo: job.company?.logo,
           },
           country: job.country,
           city: job.city || null,

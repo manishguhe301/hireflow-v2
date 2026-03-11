@@ -135,11 +135,11 @@ export default function HomePage() {
                 <div className="relative mb-4">
                   <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
                   <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
-                    {company.logo ? (
+                    {company?.logo ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={company.logo}
+                          src={company?.logo}
                           alt={`${company.name} logo`}
                           className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105" />
                       </>
@@ -290,10 +290,10 @@ export default function HomePage() {
                         <div className="relative">
                           <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
                           <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
-                            {job.company.logo ? (
+                            {job.company?.logo ? (
                               <>
                                 <img
-                                  src={job.company.logo}
+                                  src={job.company?.logo}
                                   alt={job.company.name}
                                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
