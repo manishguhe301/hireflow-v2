@@ -28,6 +28,20 @@ export async function DELETE(
       );
     }
 
+    if (user.role === Role.PLATFORM_ADMIN) {
+      return NextResponse.json(
+        { error: 'Platform admins cannot be deleted' },
+        { status: 403 },
+      );
+    }
+
+    if (user.id === guard.session.user.id) {
+      return NextResponse.json(
+        { error: 'You cannot delete your own account' },
+        { status: 400 },
+      );
+    }
+
     await prisma.user.delete({
       where: { id },
     });

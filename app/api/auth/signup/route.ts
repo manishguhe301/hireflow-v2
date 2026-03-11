@@ -31,13 +31,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!Object.values(Role).includes(role)) {
-      return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+    if (![Role.JOB_SEEKER, Role.COMPANY_ADMIN].includes(role)) {
+      return NextResponse.json(
+        { error: 'Invalid role for signup' },
+        { status: 400 },
+      );
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
 
     const isAlreadyEmailRegistered = await prisma.user.findUnique({
       where: {
-        email,
+        email: normalizedEmail,
       },
     });
 
@@ -57,7 +62,7 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role,
       },
