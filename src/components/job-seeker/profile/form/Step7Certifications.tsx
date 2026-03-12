@@ -17,7 +17,7 @@ import { AppSdk } from '@/src/utils/AppSdk'
 type CertificationForm = {
   name: string
   organization: string
-  issueDate: Date
+  issueDate: Date | null
   expiryDate: Date | null
   credentialUrl: string | null
   credentialId: string | null
@@ -55,7 +55,7 @@ const Step7Certifications = ({
     defaultValues: {
       name: '',
       organization: '',
-      issueDate: new Date(),
+      issueDate: null,
       expiryDate: null,
       credentialUrl: null,
       credentialId: null,
@@ -76,7 +76,7 @@ const Step7Certifications = ({
       resetCertForm({
         name: '',
         organization: '',
-        issueDate: new Date(),
+        issueDate: null,
         expiryDate: null,
         credentialUrl: null,
         credentialId: null,
@@ -93,13 +93,21 @@ const Step7Certifications = ({
   }
 
   const onSubmit = async (data: CertificationForm) => {
-    if (data.expiryDate && data.expiryDate < data.issueDate) {
-      toast.error('Expiry date cannot be before issue date')
+    if (!data.issueDate) {
+      toast.error('Issue date is required')
+      return
+    }
+
+
+    if (data.expiryDate && data.expiryDate <= data.issueDate) {
+      toast.error('Expiry date must be after issue date')
       return
     }
 
     const payload: CertificationInput = {
-      ...data,
+      name: data.name,
+      organization: data.organization,
+      issueDate: data.issueDate as Date,
       expiryDate: data.expiryDate || null,
       credentialUrl: data.credentialUrl || null,
       credentialId: data.credentialId || null,
@@ -299,7 +307,7 @@ const Step7Certifications = ({
             disabled={disabled || isSaving}
             label="Expiry Date (Optional)"
             value={certWatch('expiryDate')}
-            minDate={certWatch('issueDate')}
+            minDate={certWatch('issueDate') ?? undefined}
             onChange={(date) =>
               setCertValue('expiryDate', date || null, {
                 shouldValidate: true,
