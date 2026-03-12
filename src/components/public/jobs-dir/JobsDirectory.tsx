@@ -15,6 +15,7 @@ import { AppSdk } from '@/src/utils/AppSdk'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import JobsDirectorySkeleton from '../../skeletons/JobsDirectorySkeleton'
+import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
 
 export type DirJobType = {
   id: string,
@@ -121,7 +122,7 @@ const JobsDirectory = () => {
     return params.toString()
   }, [debouncedSearch, debouncedCategory, debouncedLocation, debouncedFilters, page])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ['jobs', queryParams],
     queryFn: async ({ signal }) => {
       const res = await fetch(`/api/jobs?${queryParams}`, { signal })
@@ -135,7 +136,7 @@ const JobsDirectory = () => {
 
   const jobs: DirJobType[] = data?.jobs ?? []
   const pagination: Pagination | null = data?.pagination ?? null
-  const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 150
+  const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 150 || filters.datePosted || filters.sortBy
 
   useEffect(() => {
     if (!pagination || page >= pagination.totalPages) return
@@ -374,8 +375,14 @@ const JobsDirectory = () => {
         )}
 
         <main className="flex-1 min-w-0">
-
-          {!isLoading && jobs.length > 0 && (
+          {isFetching && !isLoading && (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {[...Array(6)].map((_, i) => (
+                <JobCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
+          {!isLoading && !isFetching && jobs.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {jobs.map((job) => (
                 <JobCard
@@ -396,7 +403,7 @@ const JobsDirectory = () => {
               </div>
               <h3 className="text-xl font-semibold mb-1">No jobs found</h3>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                {isFiltersSelected ? 'Try adjusting your search or filters to find what you&apos;re looking for.' : 'No jobs posted on our platform yet.'}
+                {isFiltersSelected ? <>Try adjusting your search or filters to find what you&apos;re looking for.</> : 'No jobs posted on our platform yet.'}
               </p>
               {isFiltersSelected && <button
                 onClick={handleClearAllFilters}

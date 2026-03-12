@@ -10,6 +10,7 @@ import { companyIndustries } from '@/src/utils/constants'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import CompaniesDirectorySkeleton from '../../skeletons/CompaniesDirectorySkeleton'
+import CompanyCardSkeleton from '../../skeletons/CompanyCardSkeleton'
 
 export type Company = {
   id: string
@@ -69,7 +70,7 @@ export default function CompaniesDirectory() {
     return params.toString()
   }, [debouncedSearch, debouncedIndustry, debouncedLocation, page])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ['companies', queryParams],
     queryFn: async () => {
       const res = await fetch(`/api/companies?${queryParams}`)
@@ -163,7 +164,15 @@ export default function CompaniesDirectory() {
         </p>
       )}
 
-      {!isLoading && companies.length > 0 && (
+      {isFetching && !isLoading && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[...Array(8)].map((_, i) => (
+            <CompanyCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && !isFetching && companies.length > 0 && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {companies.map((company) => (
             <CompanyCard key={company.id} company={company} />
