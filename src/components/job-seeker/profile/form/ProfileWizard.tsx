@@ -46,7 +46,7 @@ export type EducationInput = {
   institution: string
   degree: string
   fieldOfStudy: string | null
-  startYear: number
+  startYear: number | null
   endYear: number | null
   grade: string | null
   isCurrent: boolean
@@ -516,6 +516,7 @@ const ProfileWizard = () => {
                 setValue={setValue}
                 disabled={isSubmitting}
                 isEditMode={isEditMode}
+                refetchProfile={refetchProfile}
               />
             }
             {currentStep === 4 &&

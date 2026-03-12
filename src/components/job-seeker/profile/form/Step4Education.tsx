@@ -21,7 +21,8 @@ const Step4Education = ({
   watch,
   setValue,
   disabled,
-  isEditMode
+  isEditMode,
+  refetchProfile
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
@@ -29,6 +30,7 @@ const Step4Education = ({
   setValue: UseFormSetValue<JobSeekerFormInputs>
   disabled?: boolean
   isEditMode?: boolean
+  refetchProfile?: () => void
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -47,7 +49,7 @@ const Step4Education = ({
       institution: '',
       degree: '',
       fieldOfStudy: null,
-      startYear: currentYear,
+      startYear: null,
       endYear: null,
       grade: null,
       isCurrent: false,
@@ -67,7 +69,7 @@ const Step4Education = ({
         institution: '',
         degree: '',
         fieldOfStudy: null, //optional
-        startYear: currentYear,
+        startYear: undefined,
         endYear: null, //optional
         grade: null, //optional
         isCurrent: false,
@@ -84,6 +86,11 @@ const Step4Education = ({
   }
 
   const onSubmit = async (data: EducationInput) => {
+    if (!data.startYear) {
+      toast.error('Start date is required')
+      return
+    }
+
     if (!data.isCurrent && data.endYear && data.endYear < data.startYear) {
       toast.error('End year must be after start year')
       return
@@ -130,6 +137,7 @@ const Step4Education = ({
           setValue('education', [...educations, saved], { shouldValidate: true, shouldDirty: true })
         }
 
+        await refetchProfile?.()
         toast.success(editingIndex !== null ? 'Education updated' : 'Education added')
         handleCloseModal()
       } catch {
@@ -157,6 +165,7 @@ const Step4Education = ({
       try {
         const res = await AppSdk.deleteData(`/api/profile/education/${item.id}`, null)
         if (res.error) { toast.error(res.error); return }
+        await refetchProfile?.()
         toast.success('Education deleted')
       } catch (error) {
         console.log(error);
