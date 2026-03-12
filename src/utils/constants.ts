@@ -318,49 +318,104 @@ export const yearsOfExperiences: { label: string; value: ExperienceLevel }[] = [
 ];
 
 export const degrees: SelectOption[] = [
-  { label: 'Secondary (X)', value: 'SECONDARY' },
-  { label: 'Higher Secondary (XII)', value: 'HIGHER_SECONDARY' },
+  { label: 'Secondary School (10th)', value: 'SECONDARY' },
+  { label: 'Higher Secondary School (12th)', value: 'HIGHER_SECONDARY' },
+
   { label: 'Diploma', value: 'DIPLOMA' },
+  { label: 'Advanced Diploma', value: 'ADVANCED_DIPLOMA' },
+
   { label: 'Associate Degree', value: 'ASSOCIATE' },
+
   { label: "Bachelor's Degree", value: 'BACHELOR' },
+  { label: 'Bachelor of Technology (B.Tech)', value: 'BTECH' },
+  { label: 'Bachelor of Engineering (B.E.)', value: 'BE' },
+  { label: 'Bachelor of Science (B.Sc)', value: 'BSC' },
+  { label: 'Bachelor of Computer Applications (BCA)', value: 'BCA' },
+  { label: 'Bachelor of Commerce (B.Com)', value: 'BCOM' },
+  { label: 'Bachelor of Business Administration (BBA)', value: 'BBA' },
+  { label: 'Bachelor of Arts (BA)', value: 'BA' },
+  { label: 'Bachelor of Architecture (B.Arch)', value: 'BARCH' },
+  { label: 'Bachelor of Medicine (MBBS)', value: 'MBBS' },
+  { label: 'Bachelor of Pharmacy (B.Pharm)', value: 'BPHARM' },
+
   { label: "Master's Degree", value: 'MASTER' },
-  { label: 'MBA', value: 'MBA' },
-  { label: 'MCA', value: 'MCA' },
-  { label: 'B.Tech / BE', value: 'BTECH_BE' },
-  { label: 'M.Tech / ME', value: 'MTECH_ME' },
+  { label: 'Master of Technology (M.Tech)', value: 'MTECH' },
+  { label: 'Master of Engineering (M.E.)', value: 'ME' },
+  { label: 'Master of Science (M.Sc)', value: 'MSC' },
+  { label: 'Master of Computer Applications (MCA)', value: 'MCA' },
+  { label: 'Master of Commerce (M.Com)', value: 'MCOM' },
+  { label: 'Master of Arts (MA)', value: 'MA' },
+
+  { label: 'Master of Business Administration (MBA)', value: 'MBA' },
+  { label: 'Doctor of Medicine (MD)', value: 'MD' },
+  { label: 'Doctor of Pharmacy (PharmD)', value: 'PHARMD' },
+  { label: 'Juris Doctor (JD)', value: 'JD' },
+
   { label: 'PhD / Doctorate', value: 'PHD' },
+
   { label: 'Professional Certification', value: 'CERTIFICATION' },
+
   { label: 'Other', value: 'OTHER' },
 ];
 
 export const fieldOfStudies: SelectOption[] = [
-  { label: '10th', value: 'SECONDARY' },
-  { label: '12th', value: 'HIGHER_SECONDARY' },
-  { label: 'Computer Science', value: 'COMPUTER_SCIENCE' },
-  { label: 'Information Technology', value: 'INFORMATION_TECHNOLOGY' },
-  { label: 'Software Engineering', value: 'SOFTWARE_ENGINEERING' },
-  { label: 'Electronics & Communication', value: 'ECE' },
-  { label: 'Electrical Engineering', value: 'ELECTRICAL' },
-  { label: 'Mechanical Engineering', value: 'MECHANICAL' },
-  { label: 'Civil Engineering', value: 'CIVIL' },
-  { label: 'Data Science', value: 'DATA_SCIENCE' },
-  { label: 'Artificial Intelligence', value: 'AI' },
-  { label: 'Cybersecurity', value: 'CYBER_SECURITY' },
-  { label: 'Business Administration', value: 'BUSINESS_ADMIN' },
-  { label: 'Finance', value: 'FINANCE' },
-  { label: 'Marketing', value: 'MARKETING' },
-  { label: 'Human Resources', value: 'HR' },
-  { label: 'Economics', value: 'ECONOMICS' },
-  { label: 'Mathematics', value: 'MATHEMATICS' },
-  { label: 'Physics', value: 'PHYSICS' },
-  { label: 'Chemistry', value: 'CHEMISTRY' },
-  { label: 'Biotechnology', value: 'BIOTECHNOLOGY' },
-  { label: 'Design', value: 'DESIGN' },
-  { label: 'Architecture', value: 'ARCHITECTURE' },
-  { label: 'Law', value: 'LAW' },
-  { label: 'Medicine', value: 'MEDICINE' },
-  { label: 'Psychology', value: 'PSYCHOLOGY' },
-  { label: 'Other', value: 'OTHER' },
+  { label: 'Secondary School (10th)', value: 'SECONDARY' },
+  { label: 'Higher Secondary School (12th)', value: 'HIGHER_SECONDARY' },
+  { value: 'COMPUTER_SCIENCE', label: 'Computer Science' },
+  { value: 'SOFTWARE_ENGINEERING', label: 'Software Engineering' },
+  { value: 'INFORMATION_TECHNOLOGY', label: 'Information Technology' },
+  { value: 'DATA_SCIENCE', label: 'Data Science' },
+  { value: 'CYBER_SECURITY', label: 'Cyber Security' },
+  { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Artificial Intelligence' },
+  { value: 'MACHINE_LEARNING', label: 'Machine Learning' },
+
+  { value: 'ELECTRICAL_ENGINEERING', label: 'Electrical Engineering' },
+  { value: 'ELECTRONICS_ENGINEERING', label: 'Electronics Engineering' },
+  { value: 'MECHANICAL_ENGINEERING', label: 'Mechanical Engineering' },
+  { value: 'CIVIL_ENGINEERING', label: 'Civil Engineering' },
+  { value: 'CHEMICAL_ENGINEERING', label: 'Chemical Engineering' },
+  { value: 'AEROSPACE_ENGINEERING', label: 'Aerospace Engineering' },
+
+  { value: 'MATHEMATICS', label: 'Mathematics' },
+  { value: 'PHYSICS', label: 'Physics' },
+  { value: 'CHEMISTRY', label: 'Chemistry' },
+  { value: 'STATISTICS', label: 'Statistics' },
+
+  { value: 'BUSINESS_ADMINISTRATION', label: 'Business Administration' },
+  { value: 'FINANCE', label: 'Finance' },
+  { value: 'ACCOUNTING', label: 'Accounting' },
+  { value: 'ECONOMICS', label: 'Economics' },
+  { value: 'MARKETING', label: 'Marketing' },
+  { value: 'HUMAN_RESOURCES', label: 'Human Resources' },
+
+  { value: 'LAW', label: 'Law' },
+  { value: 'POLITICAL_SCIENCE', label: 'Political Science' },
+  { value: 'INTERNATIONAL_RELATIONS', label: 'International Relations' },
+
+  { value: 'PSYCHOLOGY', label: 'Psychology' },
+  { value: 'SOCIOLOGY', label: 'Sociology' },
+  { value: 'PHILOSOPHY', label: 'Philosophy' },
+
+  { value: 'MEDICINE', label: 'Medicine' },
+  { value: 'NURSING', label: 'Nursing' },
+  { value: 'PHARMACY', label: 'Pharmacy' },
+  { value: 'PUBLIC_HEALTH', label: 'Public Health' },
+
+  { value: 'ARCHITECTURE', label: 'Architecture' },
+  { value: 'URBAN_PLANNING', label: 'Urban Planning' },
+
+  { value: 'DESIGN', label: 'Design' },
+  { value: 'GRAPHIC_DESIGN', label: 'Graphic Design' },
+  { value: 'UI_UX_DESIGN', label: 'UI/UX Design' },
+
+  { value: 'EDUCATION', label: 'Education' },
+  { value: 'LINGUISTICS', label: 'Linguistics' },
+  { value: 'ENGLISH_LITERATURE', label: 'English Literature' },
+
+  { value: 'ENVIRONMENTAL_SCIENCE', label: 'Environmental Science' },
+  { value: 'AGRICULTURE', label: 'Agriculture' },
+
+  { value: 'OTHER', label: 'Other' },
 ];
 
 export const noticePeriods: SelectOption[] = [
