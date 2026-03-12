@@ -40,7 +40,7 @@ const Step7Certifications = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const certifications = watch('certifications') || []
   const [isSaving, setIsSaving] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const {
     register: certRegister,
@@ -150,7 +150,7 @@ const Step7Certifications = ({
   const handleDelete = async (index: number) => {
     const item = certifications[index]
     if (isEditMode && item.id) {
-      setIsDeleting(true)
+      setDeletingId(item.id)
       try {
         const res = await AppSdk.deleteData(`/api/profile/certification/${item.id}`, null)
         if (res.error) { toast.error(res.error); return }
@@ -159,7 +159,7 @@ const Step7Certifications = ({
         console.log(error);
         toast.error('Something went wrong')
       } finally {
-        setIsDeleting(false)
+        setDeletingId(null)
       }
     }
     const updated = certifications.filter((_, i) => i !== index)
@@ -241,13 +241,13 @@ const Step7Certifications = ({
                   </Button>
                   <Button
                     type="button"
-                    disabled={disabled || isSaving}
+                    disabled={disabled || isSaving || deletingId === cert.id}
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     aria-label="Delete certification"
                     className="p-2!"
                   >
-                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
+                    {deletingId === cert.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
                   </Button>
                 </div>
               </div>
