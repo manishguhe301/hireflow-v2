@@ -33,7 +33,7 @@ const Step4Education = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const educations = watch('education') || []
 
   const {
@@ -153,7 +153,7 @@ const Step4Education = ({
   const handleDelete = async (index: number) => {
     const item = educations[index]
     if (isEditMode && item.id) {
-      setIsDeleting(true)
+      setDeletingId(item.id)
       try {
         const res = await AppSdk.deleteData(`/api/profile/education/${item.id}`, null)
         if (res.error) { toast.error(res.error); return }
@@ -162,7 +162,7 @@ const Step4Education = ({
         console.log(error);
         toast.error('Something went wrong')
       } finally {
-        setIsDeleting(false)
+        setDeletingId(null)
       }
     }
     const updated = educations.filter((_, i) => i !== index)
@@ -247,10 +247,10 @@ const Step4Education = ({
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     className="p-2!"
-                    disabled={disabled || isSaving}
+                    disabled={disabled || isSaving || deletingId === educations[index].id}
                     aria-label="Delete"
                   >
-                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
+                    {deletingId === educations[index].id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
                   </Button>
                 </div>
               </div>
