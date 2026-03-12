@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
-import { ArrowLeft, CircleUser, FileText, MessageCircle, ShieldUser } from 'lucide-react'
+import { ArrowLeft, Award, CircleUser, ExternalLink, FileText, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { formatDate, formatDateRange, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
@@ -506,11 +506,20 @@ const PublicProfile = () => {
 
           <div className="space-y-4">
             {profile.certifications.map((cert) => (
-              <div key={cert.id}>
-                <h3 className="font-semibold">{cert.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {cert.organization}
-                </p>
+              <div key={cert.id} className="flex items-start gap-3">
+                <Award className="h-5 w-5 text-primary" />
+                <div key={cert.id}>
+                  <h3 className="font-semibold">{cert.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {cert.organization}
+                  </p>
+                  {cert?.credentialUrl && (
+                    <Link href={cert.credentialUrl}
+                      target='_blank' className='text-sm text-muted-foreground hover:underline flex items-center gap-1 transition ease-in-out duration-300 hover:text-primary'>
+                      Link <ExternalLink className='h-3 w-3' />
+                    </Link>
+                  )}
+                </div>
               </div>
             ))}
           </div>
