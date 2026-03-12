@@ -13,6 +13,7 @@ import {
   XCircle,
   CheckCircle,
   FileText,
+  RefreshCcw,
 } from 'lucide-react'
 import { formatDate, formatRelativeTime, getLabel } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
@@ -230,14 +231,20 @@ export default function CompanyApplicationsPage() {
         applicationsLoading ? (
           <TableSkeleton columns={5} rows={8} />
         ) :
-          (<CompanyApplicationsTable data={applicationsData} />)
+          (
+            <div className='flex flex-col gap-2'>
+              <Button
+                className='flex items-center justify-center gap-2 self-end'
+                disabled={applicationsLoading || pageChangeLoading}
+                onClick={() =>
+                  applicationRefetch()
+                }>
+                <RefreshCcw className="h-4 w-4" /> Refresh
+              </Button>
+              <CompanyApplicationsTable data={applicationsData} />
+            </div>
+          )
       }
-      {
-        !applicationsLoading && pageChangeLoading && (
-          <div className="flex items-center justify-center py-6">
-            <Spinner className="h-8 w-8" />
-          </div>
-        )}
 
       {applicationsData && applicationsData.pagination.totalPages > 1 && (
         <Pagination

@@ -8,6 +8,7 @@ import Pagination from '../../ui/Pagination'
 import { useQuery } from '@tanstack/react-query'
 import TableSkeleton from '../../skeletons/TableSkeleton'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
+import { RefreshCcw } from 'lucide-react'
 
 interface Application {
   job: {
@@ -51,7 +52,7 @@ const ApplicationsPage = () => {
     useState<ApplicationStatus | 'ALL'>('ALL')
   const [page, setPage] = useState(1)
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['applications', activeTab, page],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -112,10 +113,20 @@ const ApplicationsPage = () => {
         isLoading ? (
           <TableSkeleton columns={5} rows={6} />
         ) : (
-          <ApplicationsTable
-            data={data as ApplicationWithPagination}
-            refetch={refetch}
-          />
+          <div className='flex flex-col gap-2'>
+            <Button
+              className='flex items-center justify-center gap-2 self-end'
+              disabled={isLoading || isFetching}
+              onClick={() =>
+                refetch()
+              }>
+              <RefreshCcw className="h-4 w-4" /> Refresh
+            </Button>
+            <ApplicationsTable
+              data={data as ApplicationWithPagination}
+              refetch={refetch}
+            />
+          </div>
         )
       }
       {data && data.pagination.totalPages > 1 && (
