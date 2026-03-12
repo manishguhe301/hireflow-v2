@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import { JobSeekerFormInputs, WorkExperienceInput } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
@@ -22,8 +22,8 @@ type WorkExperienceForm = {
   company: string
   title: string
   location: string | null
-  workMode: WorkMode
-  startDate: Date
+  workMode: WorkMode | null
+  startDate: Date | null
   endDate: Date | null
   description: string | null
   isCurrent: boolean
@@ -61,8 +61,8 @@ const Step3Experience = ({
       company: '',
       title: '',
       location: null,
-      workMode: 'REMOTE',
-      startDate: new Date(),
+      workMode: null,
+      startDate: null,
       endDate: null,
       description: null,
       isCurrent: false,
@@ -91,8 +91,8 @@ const Step3Experience = ({
         company: '',
         title: '',
         location: null,
-        workMode: 'REMOTE',
-        startDate: new Date(),
+        workMode: null,
+        startDate: null,
         endDate: null,
         description: null,
         isCurrent: false,
@@ -108,16 +108,40 @@ const Step3Experience = ({
   }
 
   const onSubmit = async (data: WorkExperienceForm) => {
+    if (!data.startDate) {
+      toast.error('Start date is required')
+      return
+    }
+
+    if (!data.workMode) {
+      toast.error('Work mode is required')
+      return
+    }
+
+    if (!data.isCurrent && !data.endDate) {
+      toast.error('Please provide an end date or mark the job as currently working')
+      return
+    }
+
+    if (data.isCurrent && data.endDate) {
+      toast.error('End date should be empty if you are currently working here')
+      return
+    }
+
     if (!data.isCurrent && data.endDate && data.endDate < data.startDate) {
       toast.error('End date must be after start date')
       return
     }
 
-    const payload = {
-      ...data,
+    const payload: WorkExperienceInput = {
+      company: data.company,
+      title: data.title,
       location: data.location || null,
-      description: data.description || null,
+      workMode: data.workMode as WorkMode,
+      startDate: data.startDate as Date,
       endDate: data.isCurrent ? null : data.endDate || null,
+      description: data.description || null,
+      isCurrent: data.isCurrent,
     }
 
     if (isEditMode) {
@@ -192,6 +216,12 @@ const Step3Experience = ({
     const updated = workExperiences.filter((_, i) => i !== index)
     setValue('workExperience', updated, { shouldValidate: true })
   }
+
+  useEffect(() => {
+    if (isCurrent) {
+      setExpValue('endDate', null)
+    }
+  }, [isCurrent, setExpValue])
 
   return (
     <div className="space-y-8">
@@ -326,7 +356,7 @@ const Step3Experience = ({
             <FormSelect
               disabled={disabled || isSaving}
               label="Work Mode"
-              options={workModes}
+              options={[{ value: '', label: 'Select work mode' }, ...workModes]}
               register={expRegister('workMode', { required: 'Work mode is required' })}
               error={expErrors.workMode}
             />
@@ -339,9 +369,10 @@ const Step3Experience = ({
               value={expWatch('startDate')}
               maxDate={new Date()}
               onChange={(date) =>
-                setExpValue('startDate', date!, {
-                  shouldValidate: true
-                })}
+                setExpValue('startDate', date ?? null, {
+                  shouldValidate: true,
+                })
+              }
               error={expErrors.startDate}
             />
 
@@ -350,7 +381,7 @@ const Step3Experience = ({
                 disabled={disabled || isSaving}
                 label="End Date"
                 value={expWatch('endDate')}
-                minDate={expWatch('startDate')}
+                minDate={expWatch('startDate') ?? undefined}
                 maxDate={new Date()}
                 onChange={(date) =>
                   setExpValue('endDate', date!, {
