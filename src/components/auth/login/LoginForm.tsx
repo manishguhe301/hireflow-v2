@@ -51,7 +51,7 @@ const LoginForm = () => {
       })
 
       if (!res || res.error) {
-        toast.error('Invalid email or password')
+        toast.error('Incorrect email or password')
         return
       }
 
