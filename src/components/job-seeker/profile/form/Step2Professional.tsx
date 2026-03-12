@@ -39,16 +39,15 @@ const Step2Professional = ({
         />
         <FormTextarea
           label="Bio (Optional)"
-          placeholder="Enter your bio in less than 200 characters"
+          placeholder="Write a short professional summary (max 300 characters)"
           rows={5}
           register={register('bio', {
-            validate: (value) => value.length <= 200 ||
-              'Bio must be less than 200 characters',
+            validate: (value) =>
+              value.length <= 300 || 'Bio must be less than 300 characters',
           })}
           error={errors.bio}
-          maxLength={200}
+          maxLength={300}
           disabled={disabled}
-
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <MultiSelect<WorkMode>
