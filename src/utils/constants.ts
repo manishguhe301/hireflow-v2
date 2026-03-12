@@ -318,7 +318,8 @@ export const yearsOfExperiences: { label: string; value: ExperienceLevel }[] = [
 ];
 
 export const degrees: SelectOption[] = [
-  { label: 'High School', value: 'HIGH_SCHOOL' },
+  { label: 'Secondary (X)', value: 'SECONDARY' },
+  { label: 'Higher Secondary (XII)', value: 'HIGHER_SECONDARY' },
   { label: 'Diploma', value: 'DIPLOMA' },
   { label: 'Associate Degree', value: 'ASSOCIATE' },
   { label: "Bachelor's Degree", value: 'BACHELOR' },
@@ -333,6 +334,8 @@ export const degrees: SelectOption[] = [
 ];
 
 export const fieldOfStudies: SelectOption[] = [
+  { label: '10th', value: 'SECONDARY' },
+  { label: '12th', value: 'HIGHER_SECONDARY' },
   { label: 'Computer Science', value: 'COMPUTER_SCIENCE' },
   { label: 'Information Technology', value: 'INFORMATION_TECHNOLOGY' },
   { label: 'Software Engineering', value: 'SOFTWARE_ENGINEERING' },

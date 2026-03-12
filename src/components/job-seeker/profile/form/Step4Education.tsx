@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { degrees, fieldOfStudies } from '@/src/utils/constants'
-import { useSession } from 'next-auth/react'
 import { getLabel } from '@/src/utils/helper'
 import { AppSdk } from '@/src/utils/AppSdk'
 
@@ -268,7 +267,7 @@ const Step4Education = ({
         <form onSubmit={handleEduSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormSelect
-              label="Degree"
+              label="Type of Degree"
               options={degrees}
               register={eduRegister('degree', {
                 required: 'Degree is required',
