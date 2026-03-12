@@ -77,7 +77,7 @@ const JobsDirectory = () => {
     employmentTypes: [],
     experienceLevels: [],
     salaryMin: 0,
-    salaryMax: 10000000,
+    salaryMax: 150,
     datePosted: '',
     sortBy: 'recent',
   })
@@ -106,7 +106,7 @@ const JobsDirectory = () => {
     if (debouncedFilters.salaryMin > 0)
       params.set('salaryMin', debouncedFilters.salaryMin.toString())
 
-    if (debouncedFilters.salaryMax < 10000000)
+    if (debouncedFilters.salaryMax < 150)
       params.set('salaryMax', debouncedFilters.salaryMax.toString())
 
     if (debouncedFilters.datePosted)
@@ -135,7 +135,7 @@ const JobsDirectory = () => {
 
   const jobs: DirJobType[] = data?.jobs ?? []
   const pagination: Pagination | null = data?.pagination ?? null
-  const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 10000000
+  const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 150
 
   useEffect(() => {
     if (!pagination || page >= pagination.totalPages) return
@@ -213,7 +213,7 @@ const JobsDirectory = () => {
       employmentTypes: [],
       experienceLevels: [],
       salaryMin: 0,
-      salaryMax: 10000000,
+      salaryMax: 150,
       datePosted: '',
       sortBy: 'recent',
     })
