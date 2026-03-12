@@ -22,10 +22,9 @@ const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [deleteNotificationId, setDeleteNotificationId] = useState('')
 
   const pathname = usePathname()
-
-
 
   const {
     data,
@@ -123,10 +122,14 @@ const NotificationBell = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
       toast.success('Notification deleted')
+    },
+    onSettled: () => {
+      setDeleteNotificationId('')
     }
   })
 
   const deleteNotification = async (notificationId?: string, isALL: boolean = false) => {
+    setDeleteNotificationId(notificationId as string)
     deleteMutation.mutate({ notificationId, isALL })
   }
 
@@ -160,6 +163,11 @@ const NotificationBell = () => {
           onMarkAllAsRead={markAllAsRead}
           onRefresh={refetch}
           deleteNotification={deleteNotification}
+          deleteNotificationId={deleteNotificationId}
+          disabled={deleteMutation.isPending
+            || markAsReadMutation.isPending
+            || markAllReadMutation.isPending
+          }
         />
       )}
     </div>
