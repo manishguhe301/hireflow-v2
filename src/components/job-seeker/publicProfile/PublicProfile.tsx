@@ -448,7 +448,7 @@ const PublicProfile = () => {
           </div>
 
           <div>
-            <p className="font-medium text-foreground mb-1">Expected Salary</p>
+            <p className="font-medium text-foreground mb-1">Expected CTC (in LPA)</p>
             {profile.expectedSalaryMin
               // || profile.expectedSalaryMax
               ? formatSalary(profile.expectedSalaryMin,

@@ -278,7 +278,7 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
           value={data.preferredLocations?.join(', ')}
         />
         <Item
-          label="Salary Expectations"
+          label="Expected CTC (In LPA)"
           value={
             formatSalary(data.expectedSalaryMin,
               // data.expectedSalaryMax

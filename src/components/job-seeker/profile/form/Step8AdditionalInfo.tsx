@@ -182,7 +182,7 @@ const Step8AdditionalInfo = ({
           />
           <FormInput
             disabled={disabled}
-            label="Minimum CTC in Lakhs(Optional)"
+            label="Minimum CTC in LPA(Optional)"
             register={
               register('expectedSalaryMin', {
                 valueAsNumber: true,
@@ -208,7 +208,7 @@ const Step8AdditionalInfo = ({
           />
           {/* <FormInput
             disabled={disabled}
-            label="Maximum Expected Salary in Lakhs (Optional)"
+            label="Maximum Expected Salary in LPA (Optional)"
             register={register(
               'expectedSalaryMax', {
               valueAsNumber: true,
