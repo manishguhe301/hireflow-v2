@@ -152,6 +152,7 @@ export async function GET(req: NextRequest) {
               salaryMin: true,
               createdAt: true,
               updatedAt: true,
+              hideSalary: true,
             },
           },
         },
