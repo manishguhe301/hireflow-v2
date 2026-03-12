@@ -130,13 +130,27 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
       />
       <Section
         disabled={disabled}
-        title="Profile Photo" onEdit={() => setCurrentStep(0)}>
-        <FileItem
-          label="Profile Photo"
-          file={data.avatar}
-          existingFileUrl={jobSeekerProfile?.avatar}
-          required
-        />
+        title="Profile Photo"
+        onEdit={() => setCurrentStep(0)}
+      >
+        <div className="sm:col-span-2 flex items-center gap-4">
+          {(data.avatar?.[0] || jobSeekerProfile?.avatar) ? (
+            // eslint-disable-next-line
+            <img
+              src={
+                data.avatar?.[0]
+                  ? URL.createObjectURL(data.avatar[0])
+                  : jobSeekerProfile?.avatar || ''
+              }
+              alt="Profile"
+              className="h-20 w-20 rounded-full object-cover border border-border/40"
+            />
+          ) : (
+            <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
+              No Photo
+            </div>
+          )}
+        </div>
       </Section>
 
 
