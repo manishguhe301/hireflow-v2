@@ -29,6 +29,7 @@ import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
 import { ActivitySkeleton } from '../../skeletons/ActivitySkeleton'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
+import { useProfile } from '@/src/store/hooks/useProfile'
 
 interface DashboardStats {
   total: number
@@ -140,6 +141,7 @@ const QuickActionCard = ({ href, icon, colorClass, label, desc }:
 
 const JobSeekerDashboard = () => {
   const queryClient = useQueryClient()
+  const { jobSeekerProfile } = useProfile()
 
   const { data: statsData, isLoading: statsLoading, isError: statsError } = useQuery({
     queryKey: ['dashboard-stats'],
@@ -336,15 +338,19 @@ const JobSeekerDashboard = () => {
               No recommendations yet
             </p>
 
-            <p className="text-xs mt-1 text-muted-foreground">
-              Complete your profile to improve job matches
-            </p>
+            {jobSeekerProfile && jobSeekerProfile?.profileCompleted < 70 &&
+              <>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Complete your profile to improve job matches
+                </p>
 
-            <Link href="/dashboard/profile">
-              <Button size="sm" className="mt-3">
-                Complete Profile
-              </Button>
-            </Link>
+                <Link href="/dashboard/profile">
+                  <Button size="sm" className="mt-3">
+                    Complete Profile
+                  </Button>
+                </Link>
+              </>
+            }
           </div>
         )}
       </section>
