@@ -66,36 +66,7 @@ const Step8AdditionalInfo = ({
         description="Additional information to help recruiters find you."
       />
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <MultiSelect
-            label="Job Categories"
-            options={jobCategories}
-            value={watch('jobCategories')}
-            onChange={(val) =>
-              setValue('jobCategories', val, {
-                shouldDirty: true,
-                shouldValidate: true,
-              })
-            }
-            placeholder="Search categories..."
-            disabled={disabled}
-            error={errors.jobCategories?.message}
-          />
-          <MultiSelect
-            label="Preferred Locations (Countries)"
-            options={countries}
-            value={watch('preferredLocations')}
-            onChange={(val) =>
-              setValue('preferredLocations', val, {
-                shouldDirty: true,
-                shouldValidate: true,
-              })
-            }
-            disabled={disabled}
-            placeholder="Select preferred countries..."
-            error={errors.preferredLocations?.message}
-          />
-        </div>
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
@@ -151,7 +122,7 @@ const Step8AdditionalInfo = ({
           // disabled
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           <div className="space-y-3">
             <label className="text-sm text-muted-foreground font-medium">
               Other Links (Optional)
@@ -199,6 +170,9 @@ const Step8AdditionalInfo = ({
               </div>
             )}
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormSelect
             label="Notice Period(Optional)"
             options={noticePeriods}
@@ -206,28 +180,25 @@ const Step8AdditionalInfo = ({
             error={errors.noticePeriod}
             disabled={disabled}
           />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             disabled={disabled}
-            label="Minimum Expected Salary in Lakhs(Optional)"
+            label="Minimum CTC in Lakhs(Optional)"
             register={
               register('expectedSalaryMin', {
                 valueAsNumber: true,
                 min: { value: 0, message: 'Minimum salary cannot be negative' },
-                validate: (value, formValues) => {
-                  if (!value && !formValues.expectedSalaryMax) return true
+                // validate: (value, formValues) => {
+                //   if (!value && !formValues.expectedSalaryMax) return true
 
-                  if (value && !formValues.expectedSalaryMax) return true
+                //   if (value && !formValues.expectedSalaryMax) return true
 
-                  if (value && formValues.expectedSalaryMax &&
-                    value > formValues.expectedSalaryMax) {
-                    return 'Minimum salary cannot exceed maximum salary'
-                  }
+                //   if (value && formValues.expectedSalaryMax &&
+                //     value > formValues.expectedSalaryMax) {
+                //     return 'Minimum salary cannot exceed maximum salary'
+                //   }
 
-                  return true
-                }
+                //   return true
+                // }
               })
             }
             placeholder="for example: 10"
@@ -235,7 +206,7 @@ const Step8AdditionalInfo = ({
             type='number'
             minLength={0}
           />
-          <FormInput
+          {/* <FormInput
             disabled={disabled}
             label="Maximum Expected Salary in Lakhs (Optional)"
             register={register(
@@ -258,6 +229,37 @@ const Step8AdditionalInfo = ({
             error={errors.expectedSalaryMax}
             type='number'
             minLength={0}
+          /> */}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <MultiSelect
+            label="Job Categories"
+            options={jobCategories}
+            value={watch('jobCategories')}
+            onChange={(val) =>
+              setValue('jobCategories', val, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            placeholder="Search categories..."
+            disabled={disabled}
+            error={errors.jobCategories?.message}
+          />
+          <MultiSelect
+            label="Preferred Locations (Countries)"
+            options={countries}
+            value={watch('preferredLocations')}
+            onChange={(val) =>
+              setValue('preferredLocations', val, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            disabled={disabled}
+            placeholder="Select preferred countries..."
+            error={errors.preferredLocations?.message}
           />
         </div>
       </div>
