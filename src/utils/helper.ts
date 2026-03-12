@@ -224,8 +224,8 @@ export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
   if (data.twitterUrl) formData.append('twitterUrl', data.twitterUrl);
   if (data.expectedSalaryMin)
     formData.append('expectedSalaryMin', String(data.expectedSalaryMin));
-  if (data.expectedSalaryMax)
-    formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
+  // if (data.expectedSalaryMax)
+  //   formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
   if (data.noticePeriod) formData.append('noticePeriod', data.noticePeriod);
 
   return formData;

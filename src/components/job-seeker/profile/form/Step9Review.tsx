@@ -280,7 +280,9 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
         <Item
           label="Salary Expectations"
           value={
-            formatSalary(data.expectedSalaryMin, data.expectedSalaryMax)
+            formatSalary(data.expectedSalaryMin,
+              // data.expectedSalaryMax
+            )
           }
           required={false}
         />

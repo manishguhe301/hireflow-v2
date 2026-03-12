@@ -449,8 +449,11 @@ const PublicProfile = () => {
 
           <div>
             <p className="font-medium text-foreground mb-1">Expected Salary</p>
-            {profile.expectedSalaryMin || profile.expectedSalaryMax
-              ? formatSalary(profile.expectedSalaryMin, profile.expectedSalaryMax)
+            {profile.expectedSalaryMin
+              // || profile.expectedSalaryMax
+              ? formatSalary(profile.expectedSalaryMin,
+                //  profile.expectedSalaryMax
+              )
               : '—'}
           </div>
         </div>

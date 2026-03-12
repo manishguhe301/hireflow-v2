@@ -95,7 +95,7 @@ export type JobSeekerFormInputs = {
   jobCategories: string[]
   preferredLocations: string[]
   expectedSalaryMin: number
-  expectedSalaryMax: number
+  // expectedSalaryMax: number
   noticePeriod: string
 }
 
@@ -194,7 +194,7 @@ const ProfileWizard = () => {
       jobCategories: [],
       preferredLocations: [],
       expectedSalaryMin: undefined, //optional
-      expectedSalaryMax: undefined, //optional
+      // expectedSalaryMax: undefined, //optional
       noticePeriod: '', //optional
     }
   })
@@ -235,7 +235,7 @@ const ProfileWizard = () => {
       setValue('jobCategories', jobSeekerProfile.jobCategories)
       setValue('preferredLocations', jobSeekerProfile.preferredLocations)
       setValue('expectedSalaryMin', jobSeekerProfile.expectedSalaryMin as number)
-      setValue('expectedSalaryMax', jobSeekerProfile.expectedSalaryMax as number)
+      // setValue('expectedSalaryMax', jobSeekerProfile.expectedSalaryMax as number)
       setValue('noticePeriod', jobSeekerProfile.noticePeriod as string)
     }
   }, [jobSeekerProfile, setValue])

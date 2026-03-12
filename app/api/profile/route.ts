@@ -41,7 +41,7 @@ function calculateProfileCompletion(data: {
   jobCategories: string[];
   preferredLocations: string[];
   expectedSalaryMin: number | null;
-  expectedSalaryMax: number | null;
+  // expectedSalaryMax: number | null;
   noticePeriod: string | null;
 }): number {
   let score = 0;
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
       jobCategories: formData.get('jobCategories') as string,
       preferredLocations: formData.get('preferredLocations') as string,
       expectedSalaryMin: formData.get('expectedSalaryMin') as string,
-      expectedSalaryMax: formData.get('expectedSalaryMax') as string,
+      // expectedSalaryMax: formData.get('expectedSalaryMax') as string,
       noticePeriod: formData.get('noticePeriod') as string,
     };
 
@@ -341,9 +341,9 @@ export async function POST(req: NextRequest) {
         expectedSalaryMin: data.expectedSalaryMin
           ? parseInt(data.expectedSalaryMin)
           : null,
-        expectedSalaryMax: data.expectedSalaryMax
-          ? parseInt(data.expectedSalaryMax)
-          : null,
+        // expectedSalaryMax: data.expectedSalaryMax
+        //   ? parseInt(data.expectedSalaryMax)
+        //   : null,
         noticePeriod: data.noticePeriod || null,
 
         workExperience: {
@@ -412,9 +412,9 @@ export async function POST(req: NextRequest) {
           expectedSalaryMin: data.expectedSalaryMin
             ? parseInt(data.expectedSalaryMin)
             : null,
-          expectedSalaryMax: data.expectedSalaryMax
-            ? parseInt(data.expectedSalaryMax)
-            : null,
+          // expectedSalaryMax: data.expectedSalaryMax
+          //   ? parseInt(data.expectedSalaryMax)
+          //   : null,
           noticePeriod: data.noticePeriod || null,
         }),
         isPublic: true,
@@ -490,7 +490,7 @@ export async function PATCH(req: NextRequest) {
       jobCategories: formData.get('jobCategories') as string,
       preferredLocations: formData.get('preferredLocations') as string,
       expectedSalaryMin: formData.get('expectedSalaryMin') as string,
-      expectedSalaryMax: formData.get('expectedSalaryMax') as string,
+      // expectedSalaryMax: formData.get('expectedSalaryMax') as string,
       noticePeriod: formData.get('noticePeriod') as string,
     };
 
@@ -638,9 +638,9 @@ export async function PATCH(req: NextRequest) {
         expectedSalaryMin: data.expectedSalaryMin
           ? parseInt(data.expectedSalaryMin)
           : null,
-        expectedSalaryMax: data.expectedSalaryMax
-          ? parseInt(data.expectedSalaryMax)
-          : null,
+        // expectedSalaryMax: data.expectedSalaryMax
+        //   ? parseInt(data.expectedSalaryMax)
+        //   : null,
         noticePeriod: data.noticePeriod || null,
         profileCompleted: calculateProfileCompletion({
           name: data.name,
@@ -672,9 +672,9 @@ export async function PATCH(req: NextRequest) {
           expectedSalaryMin: data.expectedSalaryMin
             ? parseInt(data.expectedSalaryMin)
             : null,
-          expectedSalaryMax: data.expectedSalaryMax
-            ? parseInt(data.expectedSalaryMax)
-            : null,
+          // expectedSalaryMax: data.expectedSalaryMax
+          //   ? parseInt(data.expectedSalaryMax)
+          //   : null,
           noticePeriod: data.noticePeriod || null,
         }),
       },

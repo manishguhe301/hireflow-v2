@@ -88,7 +88,7 @@ model Profile {
   jobCategories        String[]
   preferredLocations   String[]
   expectedSalaryMin    Int?
-  expectedSalaryMax    Int?
+  // expectedSalaryMax    Int?
   noticePeriod         String?
   
   profileCompleted     Int       @default(0)
