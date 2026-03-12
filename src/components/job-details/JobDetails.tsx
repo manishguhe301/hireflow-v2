@@ -215,7 +215,7 @@ const JobDetails = () => {
                   </div>
                 ) :
                   <span className="text-lg font-semibold text-muted-foreground">
-                    {job.company.name.charAt(0).toUpperCase()}
+                    {job?.company?.name?.charAt(0).toUpperCase()}
                   </span>}
             </div>
 

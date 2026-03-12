@@ -39,6 +39,7 @@ export type DirJobType = {
   createdAt: string,
   updatedAt: string,
   isSaved: boolean,
+  hideSalary: boolean
 }
 
 

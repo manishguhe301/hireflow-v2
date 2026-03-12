@@ -184,11 +184,12 @@ const ManageJobs = () => {
                 No jobs found
               </p>
 
-              <Link href="/company/jobs/create">
-                <Button>
-                  Post Your First Job
-                </Button>
-              </Link>
+              {activeTab === 'ALL' &&
+                <Link href="/company/jobs/create">
+                  <Button>
+                    Post Your First Job
+                  </Button>
+                </Link>}
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">

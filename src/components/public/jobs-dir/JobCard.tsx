@@ -33,7 +33,8 @@ type JobCardProps = {
   disabled?: boolean
 }
 
-export default function JobCard({ job,
+export default function JobCard({
+  job,
   isSaved = false,
   onSaveToggle,
   disabled,
@@ -114,10 +115,12 @@ export default function JobCard({ job,
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
-              <div className="flex items-center gap-1 font-medium text-foreground">
-                <Banknote className="h-4 w-4 text-primary" />
-                {formatSalary(job.salaryMin ?? null, job.salaryMax ?? null)}
-              </div>
+              {!job?.hideSalary &&
+                <div className="flex items-center gap-1 font-medium text-foreground">
+                  <Banknote className="h-4 w-4 text-primary" />
+                  {formatSalary(job.salaryMin ?? null, job.salaryMax ?? null)}
+                </div>
+              }
 
               <div className="flex items-center gap-1 text-muted-foreground">
                 <Briefcase className="h-4 w-4" />

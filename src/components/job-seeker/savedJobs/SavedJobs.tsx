@@ -36,6 +36,7 @@ export interface SavedJob {
   // savedId: string;
   savedAt: string;
   isSaved: boolean;
+  hideSalary: boolean
 }
 
 type Pagination = {

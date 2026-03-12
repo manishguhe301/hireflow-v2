@@ -65,13 +65,12 @@ const Step3JobLocation = ({
           )}
 
           <FormInput
-            label="City"
+            label="City (Optional)"
             register={register('city', {
-              required: workMode !== 'REMOTE' ? 'City is required for on-site/hybrid roles' : false
+              required: false
             })}
             placeholder="for example, Bangalore"
             error={errors.city}
-            disabled={workMode === 'REMOTE' || disabled}
           />
         </div>
       </div>

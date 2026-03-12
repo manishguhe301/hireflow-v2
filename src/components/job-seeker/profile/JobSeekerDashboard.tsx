@@ -76,7 +76,8 @@ interface RecommendedJob {
   numberOfOpenings: string;
   applicationDeadline: string;
   slug: string;
-  isSaved: boolean
+  isSaved: boolean;
+  hideSalary: boolean;
 }
 
 const APPLICATION_TABS_STATUS_COLORS = {

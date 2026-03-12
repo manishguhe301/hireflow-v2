@@ -132,7 +132,7 @@ const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
         />
         <Item label="Country" value={data.country} />
         {data.workMode !== 'REMOTE' && (
-          <Item label="City" value={data.city} />
+          <Item label="City" value={data.city} required={false} />
         )}
       </Section>
 
