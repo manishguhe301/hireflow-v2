@@ -27,7 +27,8 @@ const Step7Certifications = ({
   watch,
   setValue,
   disabled,
-  isEditMode
+  isEditMode,
+  refetchProfile
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
@@ -35,6 +36,7 @@ const Step7Certifications = ({
   setValue: UseFormSetValue<JobSeekerFormInputs>
   disabled?: boolean
   isEditMode?: boolean
+  refetchProfile?: () => void
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -127,6 +129,7 @@ const Step7Certifications = ({
           setValue('certifications', [...certifications, saved], { shouldValidate: true, shouldDirty: true })
         }
 
+        await refetchProfile?.()
         toast.success(editingIndex !== null ? 'Certification updated' : 'Certification added')
         handleCloseModal()
       } catch {
@@ -154,6 +157,7 @@ const Step7Certifications = ({
       try {
         const res = await AppSdk.deleteData(`/api/profile/certification/${item.id}`, null)
         if (res.error) { toast.error(res.error); return }
+        await refetchProfile?.()
         toast.success('Certification deleted')
       } catch (error) {
         console.log(error);

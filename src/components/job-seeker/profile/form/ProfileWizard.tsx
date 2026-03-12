@@ -545,6 +545,7 @@ const ProfileWizard = () => {
                 setValue={setValue}
                 disabled={isSubmitting}
                 isEditMode={isEditMode}
+                refetchProfile={refetchProfile}
               />
             }
             {currentStep === 7 &&
