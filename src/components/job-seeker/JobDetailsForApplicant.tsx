@@ -302,7 +302,7 @@ const JobDetailsForApplicant = () => {
           <div className="sticky top-12 space-y-6">
 
             <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4 w-full">
-              <div className='flex flex-row items-center gap-4'>
+              {session?.user.id && <div className='flex flex-row items-center gap-4'>
                 {hasApplied ? (
                   <div className="space-y-3 w-full">
                     <div className="w-full rounded-xl bg-green-500/10 border border-green-500/30 py-3 px-4 text-center">
@@ -350,10 +350,13 @@ const JobDetailsForApplicant = () => {
                     </div>
                 }
               </div>
+              }
 
 
               {!hasApplied && job.applicationDeadline && !isDeadlinePassed && (
-                <p className="text-xs text-muted-foreground text-center">
+                <p className={clsx("text-xs text-muted-foreground text-center",
+                  !session?.user.id && 'text-sm! text-destructive! font-bold!'
+                )}>
                   Apply before{' '}
                   {formatDate(job.applicationDeadline)}
                 </p>
