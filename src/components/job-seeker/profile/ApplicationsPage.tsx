@@ -102,31 +102,30 @@ const ApplicationsPage = () => {
                   setActiveTab(tab.value)
                   setPage(1)
                 }}
-                disabled={isLoading}
+                disabled={isLoading || isFetching}
               >
                 {tab.label}
               </Button>
             )
           })}
+        <Button
+          className='flex items-center justify-center gap-2 maxsm'
+          size='sm'
+          disabled={isLoading || isFetching}
+          onClick={() =>
+            refetch()
+          }>
+          <RefreshCcw className="h-4 w-4" /> Refresh
+        </Button>
       </div>
       {
         isLoading ? (
           <TableSkeleton columns={5} rows={6} />
         ) : (
-          <div className='flex flex-col gap-2'>
-            <Button
-              className='flex items-center justify-center gap-2 self-end'
-              disabled={isLoading || isFetching}
-              onClick={() =>
-                refetch()
-              }>
-              <RefreshCcw className="h-4 w-4" /> Refresh
-            </Button>
-            <ApplicationsTable
-              data={data as ApplicationWithPagination}
-              refetch={refetch}
-            />
-          </div>
+          <ApplicationsTable
+            data={data as ApplicationWithPagination}
+            refetch={refetch}
+          />
         )
       }
       {data && data.pagination.totalPages > 1 && (
