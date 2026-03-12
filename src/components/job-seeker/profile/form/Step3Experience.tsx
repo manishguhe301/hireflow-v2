@@ -47,7 +47,7 @@ const Step3Experience = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [deletingItemId, setDeletingItemId] = useState<string | null>(null)
 
   const workExperiences = watch('workExperience') || []
 
@@ -130,7 +130,7 @@ const Step3Experience = ({
       return
     }
 
-    if (!data.isCurrent && data.endDate && data.endDate < data.startDate) {
+    if (!data.isCurrent && data.endDate && data.endDate <= data.startDate) {
       toast.error('End date must be after start date')
       return
     }
@@ -199,7 +199,7 @@ const Step3Experience = ({
     const item = workExperiences[index]
 
     if (isEditMode && item.id) {
-      setIsDeleting(true)
+      setDeletingItemId(item.id as string)
       try {
         const res = await AppSdk.deleteData(`/api/profile/experience/${item.id}`, null)
         if (res.error) {
@@ -212,13 +212,13 @@ const Step3Experience = ({
         toast.error('Something went wrong')
         console.error(error)
       } finally {
-        setIsDeleting(false)
+        setDeletingItemId(null)
       }
-
     }
 
     const updated = workExperiences.filter((_, i) => i !== index)
     setValue('workExperience', updated, { shouldValidate: true })
+
   }
 
   useEffect(() => {
@@ -299,13 +299,13 @@ const Step3Experience = ({
                   </Button>
                   <Button
                     type="button"
-                    disabled={disabled}
+                    disabled={disabled || deletingItemId === exp.id}
                     variant="ghost"
                     onClick={() => handleDelete(index)}
                     aria-label="Delete work experience"
                     className="p-2!"
                   >
-                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
+                    {deletingItemId === exp.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
                   </Button>
                 </div>
               </div>
@@ -385,7 +385,11 @@ const Step3Experience = ({
                 disabled={disabled || isSaving}
                 label="End Date"
                 value={expWatch('endDate')}
-                minDate={expWatch('startDate') ?? undefined}
+                minDate={
+                  expWatch('startDate')
+                    ? new Date(expWatch('startDate')!.getTime() + 86400000)
+                    : undefined
+                }
                 maxDate={new Date()}
                 onChange={(date) =>
                   setExpValue('endDate', date!, {
