@@ -34,6 +34,7 @@ const Step3Experience = ({
   setValue,
   disabled,
   isEditMode,
+  refetchProfile
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
@@ -41,6 +42,7 @@ const Step3Experience = ({
   disabled?: boolean
   setValue: UseFormSetValue<JobSeekerFormInputs>
   isEditMode?: boolean
+  refetchProfile?: () => void
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -172,6 +174,7 @@ const Step3Experience = ({
         }
 
         toast.success(editingIndex !== null ? 'Experience updated' : 'Experience added')
+        await refetchProfile?.()
         handleCloseModal()
       } catch {
         toast.error('Something went wrong')
@@ -203,6 +206,7 @@ const Step3Experience = ({
           toast.error(res.error)
           return
         }
+        await refetchProfile?.()
         toast.success('Experience deleted')
       } catch (error) {
         toast.error('Something went wrong')

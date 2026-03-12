@@ -27,6 +27,7 @@ import { setProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
 import PageLoader from '@/src/components/ui/PageLoader'
 import StepSidebar from '@/src/components/layout/StepSidebar'
 import MobileTabs from '@/src/components/layout/MobileTabs'
+import { AppSdk } from '@/src/utils/AppSdk'
 
 export type WorkExperienceInput = {
   id?: string
@@ -288,6 +289,23 @@ const ProfileWizard = () => {
     )
   }
 
+  const refetchProfile = async () => {
+    try {
+      const res = await AppSdk.getData('/api/profile/me', null)
+      if (res.error) {
+        toast.error(res.error || 'Error in re-fetching profile, please refresh the page')
+        return
+      }
+
+      if (!res.error && res.profile) {
+        dispatch(setProfile({ profile: res.profile }))
+      }
+    } catch (error) {
+      toast.error('Error in re-fetching profile, please refresh the page')
+      console.error(error)
+    }
+  }
+
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep]
 
@@ -410,6 +428,8 @@ const ProfileWizard = () => {
     }
   };
 
+
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       {jobSeekerProfile && (
@@ -485,6 +505,7 @@ const ProfileWizard = () => {
                 setValue={setValue}
                 disabled={isSubmitting}
                 isEditMode={isEditMode}
+                refetchProfile={refetchProfile}
               />
             }
             {currentStep === 3 &&
