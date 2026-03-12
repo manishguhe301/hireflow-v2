@@ -78,7 +78,7 @@ const CreateAdminUser = () => {
 
     const payload = {
       name: data.name.trim(),
-      email: data.email.trim(),
+      email: data.email.trim().toLowerCase(),
       password: data.password.trim(),
       role: Role.PLATFORM_ADMIN,
     }

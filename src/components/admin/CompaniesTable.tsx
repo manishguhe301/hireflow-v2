@@ -84,7 +84,7 @@ const CompaniesTable = ({
                   <Link
                     href={`/admin/companies/${company.id}`}
                     className="text-muted-foreground hover:underline text-xs"
-                    target='_blank'
+                    // target='_blank'
                   >
                     View Details
                   </Link>
