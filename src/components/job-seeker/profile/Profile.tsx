@@ -17,7 +17,7 @@ import {
   Twitter,
   ExternalLink,
 } from 'lucide-react'
-import { formatSalary, getLabel } from '@/src/utils/helper'
+import { formatDateRange, formatSalary, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
@@ -302,10 +302,7 @@ const Profile = () => {
                   {exp.company} {exp.location && `• ${exp.location}`}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {new Date(exp.startDate).getFullYear()} —{' '}
-                  {exp.endDate
-                    ? new Date(exp.endDate).getFullYear()
-                    : 'Present'}
+                  {formatDateRange(exp.startDate, exp.endDate, exp.isCurrent)}
                 </p>
                 {exp.description && (
                   <p className="mt-2 text-sm text-muted-foreground">

@@ -10,6 +10,35 @@ export function formatDate(date: Date | string): string {
   });
 }
 
+export function formatDateRange(
+  startDate: Date | string,
+  endDate?: Date | string | null,
+  isCurrent?: boolean,
+) {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : null;
+
+  const format = (date: Date) =>
+    date.toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
+
+  const startFormatted = format(start);
+
+  if (isCurrent) {
+    return `${startFormatted} — Present`;
+  }
+
+  if (!end) {
+    return `${startFormatted}`;
+  }
+
+  const endFormatted = format(end);
+
+  return `${startFormatted} — ${endFormatted}`;
+}
+
 export function formatRelativeTime(date: Date | string): string {
   const d = new Date(date);
   const now = new Date();

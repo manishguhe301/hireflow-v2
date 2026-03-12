@@ -16,7 +16,7 @@ export async function GET() {
       },
       include: {
         workExperience: {
-          orderBy: { startDate: 'desc' },
+          orderBy: [{ endDate: 'desc' }, { startDate: 'desc' }],
         },
         education: {
           orderBy: { startYear: 'desc' },

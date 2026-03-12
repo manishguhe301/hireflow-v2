@@ -8,7 +8,7 @@ import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
 import { ArrowLeft, CircleUser, FileText, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
+import { formatDate, formatDateRange, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
 import DocumentCard from '../../admin/DocumentCard'
 import Link from 'next/link'
@@ -467,10 +467,7 @@ const PublicProfile = () => {
                   {exp.company} {exp.location && `• ${exp.location}`}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {new Date(exp.startDate).getFullYear()} —{' '}
-                  {exp.endDate
-                    ? new Date(exp.endDate).getFullYear()
-                    : 'Present'}
+                  {formatDateRange(exp.startDate, exp.endDate, exp.isCurrent)}
                 </p>
                 {exp.description && (
                   <p className="mt-2 text-sm text-muted-foreground">
