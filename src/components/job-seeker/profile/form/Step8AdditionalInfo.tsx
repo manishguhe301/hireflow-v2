@@ -182,11 +182,11 @@ const Step8AdditionalInfo = ({
           />
           <FormInput
             disabled={disabled}
-            label="Minimum CTC in LPA(Optional)"
+            label="Expected CTC in LPA(Optional)"
             register={
               register('expectedSalaryMin', {
                 valueAsNumber: true,
-                min: { value: 0, message: 'Minimum salary cannot be negative' },
+                min: { value: 0, message: 'Expected CTC cannot be negative' },
                 // validate: (value, formValues) => {
                 //   if (!value && !formValues.expectedSalaryMax) return true
 
