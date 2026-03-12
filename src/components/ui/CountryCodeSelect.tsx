@@ -31,6 +31,9 @@ export default function CountryCodeSelect({
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const [search, setSearch] = useState('')
+  const [highlightIndex, setHighlightIndex] = useState(0)
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   const selected = useMemo(
     () => options.find((o) => o.value === value),
@@ -48,6 +51,20 @@ export default function CountryCodeSelect({
         o.value.includes(query)
     )
   }, [options, search])
+
+  useEffect(() => {
+    //eslint-disable-next-line
+    setHighlightIndex(0)
+  }, [search])
+
+  useEffect(() => {
+    const el = optionRefs.current[highlightIndex]
+    if (el) {
+      el.scrollIntoView({
+        block: 'nearest',
+      })
+    }
+  }, [highlightIndex])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -125,21 +142,56 @@ export default function CountryCodeSelect({
               placeholder="Search country or code..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault()
+                  setHighlightIndex((prev) =>
+                    prev < filteredOptions.length - 1 ? prev + 1 : prev
+                  )
+                }
+
+                if (e.key === 'ArrowUp') {
+                  e.preventDefault()
+                  setHighlightIndex((prev) => (prev > 0 ? prev - 1 : 0))
+                }
+
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+
+                  const selectedOption = filteredOptions[highlightIndex]
+
+                  if (selectedOption) {
+                    onChange(selectedOption.value)
+                    setOpen(false)
+                    setSearch('')
+                  }
+                }
+              }}
               className="w-full px-3 py-2 text-sm rounded-md border border-border/60 bg-background focus:outline-none"
             />
           </div>
           {
             filteredOptions.length > 0 ?
-              <div className="max-h-52 overflow-auto">
-                {filteredOptions.map((option) => (
+              <div className="max-h-52 overflow-auto" ref={listRef}>
+                {filteredOptions.map((option, index) => (
                   <button
                     key={`${option.value}-${option.country}`}
                     type="button"
+                    ref={(el) => {
+                      if (el) {
+                        optionRefs.current[index] = el;
+                      }
+                    }}
                     onClick={() => {
                       onChange(option.value)
                       setOpen(false)
                     }}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-muted transition"
+                    className={clsx(
+                      "flex w-full items-center gap-2 px-4 py-2 text-sm transition",
+                      highlightIndex === index
+                        ? "bg-muted"
+                        : "hover:bg-muted"
+                    )}
                   >
                     {option.flag && (
                       //eslint-disable-next-line @next/next/no-img-element
