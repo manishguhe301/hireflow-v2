@@ -250,10 +250,18 @@ export default function ChatWindow({
           const isOwnMessage =
             message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
-          const messageDate = new Date(message.createdAt).toDateString()
+          const messageDate = new Date(message.createdAt).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
           const prevDate =
             index > 0
-              ? new Date(messages[index - 1].createdAt).toDateString()
+              ? new Date(messages[index - 1].createdAt).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
               : null
 
           const showDateDivider = messageDate !== prevDate
@@ -265,7 +273,7 @@ export default function ChatWindow({
             >
               {showDateDivider && (
                 <div className="flex justify-center my-4">
-                  <span className="text-xs bg-muted px-3 py-1 rounded-full text-muted-foreground">
+                  <span className="text-[10px] bg-muted px-3 py-1 rounded-full text-muted-foreground">
                     {messageDate}
                   </span>
                 </div>

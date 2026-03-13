@@ -9,7 +9,6 @@ import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { Spinner } from '../elements/Loader';
 import { useMutation } from '@tanstack/react-query';
-import ChatSidebarSkeleton from '../skeletons/ChatSidebarSkeleton';
 import Skeleton from '../ui/Skeleton';
 
 interface ChatSidebarProps {
@@ -147,7 +146,7 @@ export default function ChatSidebar({
 
       <div className="overflow-y-auto flex-1">
         {
-          isFetching ?
+          isFetching && searchQuery ?
             <div className="w-full overflow-hidden h-full border-r border-border p-3 space-y-3">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3 p-2">

@@ -24,6 +24,18 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const hasAutoSelectedFromUrl = useRef(false);
+  const hasShownInitToast = useRef(false)
+
+  useEffect(() => {
+    if (conversationFromUrl && !hasShownInitToast.current) {
+      const toastId = toast.loading('Please wait while we initialize the chat...')
+      hasShownInitToast.current = true
+
+      setTimeout(() => {
+        toast.dismiss(toastId)
+      }, 2000)
+    }
+  }, [conversationFromUrl])
 
   const {
     data,
@@ -160,8 +172,13 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
           <ChatSidebar
             conversations={conversations}
             selectedConversation={selectedConversation}
-            onSelectConversation={setSelectedConversation}
-            userType={userType}
+            onSelectConversation={(id) => {
+              setSelectedConversation(id)
+
+              if (conversationFromUrl) {
+                window.history.replaceState({}, '', '/company/chat')
+              }
+            }} userType={userType}
             onConversationUpdate={() => refetch()}
             searchQuery={searchQuery}
             hasMore={hasNextPage ?? false}
@@ -180,7 +197,13 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
             conversationId={selectedConversation}
             userType={userType}
             onMessageSent={() => refetch()}
-            onBack={() => setSelectedConversation(null)}
+            onBack={() => {
+              setSelectedConversation(null)
+
+              if (conversationFromUrl) {
+                window.history.replaceState({}, '', '/company/chat')
+              }
+            }}
             chatPartnerName={
               selectedConversationData
                 ? (userType === 'company'
