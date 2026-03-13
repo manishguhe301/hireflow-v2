@@ -28,6 +28,7 @@ import PageLoader from '@/src/components/ui/PageLoader'
 import StepSidebar from '@/src/components/layout/StepSidebar'
 import MobileTabs from '@/src/components/layout/MobileTabs'
 import { AppSdk } from '@/src/utils/AppSdk'
+import { ArrowLeft } from 'lucide-react'
 
 export type WorkExperienceInput = {
   id?: string
@@ -432,8 +433,17 @@ const ProfileWizard = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        disabled={isSubmitting}
+        className="inline-flex items-center gap-2 py-2 mb-6 p-0!"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
       {jobSeekerProfile && (
-        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <div className="my-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
           <p className="text-sm text-primary font-medium">
             Editing a profile
           </p>
@@ -443,7 +453,6 @@ const ProfileWizard = () => {
           </p>
         </div>
       )}
-
       {isEditMode && (
         <MobileTabs
           steps={steps}

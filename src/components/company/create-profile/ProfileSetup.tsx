@@ -17,6 +17,7 @@ import { CompanyStatus } from '@prisma/client'
 import clsx from 'clsx'
 import MobileTabs from '../../layout/MobileTabs'
 import StepSidebar from '../../layout/StepSidebar'
+import { ArrowLeft } from 'lucide-react'
 
 export type ProfileFormInputs = {
   name: string,
@@ -228,6 +229,15 @@ const ProfileSetup = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="inline-flex items-center gap-2 py-2 mb-6 p-0!"
+        disabled={isSubmitting}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </Button>
       {company?.status === CompanyStatus.REJECTED && company.rejectionReason && (
         <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
           <h3 className="text-sm font-semibold text-destructive mb-1">
