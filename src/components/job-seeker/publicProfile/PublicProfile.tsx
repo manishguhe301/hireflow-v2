@@ -595,7 +595,11 @@ const PublicProfile = () => {
               )}
             >
               {Object.values(ApplicationStatus).map((status) => (
-                <option key={status} value={status}>
+                <option
+                  key={status}
+                  value={status}
+                  disabled={status === ApplicationStatus.APPLIED}
+                >
                   {APPLICATIONS_TABS.find((tab) => tab.value === status)?.label}
                 </option>
               ))}

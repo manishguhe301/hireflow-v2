@@ -567,7 +567,11 @@ const JobApplicants = () => {
                 className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
               >
                 {Object.values(ApplicationStatus).filter(s => s !== 'REJECTED').map((status) => (
-                  <option key={status} value={status}>
+                  <option
+                    key={status}
+                    value={status}
+                    disabled={status === ApplicationStatus.APPLIED}
+                  >
                     {getLabel(APPLICATIONS_TABS, status)}
                   </option>
                 ))}
