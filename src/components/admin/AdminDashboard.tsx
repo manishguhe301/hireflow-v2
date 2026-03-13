@@ -96,12 +96,14 @@ const AdminDashboard = () => {
     )
   }
 
+
+  const pendingCount = stats.companies.pending
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
       {stats.companies.pending > 0 && (
         <div className="bg-warning/10 border border-warning/30 rounded-xl p-4">
           <p className="text-sm font-medium">
-            {stats.companies.pending} companies awaiting approval
+            {pendingCount} {pendingCount === 1 ? 'company' : 'companies'} awaiting approval
           </p>
         </div>
       )}

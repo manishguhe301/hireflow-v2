@@ -75,6 +75,9 @@ const PublicProfile = () => {
           application: res.application,
         }))
       queryClient.invalidateQueries({ queryKey: ['job-applications'] })
+      queryClient.invalidateQueries({
+        queryKey: ['company-dashboard']
+      })
       setIsRejectModalOpen(false)
       setInternalNotes('')
     },

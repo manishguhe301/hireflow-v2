@@ -173,7 +173,9 @@ const JobApplicants = () => {
       queryClient.invalidateQueries({
         queryKey: ['applications']
       })
-
+      queryClient.invalidateQueries({
+        queryKey: ['company-dashboard']
+      })
       setSelectedApplicants([])
       setIsBulkModalOpen(false)
       setBulkRejectReason('')
