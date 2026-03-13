@@ -236,7 +236,7 @@ const CompanyDetails = () => {
         </h2>
 
         <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words ">
-          {company.description}
+          {company.description || '—'}
         </p>
 
       </div>
@@ -263,7 +263,7 @@ const CompanyDetails = () => {
 
         <InfoCard title="Contact Information">
           <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
-          <InfoRow icon={<Phone />} label="Phone" value={`${company.countryPhoneCode} ${company.contactPhone}` || '—'} />
+          <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone ? `${company.countryPhoneCode} ${company.contactPhone}` : 'N/A'} />
           <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
           <InfoRow
             icon={<Linkedin />}

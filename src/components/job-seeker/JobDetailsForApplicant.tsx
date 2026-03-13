@@ -392,7 +392,7 @@ const JobDetailsForApplicant = () => {
               </div>
 
               <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                {job.company.description}
+                {job.company.description || '-'}
               </p>
 
               <Button

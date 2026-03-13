@@ -369,6 +369,7 @@ enum NotificationType {
   JOB_CLOSING_SOON
   NEW_MESSAGE_RECEIVED           
 }
+
 model Conversation {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   companyId       String    @db.ObjectId

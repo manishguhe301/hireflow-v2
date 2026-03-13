@@ -89,7 +89,7 @@ const StatCard = ({
       <div className="flex-1">
         <p className="text-sm font-medium text-muted-foreground">{title}</p>
         <p className="text-4xl font-bold mt-3 mb-2">{value}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p className="text-xs text-muted-foreground">{description || '-'}</p>
       </div>
       <div
         className={`h-12 w-12 rounded-xl ${colorClass} flex items-center justify-center flex-shrink-0 ml-4`}
@@ -234,7 +234,7 @@ export default function CompanyDashboard() {
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className=" flex items-center gap-3 flex-1 min-w-0">
-                    {app.user.profile?.avatar ? (
+                    {app?.user?.profile?.avatar ? (
                       <div className='relative'>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img

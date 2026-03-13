@@ -66,7 +66,7 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3">
         <h2 className="text-lg font-semibold tracking-tight">About the Company</h2>
         <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words text-sm leading-relaxed max-w-3xl">
-          {company.description}
+          {company.description || '—'}
         </p>
       </div>
 

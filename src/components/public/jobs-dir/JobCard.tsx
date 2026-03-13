@@ -142,10 +142,16 @@ export default function JobCard({
 
           <div className="mt-5 flex items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground">
             <div className={clsx("flex items-center gap-3", !session?.user.id && "w-full justify-between")}>
-              <div className="flex items-center gap-1">
+              {job.applicationDeadline ? <div className="flex items-center gap-1">
                 <Hourglass className="h-3.5 w-3.5" />
                 <span>Apply by {formatDate(job.applicationDeadline)}</span>
-              </div>
+              </div> :
+                <div>Application Deadline: 
+                  <span className="font-medium text-foreground ml-1">
+                    Not Provided
+                  </span>
+                </div>
+              }
 
               {Number(job.numberOfOpenings) > 1 && (
                 <span className="font-medium text-foreground max-sm:hidden">

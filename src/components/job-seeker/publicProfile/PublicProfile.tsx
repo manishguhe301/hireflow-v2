@@ -295,10 +295,10 @@ const PublicProfile = () => {
               {profile.contactEmail}
             </div>
 
-            <div className="flex items-center gap-2 py-2">
+            {profile.phone && <div className="flex items-center gap-2 py-2">
               <Phone className="h-4 w-4" />
               {profile.countryPhoneCode} {profile.phone}
-            </div>
+            </div>}
 
             {profile.portfolioWebsite && (
               <div className="flex items-center gap-2 py-2">

@@ -133,7 +133,7 @@ const Step4Review = ({ watch, setCurrentStep, isLoading }: Props) => {
         <Item label="Website" value={data.website} />
         <Item label="LinkedIn" value={data.linkedinProfile} required={false} />
         <div className="sm:col-span-2">
-          <Item label="Description" value={data.description} />
+          <Item label="Description" value={data.description || '-'} />
         </div>
       </Section>
 
@@ -141,7 +141,7 @@ const Step4Review = ({ watch, setCurrentStep, isLoading }: Props) => {
         disabled={isLoading}
       >
         <Item label="Contact Email" value={data.contactEmail} />
-        <Item label="Contact Phone" value={`${data.countryPhoneCode} ${data.contactPhone}`} required={false} />
+        <Item label="Contact Phone" value={data.contactPhone && `${data.countryPhoneCode} ${data.contactPhone}` } required={false} />
         <Item label="Country" value={data.country} />
         <Item label="City" value={data.city} required={false} />
         <div className="sm:col-span-2">
