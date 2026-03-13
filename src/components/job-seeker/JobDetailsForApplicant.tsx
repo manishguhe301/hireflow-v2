@@ -433,8 +433,9 @@ const JobDetailsForApplicant = () => {
           country: job.country,
           city: job.city || null,
         }}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
+        onSuccess={async () => {
+          await queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
+          await queryClient.refetchQueries({ queryKey: ['job-details', slug] })
         }}
       />}
     </div>
