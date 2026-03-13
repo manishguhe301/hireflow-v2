@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
     console.error('Signed URL cron failed', error);
 
     await sendEmail({
-      to: 'manishguhe301@gmail.com',
+      to: process.env.ADMIN_EMAIL!,
       subject: '🚨 Signed URL Cron Failed',
       react: React.createElement(SignedUrlFailureEmail, {
         error: String(error),

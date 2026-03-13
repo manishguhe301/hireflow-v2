@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     const { name: userName, email: userEmail, role: userRole } = user;
 
     await sendEmail({
-      to: 'manishguhe301@gmail.com',
+      to: process.env.ADMIN_EMAIL!,
       subject: `🚀 New User Signup - ${user.name}`,
       react: React.createElement(NewUserEmail, {
         name: userName,
