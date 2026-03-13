@@ -9,6 +9,8 @@ import { Button } from '../ui/Button';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { Spinner } from '../elements/Loader';
 import { useMutation } from '@tanstack/react-query';
+import ChatSidebarSkeleton from '../skeletons/ChatSidebarSkeleton';
+import Skeleton from '../ui/Skeleton';
 
 interface ChatSidebarProps {
   conversations: ConversationListItem[];
@@ -22,6 +24,7 @@ interface ChatSidebarProps {
   isLoadingMore: boolean
   setSearchQuery: Dispatch<SetStateAction<string>>
   onDeleteConversation: (id: string) => void;
+  isFetching: boolean
 }
 
 export default function ChatSidebar({
@@ -37,6 +40,7 @@ export default function ChatSidebar({
   setSearchQuery,
   // setConversations
   onDeleteConversation,
+  isFetching
 }: ChatSidebarProps) {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -85,6 +89,8 @@ export default function ChatSidebar({
     });
   }, [conversations, userType]);
 
+
+
   return (
     <div className="w-80 border-r border-border bg-card flex flex-col max-sm:w-full">
       <div className="p-4 border-b border-border">
@@ -109,7 +115,7 @@ export default function ChatSidebar({
               )}
             />
           </p>
-        </div>
+        </div >
 
         <div className="relative mt-2">
 
@@ -137,131 +143,148 @@ export default function ChatSidebar({
             </button>
           )}
         </div>
-      </div>
+      </div >
 
       <div className="overflow-y-auto flex-1">
-        {conversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground px-4">
-            <MessageCircle className="h-12 w-12 mb-4 opacity-50" />
-            <p className="text-sm text-center">No conversations yet</p>
-            {userType === 'company' && (
-              <p className="text-xs text-center mt-2">
-                Start a conversation from the applications page
-              </p>
-            )}
-          </div>
-        ) : (
-          <>
-            {renderedConversations.map((item) => {
-              if (!item) return null;
+        {
+          isFetching ?
+            <div className="w-full overflow-hidden h-full border-r border-border p-3 space-y-3">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-2">
 
-              const { conv, otherUser, lastMessage, unreadCount, src, name } = item;
+                  <Skeleton variant="circle" width={40} height={40} animation="wave" />
 
-              if (!otherUser) return null;
+                  <div className="flex-1 space-y-2">
+                    <Skeleton width="70%" height={12} animation="wave" />
+                    <Skeleton width="50%" height={10} animation="wave" />
+                  </div>
 
-              return (
-                <div
-                  key={conv.id}
-                  onClick={() => onSelectConversation(conv.id)}
-                  className={clsx(
-                    'w-full p-4 border-b border-border hover:bg-muted/30 hover:shadow-sm transition text-left cursor-pointer',
-                    selectedConversation === conv.id &&
-                    'bg-muted/50 border-l-2 border-primary'
-                  )}
-                >
-                  <div className=" flex items-start gap-3">
-                    {('logo' in otherUser && otherUser.logo) ||
-                      (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
+                </div>
+              ))}
+            </div> :
+            conversations.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground px-4">
+                <MessageCircle className="h-12 w-12 mb-4 opacity-50" />
+                <p className="text-sm text-center">No conversations yet</p>
+                {userType === 'company' && (
+                  <p className="text-xs text-center mt-2">
+                    Start a conversation from the applications page
+                  </p>
+                )}
+              </div>
+            ) : (
+              <>
+                {renderedConversations.map((item) => {
+                  if (!item) return null;
 
-                      <div className='relative'>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={
-                            src
-                          }
-                          loading='lazy'
-                          alt={otherUser.name}
-                          // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-                          className={clsx(
-                            "h-10 w-10 object-cover rounded-full shrink-0 transition-opacity duration-300",
-                          )}
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary font-semibold">
-                          {otherUser.name[0].toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+                  const { conv, otherUser, lastMessage, unreadCount, src, name } = item;
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium truncate">{name}</p>
-                        {lastMessage && (
-                          <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                            {formatRelativeTime(lastMessage.createdAt)}
-                          </span>
-                        )}
-                      </div>
+                  if (!otherUser) return null;
 
-                      {conv.job && (
-                        <p className="text-xs text-muted-foreground mb-1 truncate">
-                          Re: {conv.job.title}
-                        </p>
+                  return (
+                    <div
+                      key={conv.id}
+                      onClick={() => onSelectConversation(conv.id)}
+                      className={clsx(
+                        'w-full p-4 border-b border-border hover:bg-muted/30 hover:shadow-sm transition text-left cursor-pointer',
+                        selectedConversation === conv.id &&
+                        'bg-muted/50 border-l-2 border-primary'
                       )}
+                    >
+                      <div className=" flex items-start gap-3">
+                        {('logo' in otherUser && otherUser.logo) ||
+                          (!('logo' in otherUser) && otherUser.profile?.avatar) ? (
 
-                      <div className={clsx('flex flex-row items-center gap-2 ',
-                        lastMessage ? 'justify-between' : 'justify-end'
-                      )}>
-                        {lastMessage && (
-                          <div className="flex items-center justify-between gap-2 w-1/2">
-                            <p className="text-xs text-muted-foreground truncate flex-1">
-                              {lastMessage.content}
-                            </p>
+                          <div className='relative'>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={
+                                src
+                              }
+                              loading='lazy'
+                              alt={otherUser.name}
+                              // className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                              className={clsx(
+                                "h-10 w-10 object-cover rounded-full shrink-0 transition-opacity duration-300",
+                              )}
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <span className="text-primary font-semibold">
+                              {otherUser.name[0].toUpperCase()}
+                            </span>
                           </div>
                         )}
-                        <div className="flex items-center justify-end gap-2 self-end">
-                          {unreadCount > 0 && (
-                            <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                              {unreadCount}
-                            </span>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="font-medium truncate">{name}</p>
+                            {lastMessage && (
+                              <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
+                                {formatRelativeTime(lastMessage.createdAt)}
+                              </span>
+                            )}
+                          </div>
+
+                          {conv.job && (
+                            <p className="text-xs text-muted-foreground mb-1 truncate">
+                              Re: {conv.job.title}
+                            </p>
                           )}
-                          {userType === 'company' &&
-                            <Button
-                              disabled={deleteMutation.isPending &&
-                                deleteMutation.variables === conv.id}
-                              variant='ghost'
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteMutation.mutate(conv.id);
-                              }
-                              }
-                              aria-label='Delete conversation'
-                              className='p-0!'>
-                              {deleteMutation.isPending &&
-                                deleteMutation.variables === conv.id ? (
-                                <Spinner className="h-4 w-4" />
-                              ) : (
-                                <Trash2 className="text-destructive h-4 w-4 cursor-pointer" />
+
+                          <div className={clsx('flex flex-row items-center gap-2 ',
+                            lastMessage ? 'justify-between' : 'justify-end',
+                            'max-sm:justify-end'
+                          )}>
+                            {lastMessage && (
+                              <div className="flex items-center justify-between gap-2 w-1/2 max-sm:hidden">
+                                <p className="text-xs text-muted-foreground truncate flex-1">
+                                  {lastMessage.content}
+                                </p>
+                              </div>
+                            )}
+                            <div className="flex items-center justify-end gap-2 self-end">
+                              {unreadCount > 0 && (
+                                <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                                  {unreadCount}
+                                </span>
                               )}
-                            </Button>}
+                              {userType === 'company' &&
+                                <Button
+                                  disabled={deleteMutation.isPending &&
+                                    deleteMutation.variables === conv.id}
+                                  variant='ghost'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteMutation.mutate(conv.id);
+                                  }
+                                  }
+                                  aria-label='Delete conversation'
+                                  className='p-0!'>
+                                  {deleteMutation.isPending &&
+                                    deleteMutation.variables === conv.id ? (
+                                    <Spinner className="h-4 w-4" />
+                                  ) : (
+                                    <Trash2 className="text-destructive h-4 w-4 cursor-pointer" />
+                                  )}
+                                </Button>}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
 
-            {hasMore && (
-              <div ref={observerTarget} className="p-4 text-center">
-                {isLoadingMore && <Spinner className="h-6 w-6 mx-auto" />}
-              </div>
+                {hasMore && (
+                  <div ref={observerTarget} className="p-4 text-center">
+                    {isLoadingMore && <Spinner className="h-6 w-6 mx-auto" />}
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
       </div>
-    </div>
+    </div >
   );
 }

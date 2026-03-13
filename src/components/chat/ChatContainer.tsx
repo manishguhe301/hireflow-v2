@@ -31,6 +31,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
+    isFetching,
     refetch,
   } = useInfiniteQuery({
     queryKey: ['conversations', debouncedSearch],
@@ -168,6 +169,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
             onDeleteConversation={handleDeleteConversation}
             observerTarget={observerTarget}
             isLoadingMore={isFetchingNextPage}
+            isFetching={isFetching}
           />
         </div>
         <div className={clsx(
