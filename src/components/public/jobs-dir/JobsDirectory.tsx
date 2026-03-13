@@ -189,6 +189,30 @@ const JobsDirectory = () => {
         return AppSdk.postData(`/api/jobs/saved`, { jobId })
       }
     },
+    onMutate: async ({ jobId, currentlySaved }) => {
+      await queryClient.cancelQueries({ queryKey: ['jobs'] })
+
+      const previousData = queryClient.getQueryData(['jobs', queryParams, session?.user?.id ?? 'public'])
+
+      queryClient.setQueryData(
+        ['jobs', queryParams, session?.user?.id ?? 'public'],
+        //eslint-disable-next-line
+        (old: any) => {
+          if (!old) return old
+
+          return {
+            ...old,
+            jobs: old.jobs.map((job: DirJobType) =>
+              job.id === jobId
+                ? { ...job, isSaved: !currentlySaved }
+                : job
+            )
+          }
+        }
+      )
+
+      return { previousData }
+    },
     onSuccess: (_data, variables) => {
       if (variables.currentlySaved) {
         toast.success('Job removed from saved')
@@ -196,12 +220,19 @@ const JobsDirectory = () => {
         toast.success('Job saved successfully')
       }
 
-      queryClient.invalidateQueries({ queryKey: ['jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
+      // queryClient.invalidateQueries({ queryKey: ['jobs'] })
+      // queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
     },
-    onError: () => {
-      toast.error('Failed to save job, please try again')
-    }
+    onError: (_err, _vars, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ['jobs', queryParams, session?.user?.id ?? 'public'],
+          context.previousData
+        )
+      }
+
+      toast.error('Failed to save job')
+    },
   })
 
   const handleSaveToggle = (jobId: string, currentlySaved: boolean) => {
