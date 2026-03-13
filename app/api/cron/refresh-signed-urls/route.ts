@@ -9,11 +9,10 @@ const EXPIRY = 60 * 60 * 24 * 7;
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('user-agent');
+    const cronSecret = req.headers.get('x-cron-secret');
     const isLocalTest = process.env.NODE_ENV === 'development';
-    const isVercelCron = authHeader?.includes('vercel-cron');
 
-    if (!isVercelCron && !isLocalTest) {
+    if (cronSecret !== process.env.CRON_SECRET && !isLocalTest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

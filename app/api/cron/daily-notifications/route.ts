@@ -4,12 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('user-agent');
-
+    const cronSecret = request.headers.get('x-cron-secret');
     const isLocalTest = process.env.NODE_ENV === 'development';
-    const isVercelCron = authHeader?.includes('vercel-cron');
 
-    if (!isVercelCron && !isLocalTest) {
+    if (cronSecret !== process.env.CRON_SECRET && !isLocalTest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
