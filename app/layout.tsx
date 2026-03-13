@@ -29,7 +29,6 @@ export default function RootLayout({
               <QueryProvider>
                 {children}
               </QueryProvider>
-              {/* <ThemeToggle /> */}
               <ToasterProvider />
             </ReduxProvider>
           </ThemeProvider>
