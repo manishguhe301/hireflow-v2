@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Spinner } from '../../elements/Loader';
 import { Button } from '../../ui/Button';
 import { StatCard } from './CompanyApplicationsDashboard';
-import { CalendarClock, CheckCircle, Eye, FileText, Layers, RefreshCw, Search, UserCheck, XCircle } from 'lucide-react';
+import { CalendarClock, CheckCircle, Eye, FileCheck, FileText, Layers, OctagonAlert, RefreshCw, Search, UserCheck, XCircle } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
 import { getLabel } from '@/src/utils/helper';
 import { FormSelect } from '../../ui/FormSelect';
@@ -29,6 +29,7 @@ interface Stats {
   rejected: number,
   offered: number,
   hired: number,
+  onHold: number
 };
 
 export interface Applications {
@@ -295,7 +296,7 @@ const JobApplicants = () => {
       </div>
 
       {stats &&
-        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
           <StatCard
             title="Total"
             value={stats.total}
@@ -331,6 +332,18 @@ const JobApplicants = () => {
             value={stats.hired}
             icon={<CheckCircle className="h-5 w-5" />}
             color="bg-emerald-500/10 text-emerald-600"
+          />
+          <StatCard
+            title="Offered"
+            value={stats.offered}
+            icon={<FileCheck className="h-5 w-5" />}
+            color="bg-amber-500/10 text-amber-600"
+          />
+          <StatCard
+            title="On Hold"
+            value={stats.onHold}
+            icon={<OctagonAlert className="h-5 w-5" />}
+            color="bg-rose-500/10 text-rose-600"
           />
         </section>
       }

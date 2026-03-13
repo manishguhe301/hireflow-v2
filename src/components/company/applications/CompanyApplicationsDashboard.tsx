@@ -14,6 +14,8 @@ import {
   CheckCircle,
   FileText,
   RefreshCcw,
+  FileCheck,
+  OctagonAlert,
 } from 'lucide-react'
 import { formatDate, formatRelativeTime, getLabel } from '@/src/utils/helper'
 import Pagination from '@/src/components/ui/Pagination'
@@ -187,7 +189,7 @@ export default function CompanyApplicationsPage() {
           ))}
         </section>
       ) :
-        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
           <StatCard
             title="Total"
             value={statsData.total}
@@ -223,6 +225,18 @@ export default function CompanyApplicationsPage() {
             value={statsData.hired}
             icon={<CheckCircle className="h-5 w-5" />}
             color="bg-emerald-500/10 text-emerald-600"
+          />
+          <StatCard
+            title="Offered"
+            value={statsData.offered}
+            icon={<FileCheck className="h-5 w-5" />}
+            color="bg-amber-500/10 text-amber-600"
+          />
+          <StatCard
+            title="On Hold"
+            value={statsData.onHold}
+            icon={<OctagonAlert className="h-5 w-5" />}
+            color="bg-rose-500/10 text-rose-600"
           />
         </section>
       }

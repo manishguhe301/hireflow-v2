@@ -17,6 +17,7 @@ export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   OFFERED: 'bg-green-500/10 text-green-600',
   HIRED: 'bg-emerald-500/10 text-emerald-600',
   REJECTED: 'bg-red-500/10 text-red-600',
+  ON_HOLD: 'bg-gray-500/10 text-gray-600',
 }
 
 const ApplicationsTable = ({ data, refetch }:
