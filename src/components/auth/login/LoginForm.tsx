@@ -9,6 +9,7 @@ import { isValidEmail } from '@/src/utils/helper'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Link from 'next/link'
+import { useQueryClient } from '@tanstack/react-query'
 
 type Inputs = {
   email: string
@@ -31,6 +32,7 @@ const LoginForm = () => {
   const searchParams = useSearchParams()
   const callbackURL = searchParams.get('callbackUrl')
   const [isLoading, setIsLoading] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     const email = data.email.trim().toLowerCase()
@@ -57,6 +59,7 @@ const LoginForm = () => {
 
       toast.success('Login successful')
       reset()
+      await queryClient.invalidateQueries({ queryKey: ['jobs'] })
 
       router.replace(callbackURL || '/redirect')
     } catch (error) {

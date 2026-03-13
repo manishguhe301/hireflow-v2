@@ -123,7 +123,7 @@ const JobsDirectory = () => {
   }, [debouncedSearch, debouncedCategory, debouncedLocation, debouncedFilters, page])
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['jobs', queryParams],
+    queryKey: ['jobs', queryParams, session?.user?.id ?? 'public'],
     queryFn: async ({ signal }) => {
       const res = await fetch(`/api/jobs?${queryParams}`, { signal })
       if (!res.ok) throw new Error('Failed to fetch jobs')
