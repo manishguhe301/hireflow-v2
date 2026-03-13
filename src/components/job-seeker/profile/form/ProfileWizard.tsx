@@ -98,6 +98,7 @@ export type JobSeekerFormInputs = {
   expectedSalaryMin: number
   // expectedSalaryMax: number
   noticePeriod: string
+  deleteAvatar?: boolean
 }
 
 
@@ -197,6 +198,8 @@ const ProfileWizard = () => {
       expectedSalaryMin: undefined, //optional
       // expectedSalaryMax: undefined, //optional
       noticePeriod: '', //optional
+
+      deleteAvatar: false
     }
   })
   const router = useRouter()

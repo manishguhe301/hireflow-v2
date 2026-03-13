@@ -187,6 +187,10 @@ export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
     formData.append('avatar', data.avatar[0]);
   }
 
+  if (data.deleteAvatar) {
+    formData.append('deleteAvatar', 'true');
+  }
+
   formData.append(
     'preferredWorkMode',
     JSON.stringify(data.preferredWorkMode || []),

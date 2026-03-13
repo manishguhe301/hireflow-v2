@@ -152,6 +152,20 @@ const Step1BasicFormInfo = ({
             disabled={disabled}
           />
         </div>
+
+        {watch('deleteAvatar') && (
+          <div className="flex items-center gap-3 rounded-2xl border border-border/40 bg-muted/20 p-4">
+            <p className="text-sm text-muted-foreground flex-1">Click on &apos;Save changes&apos; to delete your avatar</p>
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => setValue('deleteAvatar', false, { shouldDirty: true })}
+              className="text-xs text-primary border border-primary/40 rounded-lg px-3 py-1.5 hover:bg-primary/10 transition disabled:opacity-50"
+            >
+              Undo
+            </button>
+          </div>
+        )}
         <FileUpload<JobSeekerFormInputs>
           label="Avatar (Optional)"
           description="PNG, JPG or SVG (max 2MB)"
@@ -161,10 +175,16 @@ const Step1BasicFormInfo = ({
           // required
           accept="image/png,image/jpeg,image/jpg,image/svg+xml"
           maxSizeMB={2}
-          existingFileUrl={jobSeekerProfile?.avatar}
+          existingFileUrl={watch('deleteAvatar') ? null : jobSeekerProfile?.avatar}
           isImage
           disabled={disabled}
+          onDeleteExisting={
+            jobSeekerProfile?.avatar
+              ? () => setValue('deleteAvatar', true, { shouldDirty: true })
+              : undefined
+          }
         />
+
       </div>
     </div>
   )
