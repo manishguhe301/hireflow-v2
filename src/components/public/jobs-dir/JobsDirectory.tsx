@@ -288,7 +288,7 @@ const JobsDirectory = () => {
 
   return (
     <div className={clsx(isLoggedIn
-      ? 'space-y-6 ' : "mx-auto max-w-5xl px-4 py-10 space-y-10")}>
+      ? 'space-y-6 ' : "mx-auto max-w-7xl px-4 py-10 space-y-10")}>
       {!isLoggedIn ?
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold tracking-tight">Explore Jobs</h1>
