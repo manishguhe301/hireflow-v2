@@ -224,7 +224,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40">
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40 max-sm:flex-col">
           <Button
             type="button"
             variant="outline"

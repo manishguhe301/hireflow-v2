@@ -289,7 +289,7 @@ export default function HomePage() {
                       <div className="flex items-start gap-5">
                         <div className="relative">
                           <div className="absolute inset-0 rounded-full border border-primary/30 blur-[0.5px]" />
-                          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
+                          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/40 bg-muted overflow-hidden sm:h-12 sm:w-12">
                             {job.company?.logo ? (
                               <>
                                 <img

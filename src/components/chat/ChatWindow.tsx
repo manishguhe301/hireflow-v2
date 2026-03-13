@@ -330,13 +330,14 @@ export default function ChatWindow({
                 handleSendMessage();
               }
             }}
-            placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+            placeholder="Type a message... (Enter to send, Shift+Enter for new line), Max 500 characters"
             className={clsx(
               'w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition',
               'bg-background text-foreground border-border/60',
               'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
             )}
             rows={2}
+            maxLength={500}
           />
           <Button
             onClick={handleSendMessage}
