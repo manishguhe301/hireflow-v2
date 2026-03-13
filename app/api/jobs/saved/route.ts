@@ -121,6 +121,11 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '12');
     const skip = (page - 1) * limit;
 
+    const appliedJobIds = await prisma.application.findMany({
+      where: { userId: guard.session.user.id },
+      select: { jobId: true },
+    });
+
     const [savedJobs, total] = await Promise.all([
       prisma.savedJob.findMany({
         where: { userId: guard.session.user.id },
@@ -170,6 +175,7 @@ export async function GET(req: NextRequest) {
         savedAt: s.createdAt,
         ...s.job,
         isSaved: true,
+        isApplied: appliedJobIds.some((job) => job.jobId === s.job.id),
       })),
       pagination: {
         total,

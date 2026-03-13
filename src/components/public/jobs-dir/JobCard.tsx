@@ -31,6 +31,7 @@ type JobCardProps = {
   isSaved?: boolean
   onSaveToggle?: () => void
   disabled?: boolean
+  isApplied?: boolean
 }
 
 export default function JobCard({
@@ -38,6 +39,7 @@ export default function JobCard({
   isSaved = false,
   onSaveToggle,
   disabled,
+  isApplied
 }: JobCardProps) {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
   const location = job.city
@@ -152,7 +154,7 @@ export default function JobCard({
               )}
             </div>
 
-            {session && (
+            {session && !isApplied && (
               <Button
                 size="sm"
                 className="flex items-center gap-1 px-3 py-1.5 text-xs"
@@ -160,6 +162,7 @@ export default function JobCard({
                   e.preventDefault()
                   setIsApplyModalOpen(true)
                 }}
+                disabled={disabled}
               >
                 <Zap className="h-3.5 w-3.5" />
                 Quick Apply
@@ -194,7 +197,6 @@ export default function JobCard({
           queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
         }}
       />
-
     </>
   )
 }

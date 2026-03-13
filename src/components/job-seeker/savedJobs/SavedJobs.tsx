@@ -36,7 +36,8 @@ export interface SavedJob {
   // savedId: string;
   savedAt: string;
   isSaved: boolean;
-  hideSalary: boolean
+  hideSalary: boolean;
+  isApplied?: boolean
 }
 
 type Pagination = {
@@ -146,6 +147,7 @@ const SavedJobs = () => {
                 <JobCard
                   job={job}
                   isSaved={job.isSaved}
+                  isApplied={job.isApplied}
                   onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
                   disabled={saveMutation.isPending}
                 />
