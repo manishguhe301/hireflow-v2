@@ -2,17 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/daily-notifications",
-      "schedule": "0 9 * * 1-6",
-      "headers": {
-        "x-cron-secret": "@cron_secret"
-      }
+      "schedule": "0 9 * * 1-6"
     },
     {
       "path": "/api/cron/refresh-signed-urls",
-      "schedule": "0 9 * * 0",
-      "headers": {
-        "x-cron-secret": "@cron_secret"
-      }
+      "schedule": "0 9 * * 0"
     }
   ]
 }

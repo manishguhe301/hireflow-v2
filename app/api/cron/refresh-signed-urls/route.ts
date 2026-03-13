@@ -9,10 +9,11 @@ const EXPIRY = 60 * 60 * 24 * 7;
 
 export async function GET(req: NextRequest) {
   try {
-    const cronSecret = req.headers.get('x-cron-secret');
+    const authHeader = req.headers.get('authorization');
+
     const isLocalTest = process.env.NODE_ENV === 'development';
 
-    if (cronSecret !== process.env.CRON_SECRET && !isLocalTest) {
+    if (!isLocalTest && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
