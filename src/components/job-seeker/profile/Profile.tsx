@@ -322,7 +322,7 @@ const Profile = () => {
       <ProfileSection title='Education'>
         <div className="space-y-4">
           {profile.education.map((edu) => (
-            <div key={edu.id}>
+            <div key={edu.id} className='border-l-2 border-primary/40 pl-4'>
               <h3 className="font-semibold">{getLabel(degrees, edu.degree)}</h3>
               <p className="text-sm text-muted-foreground">
                 {edu.institution}
