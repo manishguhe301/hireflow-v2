@@ -178,7 +178,8 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
               if (conversationFromUrl) {
                 window.history.replaceState({}, '', '/company/chat')
               }
-            }} userType={userType}
+            }}
+            userType={userType}
             onConversationUpdate={() => refetch()}
             searchQuery={searchQuery}
             hasMore={hasNextPage ?? false}
@@ -210,6 +211,13 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
                   ? (selectedConversationData.jobSeeker as ConversationUser)?.profile?.name || selectedConversationData.jobSeeker?.name
                   : (selectedConversationData.company as ConversationCompany)?.name)
                 : ''
+            }
+            chatPartnerAvatar={
+              selectedConversationData
+                ? (userType === 'company'
+                  ? (selectedConversationData.jobSeeker as ConversationUser)?.profile?.avatar
+                  : (selectedConversationData.company as ConversationCompany)?.logo)
+                : null
             }
             jobTitle={selectedConversationData?.job?.title}
           />

@@ -5,7 +5,7 @@ import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
 import { useSession } from 'next-auth/react'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import PageLoader from '@/src/components/ui/PageLoader'
 import MobileSidebar from '@/src/components/layout/MobileSidebar'
 import { Github } from 'lucide-react'
@@ -18,6 +18,8 @@ export default function ProtectedLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { status } = useSession()
   const router = useRouter()
+
+  const pathname = usePathname()
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -69,7 +71,7 @@ export default function ProtectedLayout({
           <main className="flex-1">{children}</main>
         </div>
       </div>
-      <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground lg:pl-64 md:pl-20 pl-0">
+      {!pathname.includes('chat') && <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground lg:pl-64 md:pl-20 pl-0">
         <div className=" px-6 flex items-center justify-between text-xs text-muted-foreground">
           <span>
             © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
@@ -85,7 +87,7 @@ export default function ProtectedLayout({
           </a>
 
         </div>
-      </div>
+      </div>}
     </div >
   )
 }
