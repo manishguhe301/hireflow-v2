@@ -322,9 +322,10 @@ enum ApplicationStatus {
   REVIEWING
   SHORTLISTED
   INTERVIEW_SCHEDULED
-  REJECTED
   OFFERED
   HIRED
+  REJECTED
+  ON_HOLD
 }
 
 // ==================== SAVED JOB MODEL ====================

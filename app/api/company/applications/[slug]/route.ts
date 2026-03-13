@@ -146,6 +146,7 @@ export async function GET(
       rejected: statusStats.find((s) => s.status === 'REJECTED')?._count || 0,
       offered: statusStats.find((s) => s.status === 'OFFERED')?._count || 0,
       hired: statusStats.find((s) => s.status === 'HIRED')?._count || 0,
+      onHold: statusStats.find((s) => s.status === 'ON_HOLD')?._count || 0,
     };
 
     return NextResponse.json({

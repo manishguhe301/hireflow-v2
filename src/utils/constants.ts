@@ -88,6 +88,7 @@ export const APPLICATIONS_TABS: {
   { label: 'Offered', value: ApplicationStatus.OFFERED },
   { label: 'Rejected', value: ApplicationStatus.REJECTED },
   { label: 'Hired', value: ApplicationStatus.HIRED },
+  { label: 'On Hold', value: ApplicationStatus.ON_HOLD },
 ];
 
 export const APPLICATION_TABS_WITH_SORT: {
@@ -131,6 +132,7 @@ export const STATUS_STYLES: Record<ApplicationStatus, string> = {
   OFFERED: 'bg-green-500/10 text-green-600',
   HIRED: 'bg-emerald-500/10 text-emerald-600',
   REJECTED: 'bg-red-500/10 text-red-600',
+  ON_HOLD: 'bg-gray-500/10 text-gray-600',
 };
 
 export const jobCategories = [
