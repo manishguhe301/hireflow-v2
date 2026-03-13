@@ -26,6 +26,7 @@ type FileUploadProps<T extends FieldValues> = {
   isImage?: boolean
   toolTipContent?: string
   disabled?: boolean
+  onDeleteExisting?: () => void
 }
 
 export function FileUpload<T extends FieldValues>({
@@ -40,7 +41,8 @@ export function FileUpload<T extends FieldValues>({
   existingFileUrl,
   isImage = false,
   toolTipContent,
-  disabled
+  disabled,
+  onDeleteExisting
 }: FileUploadProps<T>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -97,16 +99,11 @@ export function FileUpload<T extends FieldValues>({
         <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 space-y-3">
           <div className="flex items-center gap-3 relative">
             {isImage ? (
-              <>
-                {/*  eslint-disable-next-line */}
-                <img
-                  src={existingFileUrl}
-                  alt="Current file"
-                  className={clsx(
-                    "h-16 w-16 rounded-lg object-cover transition-opacity duration-300",
-                  )}
-                />
-              </>
+              <img
+                src={existingFileUrl}
+                alt="Current file"
+                className="h-16 w-16 rounded-lg object-cover transition-opacity duration-300"
+              />
             ) : (
               <FileText className="h-8 w-8 text-primary" />
             )}
@@ -116,6 +113,17 @@ export function FileUpload<T extends FieldValues>({
                 Click below to replace with a new file
               </p>
             </div>
+            {onDeleteExisting && (
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={(e) => { e.stopPropagation(); onDeleteExisting() }}
+                className="text-xs text-destructive border border-destructive/40 rounded-lg px-3 py-1.5 hover:bg-destructive/10 transition disabled:opacity-50 shrink-0"
+                aria-label="Remove file"
+              >
+                Remove
+              </button>
+            )}
           </div>
         </div>
       )}

@@ -492,6 +492,7 @@ export async function PATCH(req: NextRequest) {
       expectedSalaryMin: formData.get('expectedSalaryMin') as string,
       // expectedSalaryMax: formData.get('expectedSalaryMax') as string,
       noticePeriod: formData.get('noticePeriod') as string,
+      deleteAvatar: formData.get('deleteAvatar') as string,
     };
 
     if (!data.name || !data.contactEmail) {
@@ -571,7 +572,13 @@ export async function PATCH(req: NextRequest) {
     let resumeUrl = existingProfile.resumeUrl;
     let resumePath = existingProfile.resumePath;
 
-    if (avatar && avatar instanceof File) {
+    if (data.deleteAvatar === 'true') {
+      if (existingProfile.avatarPath) {
+        await deleteFileFromB2(existingProfile.avatarPath);
+      }
+      avatarUrl = null;
+      avatarPath = null;
+    } else if (avatar && avatar instanceof File) {
       if (existingProfile.avatarPath) {
         await deleteFileFromB2(existingProfile.avatarPath);
       }
