@@ -18,6 +18,7 @@ type CompaniesTableProps = {
   rejectCompanyId: string | null,
   setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
   setRejectCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
+  disabled?: boolean
 }
 
 const CompaniesTable = ({
@@ -27,9 +28,10 @@ const CompaniesTable = ({
   rejectCompanyId,
   setDeleteCompanyId,
   setRejectCompanyId,
+  disabled
 }: CompaniesTableProps) => {
   return (
-    <table className="w-full text-sm">
+    <table className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
           <th scope="col" className="px-6 py-4 text-left">Company</th>
@@ -84,7 +86,7 @@ const CompaniesTable = ({
                   <Link
                     href={`/admin/companies/${company.id}`}
                     className="text-muted-foreground hover:underline text-xs"
-                    // target='_blank'
+                  // target='_blank'
                   >
                     View Details
                   </Link>
@@ -95,7 +97,7 @@ const CompaniesTable = ({
                         onClick={() => handleApprove(company.id)}
                         disabled={
                           loadingAction === `approve-${company.id}` ||
-                          !!rejectCompanyId
+                          !!rejectCompanyId || disabled
                         }
                         className="text-success hover:underline text-xs border-none w-fit p-0! bg-transparent!"
                       >
@@ -110,7 +112,7 @@ const CompaniesTable = ({
                           setRejectCompanyId(company.id)
                         }}
                         disabled={
-                          !!loadingAction && loadingAction !== `reject-${company.id}`
+                          !!loadingAction && loadingAction !== `reject-${company.id}` || disabled
                         }
                         className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent"
                       >
@@ -124,7 +126,7 @@ const CompaniesTable = ({
 
                   <Button
                     className="p-0! border-none text-destructive! bg-transparent hover:text-destructive/80"
-                    disabled={loadingAction === `delete-${company.id}`}
+                    disabled={loadingAction === `delete-${company.id}` || disabled}
                     onClick={() => {
                       setRejectCompanyId(null)
                       setDeleteCompanyId(company.id)

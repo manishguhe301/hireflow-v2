@@ -2,7 +2,7 @@
 import { AppSdk } from "@/src/utils/AppSdk"
 import { Role, User } from "@prisma/client"
 import clsx from "clsx"
-import { Search, UserPlus, Users, } from "lucide-react"
+import { RefreshCw, Search, UserPlus, Users, } from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
@@ -44,7 +44,7 @@ const AdminUsersList = () => {
     return params.toString()
   }, [debouncedSearch, activeTab, page])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-users', activeTab, debouncedSearch, page],
     queryFn: async () => {
       const res = await AppSdk.getData(
@@ -99,25 +99,35 @@ const AdminUsersList = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex gap-2 items-center flex-wrap">
           {ADMIN_USERS_TABS.map((tab) => (
-            <button
+            <Button
               key={tab.value}
+              size="sm"
+              variant={tab.value === activeTab ? 'primary' : 'ghost'}
               onClick={() => { setActiveTab(tab.value); setPage(1) }}
               className={clsx(
-                'px-4 py-2 rounded-xl text-sm font-medium border transition cursor-pointer',
                 activeTab === tab.value
                   ? tab.value === 'ALL'
-                    ? 'bg-primary text-primary-foreground border-primary/40 shadow-md'
+                    ? 'bg-primary! text-primary-foreground! border-primary/40! shadow-md!'
                     : tab.value === 'PLATFORM_ADMIN'
-                      ? 'bg-info/10 text-info border-info/40 shadow-md'
+                      ? 'bg-info/10! text-info! border-info/40! shadow-md!'
                       : tab.value === 'COMPANY_ADMIN'
-                        ? 'bg-info/50 text-secondary-foreground border-secondary/40 shadow-md'
-                        : 'bg-accent text-foreground border-border/40 shadow-md'
-                  : 'bg-card border-border/40 hover:bg-muted/40'
+                        ? 'bg-info/50! text-secondary-foreground! border-secondary/40! shadow-md!'
+                        : 'bg-accent! text-foreground! border-border/40! shadow-md!'
+                  : 'bg-card! border-border/40! hover:bg-muted/40!'
               )}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
+          <Button
+            variant="outline"
+            onClick={() => refetch()}
+            size="sm"
+            className="flex flex-row items-center gap-2"
+            disabled={isLoading || isFetching}
+          >
+            <RefreshCw size={16} /> Refresh
+          </Button>
         </div>
         <div className="flex justify-between items-center gap-2">
           <div className="relative w-full md:w-72">
@@ -128,13 +138,16 @@ const AdminUsersList = () => {
                 setSearch(e.target.value)
                 setPage(1)
               }}
+              disabled={isLoading || isFetching}
               placeholder="Search users..."
               aria-label="Search users..."
               className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
             />
           </div>
           <Link href="/admin/create-admin">
-            <Button className="transition flex items-center gap-2 whitespace-nowrap ">
+            <Button className="transition flex items-center gap-2 whitespace-nowrap "
+              disabled={isLoading || isFetching}
+            >
               <UserPlus className="h-4 w-4" />
               Create Admin
             </Button>
@@ -157,9 +170,10 @@ const AdminUsersList = () => {
                     filteredUsers={users}
                     loadingAction={loadingAction}
                     setDeleteUserId={setDeleteUserId}
+                    disabled={isLoading || isFetching}
                   />
                 </div>
-                {!isLoading && pagination && pagination.totalPages > 1 && (
+                {!isLoading && !isFetching && pagination && pagination.totalPages > 1 && (
                   <div className="mt-8">
                     <Pagination
                       page={page}

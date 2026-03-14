@@ -8,22 +8,25 @@ import { Button } from '../ui/Button'
 import { Spinner } from '../elements/Loader'
 import Link from 'next/link'
 import { labels } from '@/src/utils/constants'
+import clsx from 'clsx'
 
 type UsersTableProps = {
   filteredUsers: User[],
   loadingAction: string | null,
   setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>
+  disabled?: boolean
 }
 
 const UsersTable = ({
   filteredUsers,
   loadingAction,
-  setDeleteUserId
+  setDeleteUserId,
+  disabled
 }: UsersTableProps) => {
   const { data: session } = useSession()
 
   return (
-    <table className="w-full text-sm">
+    <table className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
       <thead className="bg-muted/40 border-b border-border/60">
         <tr>
           <th
@@ -95,7 +98,7 @@ const UsersTable = ({
                       className="disabled:opacity-50 border-none p-0! cursor-pointer disabled:cursor-not-allowed bg-transparent! "
                       disabled={
                         !!loadingAction ||
-                        user.id === session?.user?.id
+                        user.id === session?.user?.id || disabled
                       }
 
                       onClick={() => setDeleteUserId(user.id)}
