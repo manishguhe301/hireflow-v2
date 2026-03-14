@@ -227,6 +227,7 @@ export async function PATCH(req: NextRequest) {
       country: formData.get('country') as string,
       city: formData.get('city') as string,
       countryPhoneCode: formData.get('countryPhoneCode') as string,
+      deleteLogo: formData.get('deleteLogo') as string,
     };
 
     if (
@@ -270,7 +271,13 @@ export async function PATCH(req: NextRequest) {
     let taxDocUrl = existingCompany.taxDocument;
     let taxDocPath = existingCompany.taxDocPath;
 
-    if (logo) {
+    if (data.deleteLogo === 'true') {
+      if (existingCompany.logoPath) {
+        await deleteFileFromB2(existingCompany.logoPath);
+      }
+      logoUrl = null;
+      logoPath = null;
+    } else if (logo) {
       if (existingCompany.logoPath) {
         await deleteFileFromB2(existingCompany.logoPath);
       }

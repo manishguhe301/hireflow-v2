@@ -18,6 +18,7 @@ import clsx from 'clsx'
 import MobileTabs from '../../layout/MobileTabs'
 import StepSidebar from '../../layout/StepSidebar'
 import { ArrowLeft } from 'lucide-react'
+import { Spinner } from '../../elements/Loader'
 
 export type ProfileFormInputs = {
   name: string,
@@ -38,6 +39,8 @@ export type ProfileFormInputs = {
   logo: FileList,
   businessDocument: FileList,
   taxDocument: FileList
+
+  deleteLogo?: boolean
 }
 
 const STEP_FIELDS: Record<number, (keyof ProfileFormInputs)[]> = {
@@ -100,12 +103,14 @@ const ProfileSetup = () => {
       // logo: null,
       // businessDocument: null,
       // taxDocument: null, //optional
+
+      deleteLogo: false
     }
   })
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const dispatch = useDispatch()
-  const { company } = useCompany();
+  const { company, isLoading } = useCompany();
   const isEditMode = company ? true : false
   const hasCheckedRedirect = useRef(false)
   const selectedCountry = watch('country')
@@ -179,6 +184,11 @@ const ProfileSetup = () => {
       if (data.logo?.[0]) {
         formData.append('logo', data.logo[0])
       }
+
+      if (data.deleteLogo) {
+        formData.append('deleteLogo', 'true')
+      }
+
       if (data.businessDocument?.[0]) {
         formData.append('businessDocument', data.businessDocument[0])
       }
@@ -226,6 +236,10 @@ const ProfileSetup = () => {
       setIsSubmitting(false)
     }
   }
+
+  if (isLoading) return <div className='flex items-center justify-center h-full'>
+    <Spinner className='h-8 w-8' />
+  </div>
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
@@ -297,12 +311,29 @@ const ProfileSetup = () => {
           </div>
 
           <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} isLoading={isSubmitting} />}
-            {currentStep === 1 && <Step2Contact register={register} errors={errors}
-              selectedCountry={selectedCountry} watch={watch} setValue={setValue} isLoading={isSubmitting} />}
-            {currentStep === 2 && <Step3Documents register={register} errors={errors}
-              isLoading={isSubmitting}
-            />}
+            {currentStep === 0 &&
+              <Step1BasicInfo
+                register={register}
+                errors={errors}
+                isLoading={isSubmitting}
+              />}
+            {currentStep === 1 &&
+              <Step2Contact
+                register={register}
+                errors={errors}
+                selectedCountry={selectedCountry}
+                watch={watch}
+                setValue={setValue}
+                isLoading={isSubmitting}
+              />}
+            {currentStep === 2 &&
+              <Step3Documents
+                register={register}
+                errors={errors}
+                isLoading={isSubmitting}
+                watch={watch}
+                setValue={setValue}
+              />}
             {currentStep === 3 &&
               <Step4Review
                 setCurrentStep={setCurrentStep}
