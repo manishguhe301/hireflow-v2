@@ -104,6 +104,7 @@ const AdminUsersList = () => {
               size="sm"
               variant={tab.value === activeTab ? 'primary' : 'ghost'}
               onClick={() => { setActiveTab(tab.value); setPage(1) }}
+              disabled={isLoading || isFetching}
               className={clsx(
                 activeTab === tab.value
                   ? tab.value === 'ALL'
