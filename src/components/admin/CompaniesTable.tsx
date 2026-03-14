@@ -39,7 +39,7 @@ const CompaniesTable = ({
           <DataTableHeadCell>Industry</DataTableHeadCell>
           <DataTableHeadCell>Location</DataTableHeadCell>
           <DataTableHeadCell>Status</DataTableHeadCell>
-          <DataTableHeadCell className=" text-right">Actions</DataTableHeadCell>
+          <DataTableHeadCell className="text-right">Actions</DataTableHeadCell>
         </DataTableRow>
       </DataTableHeader>
       <DataTableBody>

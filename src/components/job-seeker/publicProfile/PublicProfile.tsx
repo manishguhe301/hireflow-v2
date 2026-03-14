@@ -10,7 +10,7 @@ import { ArrowLeft, Award, CircleUser, ExternalLink, FileText, MessageCircle, Sh
 import { useSession } from 'next-auth/react'
 import { formatDate, formatDateRange, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
-import DocumentCard from '../../admin/DocumentCard'
+import DocumentCard from '../../shared/DocumentCard'
 import Link from 'next/link'
 import {
   MapPin,

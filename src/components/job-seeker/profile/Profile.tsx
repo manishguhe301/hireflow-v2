@@ -2,7 +2,7 @@
 
 import { useProfile } from '@/src/store/hooks/useProfile'
 import { Button } from '@/src/components/ui/Button'
-import DocumentCard from '@/src/components/admin/DocumentCard'
+import DocumentCard from '@/src/components/shared/DocumentCard'
 import Link from 'next/link'
 import {
   MapPin,

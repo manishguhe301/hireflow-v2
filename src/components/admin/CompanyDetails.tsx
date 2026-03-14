@@ -19,9 +19,9 @@ import clsx from 'clsx'
 import { Company } from '@prisma/client'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
-import DocumentCard from './DocumentCard'
-import InfoRow from './InfoRow'
-import InfoCard from './InfoCard'
+import DocumentCard from '../shared/DocumentCard'
+import InfoRow from '../shared/InfoRow'
+import InfoCard from '../shared/InfoCard'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
@@ -184,7 +184,6 @@ const CompanyDetails = () => {
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
               {company?.logo ? (
                 <>
-
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={company?.logo}

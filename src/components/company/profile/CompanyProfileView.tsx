@@ -18,9 +18,9 @@ import {
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { Button } from '@/src/components/ui/Button'
 import { CompanyStatus } from '@prisma/client'
-import InfoCard from '../../admin/InfoCard'
-import InfoRow from '../../admin/InfoRow'
-import DocumentCard from '../../admin/DocumentCard'
+import InfoCard from '../../shared/InfoCard'
+import InfoRow from '../../shared/InfoRow'
+import DocumentCard from '../../shared/DocumentCard'
 import { ProfileSkeleton } from '../../skeletons/ProfileSkeleton'
 
 const statusStyles: Record<CompanyStatus, string> = {

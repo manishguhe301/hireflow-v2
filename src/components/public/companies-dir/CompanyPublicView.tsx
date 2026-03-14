@@ -1,7 +1,7 @@
 'use client'
 
 import { Company, Job } from '@prisma/client'
-import InfoRow from '../../admin/InfoRow'
+import InfoRow from '../../shared/InfoRow'
 import { ArrowLeft, Briefcase, Building2, Calendar, Globe, MapPin, Users } from 'lucide-react'
 import { Button } from '../../ui/Button'
 import { useRouter } from 'next/navigation'
@@ -40,7 +40,8 @@ const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
                     alt={`${company.name} logo`}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
-                    )} />
+                    )}
+                  />
                 </>
               ) : (
                 <span className="text-lg font-semibold tracking-tight text-muted-foreground">
