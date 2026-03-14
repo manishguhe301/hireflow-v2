@@ -125,6 +125,7 @@ const ApplicationsPage = () => {
           <ApplicationsTable
             data={data as ApplicationWithPagination}
             refetch={refetch}
+            disabled={isLoading || isFetching}
           />
         )
       }
