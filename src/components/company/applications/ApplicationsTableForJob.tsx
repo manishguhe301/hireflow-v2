@@ -15,6 +15,7 @@ import { AppSdk } from "@/src/utils/AppSdk"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
 import { APPLICATIONS_TABS } from "@/src/utils/constants"
+import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from "../../shared/TableComponents"
 
 const ApplicationsTableForJob = ({
   applications,
@@ -67,10 +68,10 @@ const ApplicationsTableForJob = ({
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card">
-      <table className="w-full text-sm max-sm:w-[1100px]">
-        <thead className="bg-muted/50 border-b border-border/60 text-xs uppercase tracking-wide text-muted-foreground">
-          <tr>
-            <th scope='col' className="px-6 py-5 text-left flex flex-row items-center gap-4">
+      <DataTable className="w-full text-sm max-sm:w-[1100px]">
+        <DataTableHeader className="bg-muted/50 border-b border-border/60 text-xs uppercase tracking-wide text-muted-foreground">
+          <DataTableRow>
+            <DataTableHeadCell className="flex flex-row items-center gap-4">
               <input
                 type="checkbox"
                 id="isCurrent"
@@ -85,40 +86,40 @@ const ApplicationsTableForJob = ({
                 disabled={applicationsLength === 0 || isBulkProcessing}
               />
               Applicant
-            </th>
-            <th scope='col' className="px-6 py-5 text-left">Location</th>
-            <th scope='col' className="px-6 py-5 text-left">Status</th>
-            <th scope='col' className="px-6 py-5 text-left" >Applied</th>
-            <th scope='col' className="px-6 py-5 text-right">Actions</th>
-          </tr>
-        </thead>
+            </DataTableHeadCell>
+            <DataTableHeadCell >Location</DataTableHeadCell>
+            <DataTableHeadCell >Status</DataTableHeadCell>
+            <DataTableHeadCell  >Applied</DataTableHeadCell>
+            <DataTableHeadCell className="text-right">Actions</DataTableHeadCell>
+          </DataTableRow>
+        </DataTableHeader>
 
-        <tbody>
+        <DataTableBody>
           {applications.length === 0 && (
-            <tr>
-              <td colSpan={6} className="text-center py-16">
+            <DataTableRow>
+              <DataTableCell colSpan={6} className="text-center py-16">
                 <div className="flex flex-col items-center gap-3">
                   <FileText className="h-10 w-10 text-muted-foreground" />
                   <p className="text-muted-foreground">
                     No applicants found
                   </p>
                 </div>
-              </td>
-            </tr>
+              </DataTableCell>
+            </DataTableRow>
           )}
 
           {applications.map((app) => {
             const profile = app.user.profile
 
             return (
-              <tr
+              <DataTableRow
                 key={app.id}
                 className={clsx("hover:bg-muted/30 transition",
                   (isBulkProcessing) && "pointer-events-none opacity-50",
                   selectedApplicants.includes(app.id) && "bg-muted"
                 )}
               >
-                <td className="px-6 py-5 flex flex-row items-center gap-4">
+                <DataTableCell className="flex flex-row items-center gap-4">
                   <input
                     type="checkbox"
                     className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
@@ -154,14 +155,14 @@ const ApplicationsTableForJob = ({
                       </p>
                     </div>
                   </div>
-                </td>
-                <td className="px-6 py-5 text-xs text-muted-foreground">
+                </DataTableCell>
+                <DataTableCell className="text-xs text-muted-foreground">
                   {profile?.city
                     ? `${profile.city}, ${profile.country}`
                     : profile?.country || '—'}
-                </td>
+                </DataTableCell>
 
-                <td className="px-6 py-5">
+                <DataTableCell className="px-6 py-5">
                   <span
                     className={clsx(
                       'px-3 py-1 rounded-full text-xs font-medium',
@@ -170,12 +171,12 @@ const ApplicationsTableForJob = ({
                   >
                     {getLabel(APPLICATIONS_TABS, app.status)}
                   </span>
-                </td>
+                </DataTableCell>
 
-                <td className="px-6 py-5 text-xs text-muted-foreground">
+                <DataTableCell className="text-xs text-muted-foreground">
                   {formatRelativeTime(app.createdAt)}
-                </td>
-                <td className="px-6 py-7 text-right flex items-center justify-end gap-3">
+                </DataTableCell>
+                <DataTableCell className="px-6 py-7 text-right flex items-center justify-end gap-3">
                   <Link
                     href={`/company/applications/${slug}/${app.id}`}
                     className={clsx("text-primary text-xs font-semibold hover:underline",
@@ -197,12 +198,12 @@ const ApplicationsTableForJob = ({
                       <MessageCircle className="h-4 w-4" />
                     }
                   </Button>
-                </td>
-              </tr>
+                </DataTableCell>
+              </DataTableRow>
             )
           })}
-        </tbody>
-      </table>
+        </DataTableBody>
+      </DataTable>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { Spinner } from '@/src/components/elements/Loader'
+import { DataTable, DataTableBody, DataTableCell, DataTableHeader, DataTableRow } from '@/src/components/shared/TableComponents'
 import { Button } from '@/src/components/ui/Button'
 import { formatDate, isRichTextEmpty } from '@/src/utils/helper'
 import { Job } from '@prisma/client'
@@ -33,11 +34,13 @@ const JobsTable = ({
   setDeleteJobId,
   loadingAction,
   handleStatusChange,
+  disabled
 }: {
   jobs: JobWithCount[],
   setDeleteJobId: React.Dispatch<React.SetStateAction<string | null>>,
   loadingAction: string | null,
   handleStatusChange: (slug: string, newStatus: 'ACTIVE' | 'CLOSED') => Promise<void>
+  disabled?: boolean
 }) => {
   const [now] = useState(() => Date.now())
 
@@ -45,29 +48,29 @@ const JobsTable = ({
     return deadline && new Date(deadline).getTime() < now
   }
   return (
-    <table className="w-full text-sm">
-      <thead className="bg-muted/40 border-b border-border/60">
-        <tr>
-          <th scope='col' className="px-6 py-5 text-left">Title</th>
-          <th scope='col' className="px-6 py-5 text-left">Deadline</th>
-          <th scope='col' className="px-6 py-5 text-left">Status</th>
-          <th scope='col' className="px-6 py-5 text-left">Views</th>
-          <th scope='col' className="px-6 py-5 text-left">Applications</th>
-          <th scope='col' className="px-6 py-5 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+    <DataTable className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
+      <DataTableHeader >
+        <DataTableRow>
+          <DataTableCell>Title</DataTableCell>
+          <DataTableCell>Deadline</DataTableCell>
+          <DataTableCell>Status</DataTableCell>
+          <DataTableCell>Views</DataTableCell>
+          <DataTableCell>Applications</DataTableCell>
+          <DataTableCell className="text-right">Actions</DataTableCell>
+        </DataTableRow>
+      </DataTableHeader>
+      <DataTableBody>
         {jobs.map((job: JobWithCount) => {
           const isDeadlinePassed = getIsDeadlinePassed(job.applicationDeadline)
           return (
-            <tr
+            <DataTableRow
               key={job.id}
               className='w-full hover:bg-muted/30 transition'
             >
-              <td className="px-6 py-5">
+              <DataTableCell >
                 <div className="font-medium line-clamp-1">{job.title}</div>
-              </td>
-              <td className="px-6 py-5">
+              </DataTableCell>
+              <DataTableCell>
                 <span
                   className={clsx(
                     'text-xs font-medium',
@@ -78,8 +81,8 @@ const JobsTable = ({
                     ? formatDate(job.applicationDeadline)
                     : '—'}
                 </span>
-              </td>
-              <td className="px-6 py-5">
+              </DataTableCell>
+              <DataTableCell>
                 <span
                   className={clsx(
                     'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
@@ -96,14 +99,14 @@ const JobsTable = ({
                   {job.status === 'CLOSED' && <XCircle className="h-3 w-3" />}
                   {job.status}
                 </span>
-              </td>
-              <td className="px-6 py-5">{job.views}</td>
-              <td className="px-6 py-5">{job._count.applications}</td>
-              <td className="px-6 py-5 text-right">
+              </DataTableCell>
+              <DataTableCell>{job.views}</DataTableCell>
+              <DataTableCell>{job._count.applications}</DataTableCell>
+              <DataTableCell className="text-right">
                 <div className="inline-flex items-center gap-3">
                   {job.status !== 'DRAFT' && (
                     <Link
-                      href={`/company/jobs/${job.slug}`}
+                      href={disabled ? '#' : `/company/jobs/${job.slug}`}
                       className={clsx("text-xs text-primary hover:underline", loadingAction && 'pointer-events-none opacity-50')}
                     >
                       View
@@ -111,7 +114,7 @@ const JobsTable = ({
                   )}
 
                   <Link
-                    href={`/company/jobs/edit/${job.slug}`}
+                    href={disabled ? '#' : `/company/jobs/edit/${job.slug}`}
                     className={clsx("inline-flex items-center gap-1 text-xs text-primary hover:underline", loadingAction && 'pointer-events-none opacity-50')}
                   >
                     <Pencil className="h-3 w-3" />
@@ -123,7 +126,7 @@ const JobsTable = ({
                       <Button
                         className={clsx("p-0! bg-transparent! border-none text-success hover:underline text-xs", loadingAction && 'pointer-events-none opacity-50')}
                         onClick={() => handleStatusChange(job.slug, 'ACTIVE')}
-                        disabled={loadingAction === `publish-${job.id}`}
+                        disabled={loadingAction === `publish-${job.id}` || disabled}
                       >
                         {loadingAction === `publish-${job.id}` ? (
                           <span className="flex items-center gap-1">
@@ -141,7 +144,7 @@ const JobsTable = ({
                     <Button
                       className={clsx("p-0! bg-transparent! border-none text-destructive! hover:underline text-xs", loadingAction && 'pointer-events-none opacity-50')}
                       onClick={() => handleStatusChange(job.slug, 'CLOSED')}
-                      disabled={loadingAction === `close-${job.id}`}
+                      disabled={loadingAction === `close-${job.id}` || disabled}
                     >
                       {loadingAction === `close-${job.id}` ? (
                         <Spinner className="h-3 w-3" />
@@ -155,7 +158,7 @@ const JobsTable = ({
                     <Button
                       className={clsx("p-0! bg-transparent! border-none text-success! hover:underline text-xs", loadingAction && 'pointer-events-none opacity-50')}
                       onClick={() => handleStatusChange(job.slug, 'ACTIVE')}
-                      disabled={loadingAction === `reopen-${job.id}`}
+                      disabled={loadingAction === `reopen-${job.id}` || disabled}
                     >
                       Reopen
                     </Button>
@@ -163,7 +166,7 @@ const JobsTable = ({
 
                   <Button
                     className={clsx("p-0! bg-transparent! border-none text-destructive! hover:text-destructive/80", loadingAction && 'pointer-events-none opacity-50')}
-                    disabled={loadingAction === `delete-${job.id}`}
+                    disabled={loadingAction === `delete-${job.id}` || disabled}
                     onClick={() => setDeleteJobId(job.id)}
                     aria-label='Delete Job'
                   >
@@ -174,13 +177,13 @@ const JobsTable = ({
                     )}
                   </Button>
                 </div>
-              </td>
-            </tr>
+              </DataTableCell>
+            </DataTableRow>
           )
         }
         )}
-      </tbody>
-    </table>
+      </DataTableBody>
+    </DataTable>
   )
 }
 

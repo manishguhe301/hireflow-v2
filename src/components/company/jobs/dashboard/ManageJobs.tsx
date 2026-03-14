@@ -20,7 +20,7 @@ const ManageJobs = () => {
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ['company-jobs', activeTab],
     queryFn: async () => {
       const url =
@@ -204,6 +204,7 @@ const ManageJobs = () => {
                 loadingAction={loadingAction}
                 setDeleteJobId={setDeleteJobId}
                 handleStatusChange={handleStatusChange}
+                disabled={isFetching || isLoading || statusMutation.isPending || deleteMutation.isPending || !!loadingAction}
               />
             </div>
           )}
