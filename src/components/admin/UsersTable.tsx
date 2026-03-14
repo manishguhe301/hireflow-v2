@@ -9,6 +9,7 @@ import { Spinner } from '../elements/Loader'
 import Link from 'next/link'
 import { labels } from '@/src/utils/constants'
 import clsx from 'clsx'
+import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from '../shared/TableComponents'
 
 type UsersTableProps = {
   filteredUsers: User[],
@@ -26,45 +27,36 @@ const UsersTable = ({
   const { data: session } = useSession()
 
   return (
-    <table className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
-      <thead className="bg-muted/40 border-b border-border/60">
-        <tr>
-          <th
-            scope="col"
-            className="px-6 py-5 text-left">Name</th>
-          <th
-            scope="col"
-            className="px-6 py-5 text-left">Email</th>
-          <th
-            scope="col"
-            className="px-6 py-5 text-left">Role</th>
-          <th
-            scope="col"
-            className="px-6 py-5 text-left">Email Verified</th>
-          <th
-            scope="col"
-            className="px-6 py-5 text-right">Created At</th>
-          <th
-            scope="col"
-            className="px-6 py-5 text-right">Action</th>
-        </tr>
-      </thead>
-      <tbody>
+    <DataTable className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
+      <DataTableHeader className="bg-muted/40 border-b border-border/60">
+        <DataTableRow>
+          <DataTableHeadCell>Name</DataTableHeadCell>
+          <DataTableHeadCell>Email</DataTableHeadCell>
+          <DataTableHeadCell>Role</DataTableHeadCell>
+          <DataTableHeadCell>Email Verified</DataTableHeadCell>
+          <DataTableHeadCell
+            className="px-6 py-5 text-right">Created At</DataTableHeadCell>
+          <DataTableHeadCell className="text-right">
+            Action
+          </DataTableHeadCell>
+        </DataTableRow>
+      </DataTableHeader>
+      <DataTableBody>
         {filteredUsers.map((user) => (
-          <tr
+          <DataTableRow
             key={user.id}
             className='w-full hover:bg-muted/30 transition'
           >
-            <td className="px-6 py-5">
+            <DataTableCell>
               {user.name}
-            </td>
-            <td className="px-6 py-5">{user.email}</td>
-            <td className="px-6 py-5">
+            </DataTableCell>
+            <DataTableCell>{user.email}</DataTableCell>
+            <DataTableCell>
               <span className="px-2 py-1 rounded-full text-xs bg-muted">
                 {labels[user.role]}
               </span>
-            </td>
-            <td className="px-6 py-5">
+            </DataTableCell>
+            <DataTableCell>
               {user.emailVerified ? (
                 <div className="inline-flex items-center gap-2">
                   <Check className="h-4 w-4 text-success" />
@@ -76,11 +68,11 @@ const UsersTable = ({
                   <span className="text-red-600 text-xs">Not Verified</span>
                 </div>
               )}
-            </td>
-            <td className="px-6 py-5 text-right">
+            </DataTableCell>
+            <DataTableCell className="text-right">
               {formatDate(user.createdAt)}
-            </td>
-            <td className="px-6 py-5 text-right flex items-center gap-3 justify-end">
+            </DataTableCell>
+            <DataTableCell className="px-6 py-5 text-right flex items-center gap-3 justify-end">
               <span className='text-xs text-muted-foreground'>
                 {
                   user.role === Role.JOB_SEEKER && (
@@ -115,11 +107,11 @@ const UsersTable = ({
                 }
               </span>
 
-            </td>
-          </tr>
+            </DataTableCell>
+          </DataTableRow>
         ))}
-      </tbody>
-    </table>
+      </DataTableBody>
+    </DataTable>
   )
 }
 

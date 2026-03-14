@@ -40,12 +40,13 @@ const DataTableRow = ({ children, className }: { children: React.ReactNode, clas
   )
 }
 
-const DataTableCell = ({ children, className }: {
+const DataTableCell = ({ children, className, colSpan }: {
   children: React.ReactNode
   className?: string
+  colSpan?: number
 }) => {
   return (
-    <td className={clsx("px-6 py-5", className!)}>
+    <td colSpan={colSpan} className={clsx("px-6 py-5", className!)}>
       {children}
     </td>
   )
