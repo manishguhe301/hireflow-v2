@@ -134,7 +134,7 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
         onEdit={() => setCurrentStep(0)}
       >
         <div className="sm:col-span-2 flex items-center gap-4">
-          {(data.avatar?.[0] || jobSeekerProfile?.avatar) ? (
+          {(data.avatar?.[0] || (!data.deleteAvatar && jobSeekerProfile?.avatar)) ? (
             // eslint-disable-next-line
             <img
               src={
@@ -149,6 +149,9 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
             <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
               No Photo
             </div>
+          )}
+          {data.deleteAvatar && !data.avatar?.[0] && (
+            <p className="text-xs text-muted-foreground">Photo will be removed on save</p>
           )}
         </div>
       </Section>

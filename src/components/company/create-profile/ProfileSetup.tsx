@@ -284,6 +284,7 @@ const ProfileSetup = () => {
           currentStep={currentStep}
           onStepClick={setCurrentStep}
           isEditMode={isEditMode}
+          disabled={isSubmitting}
         />
       )}
 
@@ -295,6 +296,7 @@ const ProfileSetup = () => {
               currentStep={currentStep}
               onStepClick={setCurrentStep}
               isEditMode={isEditMode}
+              disabled={isSubmitting}
             />
           </div>
         )}

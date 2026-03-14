@@ -5,11 +5,13 @@ const MobileTabs = ({
   currentStep,
   onStepClick,
   isEditMode,
+  disabled
 }: {
   steps: { number: number; label: string }[]
   currentStep: number
   onStepClick: (index: number) => void
   isEditMode: boolean
+  disabled?: boolean
 }) => {
   return (
     <div className="max-w-[calc(100vw-2rem)] flex gap-2 overflow-x-auto pb-2 mb-4 lg:hidden scrollbar-hide">
@@ -17,11 +19,13 @@ const MobileTabs = ({
         <button
           key={step.number}
           onClick={() => isEditMode && onStepClick(index)}
+          disabled={disabled}
           className={clsx(
             'shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition',
             currentStep === index
               ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
+            disabled && 'opacity-70 cursor-not-allowed'
           )}
         >
           {step.number}. {step.label}

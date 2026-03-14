@@ -5,11 +5,13 @@ const StepSidebar = ({
   currentStep,
   onStepClick,
   isEditMode,
+  disabled
 }: {
   steps: { number: number; label: string }[]
   currentStep: number
   onStepClick: (index: number) => void
   isEditMode: boolean
+  disabled?: boolean
 }) => {
   return (
     <div className="w-48 shrink-0 flex flex-col gap-1">
@@ -22,12 +24,14 @@ const StepSidebar = ({
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }
           }}
+          disabled={disabled}
           className={clsx(
             'text-left px-3 py-2.5 rounded-xl text-sm transition flex items-center gap-2.5',
             currentStep === index
               ? 'bg-primary text-primary-foreground font-medium'
               : 'text-muted-foreground hover:bg-muted/60',
-            !isEditMode && index !== currentStep && 'opacity-40 cursor-not-allowed pointer-events-none'
+            !isEditMode && index !== currentStep && 'opacity-40 cursor-not-allowed pointer-events-none',
+            disabled && 'opacity-70 cursor-not-allowed'
           )}
         >
           <span className={clsx(

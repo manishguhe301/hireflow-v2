@@ -462,6 +462,7 @@ const ProfileWizard = () => {
           currentStep={currentStep}
           onStepClick={setCurrentStep}
           isEditMode={isEditMode}
+          disabled={isSubmitting}
         />
       )}
 
@@ -474,6 +475,7 @@ const ProfileWizard = () => {
               currentStep={currentStep}
               onStepClick={setCurrentStep}
               isEditMode={isEditMode}
+              disabled={isSubmitting}
             />
           </div>
         )}

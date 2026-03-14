@@ -141,7 +141,7 @@ const Step4Review = ({ watch, setCurrentStep, isLoading }: Props) => {
         disabled={isLoading}
       >
         <Item label="Contact Email" value={data.contactEmail} />
-        <Item label="Contact Phone" value={data.contactPhone && `${data.countryPhoneCode} ${data.contactPhone}` } required={false} />
+        <Item label="Contact Phone" value={data.contactPhone && `${data.countryPhoneCode} ${data.contactPhone}`} required={false} />
         <Item label="Country" value={data.country} />
         <Item label="City" value={data.city} required={false} />
         <div className="sm:col-span-2">
@@ -155,8 +155,8 @@ const Step4Review = ({ watch, setCurrentStep, isLoading }: Props) => {
         <FileItem
           label="Company Logo"
           file={data?.logo}
-          existingFileUrl={existingCompany?.logo}
-          required
+          existingFileUrl={watch('deleteLogo') ? null : existingCompany?.logo}
+          required={false}
         />
         <FileItem
           label="Business Document"
