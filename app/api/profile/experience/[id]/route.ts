@@ -32,6 +32,7 @@ export async function PATCH(
       endDate,
       description,
       isCurrent,
+      isPartTime,
     } = await req.json();
 
     if (!company || !title || !workMode || !startDate) {
@@ -66,6 +67,7 @@ export async function PATCH(
     }
 
     const current = isCurrent ?? false;
+    const partTime = isPartTime ?? false;
 
     if (!current && !endDate) {
       return NextResponse.json(
@@ -76,6 +78,31 @@ export async function PATCH(
 
     if (!Object.values(WorkMode).includes(workMode)) {
       return NextResponse.json({ error: 'Invalid work mode' }, { status: 400 });
+    }
+
+    if (!partTime) {
+      const overlap = await prisma.workExperience.findFirst({
+        where: {
+          profileId: profile.id,
+          isPartTime: false,
+          id: { not: id },
+          AND: [
+            ...(!current ? [{ startDate: { lt: end! } }] : []),
+            {
+              OR: [{ isCurrent: true }, { endDate: { gt: start } }],
+            },
+          ],
+        },
+      });
+
+      if (overlap) {
+        return NextResponse.json(
+          {
+            error: `This role overlaps with your experience at ${overlap.company}. Mark as part-time/freelance if they ran simultaneously.`,
+          },
+          { status: 400 },
+        );
+      }
     }
 
     const updated = await prisma.workExperience.update({
@@ -89,6 +116,7 @@ export async function PATCH(
         endDate: end,
         description: description || null,
         isCurrent: current,
+        isPartTime: partTime,
       },
     });
 

@@ -120,6 +120,7 @@ model WorkExperience {
   endDate       DateTime?
   description   String?
   isCurrent     Boolean  @default(false)
+  isPartTime    Boolean  @default(false) 
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
