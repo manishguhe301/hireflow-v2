@@ -202,6 +202,11 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
             data.workExperience.map((exp, i) => (
               <div key={i} className="border border-border/40 rounded-lg p-3">
                 <p className="font-medium">{exp.title} — {exp.company}</p>
+                {exp.isPartTime && (
+                  <span className="font-medium">
+                    Part-time
+                  </span>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {formatDate(exp.startDate)} -{' '}
                   {exp.isCurrent

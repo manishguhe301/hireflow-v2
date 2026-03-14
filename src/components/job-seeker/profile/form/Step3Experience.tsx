@@ -27,6 +27,7 @@ type WorkExperienceForm = {
   endDate: Date | null
   description: string | null
   isCurrent: boolean
+  isPartTime: boolean
 }
 
 const Step3Experience = ({
@@ -68,6 +69,7 @@ const Step3Experience = ({
       endDate: null,
       description: null,
       isCurrent: false,
+      isPartTime: false,
     },
   })
 
@@ -86,6 +88,7 @@ const Step3Experience = ({
         endDate: experience.endDate ? new Date(experience.endDate) : null,
         description: experience.description ?? null,
         isCurrent: experience.isCurrent,
+        isPartTime: experience.isPartTime,
       })
     } else {
       setEditingIndex(null)
@@ -98,6 +101,7 @@ const Step3Experience = ({
         endDate: null,
         description: null,
         isCurrent: false,
+        isPartTime: false,
       })
     }
     setIsModalOpen(true)
@@ -107,6 +111,34 @@ const Step3Experience = ({
     setIsModalOpen(false)
     setEditingIndex(null)
     resetExpForm()
+  }
+
+  const checkExpOverLap = (data: WorkExperienceForm): {
+    flag: boolean
+    message: string
+  } | undefined => {
+    const isPartTime = data.isPartTime ?? false
+
+    if (!isPartTime && data.startDate) {
+      const newStart = data.startDate.getTime()
+      const newEnd = data.isCurrent ? Infinity : data.endDate?.getTime() ?? Infinity
+
+      const overlapping = workExperiences.find((exp, i) => {
+        if (i === editingIndex) return false
+        if (exp.isPartTime) return false
+        const exStart = new Date(exp.startDate).getTime()
+        const exEnd = exp.isCurrent || !exp.endDate ? Infinity : new Date(exp.endDate).getTime()
+        return exStart < newEnd && exStart > -Infinity && newStart < exEnd
+      })
+
+      if (overlapping) {
+        return {
+          flag: true,
+          message: `This role overlaps with your experience at ${overlapping.company}. Mark as part-time/freelance if they ran simultaneously.`
+        }
+      }
+      return { flag: false, message: '' }
+    }
   }
 
   const onSubmit = async (data: WorkExperienceForm) => {
@@ -144,6 +176,14 @@ const Step3Experience = ({
       endDate: data.isCurrent ? null : data.endDate || null,
       description: data.description || null,
       isCurrent: data.isCurrent,
+      isPartTime: data.isPartTime
+    }
+
+    const overlapCheck = checkExpOverLap(data)
+
+    if (overlapCheck && overlapCheck.flag) {
+      toast.error(overlapCheck.message)
+      return
     }
 
     if (isEditMode) {
@@ -268,6 +308,11 @@ const Step3Experience = ({
                     {exp.company}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    {exp.isPartTime && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
+                        Part-time
+                      </span>
+                    )}
                     <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
                       {getLabel(workModes, exp.workMode)}
                     </span>
@@ -410,6 +455,22 @@ const Step3Experience = ({
             />
             <label htmlFor="isCurrent" className="text-sm font-medium">
               I currently work here
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isPartTime"
+              {...expRegister('isPartTime')}
+              className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
+              aria-label="This is a part-time or freelance role"
+              disabled={disabled || isSaving}
+            />
+            <label htmlFor="isPartTime" className="text-sm font-medium">
+              Part-time / Freelance{' '}
+              <span className="text-xs text-muted-foreground font-normal">
+                (allows overlapping dates)
+              </span>
             </label>
           </div>
           <FormTextarea

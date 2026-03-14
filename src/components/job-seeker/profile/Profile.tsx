@@ -304,6 +304,11 @@ const Profile = () => {
                 <p className="text-sm text-muted-foreground">
                   {exp.company} {exp.location && `• ${exp.location}`}
                 </p>
+                {exp.isPartTime && (
+                  <p className="text-sm text-muted-foreground">
+                    Part-time
+                  </p>
+                )}
                 <p className="text-xs text-muted-foreground mt-1">
                   {formatDateRange(exp.startDate, exp.endDate, exp.isCurrent)}
                 </p>

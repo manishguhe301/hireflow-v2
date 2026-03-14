@@ -40,6 +40,7 @@ export type WorkExperienceInput = {
   endDate?: Date | null
   description?: string | null
   isCurrent: boolean
+  isPartTime: boolean
 }
 
 export type EducationInput = {
