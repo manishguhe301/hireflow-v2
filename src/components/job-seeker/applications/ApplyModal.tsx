@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import clsx from 'clsx'
 import { useQueryClient } from '@tanstack/react-query'
+import { signOut } from 'next-auth/react'
 
 type ApplyFormInputs = {
   coverLetter: string
@@ -91,6 +92,11 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         method: 'POST',
         body: formData,
       })
+
+      if (res.status === 401 || res.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const result = await res.json()
 

@@ -12,6 +12,7 @@ import TableSkeleton from '@/src/components/skeletons/TableSkeleton'
 import Link from 'next/link'
 import { Button } from '@/src/components/ui/Button'
 import { JOB_TABS } from '@/src/utils/constants'
+import { signOut } from 'next-auth/react'
 
 const ManageJobs = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
@@ -51,6 +52,11 @@ const ManageJobs = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       })
+
+      if (res.status === 401 || res.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const data = await res.json()
 

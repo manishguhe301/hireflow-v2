@@ -7,7 +7,7 @@ import Step3Documents from './Step3Documents'
 import Step4Review from './Step4Review'
 import { Button } from '../../ui/Button'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { toast } from 'sonner'
@@ -206,6 +206,11 @@ const ProfileSetup = () => {
         method,
         body: formData,
       })
+
+      if (response.status === 401 || response.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const result = await response.json()
 

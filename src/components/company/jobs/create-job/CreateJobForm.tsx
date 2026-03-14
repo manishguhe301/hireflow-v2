@@ -20,6 +20,7 @@ import PageLoader from '@/src/components/ui/PageLoader';
 import MobileTabs from '@/src/components/layout/MobileTabs';
 import StepSidebar from '@/src/components/layout/StepSidebar';
 import { ArrowLeft } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 export type JobFormInputs = {
   jobId?: string;
@@ -328,6 +329,11 @@ const CreateJobForm = () => {
             method,
             body: formData,
           })
+
+          if (response.status === 401 || response.status === 403) {
+            signOut({ callbackUrl: '/login' })
+            return
+          }
 
           const result = await response.json()
 

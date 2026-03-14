@@ -5,7 +5,7 @@ import { Spinner } from '@/src/components/elements/Loader'
 import FormHeader from '@/src/components/ui/FormHeader'
 import { useProfile } from '@/src/store/hooks/useProfile'
 import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -351,6 +351,11 @@ const ProfileWizard = () => {
         body: formData,
       });
 
+      if (response.status === 401 || response.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
+
       const result = await response.json();
 
       if (!response.ok) {
@@ -408,6 +413,11 @@ const ProfileWizard = () => {
         method,
         body: formData,
       });
+
+      if (response.status === 401 || response.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const result = await response.json();
 

@@ -28,6 +28,7 @@ import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import JobDetailPageSkeleton from '../skeletons/JobDetailPageSkeleton'
 import { APPLICATIONS_TABS, JOB_STATUS_STYLE, jobCategories } from '@/src/utils/constants'
+import { signOut } from 'next-auth/react'
 
 interface JobDetails extends Job {
   _count: {
@@ -85,6 +86,11 @@ const JobDetails = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       })
+      
+      if (res.status === 401 || res.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const data = await res.json()
 
@@ -131,6 +137,11 @@ const JobDetails = () => {
       const res = await fetch(`/api/company/jobs/${slug}`, {
         method: 'DELETE'
       })
+
+      if (res.status === 401 || res.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const data = await res.json()
 
