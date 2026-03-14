@@ -93,59 +93,49 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    await prisma.conversation.update({
-      where: { id: conversationId },
-      data: { lastMessageAt: message.createdAt },
-    });
-
-    await pusherServer.trigger(
-      `conversation-${conversationId}`,
-      'new-message',
-      { message },
-    );
-
-    if (isFirstMessage) {
-      const recipientId = isCompany
-        ? conversation.jobSeekerId
-        : conversation.company.userId;
-
-      const senderName = isCompany
-        ? conversation.company.name
-        : message.sender.profile?.name || message.sender.name;
-
-      await notifyUser({
-        userId: recipientId,
-        type: 'NEW_MESSAGE_RECEIVED',
-        title: 'New Message',
-        message: `${senderName} sent you a message${conversation.job ? ` about ${conversation.job.title}` : ''}`,
-        link: isCompany ? '/dashboard/chat' : '/company/chat',
-        metadata: {
-          conversationId,
-          senderId: guard.session.user.id,
-          senderName,
-          jobTitle: conversation.job?.title,
-        },
-      });
-    }
-
     const recipientId = isCompany
       ? conversation.jobSeekerId
       : conversation.company.userId;
 
-    await pusherServer.trigger(
-      `user-messages-${recipientId}`,
-      'conversation-updated',
-      {
-        conversationId,
-        lastMessage: message.content,
-        updatedAt: message.createdAt,
-      },
-    );
+    const senderName = isCompany
+      ? conversation.company.name
+      : message.sender.profile?.name || message.sender.name;
 
-    return NextResponse.json(
-      { message },
-      { status: 201 },
-    );
+    await Promise.all([
+      prisma.conversation.update({
+        where: { id: conversationId },
+        data: { lastMessageAt: message.createdAt },
+      }),
+      pusherServer.trigger(`conversation-${conversationId}`, 'new-message', {
+        message,
+      }),
+      isFirstMessage
+        ? notifyUser({
+            userId: recipientId,
+            type: 'NEW_MESSAGE_RECEIVED',
+            title: 'New Message',
+            message: `${senderName} sent you a message${conversation.job ? ` about ${conversation.job.title}` : ''}`,
+            link: isCompany ? '/dashboard/chat' : '/company/chat',
+            metadata: {
+              conversationId,
+              senderId: guard.session.user.id,
+              senderName,
+              jobTitle: conversation.job?.title,
+            },
+          })
+        : Promise.resolve(),
+      pusherServer.trigger(
+        `user-messages-${recipientId}`,
+        'conversation-updated',
+        {
+          conversationId,
+          lastMessage: message.content,
+          updatedAt: message.createdAt,
+        },
+      ),
+    ]);
+
+    return NextResponse.json({ message }, { status: 201 });
   } catch (error) {
     console.error('Error sending message:', error);
     return NextResponse.json(
