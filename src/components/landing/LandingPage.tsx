@@ -19,6 +19,7 @@ import { useQuery } from '@tanstack/react-query';
 import LandingPageSkeleton from '../skeletons/LandingPageSkeleton';
 import { Button } from '../ui/Button';
 import { features } from '@/src/utils/constants';
+import HeroPill from './landing-components/HeroPill';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -72,9 +73,9 @@ export default function HomePage() {
         </div>
         <div className="mx-auto max-w-7xl px-6 py-28 grid gap-16 md:grid-cols-2 items-center">
           <div>
-            <span className="inline-block mb-6 rounded-full border border-border/60 bg-muted/50 px-4 py-1 text-xs tracking-widest text-muted-foreground">
+            <HeroPill>
               TRUSTED BY 5,000+ PROFESSIONALS
-            </span>
+            </HeroPill>
 
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
               Connect with verified companies.
@@ -306,7 +307,6 @@ export default function HomePage() {
                         <div>
                           <h3 className="font-semibold flex items-center gap-2">
                             {job.title}
-
                             {isNewJob(job.createdAt) && (
                               <span className="rounded-md bg-primary/15 px-2 py-[2px] text-[10px] font-semibold text-primary">
                                 NEW

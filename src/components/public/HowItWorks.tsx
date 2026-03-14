@@ -16,6 +16,7 @@ import {
 
 import { Button } from '@/src/components/ui/Button'
 import WorkflowSection from './WorkFlowSection'
+import HeroPill from '../landing/landing-components/HeroPill'
 
 export type Step = {
   icon: React.ReactNode
@@ -95,9 +96,9 @@ export default function HowItWorks() {
           <div className="absolute left-1/2 top-[-120px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-primary/15 blur-[160px]" />
         </div>
         <div className="mx-auto max-w-7xl px-6 py-28 text-center">
-          <span className="inline-block mb-6 rounded-full border border-border/60 bg-muted/50 px-4 py-1 text-xs tracking-widest text-muted-foreground">
+          <HeroPill>
             HIRING MADE TRANSPARENT
-          </span>
+          </HeroPill>
           <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">
             How HireFlow<span className="text-primary">.</span> Works
           </h1>
