@@ -9,7 +9,7 @@ const ChatMessage = ({
   isOwnMessage
 }: {
   isOwnMessage: boolean
-  message: MessageWithSender
+  message: MessageWithSender & { isSending: boolean }
 }) => {
   const name =
     isOwnMessage
@@ -59,12 +59,18 @@ const ChatMessage = ({
             {name}
           </span>
 
-          <span className="text-[10px]">
-            {formatRelativeTime(message.createdAt)}
-          </span>
-
           {isOwnMessage && (
-            <CheckCheck size={12} className="opacity-70" />
+            message.isSending ? (
+              <span className="text-[10px] text-muted-foreground">sending...</span>
+            ) : (
+              <>
+                <span className="text-[10px]">
+                  {formatRelativeTime(message.createdAt)}
+                </span>
+
+                <CheckCheck size={12} className="opacity-70" />
+              </>
+            )
           )}
         </div>
 
