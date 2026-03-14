@@ -43,8 +43,24 @@ export default function ChatWindow({
 
   const handleNewMessage = useCallback((message: MessageWithSender) => {
     setMessages((prev) => {
+      // check if server message already exists
       const exists = prev.some((m) => m.id === message.id);
       if (exists) return prev;
+
+      // replace optimistic message if same content + sender
+      const optimisticIndex = prev.findIndex(
+        (m) =>
+          m.id.startsWith('temp-') &&
+          m.content === message.content &&
+          m.senderType === message.senderType
+      );
+
+      if (optimisticIndex !== -1) {
+        const updated = [...prev];
+        updated[optimisticIndex] = message;
+        return updated;
+      }
+
       return [...prev, message];
     });
 
@@ -52,15 +68,13 @@ export default function ChatWindow({
       message.senderType === (userType === 'company' ? 'COMPANY' : 'JOB_SEEKER');
 
     if (!isOwnMessage) {
-      if (typeof window !== 'undefined' && 'Audio' in window) {
-        const audio = new Audio('/notification.mp3');
-        audio.volume = 0.6;
-        audio.play().catch(() => { });
-      }
+      const audio = new Audio('/notification.mp3');
+      audio.volume = 0.6;
+      audio.play().catch(() => { });
     }
 
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
+  }, [userType]);
 
   useChatPusher(conversationId, handleNewMessage);
 
@@ -146,29 +160,75 @@ export default function ChatWindow({
   };
 
   const sendMutation = useMutation({
-    mutationFn: (content: string) =>
+    mutationFn: ({ content }: { content: string; tempId: string }) =>
       AppSdk.postData('/api/chat/messages/send', { conversationId, content }),
-    onSuccess: (res, content) => {
+
+    onSuccess: (res, variables) => {
       if (res.error) {
         toast.error(res.error);
-        setNewMessage(content);
+
+        setMessages((prev) =>
+          prev.filter((m) => m.id !== variables.tempId)
+        );
+
+        setNewMessage(variables.content);
         return;
       }
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === variables.tempId
+            ? { ...res.message, isSending: false }
+            : m
+        )
+      );
+
       onMessageSent();
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     },
-    onError: (_error, content) => {
+
+    onError: (_error, variables) => {
       toast.error('Failed to send message');
-      setNewMessage(content);
+
+      setMessages((prev) =>
+        prev.filter((m) => m.id !== variables.tempId)
+      );
+
+      setNewMessage(variables.content);
     },
   });
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId) return;
 
-    const tempMessage = newMessage;
+    const content = newMessage.trim();
     setNewMessage('');
-    sendMutation.mutate(tempMessage);
+
+    const tempId = `temp-${Date.now()}`;
+
+    const optimisticMessage: MessageWithSender & { isSending: boolean } = {
+      id: tempId,
+      conversationId: conversationId,
+      content,
+      createdAt: new Date(),
+      senderId: 'me',
+      senderType: userType === 'company' ? 'COMPANY' : 'JOB_SEEKER',
+      isRead: true,
+      isSending: true,
+      sender: {
+        id: 'me',
+        name: 'You',
+        profile: {
+          avatar: null,
+          name: 'You'
+        }
+      }
+    };
+
+    setMessages((prev) => [...prev, optimisticMessage]);
+
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    sendMutation.mutate({ content, tempId });
   };
 
   if (!conversationId) {
@@ -308,7 +368,7 @@ export default function ChatWindow({
                 </div>
               )}
               <ChatMessage
-                message={message}
+                message={message as MessageWithSender & { isSending: boolean }}
                 isOwnMessage={isOwnMessage}
               />
             </div>
