@@ -3,35 +3,25 @@ import { AppSdk } from '@/src/utils/AppSdk'
 import {
   Building2,
   Users,
-  Clock,
-  CheckCircle,
-  XCircle,
   UserCog,
-  Briefcase,
   ArrowRight,
-  FileText,
   TrendingUp,
   Activity,
 } from 'lucide-react'
 import Link from 'next/link'
-import StatCard from './StatCard'
 import { Button } from '../ui/Button'
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
-import { formatRelativeTime } from '@/src/utils/helper'
 import { useQuery } from '@tanstack/react-query'
 import AdminDashboardSkeleton from '../skeletons/DashboardSkeleton'
+import CompanyOverView from './CompanyOverView'
+import UsersOverView from './UsersOverView'
+import UserGrowthChart from './UserGrowthChart'
+import JobTrendsChart from './JobTrendsChart'
+import TopCompanyCard from './TopCompanyCard'
+import RecentActivity from './RecentActivity'
+import PlatFormOverView from './PlatFormOverView'
+import QuickActionLink from '../shared/QuickActionLink'
 
-interface DashboardStats {
+export interface DashboardStats {
   companies: {
     total: number
     pending: number
@@ -96,8 +86,8 @@ const AdminDashboard = () => {
     )
   }
 
-
   const pendingCount = stats.companies.pending
+
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
       {stats.companies.pending > 0 && (
@@ -115,36 +105,7 @@ const AdminDashboard = () => {
       </div>
       <section className="space-y-4 pt-2">
         <h2 className="text-2xl font-semibold tracking-tight">Platform Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Total Jobs"
-            value={stats.platform.totalJobs}
-            description="Posted on platform"
-            icon={<Briefcase className="h-6 w-6 text-primary" />}
-            colorClass="bg-primary/10"
-          />
-          <StatCard
-            title="Applications"
-            value={stats.platform.totalApplications}
-            description="Total submissions"
-            icon={<FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
-            colorClass="bg-info/10"
-          />
-          <StatCard
-            title="Approved (30d)"
-            value={stats.platform.recentApprovals}
-            description="Companies approved"
-            icon={<CheckCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-            colorClass="bg-success/10"
-          />
-          <StatCard
-            title="Rejected (30d)"
-            value={stats.platform.recentRejections}
-            description="Companies rejected"
-            icon={<XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />}
-            colorClass="bg-destructive/10"
-          />
-        </div>
+        <PlatFormOverView stats={stats} />
       </section>
 
       <section className="space-y-4 pt-2">
@@ -157,36 +118,7 @@ const AdminDashboard = () => {
             View all <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Total Companies"
-            value={stats.companies.total}
-            description="All registered companies"
-            icon={<Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
-            colorClass="bg-info/10"
-          />
-          <StatCard
-            title="Pending Approval"
-            value={stats.companies.pending}
-            description="Awaiting admin review"
-            icon={<Clock className="h-6 w-6 text-amber-500 dark:text-amber-400" />}
-            colorClass="bg-warning/10"
-          />
-          <StatCard
-            title="Approved"
-            value={stats.companies.approved}
-            description="Active companies"
-            icon={<CheckCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-            colorClass="bg-success/10"
-          />
-          <StatCard
-            title="Rejected"
-            value={stats.companies.rejected}
-            description="Declined companies"
-            icon={<XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />}
-            colorClass="bg-destructive/10"
-          />
-        </div>
+        <CompanyOverView stats={stats} />
       </section>
 
       <section className="space-y-4 pt-2">
@@ -199,29 +131,7 @@ const AdminDashboard = () => {
             View all <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard
-            title="Total Users"
-            value={stats.users.total}
-            description="All platform users"
-            icon={<Users className="h-6 w-6 text-violet-600 dark:text-violet-400" />}
-            colorClass="bg-info/10"
-          />
-          <StatCard
-            title="Job Seekers"
-            value={stats.users.jobSeekers}
-            description="Active job seekers"
-            icon={<Briefcase className="h-6 w-6 text-primary" />}
-            colorClass="bg-primary/10"
-          />
-          <StatCard
-            title="Platform Admins"
-            value={stats.users.admins}
-            description="Admin accounts"
-            icon={<UserCog className="h-6 w-6 text-slate-600 dark:text-slate-400" />}
-            colorClass="bg-muted"
-          />
-        </div>
+        <UsersOverView stats={stats} />
       </section>
 
       {stats.analytics.userGrowth.length > 0 && (
@@ -230,54 +140,14 @@ const AdminDashboard = () => {
             <TrendingUp className="h-5 w-5 text-primary" />
             <h2 className="text-2xl font-semibold tracking-tight">User Growth (Last 12 Months)</h2>
           </div>
-          <div className="bg-card border border-border/60 rounded-2xl p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={stats.analytics.userGrowth}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--border))" />
-                <XAxis dataKey="month" stroke="rgb(var(--muted-foreground))" />
-                <YAxis stroke="rgb(var(--muted-foreground))" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgb(var(--card))',
-                    border: '1px solid rgb(var(--border))',
-                    borderRadius: '8px',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="users"
-                  stroke="rgb(var(--primary))"
-                  strokeWidth={2}
-                  dot={{ fill: 'rgb(var(--primary))' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          <UserGrowthChart stats={stats} />
         </section>
       )}
 
       {stats.analytics.jobTrends.length > 0 && (
         <section className="space-y-4 pt-2">
           <h2 className="text-2xl font-semibold tracking-tight">Job Posting Trends (Last 12 Months)</h2>
-          <div className="bg-card border border-border/60 rounded-2xl p-6">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={stats.analytics.jobTrends}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--border))" />
-                <XAxis dataKey="month" stroke="rgb(var(--muted-foreground))" />
-                <YAxis stroke="rgb(var(--muted-foreground))" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'rgb(var(--card))',
-                    border: '1px solid rgb(var(--border))',
-                    borderRadius: '8px',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
-                  }}
-                />
-                <Bar dataKey="jobs" fill="rgb(var(--primary))" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <JobTrendsChart stats={stats} />
         </section>
       )}
 
@@ -287,15 +157,7 @@ const AdminDashboard = () => {
           <div className="bg-card border border-border/60 rounded-2xl p-6">
             <div className="space-y-4 pt-2">
               {stats.analytics.topCompanies.map((company, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm">
-                      {index + 1}
-                    </div>
-                    <p className="font-medium">{company.name}</p>
-                  </div>
-                  <span className="text-muted-foreground">{company.jobs} jobs</span>
-                </div>
+                <TopCompanyCard company={company} index={index} key={index} />
               ))}
             </div>
           </div>
@@ -309,24 +171,7 @@ const AdminDashboard = () => {
         </div>
         {stats.analytics.recentActivity.length > 0 ? (
           <div className="space-y-3">
-            {stats.analytics.recentActivity.map((activity, index) => (
-              <div
-                key={index}
-                className="block rounded-xl border border-border/60 bg-card p-4"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium">{activity.action}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                      {activity.details}
-                    </p>
-                  </div>
-                  <p className="text-xs text-muted-foreground whitespace-nowrap">
-                    {formatRelativeTime(activity.timestamp)}
-                  </p>
-                </div>
-              </div>
-            ))}
+            <RecentActivity stats={stats} />
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
@@ -339,56 +184,30 @@ const AdminDashboard = () => {
       <section className="space-y-4 pt-2">
         <h2 className="text-2xl font-semibold tracking-tight">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
+          <QuickActionLink
             href="/admin/companies"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition">
-                <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="font-semibold">Manage Companies</p>
-                <p className="text-sm text-muted-foreground">
-                  Review and approve companies
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/admin/users"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center transition">
-                <Users className="h-6 w-6 text-violet-600 dark:text-violet-400" />
-              </div>
-              <div>
-                <p className="font-semibold">Manage Users</p>
-                <p className="text-sm text-muted-foreground">
-                  View and manage all users
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/admin/create-admin"
-            className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center transition">
-                <UserCog className="h-6 w-6 text-slate-600 dark:text-slate-400" />
-              </div>
-              <div>
-                <p className="font-semibold">Create Admin</p>
-                <p className="text-sm text-muted-foreground">
-                  Add new platform admin
-                </p>
-              </div>
-            </div>
-          </Link>
+            icon={
+              <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            }
+            description='Review and approve companies'
+            title='Manage Companies'
+          />
+          <QuickActionLink
+            href='/admin/users'
+            icon={
+              <Users className="h-6 w-6 text-violet-600 dark:text-violet-400" />
+            }
+            title='Manage Users'
+            description='View and manage all users'
+          />
+          <QuickActionLink
+            href='/admin/create-admin'
+            icon={
+              <UserCog className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+            }
+            title='Create Admin'
+            description='Add new platform admin'
+          />
         </div>
       </section>
     </div>
