@@ -1,23 +1,7 @@
 'use client'
 import LoginForm from './LoginForm'
 import AuthAsideSection from '../AuthAsideSection'
-
-const loginContent = [
-  {
-    srNo: 1,
-    title: 'Secure access',
-    desc: 'Your account is protected with role-based access and verified authentication.'
-  },
-  {
-    srNo: 2,
-    title: 'Continue where you left off',
-    desc: 'Resume applications, job postings, and profile updates seamlessly.'
-  }, {
-    srNo: 3,
-    title: 'Trusted hiring platform',
-    desc: 'Join a verified ecosystem of approved companies and genuine candidates.'
-  }
-]
+import { loginContent } from '@/src/utils/constants'
 
 const Login = () => {
   return (

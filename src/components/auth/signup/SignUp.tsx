@@ -1,25 +1,7 @@
 'use client'
-import Link from 'next/link'
 import SignUpForm from './SignUpForm'
 import AuthAsideSection from '../AuthAsideSection'
-
-const signUpContent = [
-  {
-    srNo: 1,
-    title: 'Verified companies only',
-    desc: 'Every company is manually approved by platform admins.'
-  },
-  {
-    srNo: 2,
-    title: 'Real-time tracking',
-    desc: 'Track your applications from "Applied" to "Hired" with complete transparency.'
-  },
-  {
-    srNo: 3,
-    title: 'Complete profiles',
-    desc: 'Build detailed profiles with resume, skills, experience, and certifications.'
-  }
-]
+import { signUpContent } from '@/src/utils/constants'
 
 const SignUp = () => {
   return (

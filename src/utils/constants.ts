@@ -453,3 +453,39 @@ export const PROFILE_SETUP_STEP_FIELDS: Record<
   1: ['contactEmail', 'country'],
   2: ['logo', 'businessDocument'],
 };
+
+export const loginContent = [
+  {
+    srNo: 1,
+    title: 'Secure access',
+    desc: 'Your account is protected with role-based access and verified authentication.',
+  },
+  {
+    srNo: 2,
+    title: 'Continue where you left off',
+    desc: 'Resume applications, job postings, and profile updates seamlessly.',
+  },
+  {
+    srNo: 3,
+    title: 'Trusted hiring platform',
+    desc: 'Join a verified ecosystem of approved companies and genuine candidates.',
+  },
+];
+
+export const signUpContent = [
+  {
+    srNo: 1,
+    title: 'Verified companies only',
+    desc: 'Every company is manually approved by platform admins.',
+  },
+  {
+    srNo: 2,
+    title: 'Real-time tracking',
+    desc: 'Track your applications from "Applied" to "Hired" with complete transparency.',
+  },
+  {
+    srNo: 3,
+    title: 'Complete profiles',
+    desc: 'Build detailed profiles with resume, skills, experience, and certifications.',
+  },
+];
