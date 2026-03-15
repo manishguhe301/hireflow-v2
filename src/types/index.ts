@@ -1,3 +1,5 @@
+import { Company, User } from '@prisma/client';
+
 export interface ConversationUser {
   id: string;
   name: string;
@@ -117,3 +119,45 @@ export interface AdminDashboardStats {
     }[];
   };
 }
+
+export type AdminCompaniesTableProps = {
+  filteredCompanies: Company[];
+  handleApprove: (id: string) => Promise<void>;
+  loadingAction: string | null;
+  rejectCompanyId: string | null;
+  setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>;
+  setRejectCompanyId: React.Dispatch<React.SetStateAction<string | null>>;
+  disabled?: boolean;
+};
+
+export type DeleteCompanyModalProps = {
+  deleteCompanyId: string | null;
+  setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>;
+  handleDelete: () => Promise<void>;
+  loadingAction: string | null;
+  companyName: string;
+};
+
+export type RejectCompanyModalProps = {
+  rejectCompanyId: string | null;
+  setRejectCompanyId: React.Dispatch<React.SetStateAction<string | null>>;
+  rejectReason: string;
+  setRejectReason: React.Dispatch<React.SetStateAction<string>>;
+  onReject: (id: string, reason: string) => Promise<void>;
+  loadingAction: string | null;
+};
+
+export type UserDeleteModalProps = {
+  deleteUserId: string | null;
+  setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>;
+  handleDelete: () => Promise<void>;
+  loadingAction: string | null;
+  deleteUserName: string;
+};
+
+export type UsersTableProps = {
+  filteredUsers: User[];
+  loadingAction: string | null;
+  setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>;
+  disabled?: boolean;
+};

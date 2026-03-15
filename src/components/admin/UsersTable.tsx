@@ -10,13 +10,7 @@ import Link from 'next/link'
 import { labels } from '@/src/utils/constants'
 import clsx from 'clsx'
 import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from '../shared/TableComponents'
-
-type UsersTableProps = {
-  filteredUsers: User[],
-  loadingAction: string | null,
-  setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>
-  disabled?: boolean
-}
+import { UsersTableProps } from '@/src/types'
 
 const UsersTable = ({
   filteredUsers,

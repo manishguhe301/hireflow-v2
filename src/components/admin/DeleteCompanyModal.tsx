@@ -1,14 +1,7 @@
+import { DeleteCompanyModalProps } from "@/src/types"
 import { Spinner } from "../elements/Loader"
 import { Button } from "../ui/Button"
 import Modal from "../ui/Modal"
-
-type DeleteCompanyModalProps = {
-  deleteCompanyId: string | null,
-  setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
-  handleDelete: () => Promise<void>,
-  loadingAction: string | null
-  companyName: string
-}
 
 const DeleteCompanyModal = ({
   deleteCompanyId,

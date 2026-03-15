@@ -2,16 +2,15 @@ import React from 'react'
 import Modal from '../ui/Modal'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
+import { UserDeleteModalProps } from '@/src/types'
 
-type UserDeleteModalProps = {
-  deleteUserId: string | null,
-  setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>,
-  handleDelete: () => Promise<void>,
-  loadingAction: string | null
-  deleteUserName: string
-}
-
-const UserDeleteModal = ({ deleteUserId, setDeleteUserId, handleDelete, loadingAction, deleteUserName }: UserDeleteModalProps) => {
+const UserDeleteModal = ({
+  deleteUserId,
+  setDeleteUserId,
+  handleDelete,
+  loadingAction,
+  deleteUserName
+}: UserDeleteModalProps) => {
   return (
     <Modal
       open={!!deleteUserId}

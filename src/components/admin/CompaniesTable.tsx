@@ -11,16 +11,7 @@ import { Spinner } from '../elements/Loader'
 import { Company } from '@prisma/client'
 import { companyIndustries } from '@/src/utils/constants'
 import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from '../shared/TableComponents'
-
-type CompaniesTableProps = {
-  filteredCompanies: Company[],
-  handleApprove: (id: string) => Promise<void>,
-  loadingAction: string | null,
-  rejectCompanyId: string | null,
-  setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
-  setRejectCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
-  disabled?: boolean
-}
+import { AdminCompaniesTableProps } from '@/src/types'
 
 const CompaniesTable = ({
   filteredCompanies,
@@ -30,7 +21,7 @@ const CompaniesTable = ({
   setDeleteCompanyId,
   setRejectCompanyId,
   disabled
-}: CompaniesTableProps) => {
+}: AdminCompaniesTableProps) => {
   return (
     <DataTable className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
       <DataTableHeader >

@@ -5,7 +5,6 @@ import clsx from "clsx"
 import { RefreshCw, Search, UserPlus, Users, } from "lucide-react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-
 import Link from "next/link"
 import UserDeleteModal from "./UserDeleteModal"
 import { Button } from "../ui/Button"
@@ -15,13 +14,7 @@ import useDebounce from "@/src/store/hooks/useDebounce"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import AdminUsersTableSkeleton from "../skeletons/AdminUsersTableSkeleton"
 import { ADMIN_USERS_TABS } from "@/src/utils/constants"
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import { PaginationType } from "@/src/types"
 
 const AdminUsersList = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | Role>('ALL')
@@ -61,7 +54,7 @@ const AdminUsersList = () => {
   })
 
   const users: User[] = data?.users ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
+  const pagination: PaginationType | null = data?.pagination ?? null
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
