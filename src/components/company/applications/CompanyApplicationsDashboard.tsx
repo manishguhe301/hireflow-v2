@@ -3,45 +3,14 @@
 import { useEffect, useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '@/src/components/ui/Button'
-import {
-  Layers,
-  Eye,
-  UserCheck,
-  CalendarClock,
-  XCircle,
-  CheckCircle,
-  RefreshCcw,
-  FileCheck,
-  OctagonAlert,
-} from 'lucide-react'
+import { RefreshCcw } from 'lucide-react'
 import Pagination from '@/src/components/ui/Pagination'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import TableSkeleton from '../../skeletons/TableSkeleton'
 
 import CompanyApplicationsTable from './CompanyApplicationsTable'
-
-export const StatCard = ({
-  title,
-  value,
-  icon,
-  color,
-}: {
-  title: string
-  value: number
-  icon: React.ReactNode
-  color: string
-}) => (
-  <div className="bg-card border border-border/60 rounded-2xl p-6 flex items-center justify-between hover:shadow-md hover:border-primary/30 transition">
-    <div>
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className="text-3xl font-bold mt-2">{value}</p>
-    </div>
-    <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${color}`}>
-      {icon}
-    </div>
-  </div>
-)
+import ApplicationDashboardStats from './ApplicationDashboardStats'
 
 export default function CompanyApplicationsPage() {
   const [page, setPage] = useState(1)
@@ -145,6 +114,15 @@ export default function CompanyApplicationsPage() {
     )
   }
 
+  const loading = () => {
+    return (
+      <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <StatCardSkeleton key={i} />
+        ))}
+      </section>)
+  }
+
   return (
     <div className=" p-4 md:p-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto max-sm:max-w-screen">
       <div>
@@ -157,64 +135,10 @@ export default function CompanyApplicationsPage() {
       </div>
 
       {statsLoading ? (
-        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <StatCardSkeleton key={i} />
-          ))}
-        </section>
+        loading()
       ) :
-        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          <StatCard
-            title="Total"
-            value={statsData.total}
-            icon={<Layers className="h-5 w-5" />}
-            color="bg-gray-500/10 text-gray-600"
-          />
-          <StatCard
-            title="Reviewing"
-            value={statsData.reviewing}
-            icon={<Eye className="h-5 w-5" />}
-            color="bg-yellow-500/10 text-yellow-600"
-          />
-          <StatCard
-            title="Shortlisted"
-            value={statsData.shortlisted}
-            icon={<UserCheck className="h-5 w-5" />}
-            color="bg-purple-500/10 text-purple-600"
-          />
-          <StatCard
-            title="Interview Scheduled"
-            value={statsData.interviewScheduled}
-            icon={<CalendarClock className="h-5 w-5" />}
-            color="bg-indigo-500/10 text-indigo-600"
-          />
-          <StatCard
-            title="Rejected"
-            value={statsData.rejected}
-            icon={<XCircle className="h-5 w-5" />}
-            color="bg-red-500/10 text-red-600"
-          />
-          <StatCard
-            title="Hired"
-            value={statsData.hired}
-            icon={<CheckCircle className="h-5 w-5" />}
-            color="bg-emerald-500/10 text-emerald-600"
-          />
-          <StatCard
-            title="Offered"
-            value={statsData.offered}
-            icon={<FileCheck className="h-5 w-5" />}
-            color="bg-amber-500/10 text-amber-600"
-          />
-          <StatCard
-            title="On Hold"
-            value={statsData.onHold}
-            icon={<OctagonAlert className="h-5 w-5" />}
-            color="bg-rose-500/10 text-rose-600"
-          />
-        </section>
+        <ApplicationDashboardStats statsData={statsData} />
       }
-
       {
         applicationsLoading ? (
           <TableSkeleton columns={5} rows={8} />
