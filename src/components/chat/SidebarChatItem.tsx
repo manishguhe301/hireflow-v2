@@ -9,18 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 
-const SidebarChatItem = ({ src,
-  conv,
-  onSelectConversation,
-  selectedConversation,
-  otherUser,
-  lastMessage,
-  unreadCount,
-  name,
-  userType,
-  onDeleteConversation,
-  onConversationUpdate
-}: {
+interface ChatItemProps {
   conv: ConversationListItem
   otherUser: ConversationUser | ConversationCompany
   src: string
@@ -32,7 +21,20 @@ const SidebarChatItem = ({ src,
   onConversationUpdate: () => void
   onSelectConversation: (id: string) => void;
   selectedConversation: string | null;
-}) => {
+}
+
+const SidebarChatItem = ({ src,
+  conv,
+  onSelectConversation,
+  selectedConversation,
+  otherUser,
+  lastMessage,
+  unreadCount,
+  name,
+  userType,
+  onDeleteConversation,
+  onConversationUpdate
+}: ChatItemProps) => {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => AppSdk.deleteData(`/api/chat/conversations/${id}`, null),

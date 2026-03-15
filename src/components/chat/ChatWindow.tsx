@@ -3,14 +3,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
-import { Send, MessageSquare, MoveLeft } from 'lucide-react';
-import { Button } from '../ui/Button';
-import clsx from 'clsx';
+import { MessageSquare } from 'lucide-react';
 import { useChatPusher } from '@/src/store/hooks/useChatPusher';
 import { MessageWithSender } from '@/src/types';
 import ChatMessage from './ChatMessage';
-import { useMutation } from '@tanstack/react-query';
 import PageLoader from '../ui/PageLoader';
+import { DesktopChatHeader, MobileChatHeader } from './ChatHeader';
+import MessageInput from './MessageInput';
 
 interface ChatWindowProps {
   conversationId: string | null;
@@ -159,77 +158,6 @@ export default function ChatWindow({
     }
   };
 
-  const sendMutation = useMutation({
-    mutationFn: ({ content }: { content: string; tempId: string }) =>
-      AppSdk.postData('/api/chat/messages/send', { conversationId, content }),
-
-    onSuccess: (res, variables) => {
-      if (res.error) {
-        toast.error(res.error);
-
-        setMessages((prev) =>
-          prev.filter((m) => m.id !== variables.tempId)
-        );
-
-        setNewMessage(variables.content);
-        return;
-      }
-
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === variables.tempId
-            ? { ...res.message, isSending: false }
-            : m
-        )
-      );
-
-      onMessageSent();
-    },
-
-    onError: (_error, variables) => {
-      toast.error('Failed to send message');
-
-      setMessages((prev) =>
-        prev.filter((m) => m.id !== variables.tempId)
-      );
-
-      setNewMessage(variables.content);
-    },
-  });
-
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !conversationId) return;
-
-    const content = newMessage.trim();
-    setNewMessage('');
-
-    const tempId = `temp-${Date.now()}`;
-
-    const optimisticMessage: MessageWithSender & { isSending: boolean } = {
-      id: tempId,
-      conversationId: conversationId,
-      content,
-      createdAt: new Date(),
-      senderId: 'me',
-      senderType: userType === 'company' ? 'COMPANY' : 'JOB_SEEKER',
-      isRead: true,
-      isSending: true,
-      sender: {
-        id: 'me',
-        name: 'You',
-        profile: {
-          avatar: null,
-          name: 'You'
-        }
-      }
-    };
-
-    setMessages((prev) => [...prev, optimisticMessage]);
-
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-
-    sendMutation.mutate({ content, tempId });
-  };
 
   if (!conversationId) {
     return (
@@ -252,70 +180,18 @@ export default function ChatWindow({
   return (
     <div className="flex-1 flex flex-col bg-background w-full">
       {conversationId && (
-        <div className="p-3 border-b flex items-center gap-3 sm:hidden bg-card">
-          <Button
-            variant="ghost"
-            size='sm'
-            onClick={onBack}
-            aria-label='Go Back'
-            className="p-2!"
-          >
-            <MoveLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1 min-w-0 flex items-center gap-3 ">
-            {chatPartnerAvatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={chatPartnerAvatar}
-                alt={chatPartnerName}
-                className="h-8 w-8 rounded-full object-cover"
-              />
-            ) : (
-              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary font-semibold text-sm">
-                  {chatPartnerName?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="font-semibold text-sm truncate">{chatPartnerName}</p>
-              {jobTitle && (
-                <p className="text-[10px] text-muted-foreground truncate line-clamp-1">
-                  {jobTitle}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+        <MobileChatHeader
+          onBack={onBack}
+          chatPartnerAvatar={chatPartnerAvatar}
+          chatPartnerName={chatPartnerName}
+          jobTitle={jobTitle}
+        />
       )}
-      <div className="hidden sm:flex items-center justify-between border-b border-border px-4 py-3 bg-card">
-        <div className="flex items-center gap-3 min-w-0">
-          {chatPartnerAvatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={chatPartnerAvatar}
-              alt={chatPartnerName}
-              className="h-9 w-9 rounded-full object-cover"
-            />
-          ) : (
-            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-semibold text-sm">
-                {chatPartnerName?.charAt(0).toUpperCase()}
-              </span>
-            </div>
-          )}
-
-          <div className="min-w-0">
-            <p className="text-sm font-semibold truncate">{chatPartnerName}</p>
-
-            {jobTitle && (
-              <p className="text-xs text-muted-foreground truncate">
-                Re: {jobTitle}
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
+      <DesktopChatHeader
+        chatPartnerAvatar={chatPartnerAvatar}
+        chatPartnerName={chatPartnerName}
+        jobTitle={jobTitle}
+      />
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
@@ -377,42 +253,15 @@ export default function ChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t border-border bg-card">
-        <div className="flex flex-col gap-2">
-          <textarea
-            value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value)
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
-            placeholder="Type a message... (Enter to send, Shift+Enter for new line), Max 500 characters"
-            className={clsx(
-              'w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition',
-              'bg-background text-foreground border-border/60',
-              'focus:border-primary/40 focus:ring-1 focus:ring-primary/30',
-            )}
-            rows={2}
-            maxLength={500}
-          />
-          <Button
-            onClick={handleSendMessage}
-            disabled={!newMessage.trim() || sendMutation.isPending}
-            className="px-4 self-end"
-            aria-label='Send Message'
-          >
-            {sendMutation.isPending ? (
-              <Spinner className="h-4 w-4" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
+      <MessageInput
+        conversationId={conversationId}
+        messagesEndRef={messagesEndRef}
+        newMessage={newMessage}
+        onMessageSent={onMessageSent}
+        setMessages={setMessages}
+        setNewMessage={setNewMessage}
+        userType={userType}
+      />
     </div>
   );
 }
