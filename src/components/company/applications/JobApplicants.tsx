@@ -2,25 +2,22 @@
 import { AppSdk } from '@/src/utils/AppSdk';
 import { ApplicationStatus, CurrentEmployment, ExperienceLevel } from '@prisma/client';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner';
-import { Spinner } from '../../elements/Loader';
 import { Button } from '../../ui/Button';
-import { StatCard } from './CompanyApplicationsDashboard';
-import { CalendarClock, CheckCircle, Eye, FileCheck, FileText, Layers, OctagonAlert, RefreshCw, Search, UserCheck, XCircle } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
-import { getLabel } from '@/src/utils/helper';
-import { FormSelect } from '../../ui/FormSelect';
 import ApplicationsTableForJob from './ApplicationsTableForJob';
-import Modal from '../../ui/Modal';
 import useDebounce from '@/src/store/hooks/useDebounce';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton';
 import TableSkeleton from '../../skeletons/TableSkeleton';
-import clsx from 'clsx';
-import { APPLICATION_TABS_WITH_SORT, APPLICATIONS_TABS } from '@/src/utils/constants';
+import ApplicationStats from './ApplicationStats';
+import BulkActionModal from './BulkActionModal';
+import JobApplicationFilters from './JobApplicationFilters';
+import SelectedApplicantsUI from './SelectedApplicantsUI';
+import NoApplications from './NoApplications';
 
-interface Stats {
+export interface Stats {
   total: number,
   applied: number,
   reviewing: number,
@@ -76,7 +73,7 @@ const JobApplicants = () => {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([])
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
   const [bulkAction, setBulkAction] = useState<'update_status' | 'reject' | null>(null)
-  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus | ''>('APPLIED')
+  const [bulkStatus, setBulkStatus] = useState<ApplicationStatus | ''>('REVIEWING')
   const [bulkRejectReason, setBulkRejectReason] = useState('')
   const debouncedSearch = useDebounce(search, 500)
   const queryClient = useQueryClient()
@@ -296,180 +293,29 @@ const JobApplicants = () => {
           View and manage job applicants
         </p>
       </div>
-
       {stats &&
-        <section className="grid grid-cols-1 max-w-full md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          <StatCard
-            title="Total"
-            value={stats.total}
-            icon={<Layers className="h-5 w-5" />}
-            color="bg-gray-500/10 text-gray-600"
-          />
-          <StatCard
-            title="Reviewing"
-            value={stats.reviewing}
-            icon={<Eye className="h-5 w-5" />}
-            color="bg-yellow-500/10 text-yellow-600"
-          />
-          <StatCard
-            title="Shortlisted"
-            value={stats.shortlisted}
-            icon={<UserCheck className="h-5 w-5" />}
-            color="bg-purple-500/10 text-purple-600"
-          />
-          <StatCard
-            title="Interview Scheduled"
-            value={stats.interviewScheduled}
-            icon={<CalendarClock className="h-5 w-5" />}
-            color="bg-indigo-500/10 text-indigo-600"
-          />
-          <StatCard
-            title="Rejected"
-            value={stats.rejected}
-            icon={<XCircle className="h-5 w-5" />}
-            color="bg-red-500/10 text-red-600"
-          />
-          <StatCard
-            title="Hired"
-            value={stats.hired}
-            icon={<CheckCircle className="h-5 w-5" />}
-            color="bg-emerald-500/10 text-emerald-600"
-          />
-          <StatCard
-            title="Offered"
-            value={stats.offered}
-            icon={<FileCheck className="h-5 w-5" />}
-            color="bg-amber-500/10 text-amber-600"
-          />
-          <StatCard
-            title="On Hold"
-            value={stats.onHold}
-            icon={<OctagonAlert className="h-5 w-5" />}
-            color="bg-rose-500/10 text-rose-600"
-          />
-        </section>
+        <ApplicationStats stats={stats} />
       }
-
-      <div>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-border/60 bg-card rounded-2xl p-4">
-          <FormSelect
-            options={APPLICATION_TABS_WITH_SORT}
-            disabled={isLoading}
-            placeholder='Filters'
-            onChange={(value) => {
-              setPage(1)
-
-              if (value === 'name' || value === 'recent' || value === 'oldest') {
-                setSortBy(value)
-                setActiveTab('ALL')
-                return
-              }
-
-              if (value === 'ALL') {
-                setActiveTab('ALL')
-                setSortBy('')
-                return
-              }
-
-              setActiveTab(value as ApplicationStatus)
-              setSortBy('')
-            }}
-            className='py-2! w-full md:w-80'
-          />
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search applicants..."
-              className="w-full md:w-64 rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
-              aria-label="Search applicants"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-          <Button
-            className='flex items-center gap-2'
-            disabled={isRefreshing}
-            onClick={() => {
-              if (isRefreshing) return;
-              setPage(1)
-              setActiveTab('ALL')
-              setSortBy('')
-              setSearch('')
-
-              setIsRefreshing(true);
-              refetch();
-
-              setTimeout(() => setIsRefreshing(false), 1000);
-            }}>
-            <RefreshCw
-              size={16}
-              className={clsx(
-                'transition',
-                isRefreshing && 'animate-spin opacity-50 cursor-not-allowed'
-              )}
-            />
-            Refresh
-
-          </Button>
-        </div>
-        <div className="flex items-center  gap-4 mt-4">
-          <p className="text-sm text-muted-foreground">
-            Showing <span className="font-semibold text-foreground">{applications.length} </span>
-            of <span className="font-semibold text-foreground">{pagination?.total}</span> applicants
-          </p>
-
-        </div>
-      </div>
+      <JobApplicationFilters
+        isLoading={isLoading}
+        isRefreshing={isRefreshing}
+        refetch={refetch}
+        search={search}
+        setActiveTab={setActiveTab}
+        setIsRefreshing={setIsRefreshing}
+        setPage={setPage}
+        setSearch={setSearch}
+        setSortBy={setSortBy}
+        paginationTotal={pagination?.total}
+        applicationsLength={applications?.length}
+      />
       {selectedApplicants.length > 0 && (
-        <div className="flex items-center gap-4 rounded-xl border border-primary/40 bg-primary/5 px-4 py-3 max-sm:flex-col max-sm:items-start">
-          <p className="text-sm font-semibold text-primary">
-            {selectedApplicants.length} applicant{selectedApplicants.length > 1 ? 's' : ''} selected
-          </p>
-
-          <div className="flex gap-2 ml-auto max-sm:items-start max-sm:ml-0">
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex items-center gap-1"
-              onClick={() => {
-                setBulkAction('update_status')
-                setIsBulkModalOpen(true)
-              }}
-            >
-              <UserCheck className="h-4 w-4" />
-              Update Status
-            </Button>
-
-            <Button
-              size="sm"
-              variant="danger"
-              className='flex items-center gap-1'
-              onClick={() => {
-                setBulkAction('reject')
-                setIsBulkModalOpen(true)
-              }}
-            >
-              <XCircle className="h-4 w-4" />
-              Reject All
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setSelectedApplicants([])}
-            >
-              Clear Selection
-            </Button>
-          </div>
-        </div>
+        <SelectedApplicantsUI
+          selectedApplicantsLength={selectedApplicants.length}
+          setSelectedApplicants={setSelectedApplicants}
+          setIsBulkModalOpen={setIsBulkModalOpen}
+          setBulkAction={setBulkAction}
+        />
       )}
       <>
         {
@@ -486,43 +332,12 @@ const JobApplicants = () => {
                 isBulkProcessing={isBulkProcessing}
                 jobId={job?.id || ''}
               /> : (
-                <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-                  <FileText className="h-10 w-10 text-muted-foreground" />
-
-                  <p className="text-lg font-medium">
-                    No applicants found
-                  </p>
-
-                  <p className="text-sm text-muted-foreground max-w-md">
-                    {activeTab !== 'ALL' && search
-                      ? `No applicants match the "${getLabel(
-                        APPLICATIONS_TABS,
-                        activeTab,
-                      )}" status with search term "${search}". `
-                      : activeTab !== 'ALL'
-                        ? `No applicants found under "${getLabel(
-                          APPLICATIONS_TABS,
-                          activeTab,
-                        )}" status. `
-                        : search
-                          ? `No applicants match the search term "${search}". `
-                          : `There are no applicants for this job yet. `}
-                    try adjusting your filters to find what you&apos;re looking for.
-                  </p>
-
-                  {(activeTab !== 'ALL' || search) && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setActiveTab('ALL')
-                        setSearch('')
-                      }}
-                    >
-                      Clear Filters
-                    </Button>
-                  )}
-                </div>
+                <NoApplications
+                  activeTab={activeTab}
+                  search={search}
+                  setActiveTab={setActiveTab}
+                  setSearch={setSearch}
+                />
               )
           )
         }
@@ -540,86 +355,20 @@ const JobApplicants = () => {
         )
       }
 
-      <Modal
-        open={isBulkModalOpen}
-        onClose={() => {
-          if (!isBulkProcessing) {
-            setIsBulkModalOpen(false)
-            setBulkRejectReason('')
-          }
-        }}
-      >
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">
-            {bulkAction === 'reject' ? 'Bulk Reject Applications' : 'Bulk Update Status'}
-          </h3>
-
-          <p className="text-sm text-muted-foreground">
-            This action will update <span className="font-semibold">{selectedApplicants.length}</span> application
-            {selectedApplicants.length > 1 ? 's' : ''}.
-          </p>
-
-          {bulkAction === 'update_status' && (
-            <div>
-              <label className="text-sm font-medium mb-2 block">New Status</label>
-              <select
-                value={bulkStatus}
-                onChange={(e) => setBulkStatus(e.target.value as ApplicationStatus)}
-                disabled={isBulkProcessing}
-                className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40"
-              >
-                {Object.values(ApplicationStatus).filter(s => s !== 'REJECTED').map((status) => (
-                  <option
-                    key={status}
-                    value={status}
-                    disabled={status === ApplicationStatus.APPLIED}
-                  >
-                    {getLabel(APPLICATIONS_TABS, status)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {bulkAction === 'reject' && (
-            <div>
-              <label className="text-sm font-medium mb-2 block">Rejection Reason (Optional)</label>
-              <textarea
-                value={bulkRejectReason}
-                onChange={(e) => setBulkRejectReason(e.target.value)}
-                placeholder="Add internal notes..."
-                rows={4}
-                disabled={isBulkProcessing}
-                className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none focus:border-primary/40" />
-            </div>
-          )}
-
-          <div className="flex justify-end gap-3 pt-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsBulkModalOpen(false)}
-              disabled={isBulkProcessing}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              variant={bulkAction === 'reject' ? 'danger' : 'primary'}
-              onClick={handleBulkAction}
-              disabled={isBulkProcessing}
-            >
-              {isBulkProcessing ? <Spinner className="h-4 w-4" /> : 'Confirm'}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      <BulkActionModal
+        isBulkModalOpen={isBulkModalOpen}
+        setIsBulkModalOpen={setIsBulkModalOpen}
+        bulkAction={bulkAction}
+        bulkRejectReason={bulkRejectReason}
+        bulkStatus={bulkStatus}
+        handleBulkAction={handleBulkAction}
+        isBulkProcessing={isBulkProcessing}
+        selectedApplicants={selectedApplicants}
+        setBulkRejectReason={setBulkRejectReason}
+        setBulkStatus={setBulkStatus}
+      />
     </div>
   )
 }
 
 export default JobApplicants
-
-
-
-
-

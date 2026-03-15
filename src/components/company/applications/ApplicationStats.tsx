@@ -1,4 +1,3 @@
-import { Stats } from './JobApplicants'
 import StatCard from '../../shared/StatCard'
 import {
   CalendarClock,
@@ -10,6 +9,7 @@ import {
   UserCheck,
   XCircle
 } from 'lucide-react';
+import { Stats } from './JobApplicants';
 
 const ApplicationStats = ({
   stats
