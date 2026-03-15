@@ -1,7 +1,7 @@
 'use client';
 import { MessageCircle, } from 'lucide-react';
-import { ConversationCompany, ConversationListItem, ConversationUser } from '@/src/types';
-import { Dispatch, RefObject, SetStateAction, useMemo, useState } from 'react';
+import { ChatSidebarProps, ConversationCompany, ConversationUser } from '@/src/types';
+import { useMemo, useState } from 'react';
 import { Spinner } from '../elements/Loader';
 import Skeleton from '../ui/Skeleton';
 import ChatSidebarTopSection from './ChatSidebarTopSection';
@@ -22,21 +22,6 @@ const ChatSidebarSkeleton = () => {
       ))}
     </div>
   )
-}
-
-interface ChatSidebarProps {
-  conversations: ConversationListItem[];
-  selectedConversation: string | null;
-  onSelectConversation: (id: string) => void;
-  userType: 'company' | 'jobseeker';
-  onConversationUpdate: () => void;
-  searchQuery: string;
-  hasMore: boolean
-  observerTarget: RefObject<HTMLDivElement | null>
-  isLoadingMore: boolean
-  setSearchQuery: Dispatch<SetStateAction<string>>
-  onDeleteConversation: (id: string) => void;
-  isFetching: boolean
 }
 
 export default function ChatSidebar({

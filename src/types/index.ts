@@ -1,4 +1,5 @@
 import { Company, User } from '@prisma/client';
+import { Dispatch, RefObject, SetStateAction } from 'react';
 
 export interface ConversationUser {
   id: string;
@@ -161,3 +162,61 @@ export type UsersTableProps = {
   setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>;
   disabled?: boolean;
 };
+
+export interface ChatSidebarProps {
+  conversations: ConversationListItem[];
+  selectedConversation: string | null;
+  onSelectConversation: (id: string) => void;
+  userType: 'company' | 'jobseeker';
+  onConversationUpdate: () => void;
+  searchQuery: string;
+  hasMore: boolean;
+  observerTarget: RefObject<HTMLDivElement | null>;
+  isLoadingMore: boolean;
+  setSearchQuery: Dispatch<SetStateAction<string>>;
+  onDeleteConversation: (id: string) => void;
+  isFetching: boolean;
+}
+
+export interface ChatSidebarTopSectionProps {
+  conversations: ConversationListItem[];
+  isRefreshing: boolean;
+  onConversationUpdate: () => void;
+  setIsRefreshing: Dispatch<SetStateAction<boolean>>;
+  setSearchQuery: Dispatch<SetStateAction<string>>;
+  searchQuery: string;
+}
+
+export interface ChatWindowProps {
+  conversationId: string | null;
+  userType: 'company' | 'jobseeker';
+  onMessageSent: () => void;
+  chatPartnerName?: string;
+  chatPartnerAvatar?: string | null;
+  jobTitle?: string;
+  onBack?: () => void;
+}
+
+export interface MessageInputProps {
+  conversationId: string | null;
+  setMessages: Dispatch<SetStateAction<MessageWithSender[]>>;
+  onMessageSent: () => void;
+  newMessage: string;
+  setNewMessage: Dispatch<SetStateAction<string>>;
+  userType: 'company' | 'jobseeker';
+  messagesEndRef: RefObject<HTMLDivElement | null>;
+}
+
+export interface ChatItemProps {
+  conv: ConversationListItem;
+  otherUser: ConversationUser | ConversationCompany;
+  src: string;
+  name: string;
+  unreadCount: number;
+  lastMessage: ConversationMessage;
+  userType: 'company' | 'jobseeker';
+  onDeleteConversation: (id: string) => void;
+  onConversationUpdate: () => void;
+  onSelectConversation: (id: string) => void;
+  selectedConversation: string | null;
+}

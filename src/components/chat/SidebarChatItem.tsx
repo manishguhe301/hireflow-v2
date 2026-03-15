@@ -4,24 +4,10 @@ import { Trash2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { formatRelativeTime } from '@/src/utils/helper';
 import clsx from 'clsx';
-import { ConversationCompany, ConversationListItem, ConversationMessage, ConversationUser } from '@/src/types';
+import { ChatItemProps } from '@/src/types';
 import { useMutation } from '@tanstack/react-query';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
-
-interface ChatItemProps {
-  conv: ConversationListItem
-  otherUser: ConversationUser | ConversationCompany
-  src: string
-  name: string
-  unreadCount: number
-  lastMessage: ConversationMessage
-  userType: "company" | "jobseeker"
-  onDeleteConversation: (id: string) => void
-  onConversationUpdate: () => void
-  onSelectConversation: (id: string) => void;
-  selectedConversation: string | null;
-}
 
 const SidebarChatItem = ({ src,
   conv,

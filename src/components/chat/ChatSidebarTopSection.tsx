@@ -1,16 +1,6 @@
-import { ConversationListItem } from '@/src/types';
+import { ChatSidebarTopSectionProps } from '@/src/types';
 import clsx from 'clsx';
 import { RefreshCw } from 'lucide-react';
-import React, { Dispatch, SetStateAction } from 'react'
-
-interface ChatSidebarTopSectionProps {
-  conversations: ConversationListItem[];
-  isRefreshing: boolean,
-  onConversationUpdate: () => void;
-  setIsRefreshing: Dispatch<SetStateAction<boolean>>
-  setSearchQuery: Dispatch<SetStateAction<string>>
-  searchQuery: string
-}
 
 const ChatSidebarTopSection = ({
   conversations,

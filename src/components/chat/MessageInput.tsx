@@ -1,22 +1,11 @@
 import clsx from 'clsx';
-import React, { Dispatch, RefObject, SetStateAction } from 'react'
 import { Spinner } from '../elements/Loader';
 import { Send } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useMutation } from '@tanstack/react-query';
 import { AppSdk } from '@/src/utils/AppSdk';
 import { toast } from 'sonner';
-import { MessageWithSender } from '@/src/types';
-
-interface MessageInputProps {
-  conversationId: string | null;
-  setMessages: Dispatch<SetStateAction<MessageWithSender[]>>
-  onMessageSent: () => void;
-  newMessage: string
-  setNewMessage: Dispatch<SetStateAction<string>>
-  userType: 'company' | 'jobseeker';
-  messagesEndRef: RefObject<HTMLDivElement | null>
-}
+import { MessageInputProps, MessageWithSender } from '@/src/types';
 
 const MessageInput = ({
   conversationId,

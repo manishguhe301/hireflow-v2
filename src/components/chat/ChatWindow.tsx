@@ -5,21 +5,11 @@ import { toast } from 'sonner';
 import { Spinner } from '../elements/Loader';
 import { MessageSquare } from 'lucide-react';
 import { useChatPusher } from '@/src/store/hooks/useChatPusher';
-import { MessageWithSender } from '@/src/types';
+import { ChatWindowProps, MessageWithSender } from '@/src/types';
 import ChatMessage from './ChatMessage';
 import PageLoader from '../ui/PageLoader';
 import { DesktopChatHeader, MobileChatHeader } from './ChatHeader';
 import MessageInput from './MessageInput';
-
-interface ChatWindowProps {
-  conversationId: string | null;
-  userType: 'company' | 'jobseeker';
-  onMessageSent: () => void;
-  chatPartnerName?: string;
-  chatPartnerAvatar?: string | null;
-  jobTitle?: string;
-  onBack?: () => void;
-}
 
 export default function ChatWindow({
   conversationId,
