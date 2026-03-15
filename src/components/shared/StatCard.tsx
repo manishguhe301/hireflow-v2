@@ -8,7 +8,7 @@ interface StatCardProps {
   description?: string
   icon: React.ReactNode
   colorClass: string
-  valueClass?: string
+  isValueSmall?: boolean
 }
 
 const StatCard = ({
@@ -17,15 +17,20 @@ const StatCard = ({
   description,
   icon,
   colorClass,
-  valueClass
+  isValueSmall
 }: StatCardProps) => {
   return (
     <div className="bg-card border border-border/60 rounded-2xl p-6 hover:border-primary/40 transition hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className={clsx("text-4xl font-bold whitespace-nowrap mt-3 mb-2",
-            valueClass!)}>{value}</p>
+          <p
+            className={clsx(
+              "text-4xl font-bold whitespace-nowrap mt-3 mb-2",
+              isValueSmall && 'text-3xl! mb-0!'
+            )}>
+            {value}
+          </p>
           {description && <p className="text-xs text-muted-foreground">{description || '-'}</p>}
         </div>
         <div className={`h-12 w-12 rounded-xl ${colorClass} flex items-center justify-center flex-shrink-0 ml-4`}>
