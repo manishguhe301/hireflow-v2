@@ -2,12 +2,12 @@
 
 import React from 'react'
 import { UseFormWatch } from 'react-hook-form'
-import { ProfileFormInputs } from './ProfileSetup'
 import { Pencil } from 'lucide-react'
 import clsx from 'clsx'
 import { useCompany } from '@/src/store/hooks/useCompany'
 import { getFileNameFromPath } from '@/src/utils/helper'
 import StepHeader from '../../ui/StepHeader'
+import { ProfileFormInputs } from '@/src/types'
 
 type Props = {
   watch: UseFormWatch<ProfileFormInputs>

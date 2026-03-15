@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
 import { FieldErrors, UseFormRegister } from 'react-hook-form'
-import { ProfileFormInputs } from './ProfileSetup'
 import { FormTextarea } from '../../ui/FormTextarea'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
 import { companyIndustries, companySizes } from '@/src/utils/constants'
 import StepHeader from '../../ui/StepHeader'
+import { ProfileFormInputs } from '@/src/types'
 
 const currentYear = new Date().getFullYear()
 

@@ -1,8 +1,8 @@
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { FileUpload } from "../../ui/FileUpload"
-import { ProfileFormInputs } from "./ProfileSetup"
 import { useCompany } from "@/src/store/hooks/useCompany"
 import StepHeader from "../../ui/StepHeader"
+import { ProfileFormInputs } from "@/src/types"
 
 const Step3Documents = ({
   register,
