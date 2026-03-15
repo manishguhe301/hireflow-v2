@@ -19,55 +19,9 @@ import MobileTabs from '../../layout/MobileTabs'
 import StepSidebar from '../../layout/StepSidebar'
 import { ArrowLeft } from 'lucide-react'
 import { Spinner } from '../../elements/Loader'
+import { PROFILE_SETUP_STEP_FIELDS, profileSetupSteps } from '@/src/utils/constants'
+import { ProfileFormInputs } from '@/src/types'
 
-export type ProfileFormInputs = {
-  name: string,
-  description: string,
-  industry: string,
-  companySize: string,
-  foundedYear: string,
-  website: string,
-  linkedinProfile: string,
-
-  contactEmail: string,
-  contactPhone: string,
-  country: string,
-  city: string,
-  countryPhoneCode: string,
-  address: string,
-
-  logo: FileList,
-  businessDocument: FileList,
-  taxDocument: FileList
-
-  deleteLogo?: boolean
-}
-
-const STEP_FIELDS: Record<number, (keyof ProfileFormInputs)[]> = {
-  0: [
-    'name',
-    'description',
-    'industry',
-    'companySize',
-    'foundedYear',
-    'website',
-  ],
-  1: [
-    'contactEmail',
-    'country',
-  ],
-  2: [
-    'logo',
-    'businessDocument',
-  ],
-}
-
-const steps = [
-  { number: 1, label: 'Basic Info' },
-  { number: 2, label: 'Contact' },
-  { number: 3, label: 'Documents' },
-  { number: 4, label: 'Review' },
-]
 
 const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(0)
@@ -146,7 +100,7 @@ const ProfileSetup = () => {
 
 
   const handleNext = async () => {
-    const fields = STEP_FIELDS[currentStep]
+    const fields = PROFILE_SETUP_STEP_FIELDS[currentStep]
 
     if (!fields) {
       setCurrentStep((prev) => prev + 1)
@@ -285,7 +239,7 @@ const ProfileSetup = () => {
 
       {isEditMode && (
         <MobileTabs
-          steps={steps}
+          steps={profileSetupSteps}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
           isEditMode={isEditMode}
@@ -297,7 +251,7 @@ const ProfileSetup = () => {
         {isEditMode && (
           <div className="hidden lg:block sticky top-24">
             <StepSidebar
-              steps={steps}
+              steps={profileSetupSteps}
               currentStep={currentStep}
               onStepClick={setCurrentStep}
               isEditMode={isEditMode}
@@ -313,7 +267,7 @@ const ProfileSetup = () => {
               handleNext={handleNext}
               handlePrev={handlePrev}
               disabled={isSubmitting}
-              steps={steps}
+              steps={profileSetupSteps}
             />
           </div>
 

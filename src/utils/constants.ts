@@ -8,6 +8,7 @@ import {
   WorkMode,
 } from '@prisma/client';
 import { Briefcase, ShieldCheck, UserCircle, Workflow } from 'lucide-react';
+import { ProfileFormInputs } from '../types';
 
 export const STATUS_STYLE: Record<CompanyStatus, string> = {
   PENDING: 'bg-yellow-100 text-yellow-700',
@@ -429,3 +430,26 @@ export const noticePeriods: SelectOption[] = [
   { label: '2 months', value: '2_MONTHS' },
   { label: '3 months', value: '3_MONTHS' },
 ];
+
+export const profileSetupSteps = [
+  { number: 1, label: 'Basic Info' },
+  { number: 2, label: 'Contact' },
+  { number: 3, label: 'Documents' },
+  { number: 4, label: 'Review' },
+];
+
+export const PROFILE_SETUP_STEP_FIELDS: Record<
+  number,
+  (keyof ProfileFormInputs)[]
+> = {
+  0: [
+    'name',
+    'description',
+    'industry',
+    'companySize',
+    'foundedYear',
+    'website',
+  ],
+  1: ['contactEmail', 'country'],
+  2: ['logo', 'businessDocument'],
+};

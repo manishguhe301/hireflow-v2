@@ -57,3 +57,26 @@ export interface MessageWithSender {
     } | null;
   };
 }
+
+export type ProfileFormInputs = {
+  name: string;
+  description: string;
+  industry: string;
+  companySize: string;
+  foundedYear: string;
+  website: string;
+  linkedinProfile: string;
+
+  contactEmail: string;
+  contactPhone: string;
+  country: string;
+  city: string;
+  countryPhoneCode: string;
+  address: string;
+
+  logo: FileList;
+  businessDocument: FileList;
+  taxDocument: FileList;
+
+  deleteLogo?: boolean;
+};
