@@ -80,3 +80,40 @@ export type ProfileFormInputs = {
 
   deleteLogo?: boolean;
 };
+
+export type PaginationType = {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export interface AdminDashboardStats {
+  companies: {
+    total: number;
+    pending: number;
+    rejected: number;
+    approved: number;
+  };
+  users: {
+    total: number;
+    jobSeekers: number;
+    admins: number;
+  };
+  platform: {
+    totalJobs: number;
+    totalApplications: number;
+    recentApprovals: number;
+    recentRejections: number;
+  };
+  analytics: {
+    userGrowth: { month: string; users: number }[];
+    jobTrends: { month: string; jobs: number }[];
+    topCompanies: { name: string; jobs: number }[];
+    recentActivity: {
+      action: string;
+      timestamp: Date;
+      details: string;
+    }[];
+  };
+}
