@@ -1,9 +1,9 @@
+import { AdminDashboardStats } from '@/src/types'
 import React from 'react'
-import { DashboardStats } from '../AdminDashboard'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 const UserGrowthChart = ({ stats: { analytics: { userGrowth } } }:
-  { stats: DashboardStats }
+  { stats: AdminDashboardStats }
 ) => {
   return (
     <div className="bg-card border border-border/60 rounded-2xl p-6">

@@ -1,4 +1,4 @@
-import { DashboardStats } from '../AdminDashboard'
+import { AdminDashboardStats } from '@/src/types'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 const JobTrendsChart = (
@@ -8,7 +8,7 @@ const JobTrendsChart = (
         jobTrends
       }
     }
-  }: { stats: DashboardStats }) => {
+  }: { stats: AdminDashboardStats }) => {
   return (
     <div className="bg-card border border-border/60 rounded-2xl p-6">
       <ResponsiveContainer width="100%" height={300}>

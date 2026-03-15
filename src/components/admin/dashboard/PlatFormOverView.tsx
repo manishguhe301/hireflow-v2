@@ -1,8 +1,8 @@
+import { AdminDashboardStats } from '@/src/types'
 import StatCard from '../../shared/StatCard'
-import { DashboardStats } from '../AdminDashboard'
 import { Briefcase, CheckCircle, FileText, XCircle } from 'lucide-react'
 
-const PlatFormOverView = ({ stats: { platform } }: { stats: DashboardStats }) => {
+const PlatFormOverView = ({ stats: { platform } }: { stats: AdminDashboardStats }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatCard

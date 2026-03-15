@@ -1,8 +1,8 @@
-import { DashboardStats } from '../AdminDashboard'
+import { AdminDashboardStats } from '@/src/types'
 import { formatRelativeTime } from '@/src/utils/helper'
 
 const RecentActivity = ({ stats: { analytics: { recentActivity } } }:
-  { stats: DashboardStats }) => {
+  { stats: AdminDashboardStats }) => {
   return recentActivity.map((activity, index) => (
     <div
       key={index}

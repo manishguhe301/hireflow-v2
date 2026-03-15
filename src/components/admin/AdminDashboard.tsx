@@ -20,36 +20,7 @@ import TopCompanyCard from './dashboard/TopCompanyCard'
 import RecentActivity from './dashboard/RecentActivity'
 import PlatFormOverView from './dashboard/PlatFormOverView'
 import QuickActionLink from '../shared/QuickActionLink'
-
-export interface DashboardStats {
-  companies: {
-    total: number
-    pending: number
-    rejected: number
-    approved: number
-  }
-  users: {
-    total: number
-    jobSeekers: number
-    admins: number
-  }
-  platform: {
-    totalJobs: number
-    totalApplications: number
-    recentApprovals: number
-    recentRejections: number
-  }
-  analytics: {
-    userGrowth: { month: string; users: number }[]
-    jobTrends: { month: string; jobs: number }[]
-    topCompanies: { name: string; jobs: number }[]
-    recentActivity: {
-      action: string
-      timestamp: Date
-      details: string
-    }[]
-  }
-}
+import { AdminDashboardStats } from '@/src/types'
 
 const AdminDashboard = () => {
   const { data: stats, isLoading, refetch, isError } = useQuery({
@@ -61,7 +32,7 @@ const AdminDashboard = () => {
         throw new Error(res.error || 'Failed to fetch stats')
       }
 
-      return res as DashboardStats
+      return res as AdminDashboardStats
     },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,

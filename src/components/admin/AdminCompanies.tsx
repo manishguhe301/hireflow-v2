@@ -19,13 +19,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AdminCompaniesTableSkeleton from '../skeletons/AdminCompaniesTableSkeleton'
 import { TABS } from '@/src/utils/constants'
 import { Button } from '../ui/Button'
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import { PaginationType } from '@/src/types'
 
 const AdminCompanies = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
@@ -67,7 +61,7 @@ const AdminCompanies = () => {
   })
 
   const companies: Company[] = data?.companies ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
+  const pagination: PaginationType | null = data?.pagination ?? null
 
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {

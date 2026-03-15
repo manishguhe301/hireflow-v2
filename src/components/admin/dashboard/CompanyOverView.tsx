@@ -1,9 +1,9 @@
 import React from 'react'
 import StatCard from '../../shared/StatCard'
-import { DashboardStats } from '../AdminDashboard'
 import { Building2, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { AdminDashboardStats } from '@/src/types'
 
-const CompanyOverView = ({ stats: { companies } }: { stats: DashboardStats }) => {
+const CompanyOverView = ({ stats: { companies } }: { stats: AdminDashboardStats }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatCard
