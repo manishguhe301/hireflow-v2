@@ -17,6 +17,16 @@ import { useQueryClient } from "@tanstack/react-query"
 import { APPLICATIONS_TABS } from "@/src/utils/constants"
 import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from "../../shared/TableComponents"
 
+interface ApplicationTableProps {
+  applications: Applications[],
+  selectAllApplicants: () => void,
+  selectedApplicants: string[]
+  applicationsLength: number
+  checkBoxHandler: (appId: string) => void
+  isBulkProcessing?: boolean
+  jobId?: string
+}
+
 const ApplicationsTableForJob = ({
   applications,
   selectAllApplicants,
@@ -25,15 +35,7 @@ const ApplicationsTableForJob = ({
   checkBoxHandler,
   isBulkProcessing,
   jobId
-}: {
-  applications: Applications[],
-  selectAllApplicants: () => void,
-  selectedApplicants: string[]
-  applicationsLength: number
-  checkBoxHandler: (appId: string) => void
-  isBulkProcessing?: boolean
-  jobId?: string
-}) => {
+}: ApplicationTableProps) => {
   const { slug } = useParams()
   const lengthSelected = selectedApplicants.length
   const [creatingFor, setCreatingFor] = useState<string | null>(null);

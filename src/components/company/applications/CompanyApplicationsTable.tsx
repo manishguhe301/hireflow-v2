@@ -85,20 +85,20 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
                 </DataTableCell>
 
 
-                <DataTableCell className='font-semibold'
+                <DataTableCell
+                  className={clsx('font-semibold')}
                 >
-                  <span
-                    className={clsx(
-                      "text-xs px-2 py-1 rounded-full font-medium",
-                      isDeadlinePassed
-                        ? "bg-red-500/10 text-destructive"
-                        : "bg-primary/10 text-primary"
-                    )}
-                  >
-                    {job.applicationDeadline
-                      ? formatDate(job.applicationDeadline)
-                      : '—'}
-                  </span>
+                  {job.applicationDeadline
+                    ? <span
+                      className={clsx(
+                        "text-xs px-2 py-1 rounded-full font-medium",
+                        isDeadlinePassed
+                          ? "bg-red-500/10 text-destructive"
+                          : "bg-primary/10 text-primary"
+                      )}
+                    >
+                      {formatDate(job.applicationDeadline)}
+                    </span> : '—'}
                 </DataTableCell>
 
                 <DataTableCell >
@@ -121,7 +121,7 @@ export const CompanyApplicationsTable = ({ data }: { data: CompanyApplicationsRe
           )}
         </DataTableBody>
       </DataTable>
-    </div>
+    </div >
   )
 }
 
