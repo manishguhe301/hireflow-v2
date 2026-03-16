@@ -62,10 +62,6 @@ const Step1BasicInfo = ({
           rows={5}
           register={register('description', {
             required: 'Description is required',
-            // maxLength: {
-            //   value: 500,
-            //   message: 'Description cannot exceed 500 characters',
-            // },
           })}
           disabled={isLoading}
           error={errors.description}
@@ -117,7 +113,6 @@ const Step1BasicInfo = ({
             placeholder="https://linkedin.com/company/your-company"
             type="url"
             register={register('linkedinProfile', {
-              // required: 'LinkedIn profile is required',
               validate: (value) => {
                 const pattern =
                   /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/
