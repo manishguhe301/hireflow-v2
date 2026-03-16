@@ -3,27 +3,29 @@ import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
 import { ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react'
 import clsx from 'clsx'
-import { Company } from '@prisma/client'
-import { companyIndustries } from '@/src/utils/constants'
+import { Company, CompanyStatus } from '@prisma/client'
 import { useSession } from 'next-auth/react'
+
+const statusStyles: Record<CompanyStatus, string> = {
+  PENDING: 'bg-warning/10 text-warning border-warning/30',
+  APPROVED: 'bg-success/10 text-success border-success/30',
+  REJECTED: 'bg-destructive/10 text-destructive border-destructive/30',
+}
 
 const CompanyDetailsTopSection = ({ company }: { company: Company }) => {
   const router = useRouter()
 
-  const companyIndustry = companyIndustries.find((ind) =>
-    ind.value === company.industry)?.label || company.industry
-
   const { data: session } = useSession()
   return (
     <>
-      <Button
+      {session?.user.role !== 'COMPANY_ADMIN' && <Button
         variant="ghost"
         onClick={() => router.back()}
         className="inline-flex items-center gap-2 mb-6 p-0!"
       >
         <ArrowLeft className="h-4 w-4" />
         Back
-      </Button>
+      </Button>}
       <div className="rounded-2xl border border-border/40 bg-card p-8 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
@@ -52,21 +54,21 @@ const CompanyDetailsTopSection = ({ company }: { company: Company }) => {
                 {company.name}
               </h1>
               <p className="text-sm text-muted-foreground capitalize">
-                {companyIndustry} •  {company.city && ` ${company.city}` + ', '} {company.country}
+                {company.industry} • {company.companySize}
+              </p>
+
+              <p className="text-xs text-muted-foreground mt-1">
+                {company.city && `${company.city}, `}{company.country}
+                {company.foundedYear && ` • Founded ${company.foundedYear}`}
               </p>
             </div>
           </div>
 
-          {session?.user.role === 'PLATFORM_ADMIN' &&
+          {session && session?.user.role !== 'JOB_SEEKER' &&
             <div
               className={clsx(
                 'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold',
-                company.status === 'PENDING' &&
-                'bg-warning/10 text-warning border border-warning/20',
-                company.status === 'APPROVED' &&
-                'bg-success/10 text-success border border-success/20',
-                company.status === 'REJECTED' &&
-                'bg-destructive/10 text-destructive border border-destructive/20'
+                statusStyles[company.status],
               )}
             >
               {company.status === 'PENDING' ?
