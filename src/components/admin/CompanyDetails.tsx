@@ -149,7 +149,7 @@ const CompanyDetails = () => {
   }
 
   return (
-    <div className="md:p-8 p-4 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
+    <div className="md:p-8 p-4 space-y-10 max-w-5xl mx-auto animate-in fade-in duration-500">
       <CompanyDetailsTopSection company={company} />
       <CompanyiInfo company={company} />
       <CompanyDocs

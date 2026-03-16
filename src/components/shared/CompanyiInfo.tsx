@@ -24,17 +24,8 @@ const CompanyiInfo = ({ company }: {
     ind.value === company.industry)?.label || company.industry
   return (
     <div>
-      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3 ">
-        <h2 className="text-lg font-semibold">
-          About the Company
-        </h2>
 
-        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words ">
-          {company.description || '—'}
-        </p>
-
-      </div>
-      {session?.user.role === 'PLATFORM_ADMIN' && 'REJECTED' && company.rejectionReason && (
+      {session && session?.user.role !== 'JOB_SEEKER' && 'REJECTED' && company.rejectionReason && (
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 space-y-2">
           <div className="flex items-center gap-2">
             <XCircle className="h-5 w-5 text-destructive" />
@@ -48,6 +39,18 @@ const CompanyiInfo = ({ company }: {
           </p>
         </div>
       )}
+
+      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3 ">
+        <h2 className="text-lg font-semibold">
+          About the Company
+        </h2>
+
+        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words ">
+          {company.description || '—'}
+        </p>
+
+      </div>
+
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <InfoCard title="Company Information">
           <InfoRow
@@ -59,40 +62,46 @@ const CompanyiInfo = ({ company }: {
             label="Company Size
             " icon={<Users
             />} value={company
-              .companySize} />
+              .companySize}
+          />
           <InfoRow
             label="Founded"
             icon={<Calendar />}
             value={company.foundedYear
-              ?.toString() || '—'} />
+              ?.toString() || '—'}
+          />
           <InfoRow
             icon={<MapPin />}
             label="Location"
             value={`${company.city
-              && `${company.city}, `}` + company.country} />
+              && `${company.city}, `}` + company.country}
+          />
         </InfoCard>
 
         <InfoCard title="Contact Information">
-          {session?.user.role === 'PLATFORM_ADMIN' &&
+          {session && session?.user.role !== 'JOB_SEEKER' &&
             <>
               <InfoRow
                 icon={<Mail />}
                 label="Email"
-                value={company.contactEmail
-
-                } />
+                value={company.contactEmail}
+              />
               <InfoRow
                 icon={<Phone />}
                 label="Phone"
                 value={company.contactPhone
-                  ? `${company.countryPhoneCode} ${company.contactPhone}` : 'N/A'} />
+                  ? `${company.countryPhoneCode} ${company.contactPhone}` :
+                  'N/A'}
+              />
             </>
           }
           <InfoRow
             icon={<Globe />}
             label="Website"
             value={company.website
-              || '—'} isLink />
+              || '—'}
+            isLink
+          />
           <InfoRow
             icon={<Linkedin />}
             label="LinkedIn"
@@ -103,9 +112,7 @@ const CompanyiInfo = ({ company }: {
             <InfoRow
               icon={<MapPin />}
               label="Address"
-              value={company.address
-
-              } />
+              value={company.address} />
           )}
         </InfoCard>
       </section>
