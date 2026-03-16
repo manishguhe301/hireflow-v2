@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import { Button } from '../../ui/Button'
-import { ArrowLeft, Award, CircleUser, ExternalLink, FileText, MessageCircle, ShieldUser } from 'lucide-react'
+import { Award, CircleUser, ExternalLink, FileText, MessageCircle, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { formatDate, formatDateRange, formatSalary, getLabel } from '@/src/utils/helper'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
@@ -180,14 +180,6 @@ const PublicProfile = () => {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
-      {/* <Button
-        variant="ghost"
-        onClick={() => router.back()}
-        className="inline-flex items-center gap-2 py-2 mb-6 p-0!"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button> */}
       <div className="rounded-3xl border border-border/40 bg-card p-6 space-y-4 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between!">
           <div className="flex items-center gap-5">

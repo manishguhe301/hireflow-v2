@@ -1,10 +1,9 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import { Button } from '../ui/Button'
-import { ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { CheckCircle, Clock, XCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { Company, CompanyStatus } from '@prisma/client'
 import { useSession } from 'next-auth/react'
+import BackButton from './BackButton'
 
 const statusStyles: Record<CompanyStatus, string> = {
   PENDING: 'bg-warning/10 text-warning border-warning/30',
@@ -13,19 +12,13 @@ const statusStyles: Record<CompanyStatus, string> = {
 }
 
 const CompanyDetailsTopSection = ({ company }: { company: Company }) => {
-  const router = useRouter()
 
   const { data: session } = useSession()
   return (
     <>
-      {session?.user.role !== 'COMPANY_ADMIN' && <Button
-        variant="ghost"
-        onClick={() => router.back()}
-        className="inline-flex items-center gap-2 mb-6 p-0!"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>}
+      {session?.user.role !== 'COMPANY_ADMIN' &&
+        <BackButton />
+      }
       <div className="rounded-2xl border border-border/40 bg-card p-8 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">

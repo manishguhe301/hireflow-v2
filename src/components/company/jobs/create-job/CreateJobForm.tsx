@@ -1,5 +1,5 @@
 'use client'
-import { EmploymentType, ExperienceLevel, Job, JobStatus, WorkMode } from '@prisma/client';
+import { EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -19,8 +19,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PageLoader from '@/src/components/ui/PageLoader';
 import MobileTabs from '@/src/components/layout/MobileTabs';
 import StepSidebar from '@/src/components/layout/StepSidebar';
-import { ArrowLeft } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+import BackButton from '@/src/components/shared/BackButton';
 
 export type JobFormInputs = {
   jobId?: string;
@@ -388,15 +388,7 @@ const CreateJobForm = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      <Button
-        variant="ghost"
-        onClick={() => router.back()}
-        disabled={isAnyActionInProgress}
-        className="inline-flex items-center gap-2 py-2 mb-6 p-0!"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
+      <BackButton disabled={isAnyActionInProgress} />
       {jobStatus && (
         <div
           className={clsx(

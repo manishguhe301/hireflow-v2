@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import {
-  ArrowLeft, Briefcase,
+  Briefcase,
   BookmarkCheck,
   Bookmark,
   Send,
@@ -21,6 +21,7 @@ import JobDetailsSkeleton from '../skeletons/JobDetailsSkeleton'
 import ApplicationProgress from './applications/ApplicationProgress'
 import SimilarJobs from './similarJobs/SimilarJobs'
 import DOMPurify from 'dompurify'
+import BackButton from '../shared/BackButton'
 
 export interface SimilarJob {
   company: {
@@ -184,14 +185,7 @@ const JobDetailsForApplicant = () => {
 
   return (
     <div className={clsx("mx-auto  px-4 py-10 space-y-10", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>
-      <Button
-        variant="ghost"
-        onClick={() => router.back()}
-        className="inline-flex items-center gap-2 mb-6 p-0!"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
+      <BackButton />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         <div className="lg:col-span-2 space-y-8">
