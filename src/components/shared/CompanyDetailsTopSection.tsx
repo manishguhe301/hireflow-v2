@@ -69,9 +69,12 @@ const CompanyDetailsTopSection = ({ company }: { company: Company }) => {
                 'bg-destructive/10 text-destructive border border-destructive/20'
               )}
             >
-              {company.status === 'PENDING' && <Clock className="h-4 w-4" />}
-              {company.status === 'APPROVED' && <CheckCircle className="h-4 w-4" />}
-              {company.status === 'REJECTED' && <XCircle className="h-4 w-4" />}
+              {company.status === 'PENDING' ?
+                <Clock className="h-4 w-4" /> :
+                company.status === 'APPROVED' ?
+                  <CheckCircle className="h-4 w-4" /> :
+                  <XCircle className="h-4 w-4" />
+              }
               {company.status}
             </div>
           }
