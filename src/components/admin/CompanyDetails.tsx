@@ -1,33 +1,18 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
-  Building2,
-  Mail,
-  Phone,
-  Globe,
-  MapPin,
-  CheckCircle,
-  XCircle,
-  Clock,
-  ArrowLeft,
-  Users,
-  Calendar,
-  Linkedin
-} from 'lucide-react'
-import clsx from 'clsx'
+import { Building2 } from 'lucide-react'
 import { Company } from '@prisma/client'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { toast } from 'sonner'
-import DocumentCard from '../shared/DocumentCard'
-import InfoRow from '../shared/InfoRow'
-import InfoCard from '../shared/InfoCard'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import CompanyDetailsSkeleton from '../skeletons/CompanyDetailsSkeleton'
-import { companyIndustries } from '@/src/utils/constants'
+import CompanyDetailsTopSection from '../shared/CompanyDetailsTopSection'
+import CompanyiInfo from '../shared/CompanyiInfo'
+import CompanyDocs from '../shared/CompanyDocs'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -163,136 +148,17 @@ const CompanyDetails = () => {
     )
   }
 
-  const companyIndustry = companyIndustries.find((ind) =>
-    ind.value === company.industry)?.label || company.industry
-
   return (
     <div className="md:p-8 p-4 space-y-10 max-w-[1200px] mx-auto animate-in fade-in duration-500">
-      <Button
-        onClick={() => router.back()}
-        variant="ghost"
-        className="inline-flex items-center gap-2 text-sm p-0!"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </Button>
-
-
-      <div className="rounded-3xl border border-border/40 bg-card p-8 shadow-sm">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-muted overflow-hidden">
-              {company?.logo ? (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={company?.logo}
-                    alt={`${company.name} logo`}
-                    className={clsx(
-                      "h-full w-full object-cover transition-opacity duration-300",
-                    )}
-                    loading="lazy"
-                  />
-                </>
-              ) : (
-                <span className="text-sm font-semibold text-muted-foreground">
-                  {company.name.charAt(0).toUpperCase()}
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight capitalize">
-                {company.name}
-              </h1>
-              <p className="text-sm text-muted-foreground capitalize">
-                {companyIndustry} •  {company.city && ` ${company.city}` + ', '} {company.country}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className={clsx(
-              'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold',
-              company.status === 'PENDING' &&
-              'bg-warning/10 text-warning border border-warning/20',
-              company.status === 'APPROVED' &&
-              'bg-success/10 text-success border border-success/20',
-              company.status === 'REJECTED' &&
-              'bg-destructive/10 text-destructive border border-destructive/20'
-            )}
-          >
-            {company.status === 'PENDING' && <Clock className="h-4 w-4" />}
-            {company.status === 'APPROVED' && <CheckCircle className="h-4 w-4" />}
-            {company.status === 'REJECTED' && <XCircle className="h-4 w-4" />}
-            {company.status}
-          </div>
-        </div>
-      </div>
-      <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-3 ">
-        <h2 className="text-lg font-semibold">
-          About the Company
-        </h2>
-
-        <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap break-words ">
-          {company.description || '—'}
-        </p>
-
-      </div>
-      {company.status === 'REJECTED' && company.rejectionReason && (
-        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 space-y-2">
-          <div className="flex items-center gap-2">
-            <XCircle className="h-5 w-5 text-destructive" />
-            <h2 className="text-sm font-semibold text-destructive">
-              Rejection Reason
-            </h2>
-          </div>
-
-          <p className="text-sm text-muted-foreground whitespace-pre-line">
-            {company.rejectionReason}
-          </p>
-        </div>
-      )}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InfoCard title="Company Information">
-          <InfoRow icon={<Building2 />} label="Industry" value={companyIndustry} />
-          <InfoRow label="Company Size" icon={<Users />} value={company.companySize} />
-          <InfoRow label="Founded" icon={<Calendar />} value={company.foundedYear?.toString() || '—'} />
-        </InfoCard>
-
-        <InfoCard title="Contact Information">
-          <InfoRow icon={<Mail />} label="Email" value={company.contactEmail} />
-          <InfoRow icon={<Phone />} label="Phone" value={company.contactPhone ? `${company.countryPhoneCode} ${company.contactPhone}` : 'N/A'} />
-          <InfoRow icon={<Globe />} label="Website" value={company.website || '—'} isLink />
-          <InfoRow
-            icon={<Linkedin />}
-            label="LinkedIn"
-            value={company.linkedinProfile || '—'}
-            isLink
-          />
-          {company.address && (
-            <InfoRow icon={<MapPin />} label="Address" value={company.address} />
-          )}
-        </InfoCard>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Documents</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DocumentCard
-            label="Business Registration"
-            hasDocument={Boolean(company.businessDocPath)}
-            apiUrl={`/api/company/${company.id}/document?type=business`}
-          />
-          <DocumentCard
-            label="Tax Document"
-            hasDocument={Boolean(company.taxDocPath)}
-            apiUrl={`/api/company/${company.id}/document?type=tax`}
-          />
-        </div>
-      </section>
-
+      <CompanyDetailsTopSection company={company} />
+      <CompanyiInfo company={company} />
+      <CompanyDocs
+        paths={{
+          businessDocPath: company.businessDocPath,
+          taxDocPath: company.taxDocPath
+        }}
+        companyId={company.id}
+      />
 
       {company.status !== 'REJECTED' && (
         <section className="space-y-4">
