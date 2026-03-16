@@ -200,6 +200,38 @@ const ProfileSetup = () => {
     <Spinner className='h-8 w-8' />
   </div>
 
+  const stepComponents = [
+    <Step1BasicInfo
+      key={1}
+      register={register}
+      errors={errors}
+      isLoading={isSubmitting}
+    />,
+    <Step2Contact
+      key={2}
+      register={register}
+      errors={errors}
+      selectedCountry={selectedCountry}
+      watch={watch}
+      setValue={setValue}
+      isLoading={isSubmitting}
+    />,
+    <Step3Documents
+      key={3}
+      register={register}
+      errors={errors}
+      isLoading={isSubmitting}
+      watch={watch}
+      setValue={setValue}
+    />,
+    <Step4Review
+      key={4}
+      setCurrentStep={setCurrentStep}
+      watch={watch}
+      isLoading={isSubmitting}
+    />
+  ]
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <BackButton disabled={isSubmitting} />
@@ -264,36 +296,7 @@ const ProfileSetup = () => {
           </div>
 
           <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 &&
-              <Step1BasicInfo
-                register={register}
-                errors={errors}
-                isLoading={isSubmitting}
-              />}
-            {currentStep === 1 &&
-              <Step2Contact
-                register={register}
-                errors={errors}
-                selectedCountry={selectedCountry}
-                watch={watch}
-                setValue={setValue}
-                isLoading={isSubmitting}
-              />}
-            {currentStep === 2 &&
-              <Step3Documents
-                register={register}
-                errors={errors}
-                isLoading={isSubmitting}
-                watch={watch}
-                setValue={setValue}
-              />}
-            {currentStep === 3 &&
-              <Step4Review
-                setCurrentStep={setCurrentStep}
-                watch={watch}
-                isLoading={isSubmitting}
-              />
-            }
+            {stepComponents[currentStep]}
           </form>
 
           <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0 max-md:flex-col max-md:gap-4",
@@ -310,7 +313,6 @@ const ProfileSetup = () => {
               </Button>
             )}
             <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
-
               {currentStep !== 3 && isEditMode && company?.status === CompanyStatus.APPROVED && < Button
                 type="button"
                 disabled={isSubmitting}
