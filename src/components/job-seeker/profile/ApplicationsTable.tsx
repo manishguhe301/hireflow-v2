@@ -4,11 +4,11 @@ import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import { ApplicationStatus } from '@prisma/client'
 import Link from 'next/link'
-import { ApplicationWithPagination } from './ApplicationsPage'
 import { Button } from '../../ui/Button'
 import WithdrawModal from './WithdrawModal'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
 import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from '../../shared/TableComponents'
+import { ApplicationWithPagination } from '@/src/types'
 
 export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   APPLIED: 'bg-blue-500/10 text-blue-600',

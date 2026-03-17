@@ -304,8 +304,8 @@ export const USERS_TYPE_TABS_STYLES = {
 };
 
 export const ADMIN_COMPANIES_TABS_STYLES = {
-  'ALL': 'bg-primary! text-primary-foreground! border-primary/40!',
-  'PENDING': 'bg-amber-400! text-amber-950! border-amber-950/40!',
-  'APPROVED': 'bg-success/10! text-success! border-success/40! ',
-  'REJECTED': 'bg-destructive/10! text-destructive! border-destructive/40!'
-}
+  ALL: 'bg-primary! text-primary-foreground! border-primary/40!',
+  PENDING: 'bg-amber-400! text-amber-950! border-amber-950/40!',
+  APPROVED: 'bg-success/10! text-success! border-success/40! ',
+  REJECTED: 'bg-destructive/10! text-destructive! border-destructive/40!',
+};
