@@ -1,21 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
-import Modal from '@/src/components/ui/Modal'
-import { GraduationCap, Edit, Plus, Trash2, Loader2 } from 'lucide-react'
+import { GraduationCap, Plus, } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { FormInput } from '@/src/components/ui/FormInput'
-import { FormSelect } from '@/src/components/ui/FormSelect'
-import { degrees, fieldOfStudies } from '@/src/utils/constants'
-import { getLabel } from '@/src/utils/helper'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { EducationInput, JobSeekerFormInputs } from '@/src/types'
-
-const currentYear = new Date().getFullYear()
+import EducationModal from './EducationModal'
+import EducationCard from './EducationCard'
 
 const Step4Education = ({
   watch,
@@ -55,8 +50,6 @@ const Step4Education = ({
       isCurrent: false,
     },
   })
-
-  const isCurrent = eduWatch('isCurrent')
 
   const handleOpenModal = (index?: number) => {
     if (index !== undefined) {
@@ -210,167 +203,32 @@ const Step4Education = ({
       ) : (
         <div className="space-y-4">
           {educations.map((edu, index) => (
-            <div
+            <EducationCard
               key={edu.id || index}
-              className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60"
-            >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold break-words">
-                    {getLabel(degrees, edu.degree)}
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground break-words">
-                    {edu.institution}
-                  </p>
-
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    {edu.fieldOfStudy && (
-                      <span className="rounded-full border border-border/40 bg-muted/30 px-2 py-1">
-                        {getLabel(fieldOfStudies, edu.fieldOfStudy)}
-                      </span>
-                    )}
-                    <span className="rounded-full border border-border/40 bg-muted/30 px-2 py-1">
-                      {edu.startYear} - {edu.isCurrent ? 'Present' : edu.endYear || 'N/A'}
-                    </span>
-                    {edu.grade && (
-                      <span className="rounded-full border border-border/40 bg-muted/30 px-2 py-1">
-                        Grade: {edu.grade}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex gap-2 self-start sm:self-auto">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleOpenModal(index)}
-                    className="p-2!"
-                    disabled={disabled || isSaving}
-                    aria-label="Edit"
-                  >
-                    <Edit className="h-4 w-4 text-primary" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleDelete(index)}
-                    className="p-2!"
-                    disabled={disabled || isSaving || deletingId === educations[index].id}
-                    aria-label="Delete"
-                  >
-                    {deletingId === educations[index].id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
+              disabled={disabled || isSaving}
+              edu={edu}
+              handleOpenModal={handleOpenModal}
+              index={index}
+              handleDelete={handleDelete}
+              deletingId={deletingId}
+              educations={educations}
+            />
           ))}
         </div>
       )}
 
-      <Modal open={isModalOpen} onClose={handleCloseModal} className="max-sm:max-h-[70%] overflow-y-scroll max-w-2xl max-h-[90%]"
-      >
-        <h2 className="text-xl font-semibold mb-6">
-          {editingIndex !== null ? 'Edit Education' : 'Add Education'}
-        </h2>
-
-        <form onSubmit={handleEduSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormSelect
-              label="Type of Degree"
-              options={degrees}
-              register={eduRegister('degree', {
-                required: 'Degree is required',
-              })}
-              error={eduErrors.degree}
-              disabled={disabled || isSaving}
-
-            />
-            <FormInput
-              label="Institution"
-              register={eduRegister('institution', { required: 'Institution is required' })}
-              error={eduErrors.institution}
-              disabled={disabled || isSaving}
-            />
-          </div>
-
-          <FormSelect
-            label="Field of Study "
-            options={fieldOfStudies}
-            register={eduRegister('fieldOfStudy', {
-              required: 'Field of study is required',
-            })}
-            disabled={disabled || isSaving}
-            error={eduErrors.fieldOfStudy}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormInput
-              type="number"
-              label="Start Year"
-              disabled={disabled || isSaving}
-              register={eduRegister('startYear', { required: true })}
-              error={eduErrors.startYear}
-              minLength={2000}
-              maxLength={currentYear}
-            />
-
-            {!isCurrent && (
-              <FormInput
-                type="number"
-                disabled={disabled || isSaving}
-                label="End Year"
-                register={eduRegister('endYear')}
-                error={eduErrors.endYear}
-                maxLength={currentYear}
-                minLength={2000}
-              />
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isCurrentEdu"
-              disabled={disabled || isSaving}
-              {...eduRegister('isCurrent')}
-              className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
-            />
-            <label htmlFor="isCurrentEdu" className="text-sm font-medium">
-              I am currently studying here
-            </label>
-          </div>
-
-          <FormInput
-            label="Grade (Optional)"
-            register={eduRegister('grade')}
-            error={eduErrors.grade}
-            disabled={disabled || isSaving}
-          />
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCloseModal}
-              disabled={disabled || isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={disabled || isSaving}
-            >
-              {
-                isSaving ?
-                  'Saving...' : editingIndex !== null
-                    ? 'Update Education'
-                    : 'Add Education'
-              }
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <EducationModal
+        isModalOpen={isModalOpen}
+        handleCloseModal={handleCloseModal}
+        disabled={disabled || isSaving}
+        isSaving={isSaving}
+        editingIndex={editingIndex}
+        eduErrors={eduErrors}
+        eduRegister={eduRegister}
+        eduWatch={eduWatch}
+        handleEduSubmit={handleEduSubmit}
+        onSubmit={onSubmit}
+      />
     </div>
   )
 }
