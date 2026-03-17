@@ -8,7 +8,7 @@ import {
   WorkMode,
 } from '@prisma/client';
 import { Briefcase, ShieldCheck, UserCircle, Workflow } from 'lucide-react';
-import { ProfileFormInputs } from '../types';
+import { JobFormInputs, ProfileFormInputs } from '../types';
 
 export const STATUS_STYLE: Record<CompanyStatus, string> = {
   PENDING: 'bg-yellow-100 text-yellow-700',
@@ -488,4 +488,19 @@ export const signUpContent = [
     title: 'Complete profiles',
     desc: 'Build detailed profiles with resume, skills, experience, and certifications.',
   },
+];
+
+export const STEP_FIELDS: Record<number, (keyof JobFormInputs)[]> = {
+  0: ['title', 'description', 'category'],
+  1: ['requirements', 'skills', 'experienceLevel', 'employmentType'],
+  2: ['workMode', 'country'],
+  3: ['hideSalary', 'numberOfOpenings'],
+};
+
+export const jobFormSteps = [
+  { number: 1, label: 'Basic Details' },
+  { number: 2, label: 'Requirements' },
+  { number: 3, label: 'Location & Work Mode' },
+  { number: 4, label: 'Salary & Openings' },
+  { number: 5, label: 'Review & Publish' },
 ];

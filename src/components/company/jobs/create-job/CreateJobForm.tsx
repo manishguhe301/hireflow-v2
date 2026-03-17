@@ -1,5 +1,5 @@
 'use client'
-import { EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client';
+import { JobStatus } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -11,7 +11,7 @@ import Step3JobLocation from './Step3JobLocation';
 import Step4JobSalary from './Step4JobSalary';
 import Step5JobReview from './Step5JobReview';
 import { Button } from '@/src/components/ui/Button';
-import { isRichTextEmpty } from '@/src/utils/helper';
+import { isRichTextEmpty, JOB_STATUS_UI } from '@/src/utils/helper';
 import { Spinner } from '@/src/components/elements/Loader';
 import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
@@ -21,85 +21,8 @@ import MobileTabs from '@/src/components/layout/MobileTabs';
 import StepSidebar from '@/src/components/layout/StepSidebar';
 import { signOut } from 'next-auth/react';
 import BackButton from '@/src/components/shared/BackButton';
-
-export type JobFormInputs = {
-  jobId?: string;
-  title: string;
-  description: string;
-  requirements: string;
-  responsibilities?: string;
-  skills: string[];
-  experienceLevel: ExperienceLevel;
-  employmentType: EmploymentType;
-  workMode: WorkMode;
-  country: string;
-  city?: string;
-  salaryMin?: number;
-  salaryMax?: number;
-  // currency?: string;
-  hideSalary: boolean;
-  numberOfOpenings: number;
-  applicationDeadline?: Date;
-  category: string;
-}
-
-const STEP_FIELDS: Record<number, (keyof JobFormInputs)[]> = {
-  0: [
-    'title',
-    'description',
-    'category',
-  ],
-  1: [
-    'requirements',
-    'skills',
-    'experienceLevel',
-    'employmentType',
-  ],
-  2: [
-    'workMode',
-    'country',
-  ],
-  3: [
-    'hideSalary',
-    'numberOfOpenings',
-  ]
-}
-
-const jobFormSteps = [
-  { number: 1, label: 'Basic Details' },
-  { number: 2, label: 'Requirements' },
-  { number: 3, label: 'Location & Work Mode' },
-  { number: 4, label: 'Salary & Openings' },
-  { number: 5, label: 'Review & Publish' },
-]
-
-const JOB_STATUS_UI: Record<JobStatus, {
-  className: string
-  title: string
-  message: (step: number) => string
-}> = {
-  DRAFT: {
-    className: 'bg-warning/10 border-warning/30 text-warning',
-    title: 'Draft Job',
-    message: (step) =>
-      step >= 4
-        ? 'All required details look complete. You can publish this job now.'
-        : 'This job is saved as a draft. Complete all steps to publish it.',
-  },
-  ACTIVE: {
-    className: 'bg-success/10 border-success/30 text-success',
-    title: 'Active Job',
-    message: () =>
-      'This job is live and visible to candidates. Any changes will update it immediately.',
-  },
-  CLOSED: {
-    className: 'bg-destructive/10 border-destructive/30 text-destructive',
-    title: 'Closed Job',
-    message: () =>
-      'This job is closed and no longer accepting applications. You can reopen it anytime.',
-  },
-}
-
+import { JobFormInputs } from '@/src/types';
+import { jobFormSteps, STEP_FIELDS } from '@/src/utils/constants';
 
 const CreateJobForm = () => {
   const [currentStep, setCurrentStep] = useState(0)

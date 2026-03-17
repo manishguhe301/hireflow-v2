@@ -1,4 +1,10 @@
-import { Company, User } from '@prisma/client';
+import {
+  Company,
+  EmploymentType,
+  ExperienceLevel,
+  User,
+  WorkMode,
+} from '@prisma/client';
 import { Dispatch, RefObject, SetStateAction } from 'react';
 
 export interface ConversationUser {
@@ -220,3 +226,24 @@ export interface ChatItemProps {
   onSelectConversation: (id: string) => void;
   selectedConversation: string | null;
 }
+
+export type JobFormInputs = {
+  jobId?: string;
+  title: string;
+  description: string;
+  requirements: string;
+  responsibilities?: string;
+  skills: string[];
+  experienceLevel: ExperienceLevel;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
+  country: string;
+  city?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  // currency?: string;
+  hideSalary: boolean;
+  numberOfOpenings: number;
+  applicationDeadline?: Date;
+  category: string;
+};

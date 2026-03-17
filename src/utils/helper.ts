@@ -1,4 +1,4 @@
-import { ExperienceLevel } from '@prisma/client';
+import { ExperienceLevel, JobStatus } from '@prisma/client';
 import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
 
 export function formatDate(date: Date | string): string {
@@ -243,3 +243,33 @@ export function isNewJob(date: Date | string): boolean {
 
   return now - created < oneDay;
 }
+
+export const JOB_STATUS_UI: Record<
+  JobStatus,
+  {
+    className: string;
+    title: string;
+    message: (step: number) => string;
+  }
+> = {
+  DRAFT: {
+    className: 'bg-warning/10 border-warning/30 text-warning',
+    title: 'Draft Job',
+    message: (step) =>
+      step >= 4
+        ? 'All required details look complete. You can publish this job now.'
+        : 'This job is saved as a draft. Complete all steps to publish it.',
+  },
+  ACTIVE: {
+    className: 'bg-success/10 border-success/30 text-success',
+    title: 'Active Job',
+    message: () =>
+      'This job is live and visible to candidates. Any changes will update it immediately.',
+  },
+  CLOSED: {
+    className: 'bg-destructive/10 border-destructive/30 text-destructive',
+    title: 'Closed Job',
+    message: () =>
+      'This job is closed and no longer accepting applications. You can reopen it anytime.',
+  },
+};
