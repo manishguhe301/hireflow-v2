@@ -2,6 +2,7 @@ import {
   Company,
   EmploymentType,
   ExperienceLevel,
+  Job,
   User,
   WorkMode,
 } from '@prisma/client';
@@ -296,4 +297,17 @@ export interface AnalyticsData {
     count: number;
     percentage: number;
   }[];
+}
+
+export interface JobDetails extends Job {
+  _count: {
+    applications: number;
+    savedJobs: number;
+  };
+  applications: {
+    id: string;
+    status: string;
+    createdAt: Date;
+  }[];
+  company: Company;
 }

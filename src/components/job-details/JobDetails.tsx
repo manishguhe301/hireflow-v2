@@ -20,7 +20,6 @@ import {
 import clsx from 'clsx'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
 import { Button } from '../ui/Button'
-import { Company, Job } from '@prisma/client'
 import InfoCard from '../shared/InfoCard'
 import InfoRow from '../shared/InfoRow'
 import { formatDate, getLabel, isRichTextEmpty, } from '@/src/utils/helper'
@@ -29,19 +28,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import JobDetailPageSkeleton from '../skeletons/JobDetailPageSkeleton'
 import { APPLICATIONS_TABS, JOB_STATUS_STYLE, jobCategories } from '@/src/utils/constants'
 import { signOut } from 'next-auth/react'
-
-interface JobDetails extends Job {
-  _count: {
-    applications: number,
-    savedJobs: number
-  },
-  applications: {
-    id: string,
-    status: string,
-    createdAt: Date,
-  }[]
-  company: Company
-}
+import { JobDetails as JobDetailsType } from '@/src/types'
 
 const JobDetails = () => {
   const params = useParams()
@@ -70,7 +57,7 @@ const JobDetails = () => {
     refetchOnMount: 'always'
   })
 
-  const job: JobDetails = data
+  const job: JobDetailsType = data
 
   const statusMutation = useMutation({
     mutationFn: async ({
@@ -86,7 +73,7 @@ const JobDetails = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       })
-      
+
       if (res.status === 401 || res.status === 403) {
         signOut({ callbackUrl: '/login' })
         return
