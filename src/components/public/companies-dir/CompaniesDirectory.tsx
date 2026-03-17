@@ -11,23 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import CompaniesDirectorySkeleton from '../../skeletons/CompaniesDirectorySkeleton'
 import CompanyCardSkeleton from '../../skeletons/CompanyCardSkeleton'
-
-export type Company = {
-  id: string
-  name: string
-  logo: string | null
-  industry: string
-  country: string
-  companySize: string
-  jobCount: number
-}
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import { DirCompanyType, PaginationType } from '@/src/types'
 
 export default function CompaniesDirectory() {
   const router = useRouter()
@@ -82,8 +66,8 @@ export default function CompaniesDirectory() {
     refetchOnWindowFocus: false
   })
 
-  const companies: Company[] = data?.companies ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
+  const companies: DirCompanyType[] = data?.companies ?? []
+  const pagination: PaginationType | null = data?.pagination ?? null
 
 
   useEffect(() => {

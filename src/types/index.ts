@@ -646,3 +646,14 @@ export type Filters = {
   datePosted: string;
   sortBy: string;
 };
+
+export type DirCompanyType = {
+  id: string;
+  name: string;
+  logo: string | null;
+  industry: string;
+  country: string;
+  companySize: string;
+  jobCount: number;
+};
+
