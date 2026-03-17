@@ -15,37 +15,13 @@ import { Spinner } from '../../elements/Loader'
 import clsx from 'clsx'
 import { useQueryClient } from '@tanstack/react-query'
 import { signOut } from 'next-auth/react'
-
-type ApplyFormInputs = {
-  coverLetter: string
-  customResume: FileList
-}
-
-type ApplyModalProps = {
-  open: boolean
-  onClose: () => void
-  job: {
-    id: string
-    title: string
-    slug: string
-    workMode: string
-    employmentType: string
-    company: {
-      name: string
-      logo: string | null
-    }
-    country: string
-    city: string | null
-  }
-  onSuccess: () => void
-}
+import { ApplyFormInputs, ApplyModalProps } from '@/src/types'
 
 export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModalProps) {
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
   const [isSubmitting, setIsSubmitting] = useState(false)
   const queryClient = useQueryClient()
-
 
   const {
     register,

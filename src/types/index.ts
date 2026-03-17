@@ -311,3 +311,27 @@ export interface JobDetails extends Job {
   }[];
   company: Company;
 }
+
+export type ApplyFormInputs = {
+  coverLetter: string;
+  customResume: FileList;
+};
+
+export type ApplyModalProps = {
+  open: boolean;
+  onClose: () => void;
+  job: {
+    id: string;
+    title: string;
+    slug: string;
+    workMode: string;
+    employmentType: string;
+    company: {
+      name: string;
+      logo: string | null;
+    };
+    country: string;
+    city: string | null;
+  };
+  onSuccess: () => void;
+};
