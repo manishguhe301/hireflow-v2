@@ -18,7 +18,10 @@ const MobileTabs = ({
       {steps.map((step, index) => (
         <button
           key={step.number}
-          onClick={() => isEditMode && onStepClick(index)}
+          onClick={() => {
+            if (currentStep === index) return
+            if (isEditMode) onStepClick(index)
+          }}
           disabled={disabled}
           className={clsx(
             'shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition',
@@ -30,8 +33,9 @@ const MobileTabs = ({
         >
           {step.number}. {step.label}
         </button>
-      ))}
-    </div>
+      ))
+      }
+    </div >
   )
 }
 

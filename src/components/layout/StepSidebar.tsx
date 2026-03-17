@@ -20,6 +20,7 @@ const StepSidebar = ({
           key={step.number}
           onClick={() => {
             if (isEditMode) {
+              if(currentStep === index) return
               onStepClick(index)
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }
