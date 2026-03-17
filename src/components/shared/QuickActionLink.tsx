@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import Link from "next/link"
 
 const QuickActionLink = ({
@@ -5,11 +6,13 @@ const QuickActionLink = ({
   icon,
   title,
   description,
+  colorClass
 }: {
   href: string
   icon: React.ReactNode
   title: string
   description: string
+  colorClass?: string
 }) => {
   return (
     <Link
@@ -17,7 +20,7 @@ const QuickActionLink = ({
       className="p-6 bg-card border border-border/60 rounded-2xl hover:border-primary/40 transition hover:shadow-lg group hover:-translate-y-[2px]"
     >
       <div className="flex items-center gap-4">
-        <div className="h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition">
+        <div className={clsx("h-12 w-12 rounded-xl bg-info/10 flex items-center justify-center transition", colorClass!)}>
           {icon}
         </div>
         <div>

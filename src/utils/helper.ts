@@ -309,3 +309,14 @@ export const ADMIN_COMPANIES_TABS_STYLES = {
   APPROVED: 'bg-success/10! text-success! border-success/40! ',
   REJECTED: 'bg-destructive/10! text-destructive! border-destructive/40!',
 };
+
+export const APPLICATION_TABS_STATUS_COLORS = {
+  applied: 'bg-blue-500/10 text-blue-600',
+  reviewing: 'bg-yellow-500/10 text-yellow-600',
+  shortlisted: 'bg-purple-500/10 text-purple-600',
+  interviewScheduled: 'bg-indigo-500/10 text-indigo-600',
+  offered: 'bg-green-500/10 text-green-600',
+  hired: 'bg-emerald-500/10 text-emerald-600',
+  rejected: 'bg-red-500/10 text-red-600',
+  total: 'bg-gray-500/10 text-gray-600',
+};

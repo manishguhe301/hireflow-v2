@@ -462,3 +462,53 @@ export interface ApplicationWithPagination {
   applications: Application[];
   pagination: PaginationType;
 }
+
+export interface JobSeekerDashboardStats {
+  total: number;
+  applied: number;
+  reviewing: number;
+  shortlisted: number;
+  interviewScheduled: number;
+  rejected: number;
+  offered: number;
+  hired: number;
+}
+
+export interface JobSeekerActivities {
+  id: string;
+  status: ApplicationStatus;
+  updatedAt: string;
+  job: {
+    title: string;
+    company: {
+      name: string;
+    };
+    slug: string;
+  };
+}
+
+export interface RecommendedJob {
+  id: string;
+  title: string;
+  category: string;
+  company: {
+    name: string;
+    id: string;
+    logo: string;
+    website: string;
+  };
+  country: string;
+  city: string;
+  workMode: WorkMode;
+  employmentType: EmploymentType;
+  createdAt: string;
+  updatedAt: string;
+  experienceLevel: ExperienceLevel;
+  salaryMin: number;
+  salaryMax: number;
+  numberOfOpenings: string;
+  applicationDeadline: string;
+  slug: string;
+  isSaved: boolean;
+  hideSalary: boolean;
+}
