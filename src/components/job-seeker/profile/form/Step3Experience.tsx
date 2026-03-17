@@ -1,34 +1,17 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
-import Modal from '@/src/components/ui/Modal'
-import FormDatePicker from '@/src/components/ui/FormDatePicker'
-import { Briefcase, Edit, Loader2, Plus, Trash2 } from 'lucide-react'
+import { Briefcase, Plus } from 'lucide-react'
 import { WorkMode } from '@prisma/client'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { formatDate, getLabel } from '@/src/utils/helper'
-import { FormSelect } from '@/src/components/ui/FormSelect'
-import { FormInput } from '@/src/components/ui/FormInput'
-import { FormTextarea } from '@/src/components/ui/FormTextarea'
-import { workModes } from '@/src/utils/constants'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { JobSeekerFormInputs, WorkExperienceInput } from '@/src/types'
-
-type WorkExperienceForm = {
-  company: string
-  title: string
-  location: string | null
-  workMode: WorkMode | null
-  startDate: Date | null
-  endDate: Date | null
-  description: string | null
-  isCurrent: boolean
-  isPartTime: boolean
-}
+import { JobSeekerFormInputs, WorkExperienceForm, WorkExperienceInput } from '@/src/types'
+import ExperienceModal from './ExperienceModal'
+import ExperienceCard from './ExperienceCard'
 
 const Step3Experience = ({
   watch,
@@ -48,7 +31,6 @@ const Step3Experience = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const [deletingItemId, setDeletingItemId] = useState<string | null>(null)
 
   const workExperiences = watch('workExperience') || []
 
@@ -235,32 +217,6 @@ const Step3Experience = ({
     handleCloseModal()
   }
 
-  const handleDelete = async (index: number) => {
-    const item = workExperiences[index]
-
-    if (isEditMode && item.id) {
-      setDeletingItemId(item.id as string)
-      try {
-        const res = await AppSdk.deleteData(`/api/profile/experience/${item.id}`, null)
-        if (res.error) {
-          toast.error(res.error)
-          return
-        }
-        await refetchProfile?.()
-        toast.success('Experience deleted')
-      } catch (error) {
-        toast.error('Something went wrong')
-        console.error(error)
-      } finally {
-        setDeletingItemId(null)
-      }
-    }
-
-    const updated = workExperiences.filter((_, i) => i !== index)
-    setValue('workExperience', updated, { shouldValidate: true })
-
-  }
-
   useEffect(() => {
     if (isCurrent) {
       setExpValue('endDate', null)
@@ -297,217 +253,33 @@ const Step3Experience = ({
       ) : (
         <div className="space-y-4">
           {workExperiences.map((exp, index) => (
-            <div
+            <ExperienceCard
               key={exp.id || index}
-              className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60 max-sm:w-full"
-            >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold break-words">{exp.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground break-words">
-                    {exp.company}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    {exp.isPartTime && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
-                        Part-time
-                      </span>
-                    )}
-                    <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
-                      {getLabel(workModes, exp.workMode)}
-                    </span>
-                    {exp.location && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-muted/30 px-2 py-1 break-all">
-                        {exp.location}
-                      </span>
-                    )}
-                    <span className="inline-flex items-center gap-1 break-all">
-                      {formatDate(exp.startDate)} — {exp.isCurrent ? 'Present' : exp.endDate ? formatDate(exp.endDate) : 'N/A'}
-                    </span>
-                  </div>
-                  {exp.description && (
-                    <p className="mt-3 text-sm text-muted-foreground line-clamp-3 break-words">
-                      {exp.description}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-2 self-start sm:self-auto">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleOpenModal(index)}
-                    disabled={disabled}
-                    aria-label="Edit work experience"
-                    className="p-2!"
-                  >
-                    <Edit className="h-4 w-4 text-primary" />
-                  </Button>
-                  <Button
-                    type="button"
-                    disabled={disabled || deletingItemId === exp.id}
-                    variant="ghost"
-                    onClick={() => handleDelete(index)}
-                    aria-label="Delete work experience"
-                    className="p-2!"
-                  >
-                    {deletingItemId === exp.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
+              watch={watch}
+              isEditMode={isEditMode}
+              exp={exp}
+              refetchProfile={refetchProfile}
+              setValue={setValue}
+              index={index}
+              disabled={disabled}
+              handleOpenModal={handleOpenModal}
+            />
           ))}
         </div>
       )}
-      <Modal
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        className="max-w-3xl max-sm:max-h-[70%] max-sm:overflow-y-scroll "
-      >
-        <h2 className="text-xl font-semibold mb-6">
-          {editingIndex !== null ? 'Edit Work Experience' : 'Add Work Experience'}
-        </h2>
-        <form
-          onSubmit={handleExpSubmit(onSubmit)}
-          className="space-y-6"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormInput
-              label="Job Title"
-              placeholder="e.g., Senior Frontend Developer"
-              register={expRegister('title', {
-                required: 'Job title is required',
-                minLength: { value: 2, message: 'Title must be at least 2 characters' },
-              })}
-              error={expErrors.title}
-              disabled={disabled || isSaving}
-            />
-
-            <FormInput
-              label="Company"
-              placeholder="e.g., Google"
-              register={expRegister('company', {
-                required: 'Company name is required',
-                minLength: { value: 2, message: 'Company name must be at least 2 characters' },
-              })}
-              error={expErrors.company}
-              disabled={disabled || isSaving}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormInput
-              label="Location (Optional)"
-              placeholder="e.g., San Francisco, CA"
-              disabled={disabled || isSaving}
-              register={expRegister('location')}
-              error={expErrors.location}
-            />
-            <FormSelect
-              disabled={disabled || isSaving}
-              label="Work Mode"
-              options={[{ value: '', label: 'Select work mode' }, ...workModes]}
-              register={expRegister('workMode', { required: 'Work mode is required' })}
-              error={expErrors.workMode}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormDatePicker
-              disabled={disabled || isSaving}
-              label="Start Date"
-              value={expWatch('startDate')}
-              maxDate={new Date()}
-              onChange={(date) =>
-                setExpValue('startDate', date ?? null, {
-                  shouldValidate: true,
-                })
-              }
-              error={expErrors.startDate}
-            />
-
-            {!isCurrent && (
-              <FormDatePicker
-                disabled={disabled || isSaving}
-                label="End Date"
-                value={expWatch('endDate')}
-                minDate={
-                  expWatch('startDate')
-                    ? new Date(expWatch('startDate')!.getTime() + 86400000)
-                    : undefined
-                }
-                maxDate={new Date()}
-                onChange={(date) =>
-                  setExpValue('endDate', date!, {
-                    shouldValidate: true,
-                  })}
-                error={expErrors.endDate}
-              />
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isCurrent"
-              {...expRegister('isCurrent')}
-              className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
-              aria-label="I currently work here"
-              disabled={disabled || isSaving}
-            />
-            <label htmlFor="isCurrent" className="text-sm font-medium">
-              I currently work here
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isPartTime"
-              {...expRegister('isPartTime')}
-              className="h-4 w-4 rounded border-border/40 accent-primary focus:ring-2 focus:ring-primary/30"
-              aria-label="This is a part-time or freelance role"
-              disabled={disabled || isSaving}
-            />
-            <label htmlFor="isPartTime" className="text-sm font-medium">
-              Part-time / Freelance{' '}
-              <span className="text-xs text-muted-foreground font-normal">
-                (allows overlapping dates)
-              </span>
-            </label>
-          </div>
-          <FormTextarea
-            disabled={disabled || isSaving}
-            label="Description (Optional)"
-            placeholder="Describe your role, responsibilities, and achievements..."
-            rows={5}
-            register={expRegister('description', {
-              maxLength: { value: 500, message: 'Description must be less than 500 characters' },
-            })}
-            error={expErrors.description}
-            maxLength={500}
-          />
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCloseModal}
-              disabled={disabled || isSaving}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={disabled || isSaving}
-            >
-              {
-                isSaving ?
-                  'Saving...' : editingIndex !== null
-                    ? 'Update Experience'
-                    : 'Add Experience'
-              }
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <ExperienceModal
+        isModalOpen={isModalOpen}
+        handleCloseModal={handleCloseModal}
+        disabled={disabled || isSaving}
+        isSaving={isSaving}
+        editingIndex={editingIndex}
+        expErrors={expErrors}
+        expRegister={expRegister}
+        expWatch={expWatch}
+        onSubmit={onSubmit}
+        handleExpSubmit={handleExpSubmit}
+        setExpValue={setExpValue}
+      />
     </div>
   )
 }
