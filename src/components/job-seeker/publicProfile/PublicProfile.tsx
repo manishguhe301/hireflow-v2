@@ -7,8 +7,6 @@ import { toast } from 'sonner'
 import { Button } from '../../ui/Button'
 import { CircleUser, ShieldUser } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { formatSalary, getLabel } from '@/src/utils/helper'
-import { currentEmploymentStatuses, jobCategories, jobSkills, noticePeriods, workModes } from '@/src/utils/constants'
 import DocumentCard from '../../shared/DocumentCard'
 import { Application, ApplicationStatus } from '@prisma/client'
 import clsx from 'clsx'
@@ -16,11 +14,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
 import ProfileTopSection from '../../shared/ProfileTopSection'
-import { Pill, ProfileSection, SubHeader } from '../../elements/ProfileElements'
+import { Certifications, Educations, PrefferedJobCategories, PrefferedJobLocations, ProfessionalPreferences, ProfileBio, ProfileSection, Skills, WorkExperiences } from '../../elements/ProfileElements'
 import ContactSection from '../profile/ContactSection'
-import Experience from '../../shared/Experience'
-import EduCard from '../profile/EduCard'
-import CertificateCard from '../profile/CertificateCard'
 import RejectApplicantModal from './RejectApplicantModal'
 import AdminMetadata from './AdminMetadata'
 
@@ -84,7 +79,6 @@ const PublicProfile = () => {
     },
   })
 
-
   const handleStatusChange = async (
     status: ApplicationStatus,
     notes?: string,
@@ -145,12 +139,10 @@ const PublicProfile = () => {
     )
   }
 
-
   const isOwner = session?.user?.id === profile.userId
   const isAdmin =
     session?.user?.role === 'PLATFORM_ADMIN'
     || session?.user?.role === 'COMPANY_ADMIN'
-  const isPlatFormAdmin = session?.user?.role === 'PLATFORM_ADMIN'
 
   const canView =
     profile.isPublic || isOwner || isAdmin
@@ -171,7 +163,6 @@ const PublicProfile = () => {
     )
   }
 
-
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
       <ProfileTopSection
@@ -186,11 +177,7 @@ const PublicProfile = () => {
       />
 
       {profile.bio && (
-        <ProfileSection title="About" >
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
-            {profile.bio}
-          </p>
-        </ProfileSection>
+        <ProfileBio bio={profile.bio} />
       )}
 
       <div className="grid grid-cols-1 gap-6  lg:grid-cols-2 ">
@@ -201,133 +188,27 @@ const PublicProfile = () => {
             className="space-y-3 text-sm text-muted-foreground divide-y divide-border/40"
           />
         </ProfileSection>
-
         <div className='flex flex-col gap-6'>
-          <ProfileSection title='Preferred Job Categories'>
-            {profile.jobCategories.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {profile.jobCategories.map((category) => (
-                  <Pill
-                    key={category}
-                    text={getLabel(jobCategories, category) as string}
-                  >
-                  </Pill>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">—</p>
-            )}
-          </ProfileSection>
-
-          <ProfileSection title='Preferred Locations'>
-            {profile.preferredLocations.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {profile.preferredLocations.map((location) => (
-                  <Pill
-                    key={location}
-                    text={location}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">—</p>
-            )}
-          </ProfileSection>
+          <PrefferedJobCategories prefferedJobCategories={profile.jobCategories} />
+          <PrefferedJobLocations preferredLocations={profile.preferredLocations} />
         </div>
       </div>
 
-      {profile.skills.length > 0 && (
-        <ProfileSection title='Skills'>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {profile.skills.map((skill) => (
-              <Pill
-                text={getLabel(jobSkills, skill) as string}
-                key={skill}
-              />
-            ))}
-          </div>
-        </ProfileSection>
-      )}
+      <Skills skills={profile.skills} />
 
-      <ProfileSection title='Professional Preferences'>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
-          <div>
-            <p className="font-medium text-foreground mb-1">Preferred Work Mode</p>
-            {profile.preferredWorkMode.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {profile.preferredWorkMode.map((mode) => (
-                  <Pill
-                    key={mode}
-                    text={getLabel(workModes, mode) as string}
-                  />
-                ))}
-              </div>
-            ) : (
-              '—'
-            )}
-          </div>
+      <ProfessionalPreferences
+        currentEmployment={profile.currentEmployment}
+        expectedSalaryMin={profile.expectedSalaryMin}
+        noticePeriod={profile.noticePeriod}
+        preferredWorkMode={profile.preferredWorkMode}
+        willingToRelocate={profile.willingToRelocate}
+        isPublic={true}
+      />
 
-          <div>
-            <SubHeader text="Willing to Relocate" />
-            {profile.willingToRelocate ? 'Yes' : 'No'}
-          </div>
+      <WorkExperiences workExperience={profile.workExperience} />
 
-          <div>
-            <SubHeader text="Current Employment" />
-            {profile.currentEmployment
-              ? getLabel(currentEmploymentStatuses, profile.currentEmployment)
-              : '—'}
-          </div>
-
-          <div>
-            <SubHeader text="Notice Period" />
-            {profile.noticePeriod
-              ? getLabel(noticePeriods, profile.noticePeriod)
-              : '—'}
-          </div>
-
-          <div>
-            <SubHeader text="Expected CTC" />
-            {profile.expectedSalaryMin
-              // || profile.expectedSalaryMax
-              ? formatSalary(profile.expectedSalaryMin,
-                // profile.expectedSalaryMax
-              )
-              : '—'}
-          </div>
-        </div>
-      </ProfileSection>
-
-      <ProfileSection title='Work Experience'>
-        <div className="space-y-6">
-          {profile.workExperience.length > 0 ?
-            profile.workExperience.map((exp) => (
-              <Experience key={exp.id} exp={exp} />
-            )) : (
-              <p className="text-sm text-muted-foreground">—</p>
-            )}
-        </div>
-      </ProfileSection>
-
-      <ProfileSection title='Education'>
-        <div className="space-y-4">
-          {profile.education.length > 0 ? profile.education.map((edu) => (
-            <EduCard key={edu.id} edu={edu} />
-          )) : (
-            <p className="text-sm text-muted-foreground">—</p>
-          )}
-        </div>
-      </ProfileSection>
-
-      <ProfileSection title='Certifications'>
-        <div className="space-y-4">
-          {profile.certifications.length > 0 ? profile.certifications.map((cert) => (
-            <CertificateCard key={cert.id} cert={cert} />
-          )) : (
-            <p className="text-sm text-muted-foreground">—</p>
-          )}
-        </div>
-      </ProfileSection>
+      <Educations education={profile.education} />
+      <Certifications certifications={profile.certifications} />
 
       {(isOwner || isAdmin) && profile.resumeUrl && (
         <ProfileSection title='Resume'>
@@ -402,7 +283,6 @@ const PublicProfile = () => {
           </div>
         </div>
       )}
-
 
       {isAdmin && (
         <AdminMetadata profile={profile} />
