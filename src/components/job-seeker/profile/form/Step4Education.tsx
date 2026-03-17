@@ -268,7 +268,8 @@ const Step4Education = ({
         </div>
       )}
 
-      <Modal open={isModalOpen} onClose={handleCloseModal} className="max-w-2xl max-sm:h-[70%] max-sm:overflow-y-scroll">
+      <Modal open={isModalOpen} onClose={handleCloseModal} className="max-sm:max-h-[70%] overflow-y-scroll max-w-2xl max-h-[90%]"
+      >
         <h2 className="text-xl font-semibold mb-6">
           {editingIndex !== null ? 'Edit Education' : 'Add Education'}
         </h2>

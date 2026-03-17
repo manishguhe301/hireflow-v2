@@ -407,3 +407,15 @@ export type JobSeekerFormInputs = {
   noticePeriod: string;
   deleteAvatar?: boolean;
 };
+
+export type WorkExperienceForm = {
+  company: string;
+  title: string;
+  location: string | null;
+  workMode: WorkMode | null;
+  startDate: Date | null;
+  endDate: Date | null;
+  description: string | null;
+  isCurrent: boolean;
+  isPartTime: boolean;
+};
