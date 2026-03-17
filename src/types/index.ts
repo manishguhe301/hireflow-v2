@@ -419,3 +419,12 @@ export type WorkExperienceForm = {
   isCurrent: boolean;
   isPartTime: boolean;
 };
+
+export type CertificationForm = {
+  name: string;
+  organization: string;
+  issueDate: Date | null;
+  expiryDate: Date | null;
+  credentialUrl: string | null;
+  credentialId: string | null;
+};
