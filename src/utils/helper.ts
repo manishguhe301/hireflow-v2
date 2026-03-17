@@ -289,3 +289,24 @@ export const hasAnyDraftData = (data: JobFormInputs) => {
     typeof data.salaryMax === 'number'
   );
 };
+
+export const JOB_STATUS_TABS_STYLES = {
+  ALL: 'bg-primary! text-primary-foreground! border-primary/40!',
+  DRAFT: 'bg-amber-400! text-amber-950! border-amber-950/40!',
+  ACTIVE: 'bg-success/10! text-success! border-success/40!',
+  CLOSED: 'bg-destructive/10! text-destructive! border-destructive/40!',
+};
+
+export const USERS_TYPE_TABS_STYLES = {
+  ALL: 'bg-primary! text-primary-foreground! border-primary/40!',
+  PLATFORM_ADMIN: 'bg-info/10! text-info! border-info/40!',
+  COMPANY_ADMIN: 'bg-info/50! text-secondary-foreground! border-secondary/40!',
+  JOB_SEEKER: 'bg-accent! text-foreground! border-border/40!',
+};
+
+export const ADMIN_COMPANIES_TABS_STYLES = {
+  'ALL': 'bg-primary! text-primary-foreground! border-primary/40!',
+  'PENDING': 'bg-amber-400! text-amber-950! border-amber-950/40!',
+  'APPROVED': 'bg-success/10! text-success! border-success/40! ',
+  'REJECTED': 'bg-destructive/10! text-destructive! border-destructive/40!'
+}

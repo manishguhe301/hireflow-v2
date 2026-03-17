@@ -16,7 +16,6 @@ type Props = {
   disabled: boolean
 }
 
-
 const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
   const data = watch()
 

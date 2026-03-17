@@ -1,5 +1,4 @@
 'use client'
-import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { workModes } from '@/src/utils/constants'
@@ -12,7 +11,7 @@ import { JobFormInputs } from '@/src/types'
 const Step3JobLocation = ({
   register,
   errors,
-  watch,
+  // watch,
   isEditMode,
   disabled
 }: {
@@ -23,7 +22,6 @@ const Step3JobLocation = ({
   disabled?: boolean
 }) => {
   const { countries, loading } = useCountries()
-  const workMode = watch('workMode')
   return (
     <div className="space-y-8">
       <StepHeader

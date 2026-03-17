@@ -20,6 +20,7 @@ import AdminCompaniesTableSkeleton from '../skeletons/AdminCompaniesTableSkeleto
 import { TABS } from '@/src/utils/constants'
 import { Button } from '../ui/Button'
 import { PaginationType } from '@/src/types'
+import { ADMIN_COMPANIES_TABS_STYLES } from '@/src/utils/helper'
 
 const AdminCompanies = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
@@ -185,14 +186,9 @@ const AdminCompanies = () => {
               variant={tab.value === activeTab ? 'primary' : 'ghost'}
               disabled={isLoading || isFetching}
               className={clsx(
-                activeTab === tab.value
-                  ? tab.value === 'ALL'
-                    ? 'bg-primary! text-primary-foreground! border-primary/40! shadow-md!'
-                    : tab.value === 'PENDING'
-                      ? 'bg-amber-400! text-amber-950! border-amber-950/40! shadow-md!'
-                      : tab.value === 'APPROVED'
-                        ? 'bg-success/10! text-success! border-success/40! shadow-md!'
-                        : 'bg-destructive/10! text-destructive! border-destructive/40! shadow-md!'
+                'shadow-md',
+                activeTab === tab.value ?
+                  ADMIN_COMPANIES_TABS_STYLES[tab.value]
                   : 'bg-card! border-border/40! hover:bg-muted/40!'
               )}
             >
@@ -203,7 +199,7 @@ const AdminCompanies = () => {
             variant="outline"
             onClick={() => refetch()}
             size="sm"
-            className="flex flex-row items-center gap-2"
+            className="flex flex-row items-center gap-2 shadow-md"
             disabled={isLoading || isFetching}
           >
             <RefreshCw size={16} /> Refresh
