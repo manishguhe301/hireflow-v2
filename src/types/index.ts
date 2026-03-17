@@ -1,5 +1,6 @@
 import {
   Company,
+  CurrentEmployment,
   EmploymentType,
   ExperienceLevel,
   Job,
@@ -334,4 +335,75 @@ export type ApplyModalProps = {
     city: string | null;
   };
   onSuccess: () => void;
+};
+
+export type WorkExperienceInput = {
+  id?: string;
+  company: string;
+  title: string;
+  location?: string | null;
+  workMode: WorkMode;
+  startDate: Date;
+  endDate?: Date | null;
+  description?: string | null;
+  isCurrent: boolean;
+  isPartTime: boolean;
+};
+
+export type EducationInput = {
+  id?: string;
+  institution: string;
+  degree: string;
+  fieldOfStudy: string | null;
+  startYear: number | null;
+  endYear: number | null;
+  grade: string | null;
+  isCurrent: boolean;
+};
+
+export type CertificationInput = {
+  id?: string;
+  name: string;
+  organization: string;
+  issueDate: Date;
+  expiryDate: Date | null;
+  credentialUrl: string | null;
+  credentialId: string | null;
+};
+
+export type JobSeekerFormInputs = {
+  userId: string;
+  avatar: FileList;
+  phone: string;
+  country: string;
+  countryPhoneCode: string;
+  city: string;
+  contactEmail: string;
+  name: string;
+
+  preferredWorkMode: WorkMode[];
+  willingToRelocate: boolean;
+  professionalTitle: string;
+  bio: string;
+  yearsOfExperience?: ExperienceLevel | null;
+  currentEmployment?: CurrentEmployment | null;
+
+  resume: FileList;
+
+  skills: string[];
+  workExperience: WorkExperienceInput[];
+  education: EducationInput[];
+  certifications: CertificationInput[];
+
+  portfolioWebsite: string;
+  githubUrl: string;
+  linkedinUrl: string;
+  twitterUrl: string;
+  otherLinks: string[];
+  jobCategories: string[];
+  preferredLocations: string[];
+  expectedSalaryMin: number;
+  // expectedSalaryMax: number
+  noticePeriod: string;
+  deleteAvatar?: boolean;
 };

@@ -29,115 +29,8 @@ import StepSidebar from '@/src/components/layout/StepSidebar'
 import MobileTabs from '@/src/components/layout/MobileTabs'
 import { AppSdk } from '@/src/utils/AppSdk'
 import BackButton from '@/src/components/shared/BackButton'
-
-export type WorkExperienceInput = {
-  id?: string
-  company: string
-  title: string
-  location?: string | null
-  workMode: WorkMode
-  startDate: Date
-  endDate?: Date | null
-  description?: string | null
-  isCurrent: boolean
-  isPartTime: boolean
-}
-
-export type EducationInput = {
-  id?: string
-  institution: string
-  degree: string
-  fieldOfStudy: string | null
-  startYear: number | null
-  endYear: number | null
-  grade: string | null
-  isCurrent: boolean
-}
-
-export type CertificationInput = {
-  id?: string
-  name: string
-  organization: string
-  issueDate: Date
-  expiryDate: Date | null
-  credentialUrl: string | null
-  credentialId: string | null
-}
-
-
-export type JobSeekerFormInputs = {
-  userId: string
-  avatar: FileList
-  phone: string
-  country: string
-  countryPhoneCode: string
-  city: string
-  contactEmail: string
-  name: string
-
-  preferredWorkMode: WorkMode[]
-  willingToRelocate: boolean
-  professionalTitle: string
-  bio: string
-  yearsOfExperience?: ExperienceLevel | null
-  currentEmployment?: CurrentEmployment | null
-
-  resume: FileList
-
-  skills: string[]
-  workExperience: WorkExperienceInput[]
-  education: EducationInput[]
-  certifications: CertificationInput[]
-
-  portfolioWebsite: string
-  githubUrl: string
-  linkedinUrl: string
-  twitterUrl: string
-  otherLinks: string[]
-  jobCategories: string[]
-  preferredLocations: string[]
-  expectedSalaryMin: number
-  // expectedSalaryMax: number
-  noticePeriod: string
-  deleteAvatar?: boolean
-}
-
-
-const STEP_FIELDS: Record<number, (keyof JobSeekerFormInputs)[]> = {
-  0: ['phone', 'country', 'countryPhoneCode', 'contactEmail', 'name'],
-  1: ['preferredWorkMode', 'willingToRelocate'],
-  2: ['workExperience'],
-  3: ['education'],
-  4: ['skills'],
-  5: ['resume'],
-  6: [],
-  7: ['jobCategories', 'preferredLocations'],
-}
-
-
-const steps = [
-  { number: 1, label: 'Basic Info' },
-  { number: 2, label: 'Professional Info' },
-  { number: 3, label: 'Experience' },
-  { number: 4, label: 'Education' },
-  { number: 5, label: 'Skills' },
-  {
-    number: 6,
-    label: 'Resume',
-  },
-  {
-    number: 7,
-    label: 'Certifications',
-  },
-  {
-    number: 8,
-    label: 'Additional Info',
-  },
-  {
-    number: 9,
-    label: 'Review & Publish',
-  }
-]
+import { JobSeekerFormInputs } from '@/src/types'
+import { PROFILE_WIZARD_STEP_FIELDS, profileWizardSteps } from '@/src/utils/constants'
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
@@ -312,7 +205,7 @@ const ProfileWizard = () => {
   }
 
   const handleNext = async () => {
-    const fields = STEP_FIELDS[currentStep]
+    const fields = PROFILE_WIZARD_STEP_FIELDS[currentStep]
 
     if (!fields || fields.length === 0) {
       setCurrentStep((prev) => prev + 1)
@@ -461,7 +354,7 @@ const ProfileWizard = () => {
       )}
       {isEditMode && (
         <MobileTabs
-          steps={steps}
+          steps={profileWizardSteps}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
           isEditMode={isEditMode}
@@ -474,7 +367,7 @@ const ProfileWizard = () => {
         {isEditMode && (
           <div className="hidden lg:block sticky top-24">
             <StepSidebar
-              steps={steps}
+              steps={profileWizardSteps}
               currentStep={currentStep}
               onStepClick={setCurrentStep}
               isEditMode={isEditMode}
@@ -491,7 +384,7 @@ const ProfileWizard = () => {
               handleNext={handleNext}
               handlePrev={handlePrev}
               disabled={isSubmitting}
-              steps={steps}
+              steps={profileWizardSteps}
             />
           </div>
           <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">

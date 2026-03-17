@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { useCountries } from '@/src/store/hooks/useCountries'
 import { FormInput } from '@/src/components/ui/FormInput'
@@ -10,6 +9,7 @@ import { FormSelect } from '@/src/components/ui/FormSelect'
 import CountryCodeSelect from '@/src/components/ui/CountryCodeSelect'
 import { useProfile } from '@/src/store/hooks/useProfile'
 import { FileUpload } from '@/src/components/ui/FileUpload'
+import { JobSeekerFormInputs } from '@/src/types'
 
 const Step1BasicFormInfo = ({
   register,

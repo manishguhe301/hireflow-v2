@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs, WorkExperienceInput } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
 import Modal from '@/src/components/ui/Modal'
@@ -17,6 +16,7 @@ import { FormInput } from '@/src/components/ui/FormInput'
 import { FormTextarea } from '@/src/components/ui/FormTextarea'
 import { workModes } from '@/src/utils/constants'
 import { AppSdk } from '@/src/utils/AppSdk'
+import { JobSeekerFormInputs, WorkExperienceInput } from '@/src/types'
 
 type WorkExperienceForm = {
   company: string

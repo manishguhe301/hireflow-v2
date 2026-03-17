@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { useProfile } from '@/src/store/hooks/useProfile'
@@ -10,6 +9,7 @@ import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePer
 import Section from '@/src/components/shared/Section'
 import Item from '@/src/components/shared/Item'
 import FileItem from '@/src/components/shared/FileItem'
+import { JobSeekerFormInputs } from '@/src/types'
 
 type Props = {
   watch: UseFormWatch<JobSeekerFormInputs>

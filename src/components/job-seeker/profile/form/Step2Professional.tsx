@@ -1,6 +1,5 @@
 import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { currentEmploymentStatuses, workModes, yearsOfExperiences } from '@/src/utils/constants'
 import { FormSelect } from '@/src/components/ui/FormSelect'
@@ -8,6 +7,7 @@ import { FormTextarea } from '@/src/components/ui/FormTextarea'
 import { FormInput } from '@/src/components/ui/FormInput'
 import MultiSelect from '@/src/components/ui/MultiSelect'
 import { WorkMode } from '@prisma/client'
+import { JobSeekerFormInputs } from '@/src/types'
 
 const Step2Professional = ({
   register,

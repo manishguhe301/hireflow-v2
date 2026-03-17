@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { EducationInput, JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
 import Modal from '@/src/components/ui/Modal'
@@ -14,6 +13,7 @@ import { FormSelect } from '@/src/components/ui/FormSelect'
 import { degrees, fieldOfStudies } from '@/src/utils/constants'
 import { getLabel } from '@/src/utils/helper'
 import { AppSdk } from '@/src/utils/AppSdk'
+import { EducationInput, JobSeekerFormInputs } from '@/src/types'
 
 const currentYear = new Date().getFullYear()
 

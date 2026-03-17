@@ -1,6 +1,5 @@
 import { ExperienceLevel, JobStatus } from '@prisma/client';
-import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
-import { JobFormInputs } from '../types';
+import { JobFormInputs, JobSeekerFormInputs } from '../types';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);

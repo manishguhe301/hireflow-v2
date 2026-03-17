@@ -1,5 +1,4 @@
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
@@ -9,6 +8,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { X } from 'lucide-react'
 import { jobCategories, noticePeriods } from '@/src/utils/constants'
+import { JobSeekerFormInputs } from '@/src/types'
 
 const regex =
   /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/

@@ -8,7 +8,11 @@ import {
   WorkMode,
 } from '@prisma/client';
 import { Briefcase, ShieldCheck, UserCircle, Workflow } from 'lucide-react';
-import { JobFormInputs, ProfileFormInputs } from '../types';
+import {
+  JobFormInputs,
+  JobSeekerFormInputs,
+  ProfileFormInputs,
+} from '../types';
 
 export const STATUS_STYLE: Record<CompanyStatus, string> = {
   PENDING: 'bg-yellow-100 text-yellow-700',
@@ -503,4 +507,42 @@ export const jobFormSteps = [
   { number: 3, label: 'Location & Work Mode' },
   { number: 4, label: 'Salary & Openings' },
   { number: 5, label: 'Review & Publish' },
+];
+
+export const PROFILE_WIZARD_STEP_FIELDS: Record<
+  number,
+  (keyof JobSeekerFormInputs)[]
+> = {
+  0: ['phone', 'country', 'countryPhoneCode', 'contactEmail', 'name'],
+  1: ['preferredWorkMode', 'willingToRelocate'],
+  2: ['workExperience'],
+  3: ['education'],
+  4: ['skills'],
+  5: ['resume'],
+  6: [],
+  7: ['jobCategories', 'preferredLocations'],
+};
+
+export const profileWizardSteps = [
+  { number: 1, label: 'Basic Info' },
+  { number: 2, label: 'Professional Info' },
+  { number: 3, label: 'Experience' },
+  { number: 4, label: 'Education' },
+  { number: 5, label: 'Skills' },
+  {
+    number: 6,
+    label: 'Resume',
+  },
+  {
+    number: 7,
+    label: 'Certifications',
+  },
+  {
+    number: 8,
+    label: 'Additional Info',
+  },
+  {
+    number: 9,
+    label: 'Review & Publish',
+  },
 ];

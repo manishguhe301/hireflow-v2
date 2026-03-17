@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { CertificationInput, JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
 import Modal from '@/src/components/ui/Modal'
@@ -13,6 +12,7 @@ import { FormInput } from '@/src/components/ui/FormInput'
 import FormDatePicker from '@/src/components/ui/FormDatePicker'
 import { formatDate } from '@/src/utils/helper'
 import { AppSdk } from '@/src/utils/AppSdk'
+import { CertificationInput, JobSeekerFormInputs } from '@/src/types'
 
 type CertificationForm = {
   name: string

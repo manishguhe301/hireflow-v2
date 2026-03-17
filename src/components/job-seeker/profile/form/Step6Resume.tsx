@@ -1,9 +1,9 @@
 import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { FileUpload } from '@/src/components/ui/FileUpload'
 import { useProfile } from '@/src/store/hooks/useProfile'
+import { JobSeekerFormInputs } from '@/src/types'
 
 const Step6Resume = ({
   register,
