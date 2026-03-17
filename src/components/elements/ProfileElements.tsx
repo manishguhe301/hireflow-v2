@@ -13,9 +13,10 @@ const ProfileSection = ({ title, children, className }: { title: string, childre
   </div>
 )
 
-const Pill = ({ text }: { text: string }) => {
+const Pill = ({ text, className }: { text: string, className?: string }) => {
   return <span
-    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+    className={clsx(
+      "rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary", className!)}
   >
     {text}
   </span>

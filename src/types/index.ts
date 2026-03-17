@@ -541,3 +541,72 @@ export interface SavedJob {
   hideSalary: boolean;
   isApplied?: boolean;
 }
+
+export interface SimilarJob {
+  company: {
+    id: string;
+    name: string;
+    logo: string | null;
+  };
+  id: string;
+  slug: string;
+  title: string;
+  experienceLevel: ExperienceLevel;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
+  country: string;
+  city: string | null;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  numberOfOpenings: number;
+  applicationDeadline: Date | null;
+  category: string;
+  createdAt: Date;
+}
+
+export interface CompanyInfoForJob {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  industry: string;
+  companySize: string;
+  foundedYear?: number;
+  website?: string;
+  linkedinProfile?: true;
+  country: string;
+  city: string;
+  activeJobsCount: 5;
+}
+
+export interface JobDetailsType {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string;
+  responsibilities: string;
+  skills: string[];
+  experienceLevel: ExperienceLevel;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
+  country: string;
+  city?: string;
+  salaryMin?: string;
+  salaryMax?: string;
+  hideSalary: boolean;
+  numberOfOpenings: string;
+  applicationDeadline?: string;
+  category: string;
+  slug: string;
+  views: string;
+  createdAt: string;
+  updatedAt: string;
+  company: CompanyInfoForJob;
+}
+
+export type ExistingHistory = {
+  id: string;
+  status: string;
+  createdAt: string;
+  statusHistory: { status: string; date: string }[];
+};
