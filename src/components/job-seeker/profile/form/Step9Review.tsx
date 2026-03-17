@@ -1,120 +1,20 @@
 'use client'
 
 import React from 'react'
-import clsx from 'clsx'
-import { Pencil } from 'lucide-react'
 import { UseFormWatch } from 'react-hook-form'
 import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
-import { formatDate, formatSalary, getFileNameFromPath, getLabel } from '@/src/utils/helper'
+import { formatDate, formatSalary, getLabel } from '@/src/utils/helper'
 import { useProfile } from '@/src/store/hooks/useProfile'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
+import Section from '@/src/components/shared/Section'
+import Item from '@/src/components/shared/Item'
+import FileItem from '@/src/components/shared/FileItem'
 
 type Props = {
   watch: UseFormWatch<JobSeekerFormInputs>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
   disabled?: boolean
-}
-
-const Section = ({
-  title,
-  onEdit,
-  children,
-  disabled
-}: {
-  title: string
-  onEdit: () => void
-  children: React.ReactNode
-  disabled?: boolean
-}) => {
-  return (
-    <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold">{title}</h3>
-        <button
-          type="button"
-          onClick={onEdit}
-          disabled={disabled}
-          className="flex items-center gap-1 text-sm text-primary hover:underline"
-        >
-          <Pencil className="h-4 w-4" />
-          Edit
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-const Item = ({
-  label,
-  value,
-  required = true,
-}: {
-  label: string
-  value?: string
-  required?: boolean
-}) => (
-  <div>
-    <p className="text-xs text-muted-foreground">
-      {label}
-      {required && !value && <span className="text-red-500 ml-1">*</span>}
-    </p>
-    <p
-      className={clsx(
-        'font-medium whitespace-pre-wrap break-words',
-        !value && required && 'text-red-500',
-        !value && !required && 'text-muted-foreground'
-      )}
-    >
-      {value || (required ? 'Required' : '—')}
-    </p>
-  </div>
-)
-
-const FileItem = ({
-  label,
-  file,
-  existingFileUrl,
-  required = true
-}: {
-  label: string
-  file?: FileList
-  existingFileUrl?: string | null
-  required?: boolean
-}) => {
-  const newFileName = file?.[0]?.name
-
-  const existingFileName = existingFileUrl ? getFileNameFromPath(existingFileUrl) : null
-
-  const displayName = newFileName || existingFileName
-  const hasFile = !!(newFileName || existingFileName)
-
-  return (
-    <div>
-      <p className="text-xs text-muted-foreground">
-        {label}
-        {required && !hasFile && <span className="text-red-500 ml-1">*</span>}
-      </p>
-      <div className="flex items-center gap-2">
-        <p className={clsx(
-          'font-medium truncate',
-          !hasFile && required && 'text-red-500',
-          !hasFile && !required && 'text-muted-foreground'
-        )}>
-          {displayName || (required ? 'Required' : 'Not uploaded')}
-        </p>
-        {!newFileName && existingFileName && (
-          <span className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
-            Existing
-          </span>
-        )}
-      </div>
-    </div>
-  )
 }
 
 const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
@@ -160,12 +60,30 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
       <Section
         disabled={disabled}
         title="Basic Information" onEdit={() => setCurrentStep(0)}>
-        <Item label="Full Name" value={data.name} />
-        <Item label="Email" value={data.contactEmail} />
-        <Item label="Phone Code" value={data.countryPhoneCode} />
-        <Item label="Phone" value={data.phone} />
-        <Item label="Country" value={data.country} />
-        <Item label="City" value={data.city} required={false} />
+        <Item
+          label="Full Name"
+          value={data.name}
+        />
+        <Item
+          label="Email"
+          value={data.contactEmail}
+        />
+        <Item
+          label="Phone Code"
+          value={data.countryPhoneCode}
+        />
+        <Item
+          label="Phone"
+          value={data.phone}
+        />
+        <Item
+          label="Country"
+          value={data.country}
+        />
+        <Item
+          label="City"
+          value={data.city} required={false}
+        />
       </Section>
 
       <Section
@@ -176,7 +94,8 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
           label="Preferred Work Mode"
           value={data.preferredWorkMode
             ?.map((pw) => getLabel(workModes, pw))
-            .join(', ')} />
+            .join(', ')}
+        />
         <Item
           label="Willing to Relocate"
           value={data.willingToRelocate ? 'Yes' : 'No'}
@@ -186,17 +105,27 @@ const Step9Review = ({ watch, setCurrentStep, disabled }: Props) => {
           value={data.professionalTitle}
           required={false}
         />
-        <Item label="Bio" value={data.bio} required={false} />
-        <Item label="Years of Experience" value={getLabel(yearsOfExperiences, data.yearsOfExperience as string)}
-          required={false} />
-        <Item label="Current Employment Status"
+        <Item
+          label="Bio"
+          value={data.bio} required={false}
+        />
+        <Item
+          label="Years of Experience"
+          value={getLabel(yearsOfExperiences, data.yearsOfExperience as string)}
+          required={false}
+        />
+        <Item
+          label="Current Employment Status"
           value={getLabel(currentEmploymentStatuses, data.currentEmployment as string)}
-          required={false} />
+          required={false}
+        />
       </Section>
 
       <Section
         disabled={disabled}
-        title="Work Experience" onEdit={() => setCurrentStep(2)}>
+        title="Work Experience"
+        onEdit={() => setCurrentStep(2)}
+      >
         <div className="sm:col-span-2 space-y-3">
           {data.workExperience?.length ? (
             data.workExperience.map((exp, i) => (

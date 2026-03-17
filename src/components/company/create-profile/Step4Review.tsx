@@ -7,7 +7,7 @@ import StepHeader from '../../ui/StepHeader'
 import { ProfileFormInputs } from '@/src/types'
 import Section from '../../shared/Section'
 import Item from '../../shared/Item'
-import FileItem from './FileItem'
+import FileItem from '../../shared/FileItem'
 
 type Props = {
   watch: UseFormWatch<ProfileFormInputs>
