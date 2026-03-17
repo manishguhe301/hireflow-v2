@@ -247,3 +247,53 @@ export type JobFormInputs = {
   applicationDeadline?: Date;
   category: string;
 };
+
+export interface CompanyDashboardStats {
+  totalJobs: number;
+  activeJobs: number;
+  totalApplications: number;
+  totalViews: number;
+  statusBreakdown: {
+    applied: number;
+    reviewing: number;
+    shortlisted: number;
+    interview: number;
+    rejected: number;
+    offered: number;
+    hired: number;
+  };
+}
+
+export interface TimeSeriesData {
+  date: string;
+  applications: number;
+}
+
+export interface RecentApplication {
+  id: string;
+  status: string;
+  createdAt: string;
+  user: {
+    profile: {
+      name: string;
+      avatar: string | null;
+    } | null;
+  };
+  job: {
+    title: string;
+    slug: string;
+  };
+}
+
+export interface AnalyticsData {
+  applicationsPerJob: {
+    jobTitle: string;
+    applications: number;
+    views: number;
+  }[];
+  funnel: {
+    stage: string;
+    count: number;
+    percentage: number;
+  }[];
+}
