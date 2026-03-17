@@ -1,10 +1,10 @@
 'use client'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobFormInputs } from './CreateJobForm'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import FormDatePicker from '@/src/components/ui/FormDatePicker'
 import StepHeader from '@/src/components/ui/StepHeader'
+import { JobFormInputs } from '@/src/types'
 
 const Step4JobSalary = ({
   register,

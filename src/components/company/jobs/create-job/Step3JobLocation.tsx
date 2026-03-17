@@ -1,13 +1,13 @@
 'use client'
 import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormWatch } from 'react-hook-form'
-import { JobFormInputs } from './CreateJobForm'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { workModes } from '@/src/utils/constants'
 import { useCountries } from '@/src/store/hooks/useCountries'
 import { Spinner } from '@/src/components/elements/Loader'
 import { FormInput } from '@/src/components/ui/FormInput'
 import StepHeader from '@/src/components/ui/StepHeader'
+import { JobFormInputs } from '@/src/types'
 
 const Step3JobLocation = ({
   register,

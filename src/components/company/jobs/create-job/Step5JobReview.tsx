@@ -1,15 +1,14 @@
 'use client'
 
 import React from 'react'
-import clsx from 'clsx'
 import { UseFormWatch } from 'react-hook-form'
-import { JobFormInputs } from './CreateJobForm'
 import { formatDate, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { employmentTypes, experienceLevels, jobCategories, jobSkills, workModes } from '@/src/utils/constants'
 import Section from '@/src/components/shared/Section'
 import Item from '@/src/components/shared/Item'
+import { JobFormInputs } from '@/src/types'
 
 type Props = {
   watch: UseFormWatch<JobFormInputs>
