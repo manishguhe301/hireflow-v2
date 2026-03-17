@@ -9,7 +9,6 @@ import {
   Building2,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { DirJobType } from '../public/jobs-dir/JobsDirectory';
 import { formatRelativeTime, getLabel, isNewJob } from '@/src/utils/helper';
 import { employmentTypes, jobCategories } from '@/src/utils/constants';
 import { Company } from '../public/companies-dir/CompaniesDirectory';
@@ -20,6 +19,7 @@ import LandingPageSkeleton from '../skeletons/LandingPageSkeleton';
 import { Button } from '../ui/Button';
 import { features } from '@/src/utils/constants';
 import HeroPill from './landing-components/HeroPill';
+import { DirJobType } from '@/src/types';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)

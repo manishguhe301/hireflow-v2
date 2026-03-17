@@ -610,3 +610,39 @@ export type ExistingHistory = {
   createdAt: string;
   statusHistory: { status: string; date: string }[];
 };
+
+export type DirJobType = {
+  id: string;
+  title: string;
+  category: string;
+  company: {
+    name: string;
+    logo: string;
+    website: string;
+    id: string;
+  };
+  country: string;
+  city: string;
+  workMode: string;
+  employmentType: string;
+  applicationDeadline: string;
+  experienceLevel: string;
+  numberOfOpenings: string;
+  slug: string;
+  salaryMax: number;
+  salaryMin: number;
+  createdAt: string;
+  updatedAt: string;
+  isSaved: boolean;
+  hideSalary: boolean;
+};
+
+export type Filters = {
+  workModes: string[];
+  employmentTypes: string[];
+  experienceLevels: string[];
+  salaryMin: number;
+  salaryMax: number;
+  datePosted: string;
+  sortBy: string;
+};

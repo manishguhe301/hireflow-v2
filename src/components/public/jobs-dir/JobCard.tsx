@@ -12,7 +12,6 @@ import {
   Zap,
 } from 'lucide-react'
 import Link from 'next/link'
-import { DirJobType } from './JobsDirectory'
 import {
   employmentTypes,
   experienceLevels,
@@ -25,6 +24,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import ApplyModal from '../../job-seeker/applications/ApplyModal'
 import { useQueryClient } from '@tanstack/react-query'
+import { DirJobType } from '@/src/types'
 
 type JobCardProps = {
   job: DirJobType,
