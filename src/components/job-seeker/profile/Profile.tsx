@@ -17,10 +17,11 @@ import {
   Twitter,
   ExternalLink,
 } from 'lucide-react'
-import { formatDateRange, formatSalary, getLabel } from '@/src/utils/helper'
+import { formatSalary, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
 import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
+import Experience from '../../shared/Experience'
 
 const ProfileSection = ({ title, children, className }: { title: string, children: React.ReactNode, className?: string }) => (
   <div className={clsx("rounded-2xl border border-border/40 bg-card p-6", className!)}>
@@ -299,25 +300,7 @@ const Profile = () => {
         <div className="space-y-6">
           {profile.workExperience.length > 0 ?
             profile.workExperience.map((exp) => (
-              <div key={exp.id} className="border-l-2 border-primary/40 pl-4">
-                <h3 className="font-semibold">{exp.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {exp.company} {exp.location && `• ${exp.location}`}
-                </p>
-                {exp.isPartTime && (
-                  <p className="text-sm text-muted-foreground">
-                    Part-time
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formatDateRange(exp.startDate, exp.endDate, exp.isCurrent)}
-                </p>
-                {exp.description && (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {exp.description}
-                  </p>
-                )}
-              </div>
+              <Experience key={exp.id} exp={exp} />
             )) : (
               <p className="text-sm text-muted-foreground">—</p>
             )}
