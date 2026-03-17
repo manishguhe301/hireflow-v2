@@ -4,7 +4,6 @@ import { StateWrapper } from '@/src/components/company/CompanyProfileGuard'
 import { Spinner } from '@/src/components/elements/Loader'
 import FormHeader from '@/src/components/ui/FormHeader'
 import { useProfile } from '@/src/store/hooks/useProfile'
-import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -336,7 +335,85 @@ const ProfileWizard = () => {
     }
   };
 
-
+  const stepComponents = [
+    <Step1BasicFormInfo
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      selectedCountry={selectedCountry}
+      disabled={isSubmitting}
+      key={1}
+    />,
+    <Step2Professional
+      register={register}
+      errors={errors}
+      watch={watch}
+      disabled={isSubmitting}
+      setValue={setValue}
+      key={2}
+    />,
+    <Step3Experience
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      isEditMode={isEditMode}
+      refetchProfile={refetchProfile}
+      key={3}
+    />,
+    <Step4Education
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      isEditMode={isEditMode}
+      refetchProfile={refetchProfile}
+      key={4}
+    />,
+    <Step5Skills
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      key={5}
+    />,
+    <Step6Resume
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      key={6}
+    />,
+    <Step7Certifications
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      isEditMode={isEditMode}
+      refetchProfile={refetchProfile}
+      key={7}
+    />,
+    <Step8AdditionalInfo
+      register={register}
+      errors={errors}
+      watch={watch}
+      disabled={isSubmitting}
+      setValue={setValue}
+      key={8}
+    />,
+    <Step9Review
+      watch={watch}
+      setCurrentStep={setCurrentStep}
+      disabled={isSubmitting}
+      key={9}
+    />,
+  ]
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
@@ -388,95 +465,8 @@ const ProfileWizard = () => {
             />
           </div>
           <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 &&
-              <Step1BasicFormInfo
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                selectedCountry={selectedCountry}
-                disabled={isSubmitting}
-              />
-            }
-            {currentStep === 1 &&
-              <Step2Professional
-                register={register}
-                errors={errors}
-                watch={watch}
-                disabled={isSubmitting}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 2 &&
-              <Step3Experience
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-                isEditMode={isEditMode}
-                refetchProfile={refetchProfile}
-              />
-            }
-            {currentStep === 3 &&
-              <Step4Education
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-                isEditMode={isEditMode}
-                refetchProfile={refetchProfile}
-              />
-            }
-            {currentStep === 4 &&
-              <Step5Skills
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-              />
-            }
-            {currentStep === 5 &&
-              <Step6Resume
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-              />
-            }
-            {currentStep === 6 &&
-              <Step7Certifications
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-                isEditMode={isEditMode}
-                refetchProfile={refetchProfile}
-              />
-            }
-            {currentStep === 7 &&
-              <Step8AdditionalInfo
-                register={register}
-                errors={errors}
-                watch={watch}
-                disabled={isSubmitting}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 8 &&
-              <Step9Review
-                watch={watch}
-                setCurrentStep={setCurrentStep}
-                disabled={isSubmitting}
-              />
-            }
+            {stepComponents[currentStep]}
           </div>
-
-
           <div
             className={clsx(
               "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
