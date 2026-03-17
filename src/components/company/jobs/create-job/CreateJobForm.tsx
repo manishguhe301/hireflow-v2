@@ -11,7 +11,7 @@ import Step3JobLocation from './Step3JobLocation';
 import Step4JobSalary from './Step4JobSalary';
 import Step5JobReview from './Step5JobReview';
 import { Button } from '@/src/components/ui/Button';
-import { isRichTextEmpty, JOB_STATUS_UI } from '@/src/utils/helper';
+import { hasAnyDraftData, isRichTextEmpty, JOB_STATUS_UI } from '@/src/utils/helper';
 import { Spinner } from '@/src/components/elements/Loader';
 import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
@@ -170,21 +170,6 @@ const CreateJobForm = () => {
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
 
-  const hasAnyDraftData = (data: JobFormInputs) => {
-    return (
-      !!data.title ||
-      !isRichTextEmpty(data.description) ||
-      !!data.category ||
-      !isRichTextEmpty(data.requirements) ||
-      (data.responsibilities && !isRichTextEmpty(data.responsibilities)) ||
-      data.skills.length > 0 ||
-      !!data.country ||
-      !!data.city ||
-      typeof data.salaryMin === 'number' ||
-      typeof data.salaryMax === 'number'
-    )
-  }
-
   const handleFormSubmit =
     (isDraft: boolean): SubmitHandler<JobFormInputs> =>
       async (data) => {
@@ -309,6 +294,49 @@ const CreateJobForm = () => {
 
   const isAnyActionInProgress = isSubmitting || isSavingDraft
 
+  const stepComponents = [
+    <Step1BasicJobDetails
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isAnyActionInProgress}
+      key={1}
+    />,
+    <Step2JobRequirements
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      isEditMode={isEditMode}
+      disabled={isAnyActionInProgress}
+      key={2}
+    />,
+    <Step3JobLocation
+      register={register}
+      errors={errors}
+      watch={watch}
+      isEditMode={isEditMode}
+      disabled={isAnyActionInProgress}
+      key={3}
+    />,
+    <Step4JobSalary
+      register={register}
+      errors={errors}
+      watch={watch}
+      disabled={isAnyActionInProgress}
+      isEditMode={isEditMode}
+      setValue={setValue}
+      key={4}
+    />,
+    <Step5JobReview
+      setCurrentStep={setCurrentStep}
+      watch={watch}
+      disabled={isAnyActionInProgress}
+      key={5}
+    />
+  ]
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <BackButton disabled={isAnyActionInProgress} />
@@ -360,52 +388,7 @@ const CreateJobForm = () => {
             />
           </div>
           <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 &&
-              <Step1BasicJobDetails
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isAnyActionInProgress}
-              />
-            }
-            {currentStep === 1 &&
-              <Step2JobRequirements
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                isEditMode={isEditMode}
-                disabled={isAnyActionInProgress}
-              />
-            }
-            {currentStep === 2 &&
-              <Step3JobLocation
-                register={register}
-                errors={errors}
-                watch={watch}
-                isEditMode={isEditMode}
-                disabled={isAnyActionInProgress}
-              />
-            }
-            {
-              currentStep === 3 &&
-              <Step4JobSalary
-                register={register}
-                errors={errors}
-                watch={watch}
-                disabled={isAnyActionInProgress}
-                isEditMode={isEditMode}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 4 &&
-              <Step5JobReview
-                setCurrentStep={setCurrentStep}
-                watch={watch}
-                disabled={isAnyActionInProgress}
-              />
-            }
+            {stepComponents[currentStep]}
           </form>
 
           <div className={clsx(

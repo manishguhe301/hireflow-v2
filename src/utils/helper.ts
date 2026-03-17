@@ -1,5 +1,6 @@
 import { ExperienceLevel, JobStatus } from '@prisma/client';
 import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
+import { JobFormInputs } from '../types';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -272,4 +273,19 @@ export const JOB_STATUS_UI: Record<
     message: () =>
       'This job is closed and no longer accepting applications. You can reopen it anytime.',
   },
+};
+
+export const hasAnyDraftData = (data: JobFormInputs) => {
+  return (
+    !!data.title ||
+    !isRichTextEmpty(data.description) ||
+    !!data.category ||
+    !isRichTextEmpty(data.requirements) ||
+    (data.responsibilities && !isRichTextEmpty(data.responsibilities)) ||
+    data.skills.length > 0 ||
+    !!data.country ||
+    !!data.city ||
+    typeof data.salaryMin === 'number' ||
+    typeof data.salaryMax === 'number'
+  );
 };
