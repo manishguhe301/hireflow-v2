@@ -16,50 +16,8 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import JobsDirectorySkeleton from '../../skeletons/JobsDirectorySkeleton'
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
-
-export type DirJobType = {
-  id: string,
-  title: string,
-  category: string,
-  company: {
-    name: string,
-    logo: string,
-    website: string,
-    id: string,
-  },
-  country: string,
-  city: string,
-  workMode: string,
-  employmentType: string,
-  applicationDeadline: string,
-  experienceLevel: string,
-  numberOfOpenings: string,
-  slug: string,
-  salaryMax: number,
-  salaryMin: number,
-  createdAt: string,
-  updatedAt: string,
-  isSaved: boolean,
-  hideSalary: boolean
-}
-
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
-
-type Filters = {
-  workModes: string[]
-  employmentTypes: string[]
-  experienceLevels: string[]
-  salaryMin: number
-  salaryMax: number
-  datePosted: string
-  sortBy: string
-}
+import { DirJobType, Filters, PaginationType } from '@/src/types'
+import SearchSection from './SearchSection'
 
 const JobsDirectory = () => {
   const router = useRouter()
@@ -135,7 +93,7 @@ const JobsDirectory = () => {
   })
 
   const jobs: DirJobType[] = data?.jobs ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
+  const pagination: PaginationType | null = data?.pagination ?? null
   const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 150 || filters.datePosted || filters.sortBy
 
   useEffect(() => {
@@ -303,59 +261,15 @@ const JobsDirectory = () => {
         </div>
       }
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <div className="relative md:col-span-2">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              aria-label="Search jobs by title, skills, company…"
-              placeholder="Search jobs by title, skills, company…"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-              className="w-full rounded-xl border border-border/60 bg-background pl-10 pr-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
-            />
-          </div>
-
-          <FormSelect
-            label=""
-            placeholder="Job Categories"
-            options={[
-              { label: 'All Categories', value: '' },
-              ...jobCategories,
-            ]}
-            onChange={(value) => {
-              setCategory(value)
-              setPage(1)
-            }}
-          />
-
-          <input
-            aria-label="Location"
-            type="text"
-            placeholder="Search by city or country..."
-            value={location}
-            onChange={(e) => {
-              setLocation(e.target.value)
-              setPage(1)
-            }}
-            className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
-          />
-        </div>
-        <div className="lg:hidden flex justify-end py-4">
-          <Button
-            onClick={() => setIsMobileFilterOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-border/40 bg-card px-4 py-2 text-sm"
-            variant="outline"
-          >
-            Filters
-          </Button>
-        </div>
-
-      </div>
+      <SearchSection
+        location={location}
+        search={search}
+        setCategory={setCategory}
+        setIsMobileFilterOpen={setIsMobileFilterOpen}
+        setLocation={setLocation}
+        setPage={setPage}
+        setSearch={setSearch}
+      />
 
       {pagination && jobs?.length > 0 && (
         <p className="text-sm text-muted-foreground">
