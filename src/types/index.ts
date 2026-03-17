@@ -1,9 +1,11 @@
 import {
+  ApplicationStatus,
   Company,
   CurrentEmployment,
   EmploymentType,
   ExperienceLevel,
   Job,
+  JobStatus,
   User,
   WorkMode,
 } from '@prisma/client';
@@ -428,3 +430,35 @@ export type CertificationForm = {
   credentialUrl: string | null;
   credentialId: string | null;
 };
+
+interface Application {
+  job: {
+    company: {
+      id: string;
+      name: string;
+      logo: string | null;
+    };
+    id: string;
+    status: JobStatus;
+    title: string;
+    experienceLevel: ExperienceLevel;
+    employmentType: EmploymentType;
+    workMode: WorkMode;
+    salaryMin?: number | null;
+    salaryMax?: number | null;
+    category: string;
+    slug: string;
+  };
+  id: string;
+  resumeUrl: string;
+  coverLetter: string | null;
+  status: ApplicationStatus;
+  statusHistory: JSON | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ApplicationWithPagination {
+  applications: Application[];
+  pagination: PaginationType;
+}

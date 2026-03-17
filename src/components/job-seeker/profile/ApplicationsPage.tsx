@@ -1,5 +1,5 @@
 'use client'
-import { ApplicationStatus, EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client'
+import { ApplicationStatus } from '@prisma/client'
 import { useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '../../ui/Button'
@@ -9,43 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import TableSkeleton from '../../skeletons/TableSkeleton'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
 import { RefreshCcw } from 'lucide-react'
-
-interface Application {
-  job: {
-    company: {
-      id: string
-      name: string
-      logo: string | null
-    }
-    id: string
-    status: JobStatus
-    title: string
-    experienceLevel: ExperienceLevel
-    employmentType: EmploymentType
-    workMode: WorkMode
-    salaryMin?: number | null
-    salaryMax?: number | null
-    category: string
-    slug: string
-  }
-  id: string
-  resumeUrl: string
-  coverLetter: string | null
-  status: ApplicationStatus
-  statusHistory: JSON | null
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface ApplicationWithPagination {
-  applications: Application[]
-  pagination: {
-    total: number
-    page: number
-    limit: number
-    totalPages: number
-  }
-}
+import { ApplicationWithPagination } from '@/src/types'
 
 const ApplicationsPage = () => {
   const [activeTab, setActiveTab] =
