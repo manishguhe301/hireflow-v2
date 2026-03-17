@@ -512,3 +512,32 @@ export interface RecommendedJob {
   isSaved: boolean;
   hideSalary: boolean;
 }
+
+export interface SavedJob {
+  company: {
+    name: string;
+    id: string;
+    logo: string;
+    website: string;
+  };
+  id: string;
+  country: string;
+  city: string;
+  createdAt: string;
+  updatedAt: string;
+  slug: string;
+  title: string;
+  experienceLevel: string;
+  employmentType: string;
+  workMode: WorkMode;
+  salaryMin: number;
+  salaryMax: number;
+  numberOfOpenings: string;
+  applicationDeadline: string;
+  category: string;
+  // savedId: string;
+  savedAt: string;
+  isSaved: boolean;
+  hideSalary: boolean;
+  isApplied?: boolean;
+}

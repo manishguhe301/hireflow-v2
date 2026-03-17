@@ -1,5 +1,4 @@
 'use client'
-import { WorkMode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { Bookmark } from 'lucide-react';
@@ -10,42 +9,7 @@ import { toast } from 'sonner';
 import { formatRelativeTime } from '@/src/utils/helper';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton';
-
-export interface SavedJob {
-  company: {
-    name: string;
-    id: string;
-    logo: string;
-    website: string;
-  };
-  id: string;
-  country: string;
-  city: string;
-  createdAt: string;
-  updatedAt: string;
-  slug: string;
-  title: string;
-  experienceLevel: string;
-  employmentType: string;
-  workMode: WorkMode;
-  salaryMin: number;
-  salaryMax: number;
-  numberOfOpenings: string;
-  applicationDeadline: string;
-  category: string;
-  // savedId: string;
-  savedAt: string;
-  isSaved: boolean;
-  hideSalary: boolean;
-  isApplied?: boolean
-}
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import { PaginationType, SavedJob } from '@/src/types';
 
 const SavedJobs = () => {
   const searchParams = useSearchParams()
@@ -67,7 +31,7 @@ const SavedJobs = () => {
   })
 
   const jobs: SavedJob[] = data?.savedJobs ?? []
-  const pagination: Pagination = data?.pagination ?? null
+  const pagination: PaginationType = data?.pagination ?? null
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -103,11 +67,9 @@ const SavedJobs = () => {
     },
   })
 
-
   const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
     saveMutation.mutate({ jobId, currentlySaved })
   }
-
 
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
