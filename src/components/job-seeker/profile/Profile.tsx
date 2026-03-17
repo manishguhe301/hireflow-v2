@@ -6,29 +6,17 @@ import DocumentCard from '@/src/components/shared/DocumentCard'
 import Link from 'next/link'
 import {
   MapPin,
-  Mail,
-  Phone,
-  Globe,
-  Github,
-  Linkedin,
   Briefcase,
-  Award,
-  Link2,
-  Twitter,
-  ExternalLink,
 } from 'lucide-react'
 import { formatSalary, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import PublicProfileSkeleton from '../../skeletons/PublicProfileSkeleton'
-import { currentEmploymentStatuses, degrees, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
+import { currentEmploymentStatuses, jobCategories, jobSkills, noticePeriods, workModes, yearsOfExperiences } from '@/src/utils/constants'
 import Experience from '../../shared/Experience'
-
-const ProfileSection = ({ title, children, className }: { title: string, children: React.ReactNode, className?: string }) => (
-  <div className={clsx("rounded-2xl border border-border/40 bg-card p-6", className!)}>
-    <h2 className="text-lg font-semibold mb-6">{title}</h2>
-    {children}
-  </div>
-)
+import EduCard from './EduCard'
+import CertificateCard from './CertificateCard'
+import ContactSection from './ContactSection'
+import { Pill, ProfileSection, SubHeader } from '../../elements/ProfileElements'
 
 const Profile = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
@@ -52,8 +40,7 @@ const Profile = () => {
   const profile = jobSeekerProfile
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-6">
-
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-6">
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 
@@ -120,65 +107,7 @@ const Profile = () => {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
         <ProfileSection title='Contact Information' className="space-y-4">
-
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              {profile.contactEmail}
-            </div>
-
-            {profile.phone && <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              {profile.countryPhoneCode} {profile.phone}
-            </div>}
-
-            {profile.portfolioWebsite && (
-              <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4" />
-                <Link href={profile.portfolioWebsite} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300">
-                  Portfolio
-                </Link>
-              </div>
-            )}
-
-            {profile.githubUrl && (
-              <div className="flex items-center gap-2">
-                <Github className="h-4 w-4" />
-                <Link href={profile.githubUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 ">
-                  GitHub
-                </Link>
-              </div>
-            )}
-
-            {profile.linkedinUrl && (
-              <div className="flex items-center gap-2">
-                <Linkedin className="h-4 w-4" />
-                <Link href={profile.linkedinUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
-                  LinkedIn
-                </Link>
-              </div>
-            )}
-
-            {profile.twitterUrl && (
-              <div className="flex items-center gap-2">
-                <Twitter className="h-4 w-4" />
-                <Link href={profile.twitterUrl} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
-                  Twitter
-                </Link>
-              </div>
-            )}
-
-            {(profile.otherLinks && profile.otherLinks.length > 0) &&
-              profile.otherLinks.map((link, index) => {
-                return <div key={`${link}-${index}`} className="flex items-center gap-2">
-                  <Link2 className="h-4 w-4" />
-                  <Link href={link} target="_blank" className="underline hover:text-primary transition ease-in-out duration-300 transition">
-                    {link}
-                  </Link>
-                </div>
-              })
-            }
-          </div>
+          <ContactSection />
         </ProfileSection>
 
         <ProfileSection title='Resume'>
@@ -194,30 +123,25 @@ const Profile = () => {
       <ProfileSection title='Skills'>
         <div className="mt-4 flex flex-wrap gap-2">
           {profile.skills.map((skill) => (
-            <span
+            <Pill
+              text={getLabel(jobSkills, skill) as string}
               key={skill}
-              className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-            >
-              {getLabel(jobSkills, skill)}
-            </span>
+            />
           ))}
         </div>
       </ProfileSection>
 
       <ProfileSection title='Professional Preferences'>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
           <div>
-            <p className="font-medium text-foreground mb-1">Preferred Work Mode</p>
+            <SubHeader text="Preferred Work Mode" />
             {profile.preferredWorkMode.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {profile.preferredWorkMode.map((mode) => (
-                  <span
+                  <Pill
                     key={mode}
-                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-                  >
-                    {getLabel(workModes, mode)}
-                  </span>
+                    text={getLabel(workModes, mode) as string}
+                  />
                 ))}
               </div>
             ) : (
@@ -226,26 +150,26 @@ const Profile = () => {
           </div>
 
           <div>
-            <p className="font-medium text-foreground mb-1">Willing to Relocate</p>
+            <SubHeader text="Willing to Relocate" />
             {profile.willingToRelocate ? 'Yes' : 'No'}
           </div>
 
           <div>
-            <p className="font-medium text-foreground mb-1">Current Employment</p>
+            <SubHeader text="Current Employment" />
             {profile.currentEmployment
               ? getLabel(currentEmploymentStatuses, profile.currentEmployment)
               : '—'}
           </div>
 
           <div>
-            <p className="font-medium text-foreground mb-1">Notice Period</p>
+            <SubHeader text="Notice Period" />
             {profile.noticePeriod
               ? getLabel(noticePeriods, profile.noticePeriod)
               : '—'}
           </div>
 
           <div>
-            <p className="font-medium text-foreground mb-1">Expected CTC</p>
+            <SubHeader text="Expected CTC" />
             {profile.expectedSalaryMin
               // || profile.expectedSalaryMax
               ? formatSalary(profile.expectedSalaryMin,
@@ -256,21 +180,20 @@ const Profile = () => {
 
           <div>
             <p className="font-medium text-foreground mb-1">Profile Visibility</p>
-            {profile.isPublic ? 'Public' : 'Private'} (You can&apos;t change this)
+            {profile.isPublic ? 'Public' : 'Private'} (Not Changeable)
           </div>
         </div>
-      </ProfileSection>
+      </ProfileSection >
 
       <ProfileSection title='Preferred Job Categories'>
         {profile.jobCategories.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {profile.jobCategories.map((category) => (
-              <span
+              <Pill
                 key={category}
-                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                text={getLabel(jobCategories, category) as string}
               >
-                {getLabel(jobCategories, category)}
-              </span>
+              </Pill>
             ))}
           </div>
         ) : (
@@ -282,12 +205,10 @@ const Profile = () => {
         {profile.preferredLocations.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {profile.preferredLocations.map((location) => (
-              <span
+              <Pill
                 key={location}
-                className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-              >
-                {location}
-              </span>
+                text={location}
+              />
             ))}
           </div>
         ) : (
@@ -310,44 +231,23 @@ const Profile = () => {
       <ProfileSection title='Education'>
         <div className="space-y-4">
           {profile.education.map((edu) => (
-            <div key={edu.id} className='border-l-2 border-primary/40 pl-4'>
-              <h3 className="font-semibold">{getLabel(degrees, edu.degree)}</h3>
-              <p className="text-sm text-muted-foreground">
-                {edu.institution}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {edu.startYear} — {edu.endYear || 'Present'}
-              </p>
-            </div>
+            <EduCard key={edu.id} edu={edu} />
           ))}
         </div>
       </ProfileSection>
 
-      {profile.certifications.length > 0 && (
-        <ProfileSection title='Certifications'>
-
-          <div className="space-y-4">
-            {profile.certifications.map((cert) => (
-              <div key={cert.id} className="flex items-start gap-3">
-                <Award className="h-5 w-5 text-primary" />
-                <div>
-                  <h3 className="font-semibold">{cert.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {cert.organization}
-                  </p>
-                  {cert?.credentialUrl && (
-                    <Link href={cert.credentialUrl}
-                      target='_blank' className='text-sm text-muted-foreground hover:underline flex items-center gap-1 transition ease-in-out duration-300 hover:text-primary'>
-                      Link <ExternalLink className='h-3 w-3' />
-                    </Link>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </ProfileSection>
-      )}
-    </div>
+      {
+        profile.certifications.length > 0 && (
+          <ProfileSection title='Certifications'>
+            <div className="space-y-4">
+              {profile.certifications.map((cert) => (
+                <CertificateCard key={cert.id} cert={cert} />
+              ))}
+            </div>
+          </ProfileSection>
+        )
+      }
+    </div >
   )
 }
 
