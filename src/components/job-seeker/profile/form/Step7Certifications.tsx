@@ -4,24 +4,13 @@ import React, { useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
-import Modal from '@/src/components/ui/Modal'
 import { Award, Edit, Loader2, Plus, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { FormInput } from '@/src/components/ui/FormInput'
-import FormDatePicker from '@/src/components/ui/FormDatePicker'
 import { formatDate } from '@/src/utils/helper'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { CertificationInput, JobSeekerFormInputs } from '@/src/types'
-
-type CertificationForm = {
-  name: string
-  organization: string
-  issueDate: Date | null
-  expiryDate: Date | null
-  credentialUrl: string | null
-  credentialId: string | null
-}
+import { CertificationForm, CertificationInput, JobSeekerFormInputs } from '@/src/types'
+import CertificateModal from './CertificateModal'
 
 const Step7Certifications = ({
   watch,
@@ -268,92 +257,19 @@ const Step7Certifications = ({
         </div>
       )}
 
-      <Modal open={isModalOpen} onClose={handleCloseModal} className="max-sm:max-h-[70%] overflow-y-scroll max-w-2xl max-h-[90%]"
-      >
-        <h2 className="text-xl font-semibold mb-6">
-          {editingIndex !== null ? 'Edit Certification' : 'Add Certification'}
-        </h2>
-
-        <form onSubmit={handleCertSubmit(onSubmit)} className="space-y-6">
-          <FormInput
-            disabled={disabled || isSaving}
-            label="Certification Name"
-            register={certRegister('name', {
-              required: 'Certification name is required',
-            })}
-            error={certErrors.name}
-          />
-
-          <FormInput
-            disabled={disabled || isSaving}
-            label="Issuing Organization"
-            register={certRegister('organization', {
-              required: 'Organization is required',
-            })}
-            error={certErrors.organization}
-          />
-
-          <FormDatePicker
-            disabled={disabled || isSaving}
-            label="Issue Date"
-            value={certWatch('issueDate')}
-            maxDate={new Date()}
-            onChange={(date) =>
-              setCertValue('issueDate', date!, { shouldValidate: true })
-            }
-            error={certErrors.issueDate}
-          />
-
-          <FormDatePicker
-            disabled={disabled || isSaving}
-            label="Expiry Date (Optional)"
-            value={certWatch('expiryDate')}
-            minDate={certWatch('issueDate') ?? undefined}
-            onChange={(date) =>
-              setCertValue('expiryDate', date || null, {
-                shouldValidate: true,
-              })
-            }
-            error={certErrors.expiryDate}
-          />
-
-          <FormInput
-            label="Credential ID (Optional)"
-            register={certRegister('credentialId')}
-            disabled={disabled || isSaving}
-            error={certErrors.credentialId}
-          />
-
-          <FormInput
-            label="Credential URL (Optional)"
-            register={certRegister('credentialUrl')}
-            disabled={disabled || isSaving}
-            error={certErrors.credentialUrl}
-          />
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCloseModal}
-              disabled={disabled || isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={disabled || isSaving}
-            >
-              {
-                isSaving ?
-                  'Saving...' : editingIndex !== null
-                    ? 'Update Certification'
-                    : 'Add Certification'
-              }
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <CertificateModal
+        certErrors={certErrors}
+        certRegister={certRegister}
+        certWatch={certWatch}
+        disabled={disabled || isSaving}
+        isSaving={isSaving}
+        editingIndex={editingIndex}
+        handleCertSubmit={handleCertSubmit}
+        handleCloseModal={handleCloseModal}
+        isModalOpen={isModalOpen}
+        onSubmit={onSubmit}
+        setCertValue={setCertValue}
+      />
     </div>
   )
 }
