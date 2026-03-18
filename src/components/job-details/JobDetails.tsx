@@ -3,7 +3,6 @@
 import { useParams, useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { Spinner } from '../elements/Loader'
-import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
 import {
   Briefcase,
@@ -24,11 +23,11 @@ import InfoCard from '../shared/InfoCard'
 import InfoRow from '../shared/InfoRow'
 import { formatDate, getLabel, isRichTextEmpty, } from '@/src/utils/helper'
 import DeleteJobModal from '../company/jobs/dashboard/DeleteJobModal'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import JobDetailPageSkeleton from '../skeletons/JobDetailPageSkeleton'
 import { APPLICATIONS_TABS, JOB_STATUS_STYLE, jobCategories } from '@/src/utils/constants'
-import { signOut } from 'next-auth/react'
 import { JobDetails as JobDetailsType } from '@/src/types'
+import { useCompanyJobActions } from '@/src/store/hooks/useCompanyJobActions'
 
 const JobDetails = () => {
   const params = useParams()
@@ -37,6 +36,28 @@ const JobDetails = () => {
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
   const queryClient = useQueryClient()
+
+  const { updateStatus, deleteJob } = useCompanyJobActions({
+    onSettled: () => setLoadingAction(null),
+    onDeleteSuccess: (data) => {
+      if (data?.action === 'closed') {
+        queryClient.invalidateQueries({
+          queryKey: ['company-job', slug]
+        })
+        queryClient.invalidateQueries({
+          queryKey: ['company-dashboard']
+        })
+
+        return
+      }
+      router.push('/company/jobs')
+    },
+    onStatusSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['company-job', slug]
+      })
+    },
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['company-job', slug],
@@ -59,119 +80,20 @@ const JobDetails = () => {
 
   const job: JobDetailsType = data
 
-  const statusMutation = useMutation({
-    mutationFn: async ({
-      slug,
-      status
-    }: {
-      slug: string
-      status: 'ACTIVE' | 'CLOSED'
-    }) => {
-
-      const res = await fetch(`/api/company/jobs/${slug}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      })
-
-      if (res.status === 401 || res.status === 403) {
-        signOut({ callbackUrl: '/login' })
-        return
-      }
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to update job')
-      }
-
-      return data
-    },
-
-    onSuccess: () => {
-      toast.success('Job status updated')
-      queryClient.invalidateQueries({
-        queryKey: ['company-job', slug]
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ['company-jobs', slug]
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['company-jobs']
-      })
-      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    }
-  })
-
   const handleStatusChange = async (newStatus: 'ACTIVE' | 'CLOSED') => {
     if (!job) return
 
     setLoadingAction(`status-${job.id}`)
 
-    statusMutation.mutate({
-      slug: job.slug,
-      status: newStatus
-    })
+    updateStatus(job.slug, newStatus)
   }
-
-  const deleteMutation = useMutation({
-    mutationFn: async (slug: string) => {
-
-      const res = await fetch(`/api/company/jobs/${slug}`, {
-        method: 'DELETE'
-      })
-
-      if (res.status === 401 || res.status === 403) {
-        signOut({ callbackUrl: '/login' })
-        return
-      }
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to delete job')
-      }
-
-      return data
-    },
-
-    onSuccess: (data) => {
-
-      if (data.action === 'closed') {
-        toast.warning(data.message)
-
-        queryClient.invalidateQueries({
-          queryKey: ['company-job', slug]
-        })
-
-        return
-      }
-
-      toast.success(data.message)
-
-      queryClient.invalidateQueries({
-        queryKey: ['company-jobs']
-      })
-      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
-
-
-      router.push('/company/jobs')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    }
-  })
 
   const handleDelete = async () => {
     if (!job) return
 
     setLoadingAction(`delete-${job.id}`)
 
-    deleteMutation.mutate(job.slug)
+    deleteJob(job.slug)
   }
 
   const applicationStats = useMemo(() => {
