@@ -162,7 +162,7 @@ const ProfessionalPreferences = ({
 
         {!isPublic && <div>
           <SubHeader text="Profile Visibility" />
-          &apos;Public&apos; (Not Changeable)
+          Public (Not Changeable)
         </div>
         }
       </div>

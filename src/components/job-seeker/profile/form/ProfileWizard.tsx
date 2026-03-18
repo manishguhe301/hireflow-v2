@@ -415,20 +415,78 @@ const ProfileWizard = () => {
     />,
   ]
 
+  const renderEditBanner = () => {
+    if (!jobSeekerProfile) return null;
+
+    return (
+      <div className="my-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <p className="text-sm text-primary font-medium">
+          Editing a profile
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Please review all steps before saving changes to ensure your profile
+          remains accurate and up to date.
+        </p>
+      </div>
+    );
+  };
+
+  const isLastStep = currentStep === stepComponents.length - 1;
+  const isFirstStep = currentStep === 0;
+
+  const renderFooterActions = () => {
+    return (
+      <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+        {!isLastStep && < Button
+          type="button"
+          disabled={isSubmitting}
+          onClick={handleDraftSave}
+          variant="outline"
+          className="max-md:w-full"
+        >
+          {isSubmitting ? "Saving..." : jobSeekerProfile ? "Save Changes" : "Save as Draft"}
+        </Button>
+        }
+
+        {!isLastStep && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={handleNext}
+            className="max-md:w-full"
+          >
+            Next
+          </Button>
+        )}
+
+        {isLastStep && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={handleSubmit(handleFormSubmit)}
+            variant="primary"
+            className="max-md:w-full flex items-center justify-center"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Spinner className="h-4 w-4" />
+                {isEditMode ? "Updating..." : "Publishing..."}
+              </span>
+            ) : isEditMode ? (
+              "Update Profile"
+            ) : (
+              "Publish Profile"
+            )}
+          </Button>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <BackButton disabled={isSubmitting} />
-      {jobSeekerProfile && (
-        <div className="my-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-          <p className="text-sm text-primary font-medium">
-            Editing a profile
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Please review all steps before saving changes to ensure your profile
-            remains accurate and up to date.
-          </p>
-        </div>
-      )}
+      {renderEditBanner()}
       {isEditMode && (
         <MobileTabs
           steps={profileWizardSteps}
@@ -438,9 +496,7 @@ const ProfileWizard = () => {
           disabled={isSubmitting}
         />
       )}
-
       <div className="flex gap-6 items-start w-full">
-
         {isEditMode && (
           <div className="hidden lg:block sticky top-24">
             <StepSidebar
@@ -452,8 +508,6 @@ const ProfileWizard = () => {
             />
           </div>
         )}
-
-
         <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none w-full">
           <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
             <FormHeader
@@ -473,7 +527,7 @@ const ProfileWizard = () => {
               currentStep === 0 && "justify-end"
             )}
           >
-            {currentStep > 0 && (
+            {!isFirstStep && (
               <Button
                 type="button"
                 onClick={handlePrev}
@@ -484,51 +538,7 @@ const ProfileWizard = () => {
                 Previous
               </Button>
             )}
-
-            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
-              {currentStep !== 8 && < Button
-                type="button"
-                disabled={isSubmitting}
-                onClick={handleDraftSave}
-                variant="outline"
-                className="max-md:w-full"
-              >
-                {isSubmitting ? "Saving..." : jobSeekerProfile ? "Save Changes" : "Save as Draft"}
-              </Button>
-              }
-
-              {currentStep < 8 && (
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={handleNext}
-                  className="max-md:w-full"
-                >
-                  Next
-                </Button>
-              )}
-
-              {currentStep === 8 && (
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={handleSubmit(handleFormSubmit)}
-                  variant="primary"
-                  className="max-md:w-full flex items-center justify-center"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <Spinner className="h-4 w-4" />
-                      {isEditMode ? "Updating..." : "Publishing..."}
-                    </span>
-                  ) : isEditMode ? (
-                    "Update Profile"
-                  ) : (
-                    "Publish Profile"
-                  )}
-                </Button>
-              )}
-            </div>
+            {renderFooterActions()}
           </div>
         </div>
       </div>
