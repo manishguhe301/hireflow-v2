@@ -232,34 +232,90 @@ const ProfileSetup = () => {
     />
   ]
 
+  const rejectionBanner = () => {
+    if (company?.status !== CompanyStatus.REJECTED) return null
+
+    return (
+      <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
+        <h3 className="text-sm font-semibold text-destructive mb-1">
+          Profile Rejected
+        </h3>
+        <p className="text-sm text-destructive/90">
+          {company.rejectionReason}
+        </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Please update your information and resubmit for approval.
+        </p>
+      </div>
+    )
+  }
+
+  const editingBanner = () => {
+    if (company?.status !== CompanyStatus.APPROVED) return null
+    return (
+      <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <p className="text-sm text-primary font-medium">
+          Editing an approved profile
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Please review all steps before saving changes to ensure your profile
+          remains accurate and up to date.
+        </p>
+      </div>
+    )
+  }
+
+  const isFirstStep = currentStep === 0
+  const isLastStep = currentStep === profileSetupSteps.length - 1
+
+  const renderActions = () => {
+    return <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+      {currentStep !== 3 && isEditMode && company?.status === CompanyStatus.APPROVED && < Button
+        type="button"
+        disabled={isSubmitting}
+        onClick={handleSubmit(handleFormSubmit)}
+        variant="outline"
+        className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
+      >
+        {isSubmitting ? "Saving..." : "Save Changes"}
+      </Button>
+      }
+
+      {!isLastStep ? (
+        <Button
+          disabled={isSubmitting}
+          onClick={handleNext}
+          className="max-md:w-1/2 max-sm:w-full"
+        >
+          Next
+        </Button>
+      ) : (
+        <Button
+          disabled={isSubmitting}
+          onClick={handleSubmit(handleFormSubmit)}
+          variant="primary"
+          className="max-md:w-1/2 max-sm:w-full"
+        >
+          {isSubmitting
+            ? 'Submitting...'
+            : company?.status === CompanyStatus.REJECTED
+              ? 'Resubmit for Approval'
+              : company?.status === CompanyStatus.APPROVED
+                ? 'Save Changes'
+                : 'Submit for Approval'
+          }
+        </Button>
+      )}
+    </div>
+  }
+
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <BackButton disabled={isSubmitting} />
-      {company?.status === CompanyStatus.REJECTED && company.rejectionReason && (
-        <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
-          <h3 className="text-sm font-semibold text-destructive mb-1">
-            Profile Rejected
-          </h3>
-          <p className="text-sm text-destructive/90">
-            {company.rejectionReason}
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Please update your information and resubmit for approval.
-          </p>
-        </div>
-      )}
+      {rejectionBanner()}
 
-      {company?.status === CompanyStatus.APPROVED && (
-        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-          <p className="text-sm text-primary font-medium">
-            Editing an approved profile
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Please review all steps before saving changes to ensure your profile
-            remains accurate and up to date.
-          </p>
-        </div>
-      )}
+      {editingBanner()}
 
       {isEditMode && (
         <MobileTabs
@@ -302,7 +358,7 @@ const ProfileSetup = () => {
           <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0 max-md:flex-col max-md:gap-4",
             currentStep === 0 && 'justify-end'
           )}>
-            {currentStep > 0 && (
+            {!isFirstStep && (
               <Button
                 onClick={handlePrev}
                 variant="outline"
@@ -312,44 +368,8 @@ const ProfileSetup = () => {
                 Previous
               </Button>
             )}
-            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
-              {currentStep !== 3 && isEditMode && company?.status === CompanyStatus.APPROVED && < Button
-                type="button"
-                disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit)}
-                variant="outline"
-                className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
-              >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </Button>
-              }
 
-              {currentStep < 3 ? (
-                <Button
-                  disabled={isSubmitting}
-                  onClick={handleNext}
-                  className="max-md:w-1/2 max-sm:w-full"
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  disabled={isSubmitting}
-                  onClick={handleSubmit(handleFormSubmit)}
-                  variant="primary"
-                  className="max-md:w-1/2 max-sm:w-full"
-                >
-                  {isSubmitting
-                    ? 'Submitting...'
-                    : company?.status === CompanyStatus.REJECTED
-                      ? 'Resubmit for Approval'
-                      : company?.status === CompanyStatus.APPROVED
-                        ? 'Save Changes'
-                        : 'Submit for Approval'
-                  }
-                </Button>
-              )}
-            </div>
+            {renderActions()}
           </div>
         </div>
       </div>
