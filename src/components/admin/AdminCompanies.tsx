@@ -15,12 +15,13 @@ import RejectCompanyModal from './RejectCompanyModal'
 import CompaniesTable from './CompaniesTable'
 import Pagination from '../ui/Pagination'
 import useDebounce from '@/src/store/hooks/useDebounce'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, } from '@tanstack/react-query'
 import AdminCompaniesTableSkeleton from '../skeletons/AdminCompaniesTableSkeleton'
 import { TABS } from '@/src/utils/constants'
 import { Button } from '../ui/Button'
 import { PaginationType } from '@/src/types'
 import { ADMIN_COMPANIES_TABS_STYLES } from '@/src/utils/helper'
+import { useAdminCompanyActions } from '@/src/store/hooks/useAdminCompanyActions'
 
 const AdminCompanies = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
@@ -31,7 +32,15 @@ const AdminCompanies = () => {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const debouncedSearch = useDebounce(search, 500)
-  const queryClient = useQueryClient()
+  const { approve, reject, remove } = useAdminCompanyActions({
+    onSettled: () => {
+      setRejectCompanyId(null)
+      setRejectReason('')
+      setLoadingAction(null)
+      setDeleteCompanyId(null)
+    },
+  })
+
 
   const queryParams = useMemo(() => {
     const params = new URLSearchParams()
@@ -64,57 +73,10 @@ const AdminCompanies = () => {
   const companies: Company[] = data?.companies ?? []
   const pagination: PaginationType | null = data?.pagination ?? null
 
-  const approveMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'APPROVED',
-      })
-    },
-    onSuccess: () => {
-      toast.success('Company approved successfully')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
-    },
-    onError: () => {
-      toast.error('Failed to approve company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
-
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
-    approveMutation.mutate(id)
+    approve(id)
   }
-
-  const rejectMutation = useMutation({
-    mutationFn: async ({
-      id,
-      reason,
-    }: {
-      id: string
-      reason: string
-    }) => {
-      return AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'REJECTED',
-        rejectionReason: reason,
-      })
-    },
-    onSuccess: () => {
-      toast.success('Company rejected')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
-    },
-    onError: () => {
-      toast.error('Failed to reject company')
-    },
-    onSettled: () => {
-      setRejectCompanyId(null)
-      setRejectReason('')
-      setLoadingAction(null)
-    },
-  })
 
   const handleReject = async (id: string, reason: string) => {
     if (!reason.trim()) {
@@ -124,35 +86,16 @@ const AdminCompanies = () => {
 
     setLoadingAction(`reject-${id}`)
 
-    rejectMutation.mutate({ id, reason })
+    reject(id, reason)
   }
-
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return AppSdk.deleteData(`/api/admin/companies/${id}`, null)
-    },
-    onSuccess: () => {
-      toast.success('Company deleted')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
-    },
-    onError: () => {
-      toast.error('Failed to delete company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    }
-  })
 
   const handleDelete = async () => {
     if (!deleteCompanyId) return
 
     setLoadingAction(`delete-${deleteCompanyId}`)
 
-    deleteMutation.mutate(deleteCompanyId)
+    remove(deleteCompanyId)
 
-    setDeleteCompanyId(null)
   }
 
   useEffect(() => {
