@@ -191,30 +191,133 @@ const JobDetails = () => {
 
   if (!job) return null
 
+  const renderActions = () => {
+    const isStatusLoading = loadingAction === `status-${job.id}`;
+    const isDeleteLoading = loadingAction === `delete-${job.id}`;
+    return (
+      <div className="flex justify-end gap-3">
+        <Button
+          variant="outline"
+          onClick={() => router.push(`/company/jobs/edit/${job.slug}`)}
+          disabled={!!loadingAction}
+          className='flex items-center justify-center gap-1 '
+
+        >
+          <Edit className="h-4 w-4 mr-1" />
+          Edit Job
+        </Button>
+
+        {job.status === 'ACTIVE' && (
+          <Button variant="outline"
+            className='flex items-center justify-center gap-1 border-red-600 text-red-500'
+            onClick={() => handleStatusChange('CLOSED')}
+            disabled={isStatusLoading}
+          >
+            {isStatusLoading ? (
+              <span className='flex justify-center items-center gap-1'>
+                <Spinner className="h-4 w-4 mr-1" />
+                Closing...
+              </span>
+            ) : (
+              <span className='flex items-center justify-center gap-1'>
+                <XCircle className="h-4 w-4 mr-1" />
+                Close Job
+              </span>
+            )}
+
+          </Button>
+        )}
+        {job.status === 'CLOSED' && (
+          <Button
+            variant="primary"
+            className='flex items-center justify-center gap-1'
+            onClick={() => handleStatusChange('ACTIVE')}
+            disabled={isStatusLoading}
+          >
+            {isStatusLoading ? (
+              <span className='flex justify-center items-center gap-1'>
+                <Spinner className="h-4 w-4 mr-1" />
+                Reopening...
+              </span>
+            ) : (
+              <span className='flex items-center justify-center gap-1'>
+                <RefreshCcwDot className="h-4 w-4 mr-1" />
+                Reopen
+              </span>
+            )}
+          </Button>
+        )}
+
+        <Button
+          variant="danger"
+          className="flex items-center justify-center gap-1"
+          onClick={() => setDeleteJobId(job.id)}
+          disabled={!!loadingAction}
+        >
+
+          {isDeleteLoading ? (
+            <span className='flex justify-center items-center gap-1'>
+              <Spinner className="h-4 w-4 mr-1" />
+              Deleting...
+            </span>
+          ) : (
+            <span className='flex items-center justify-center gap-1'>
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete
+            </span>
+          )}
+        </Button>
+      </div>
+    )
+  }
+
+
+  const renderStatusBadge = () => {
+    const iconMap = {
+      DRAFT: <Clock className="h-4 w-4" />,
+      ACTIVE: <CheckCircle className="h-4 w-4" />,
+      CLOSED: <XCircle className="h-4 w-4" />,
+    };
+
+    return (
+      <div
+        className={clsx(
+          "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold",
+          JOB_STATUS_STYLE[job.status]
+        )}
+      >
+        {iconMap[job.status]}
+        {job.status}
+      </div>
+    );
+  };
+
+  const renderCompanyLogo = () => {
+    if (job.company?.logo) {
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={job.company.logo}
+          alt={job.company.name}
+          className="h-12 w-12 rounded-full object-cover"
+        />
+      );
+    }
+
+    return (
+      <span className="text-lg font-semibold text-muted-foreground">
+        {job.company?.name?.charAt(0).toUpperCase()}
+      </span>
+    );
+  };
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-6">
-
       <div className="rounded-3xl border border-border/40 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
             <div className="  flex h-14 w-14 items-center justify-center rounded-2xl border border-border/40 bg-muted">
-              {
-                job.company?.logo ? (
-                  <div className='relative'>
-                    {/*  eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={job?.company?.logo}
-                      alt={job.company.name}
-                      // className="h-12 w-12 rounded-full"
-                      className={clsx(
-                        "h-12 w-12 rounded-full object-cover transition-opacity duration-300",
-                      )}
-                    />
-                  </div>
-                ) :
-                  <span className="text-lg font-semibold text-muted-foreground">
-                    {job?.company?.name?.charAt(0).toUpperCase()}
-                  </span>}
+              {renderCompanyLogo()}
             </div>
 
             <div>
@@ -225,17 +328,7 @@ const JobDetails = () => {
             </div>
           </div>
 
-          <div
-            className={clsx(
-              'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold',
-              JOB_STATUS_STYLE[job.status],
-            )}
-          >
-            {job.status === 'DRAFT' && <Clock className="h-4 w-4" />}
-            {job.status === 'ACTIVE' && <CheckCircle className="h-4 w-4" />}
-            {job.status === 'CLOSED' && <XCircle className="h-4 w-4" />}
-            {job.status}
-          </div>
+          {renderStatusBadge()}
         </div>
       </div>
 
@@ -296,79 +389,7 @@ const JobDetails = () => {
         </InfoCard>
       )}
 
-      <div className="flex justify-end gap-3">
-        <Button
-          variant="outline"
-          onClick={() => router.push(`/company/jobs/edit/${job.slug}`)}
-          disabled={!!loadingAction}
-          className='flex items-center justify-center gap-1 '
-
-        >
-          <Edit className="h-4 w-4 mr-1" />
-          Edit Job
-        </Button>
-
-        {job.status === 'ACTIVE' && (
-          <Button variant="outline"
-            className='flex items-center justify-center gap-1 border-red-600 text-red-500'
-            onClick={() => handleStatusChange('CLOSED')}
-            disabled={loadingAction === `status-${job.id}`}
-          >
-            {loadingAction === `status-${job.id}` ? (
-              <span className='flex justify-center items-center gap-1'>
-                <Spinner className="h-4 w-4 mr-1" />
-                Closing...
-              </span>
-            ) : (
-              <span className='flex items-center justify-center gap-1'>
-                <XCircle className="h-4 w-4 mr-1" />
-                Close Job
-              </span>
-            )}
-
-          </Button>
-        )}
-        {job.status === 'CLOSED' && (
-          <Button
-            variant="primary"
-            className='flex items-center justify-center gap-1'
-            onClick={() => handleStatusChange('ACTIVE')}
-            disabled={loadingAction === `status-${job.id}`}
-          >
-            {loadingAction === `status-${job.id}` ? (
-              <span className='flex justify-center items-center gap-1'>
-                <Spinner className="h-4 w-4 mr-1" />
-                Reopening...
-              </span>
-            ) : (
-              <span className='flex items-center justify-center gap-1'>
-                <RefreshCcwDot className="h-4 w-4 mr-1" />
-                Reopen
-              </span>
-            )}
-          </Button>
-        )}
-
-        <Button
-          variant="danger"
-          className="flex items-center justify-center gap-1"
-          onClick={() => setDeleteJobId(job.id)}
-          disabled={!!loadingAction}
-        >
-
-          {loadingAction === `delete-${job.id}` ? (
-            <span className='flex justify-center items-center gap-1'>
-              <Spinner className="h-4 w-4 mr-1" />
-              Deleting...
-            </span>
-          ) : (
-            <span className='flex items-center justify-center gap-1'>
-              <Trash2 className="h-4 w-4 mr-1" />
-              Delete
-            </span>
-          )}
-        </Button>
-      </div>
+      {renderActions()}
 
       <DeleteJobModal
         deleteJobId={deleteJobId}
