@@ -3,24 +3,37 @@
 import Link from 'next/link'
 import { Workflow, Users, ArrowRight, Building2 } from 'lucide-react'
 import { Button } from '@/src/components/ui/Button'
+import PageTop from './PageTop'
+
+type MissionItem = { icon: React.ReactNode, title: string, desc: string }
+
+const missionItems: MissionItem[] = [
+  {
+    icon: <Building2 className="w-8 h-8 text-primary shrink-0" />,
+    title: 'Verified Companies',
+    desc: 'Every company is manually reviewed before posting jobs to prevent fake listings.'
+  },
+  {
+    icon: <Workflow className="w-8 h-8 text-primary shrink-0" />,
+    title: 'Transparent Hiring',
+    desc: 'Candidates can track the full application journey from applied to offer.'
+  },
+  {
+    icon: <Users className="w-8 h-8 text-primary shrink-0" />,
+    title: 'Structured Hiring Workflow',
+    desc: 'Companies manage applicants through clear stages like reviewing, shortlisted, interview, and hired.'
+  }
+]
 
 export default function About() {
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <section className="relative overflow-hidden isolate">
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute left-1/2 top-[-120px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-primary/15 blur-[160px]" />
-        </div>
-        <div className="mx-auto max-w-7xl px-6 py-28 text-center space-y-6">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-            About HireFlow<span className="text-primary">.</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            HireFlow connects talented professionals with verified companies
-            through a transparent and structured hiring process.
-          </p>
-        </div>
-      </section>
+      <PageTop
+        desc='HireFlow connects talented professionals with verified companies through a transparent and structured hiring process.'
+      >
+        About HireFlow<span className="text-primary">.</span>
+      </PageTop>
+
       <section className="border-t border-border/60">
         <div className="mx-auto max-w-7xl px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
           <div>
@@ -39,34 +52,24 @@ export default function About() {
             </p>
           </div>
           <div className="grid gap-4">
-            <div className="rounded-2xl border border-border/60 bg-card p-6 flex gap-4">
-              <Building2 className="w-8 h-8 text-primary shrink-0" />
-              <div>
-                <p className="font-semibold">Verified Companies</p>
-                <p className="text-sm text-muted-foreground">
-                  Every company is manually reviewed before posting jobs to prevent fake listings.
-                </p>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-border/60 bg-card p-6 flex gap-4">
-              <Workflow className="w-8 h-8 text-primary shrink-0" />
-              <div>
-                <p className="font-semibold">Transparent Hiring</p>
-                <p className="text-sm text-muted-foreground">
-                  Candidates can track the full application journey from applied to offer.
-                </p>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-border/60 bg-card p-6 flex gap-4">
-              <Users className="w-8 h-8 text-primary shrink-0" />
-              <div>
-                <p className="font-semibold">Structured Hiring Workflow</p>
-                <p className="text-sm text-muted-foreground">
-                  Companies manage applicants through clear stages like reviewing,
-                  shortlisted, interview, and hired.
-                </p>
-              </div>
-            </div>
+            {
+              missionItems.map((item) => {
+                return (
+                  <div
+                    className="rounded-2xl border border-border/60 bg-card p-6 flex gap-4"
+                    key={item.title}
+                  >
+                    {item.icon}
+                    <div>
+                      <p className="font-semibold">{item.title}</p>
+                      <p className="text-sm text-muted-for{eground">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })
+            }
           </div>
         </div>
       </section>
