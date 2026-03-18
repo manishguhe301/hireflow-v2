@@ -23,7 +23,7 @@ const CompanyiInfo = ({ company }: {
   const companyIndustry = companyIndustries.find((ind) =>
     ind.value === company.industry)?.label || company.industry
   return (
-    <div>
+    <div className=' flex flex-col gap-6'>
 
       {session && session?.user.role !== 'JOB_SEEKER' && 'REJECTED' && company.rejectionReason && (
         <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 space-y-2">

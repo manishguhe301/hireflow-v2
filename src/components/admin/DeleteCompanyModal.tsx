@@ -13,7 +13,10 @@ const DeleteCompanyModal = ({
   return (
     <Modal
       open={!!deleteCompanyId}
-      onClose={() => setDeleteCompanyId(null)}
+      onClose={() =>
+        !loadingAction &&
+        setDeleteCompanyId(null)
+      }
       className="max-w-md "
     >
       <div className="space-y-4">
@@ -28,6 +31,7 @@ const DeleteCompanyModal = ({
         <div className="flex justify-end gap-3 pt-4">
           <Button
             onClick={() => setDeleteCompanyId(null)}
+            variant="ghost"
             className="px-4! py-2! rounded-xl w-full "
           >
             Cancel
