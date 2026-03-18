@@ -32,7 +32,6 @@ const Step8AdditionalInfo = ({
 
   const handleAddOtherLink = () => {
     if (!otherLinkInput) return
-    console.log(otherLinkInput);
 
     if (!regex.test(otherLinkInput)) {
       toast.error('Please enter a valid URL')
