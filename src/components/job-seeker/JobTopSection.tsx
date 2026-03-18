@@ -11,7 +11,7 @@ import { employmentTypes, workModes } from '@/src/utils/constants'
 const JobTopSection = ({ job, isPending, isSaved, onSaveToggle }: {
   job: JobDetailsType,
   isSaved: boolean
-  onSaveToggle: (jobId: string, currentlySaved: boolean) => Promise<void>
+  onSaveToggle: (jobId: string, currentlySaved: boolean) => void
   isPending: boolean
 }) => {
   const { data: session } = useSession()

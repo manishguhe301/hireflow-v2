@@ -1,7 +1,6 @@
 'use client'
 
 import { AppSdk } from '@/src/utils/AppSdk'
-import { toast } from 'sonner'
 import { Button } from '../../ui/Button'
 import {
   Briefcase,
@@ -11,7 +10,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import JobCard from '../../public/jobs-dir/JobCard'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { StatCardSkeleton } from '../../skeletons/StatCardSkeleton'
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
 import { ActivitySkeleton } from '../../skeletons/ActivitySkeleton'
@@ -20,10 +19,17 @@ import { JobSeekerActivities, JobSeekerDashboardStats, RecommendedJob } from '@/
 import ApplicationsOverview from './ApplicationsOverview'
 import RecentActivityCard from './RecentActivityCard'
 import NoRecommendationUI from './NoRecommendationUI'
+import { useSaveJob } from '@/src/store/hooks/useSaveJob'
 
 
 const JobSeekerDashboard = () => {
   const queryClient = useQueryClient()
+  const { toggleSave, isPending: savePending } = useSaveJob({
+    invalidateKeys: [
+      ['dashboard-recommended'],
+      ['saved-jobs'],
+    ]
+  })
 
   const { data: statsData, isLoading: statsLoading, } = useQuery({
     queryKey: ['dashboard-stats'],
@@ -51,33 +57,6 @@ const JobSeekerDashboard = () => {
       return res.jobs as RecommendedJob[]
     },
   })
-
-  const saveMutation = useMutation({
-    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
-      if (currentlySaved) {
-        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) throw new Error(res.error)
-        return { removed: true }
-      } else {
-        const res = await AppSdk.postData('/api/jobs/saved', { jobId })
-        if (res.error) throw new Error(res.error)
-        return { removed: false }
-      }
-    },
-    onSuccess: ({ removed }) => {
-      toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
-      queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
-    },
-    onError: () => {
-      toast.error('Something went wrong')
-    },
-  })
-
-
-  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    saveMutation.mutate({ jobId, currentlySaved })
-  }
 
   if ((!statsData || !activityData || !recommendedData) && !statsLoading && !activityLoading && !recommendedLoading) {
     return (
@@ -145,8 +124,8 @@ const JobSeekerDashboard = () => {
                 key={job.id}
                 job={job}
                 isSaved={job.isSaved}
-                onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                disabled={saveMutation.isPending}
+                onSaveToggle={() => toggleSave(job.id, job.isSaved)}
+                disabled={savePending}
               />
             ))}
           </div>
