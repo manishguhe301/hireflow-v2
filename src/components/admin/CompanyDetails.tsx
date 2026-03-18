@@ -8,11 +8,12 @@ import { toast } from 'sonner'
 import { Spinner } from '../elements/Loader'
 import { Button } from '../ui/Button'
 import { formatDate } from '@/src/utils/helper'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import CompanyDetailsSkeleton from '../skeletons/CompanyDetailsSkeleton'
 import CompanyDetailsTopSection from '../shared/CompanyDetailsTopSection'
 import CompanyiInfo from '../shared/CompanyiInfo'
 import CompanyDocs from '../shared/CompanyDocs'
+import { useAdminCompanyActions } from '@/src/store/hooks/useAdminCompanyActions'
 
 const CompanyDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -20,7 +21,13 @@ const CompanyDetails = () => {
   const [rejectionReason, setRejectionReason] = useState('')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
-  const queryClient = useQueryClient()
+  const { approve, reject, remove, } = useAdminCompanyActions({
+    onDeleteSuccess: () => router.push('/admin/companies'),
+    onSettled: () => {
+      setLoadingAction(null)
+      setRejectionReason('')
+    },
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-company', id],
@@ -38,49 +45,10 @@ const CompanyDetails = () => {
 
   const company: Company = data
 
-  const approveMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'APPROVED',
-      })
-    },
-    onSuccess: () => {
-      toast.success('Company approved successfully')
-      queryClient.invalidateQueries({ queryKey: ['admin-company', id] })
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-    },
-    onError: () => {
-      toast.error('Failed to approve company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
-
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
-    approveMutation.mutate(id)
+    approve(id)
   }
-
-  const rejectMutation = useMutation({
-    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      return AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'REJECTED',
-        rejectionReason: reason,
-      })
-    },
-    onSuccess: () => {
-      toast.success('Company rejected')
-      queryClient.invalidateQueries({ queryKey: ['admin-company', id] })
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-    },
-    onError: () => {
-      toast.error('Failed to reject company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
 
   const handleReject = async (id: string, reason: string) => {
     if (!reason) {
@@ -89,32 +57,15 @@ const CompanyDetails = () => {
     }
     setLoadingAction(`reject-${id}`)
 
-    rejectMutation.mutate({ id, reason })
+    reject(id, reason)
   }
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return AppSdk.deleteData(`/api/admin/companies/${id}`, null)
-    },
-    onSuccess: () => {
-      toast.success('Company deleted successfully!')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      router.push('/admin/companies')
-    },
-    onError: () => {
-      toast.error('Failed to delete company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
 
   const handleDelete = async (deleteCompanyId: string) => {
     if (!deleteCompanyId) return
 
     setLoadingAction(`delete-${deleteCompanyId}`)
 
-    deleteMutation.mutate(deleteCompanyId)
+    remove(deleteCompanyId)
   }
 
   if (isLoading) {
@@ -149,7 +100,7 @@ const CompanyDetails = () => {
   }
 
   return (
-    <div className="md:p-8 p-4 space-y-10 max-w-5xl mx-auto animate-in fade-in duration-500">
+    <div className="md:p-8 p-4 space-y-10 max-w-5xl mx-auto animate-in fade-in duration-500 flex flex-col">
       <CompanyDetailsTopSection company={company} />
       <CompanyiInfo company={company} />
       <CompanyDocs
