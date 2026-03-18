@@ -1,22 +1,16 @@
 'use client'
 
+import PageTop from "./PageTop"
+
 export default function Terms() {
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <section className="relative overflow-hidden isolate">
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute left-1/2 top-[-120px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-primary/15 blur-[160px]" />
-        </div>
-        <div className="mx-auto max-w-7xl px-6 py-28 text-center space-y-6">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-            Terms of Service
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            These terms govern the use of the HireFlow platform. By using
-            HireFlow, you agree to follow the rules and guidelines described here.
-          </p>
-        </div>
-      </section>
+      <PageTop
+        desc="These terms govern the use of the HireFlow platform. By using
+            HireFlow, you agree to follow the rules and guidelines described here."
+      >
+        Terms of Service
+      </PageTop>
       <section className="border-t border-border/60">
         <div className="mx-auto max-w-4xl px-6 py-24 space-y-12">
           <div className="space-y-3">

@@ -1,22 +1,16 @@
 'use client'
 
+import PageTop from "./PageTop"
+
 export default function Privacy() {
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <section className="relative overflow-hidden isolate">
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute left-1/2 top-[-120px] h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-primary/15 blur-[160px]" />
-        </div>
-        <div className="mx-auto max-w-7xl px-6 py-28 text-center space-y-6">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-            Privacy Policy
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Your privacy matters to us. This page explains how HireFlow
-            collects, uses, and protects your information.
-          </p>
-        </div>
-      </section>
+      <PageTop
+        desc="Your privacy matters to us. This page explains how HireFlow
+            collects, uses, and protects your information."
+      >
+        Privacy Policy
+      </PageTop>
       <section className="border-t border-border/60">
         <div className="mx-auto max-w-4xl px-6 py-24 space-y-12">
           <div className="space-y-3">
