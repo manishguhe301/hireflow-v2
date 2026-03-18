@@ -2,7 +2,6 @@
 import { AppSdk } from '@/src/utils/AppSdk'
 import { useParams, } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 import {
   Briefcase,
 } from 'lucide-react'
@@ -11,7 +10,7 @@ import { experienceLevels, jobSkills } from '@/src/utils/constants'
 import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
 import ApplyModal from './applications/ApplyModal'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import JobDetailsSkeleton from '../skeletons/JobDetailsSkeleton'
 import SimilarJobs from './similarJobs/SimilarJobs'
 import BackButton from '../shared/BackButton'
@@ -21,6 +20,7 @@ import { Pill } from '../elements/ProfileElements'
 import JobInfo from './JobInfo'
 import CompanyInfo from './CompanyInfo'
 import ApplySection from './ApplySection'
+import { useSaveJob } from '@/src/store/hooks/useSaveJob'
 
 const JobDetailsForApplicant = () => {
   const params = useParams()
@@ -28,6 +28,14 @@ const JobDetailsForApplicant = () => {
   const { data: session } = useSession()
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
   const [now, setNow] = useState<number | null>(null)
+
+  const { toggleSave, isPending: savePending } = useSaveJob({
+    invalidateKeys: [
+      ['job-details', slug],
+      ['jobs'],
+      ['saved-jobs'],
+    ]
+  })
 
   const queryClient = useQueryClient()
 
@@ -60,33 +68,6 @@ const JobDetailsForApplicant = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [slug])
 
-  const saveJobMutation = useMutation({
-    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
-      if (currentlySaved) {
-        return AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-      } else {
-        return AppSdk.postData(`/api/jobs/saved`, { jobId })
-      }
-    },
-    onSuccess: (_data, variables) => {
-      toast.success(
-        variables.currentlySaved
-          ? 'Job removed from saved'
-          : 'Job saved successfully'
-      )
-
-      queryClient.invalidateQueries({ queryKey: ['job-details', slug] })
-      queryClient.invalidateQueries({ queryKey: ['jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
-    },
-    onError: () => {
-      toast.error('Something went wrong')
-    }
-  })
-
-  const onSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    saveJobMutation.mutate({ jobId, currentlySaved })
-  }
 
   if (isLoading) {
     return (
@@ -120,8 +101,8 @@ const JobDetailsForApplicant = () => {
         <div className="lg:col-span-2 space-y-8">
           <JobTopSection job={job}
             isSaved={isSaved}
-            onSaveToggle={onSaveToggle}
-            isPending={saveJobMutation.isPending}
+            onSaveToggle={toggleSave}
+            isPending={savePending}
           />
 
           <div className="flex flex-wrap gap-6 text-sm border-t border-border/40 pt-4">
