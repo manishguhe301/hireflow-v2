@@ -5,17 +5,24 @@ import { Bookmark } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
 import JobCard from '../../public/jobs-dir/JobCard';
 import { AppSdk } from '@/src/utils/AppSdk';
-import { toast } from 'sonner';
 import { formatRelativeTime } from '@/src/utils/helper';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton';
 import { PaginationType, SavedJob } from '@/src/types';
+import { useSaveJob } from '@/src/store/hooks/useSaveJob';
 
 const SavedJobs = () => {
   const searchParams = useSearchParams()
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
   const router = useRouter()
-  const queryClient = useQueryClient()
+  const { toggleSave, isPending: savePending } = useSaveJob({
+    invalidateKeys: [
+      ['saved-jobs'],
+      ['jobs'],
+      ['job-details'],
+      ['dashboard-recommended']
+    ]
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['saved-jobs', page],
@@ -42,34 +49,6 @@ const SavedJobs = () => {
       scroll: false,
     })
   }, [page, router])
-
-
-  const saveMutation = useMutation({
-    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
-      if (currentlySaved) {
-        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) throw new Error(res.error)
-        return { removed: true }
-      } else {
-        const res = await AppSdk.postData('/api/jobs/saved', { jobId })
-        if (res.error) throw new Error(res.error)
-        return { removed: false }
-      }
-    },
-    onSuccess: ({ removed }) => {
-      toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['job-details'] })
-    },
-    onError: () => {
-      toast.error('Something went wrong')
-    },
-  })
-
-  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    saveMutation.mutate({ jobId, currentlySaved })
-  }
 
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
@@ -110,8 +89,8 @@ const SavedJobs = () => {
                   job={job}
                   isSaved={job.isSaved}
                   isApplied={job.isApplied}
-                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                  disabled={saveMutation.isPending}
+                  onSaveToggle={() => toggleSave(job.id, job.isSaved)}
+                  disabled={savePending}
                 />
               </div>
             ))}

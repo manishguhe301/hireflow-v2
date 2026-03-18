@@ -1,23 +1,19 @@
 'use client'
-import { Briefcase, Search } from 'lucide-react'
+import { Briefcase } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { FormSelect } from '../../ui/FormSelect'
-import { jobCategories } from '@/src/utils/constants'
 import Pagination from '../../ui/Pagination'
 import JobCard from './JobCard'
 import FilterSidebar from './FilterSidebar'
-import { Button } from '../../ui/Button'
 import clsx from 'clsx'
 import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
-import { AppSdk } from '@/src/utils/AppSdk'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import JobsDirectorySkeleton from '../../skeletons/JobsDirectorySkeleton'
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
 import { DirJobType, Filters, PaginationType } from '@/src/types'
 import SearchSection from './SearchSection'
+import { useSaveJob } from '@/src/store/hooks/useSaveJob'
 
 const JobsDirectory = () => {
   const router = useRouter()
@@ -139,14 +135,11 @@ const JobsDirectory = () => {
     if (page !== 1) setPage(1)
   }, [filters])
 
-  const saveJobMutation = useMutation({
-    mutationFn: async ({ jobId, currentlySaved }: { jobId: string, currentlySaved: boolean }) => {
-      if (currentlySaved) {
-        return AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-      } else {
-        return AppSdk.postData(`/api/jobs/saved`, { jobId })
-      }
-    },
+  const { toggleSave, isPending: savePending } = useSaveJob({
+    invalidateKeys: [
+      // ['jobs'],
+      ['saved-jobs']
+    ],
     onMutate: async ({ jobId, currentlySaved }) => {
       await queryClient.cancelQueries({ queryKey: ['jobs'] })
 
@@ -171,31 +164,16 @@ const JobsDirectory = () => {
 
       return { previousData }
     },
-    onSuccess: (_data, variables) => {
-      if (variables.currentlySaved) {
-        toast.success('Job removed from saved')
-      } else {
-        toast.success('Job saved successfully')
-      }
-
-      // queryClient.invalidateQueries({ queryKey: ['jobs'] })
-      // queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
-    },
     onError: (_err, _vars, context) => {
-      if (context?.previousData) {
+      const ctx = context as { previousData?: unknown }
+      if (ctx?.previousData) {
         queryClient.setQueryData(
           ['jobs', queryParams, session?.user?.id ?? 'public'],
-          context.previousData
+          ctx.previousData
         )
       }
-
-      toast.error('Failed to save job')
     },
   })
-
-  const handleSaveToggle = (jobId: string, currentlySaved: boolean) => {
-    saveJobMutation.mutate({ jobId, currentlySaved })
-  }
 
   const handleClearAllFilters = () => {
     setFilters({
@@ -334,8 +312,8 @@ const JobsDirectory = () => {
                   key={job.id}
                   job={job}
                   isSaved={job.isSaved}
-                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                  disabled={saveJobMutation.isPending}
+                  onSaveToggle={() => toggleSave(job.id, job.isSaved)}
+                  disabled={savePending}
                 />
               ))}
             </div>
