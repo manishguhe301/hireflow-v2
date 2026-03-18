@@ -1,6 +1,6 @@
 'use client'
 import { formatDate } from '@/src/utils/helper'
-import { Role, User } from '@prisma/client'
+import { Role } from '@prisma/client'
 import { Check, Trash2, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import React from 'react'

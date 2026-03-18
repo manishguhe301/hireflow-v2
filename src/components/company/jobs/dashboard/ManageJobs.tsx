@@ -4,22 +4,28 @@ import { JobStatus } from '@prisma/client'
 import clsx from 'clsx'
 import { Briefcase } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 import JobsTable, { JobWithCount } from './JobsTable'
 import DeleteJobModal from './DeleteJobModal'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import TableSkeleton from '@/src/components/skeletons/TableSkeleton'
 import Link from 'next/link'
 import { Button } from '@/src/components/ui/Button'
 import { JOB_TABS } from '@/src/utils/constants'
-import { signOut } from 'next-auth/react'
 import { JOB_STATUS_TABS_STYLES } from '@/src/utils/helper'
+import { useCompanyJobActions } from '@/src/store/hooks/useCompanyJobActions'
 
 const ManageJobs = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | JobStatus>('ALL')
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const queryClient = useQueryClient()
+  const { updateStatus, deleteJob, isStatusPending, isDeletePending } =
+    useCompanyJobActions({
+      onSettled: () => {
+        setDeleteJobId(null)
+        setLoadingAction(null)
+      },
+    })
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['company-jobs', activeTab],
@@ -40,46 +46,6 @@ const ManageJobs = () => {
 
   const jobs: JobWithCount[] = data?.jobs ?? []
 
-  const statusMutation = useMutation({
-    mutationFn: async ({
-      slug,
-      status,
-    }: {
-      slug: string
-      status: 'ACTIVE' | 'CLOSED'
-    }) => {
-      const res = await fetch(`/api/company/jobs/${slug}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      })
-
-      if (res.status === 401 || res.status === 403) {
-        signOut({ callbackUrl: '/login' })
-        return
-      }
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to update job status')
-      }
-
-      return data
-    },
-    onSuccess: (data) => {
-      toast.success(data.message)
-      queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
-    },
-    onError: (error) => {
-      toast.error(error.message || 'Something went wrong')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
-
   const handleStatusChange = async (slug: string, newStatus: 'ACTIVE' | 'CLOSED') => {
     const job = jobs.find(j => j.slug === slug)
     if (!job) return
@@ -90,44 +56,8 @@ const ManageJobs = () => {
 
     setLoadingAction(`${actionType}-${job.id}`)
 
-    statusMutation.mutate({
-      slug,
-      status: newStatus,
-    })
+    updateStatus(slug, newStatus)
   }
-
-  const deleteMutation = useMutation({
-    mutationFn: async ({ id, slug }: { id: string, slug: string }) => {
-      const res = await fetch(`/api/company/jobs/${slug}`, {
-        method: 'DELETE',
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to delete job')
-      }
-
-      return data
-    },
-    onSuccess: (data) => {
-      if (data.action === 'closed') {
-        toast.warning(data.message)
-      } else {
-        toast.success(data.message)
-      }
-
-      queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
-      setDeleteJobId(null)
-    },
-    onError: (error) => {
-      toast.error(error.message || 'Something went wrong')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
 
   const handleDelete = async () => {
     if (!deleteJobId) return;
@@ -137,10 +67,7 @@ const ManageJobs = () => {
 
     setLoadingAction(`delete-${deleteJobId}`);
 
-    deleteMutation.mutate({
-      id: job.id,
-      slug: job.slug
-    })
+    deleteJob(job.slug)
   };
 
   useEffect(() => {
@@ -204,7 +131,7 @@ const ManageJobs = () => {
                 loadingAction={loadingAction}
                 setDeleteJobId={setDeleteJobId}
                 handleStatusChange={handleStatusChange}
-                disabled={isFetching || isLoading || statusMutation.isPending || deleteMutation.isPending || !!loadingAction}
+                disabled={isFetching || isLoading || isStatusPending || isDeletePending || !!loadingAction}
               />
             </div>
           )}
