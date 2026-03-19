@@ -76,7 +76,7 @@ const ProfileTopSection = ({ profile,
           </div>
         </div>
 
-        <div className="flex gap-3 max-sm:w-full">
+        <div className="flex gap-3 max-sm:w-full max-sm:justify-center">
           {isOwner &&
             <Link
               href="/dashboard/profile/form"

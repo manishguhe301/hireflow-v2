@@ -319,7 +319,7 @@ const JobApplicants = () => {
       )}
       <>
         {
-          isFetching ? (
+          isLoading && !isFetching ? (
             <TableSkeleton columns={5} rows={5} />
           ) : (
             applications.length > 0 ?

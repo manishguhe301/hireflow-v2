@@ -60,7 +60,7 @@ const CompanyDetailsTopSection = ({ company }: { company: Company }) => {
           {session && session?.user.role !== 'JOB_SEEKER' &&
             <div
               className={clsx(
-                'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold',
+                'inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold',
                 statusStyles[company.status],
               )}
             >

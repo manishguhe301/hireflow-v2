@@ -204,7 +204,7 @@ const JobDetails = () => {
     return (
       <div
         className={clsx(
-          "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold",
+          "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold justify-center",
           JOB_STATUS_STYLE[job.status]
         )}
       >
