@@ -6,12 +6,33 @@ import { Button } from '../ui/Button'
 import { links } from '@/src/utils/constants'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
+import { useEffect, useRef } from 'react'
 
 export default function PublicHeader() {
+  const detailsRef = useRef<HTMLDetailsElement | null>(null)
+
   const handleMenuClose = (e: React.MouseEvent) => {
     e.currentTarget.closest('details')?.removeAttribute('open')
   }
   const pathname = usePathname()
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        detailsRef.current &&
+        detailsRef.current.open &&
+        !detailsRef.current.contains(event.target as Node)
+      ) {
+        detailsRef.current.removeAttribute('open')
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -48,7 +69,7 @@ export default function PublicHeader() {
 
         {/* Mobile */}
         <div className="md:hidden">
-          <details className="group relative">
+          <details ref={detailsRef} className="group relative">
             <summary className="list-none cursor-pointer rounded-full border border-border/60 p-2 hover:bg-muted/50 transition">
               <Menu className="h-5 w-5" />
             </summary>
