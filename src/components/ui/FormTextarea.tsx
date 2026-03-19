@@ -2,6 +2,7 @@
 
 import { FieldError, UseFormRegisterReturn } from 'react-hook-form'
 import clsx from 'clsx'
+import { useEffect, useRef, useState } from 'react'
 
 type FormTextareaProps = {
   label: string
@@ -24,6 +25,18 @@ export const FormTextarea = ({
   className,
   maxLength = 500,
 }: FormTextareaProps) => {
+  const [length, setLength] = useState(0)
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const { onChange, ref, ...restRegister } = register
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      setLength(textareaRef.current.value.length)
+    }
+  }, [])
+
   return (
     <div className="space-y-1">
       <label className="text-sm text-muted-foreground">
@@ -31,7 +44,15 @@ export const FormTextarea = ({
       </label>
 
       <textarea
-        {...register}
+        {...restRegister}
+        ref={(el) => {
+          textareaRef.current = el
+          ref(el)
+        }}
+        onChange={(e) => {
+          setLength(e.target.value.length)
+          onChange(e)
+        }}
         maxLength={maxLength}
         disabled={disabled}
         rows={rows}
@@ -48,9 +69,12 @@ export const FormTextarea = ({
 
       <div className="flex justify-between text-xs text-muted-foreground">
         <span>{error?.message}</span>
-        <span>Max {maxLength} characters</span>
+        <span className={clsx(
+          length > maxLength * 0.9 && "text-destructive"
+        )}>
+          {length} / {maxLength}
+        </span>
       </div>
     </div>
   )
 }
-

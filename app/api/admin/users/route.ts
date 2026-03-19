@@ -12,8 +12,8 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const role = searchParams.get('role');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '12');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(50, parseInt(searchParams.get('limit') || '12'));
     const skip = (page - 1) * limit;
     const search = searchParams.get('search') || '';
 
@@ -21,6 +21,13 @@ export async function GET(req: NextRequest) {
     const where: any = {};
 
     if (role) {
+      if (!Object.values(Role).includes(role as Role)) {
+        return NextResponse.json(
+          { error: 'Invalid role provided' },
+          { status: 400 },
+        );
+      }
+
       where.role = role as Role;
     }
 

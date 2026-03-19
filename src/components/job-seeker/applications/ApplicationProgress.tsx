@@ -1,4 +1,3 @@
-import { ExistingHistory } from '../JobDetailsForApplicant'
 import {
   CheckCircle,
   Circle,
@@ -7,6 +6,7 @@ import {
 import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import clsx from 'clsx'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
+import { ExistingHistory } from '@/src/types'
 
 const STATUS_FLOW = [
   'APPLIED',

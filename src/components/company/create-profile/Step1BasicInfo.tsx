@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
 import { FieldErrors, UseFormRegister } from 'react-hook-form'
-import { ProfileFormInputs } from './ProfileSetup'
 import { FormTextarea } from '../../ui/FormTextarea'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
 import { companyIndustries, companySizes } from '@/src/utils/constants'
 import StepHeader from '../../ui/StepHeader'
+import { ProfileFormInputs } from '@/src/types'
 
 const currentYear = new Date().getFullYear()
 
@@ -62,10 +62,6 @@ const Step1BasicInfo = ({
           rows={5}
           register={register('description', {
             required: 'Description is required',
-            // maxLength: {
-            //   value: 500,
-            //   message: 'Description cannot exceed 500 characters',
-            // },
           })}
           disabled={isLoading}
           error={errors.description}
@@ -117,7 +113,6 @@ const Step1BasicInfo = ({
             placeholder="https://linkedin.com/company/your-company"
             type="url"
             register={register('linkedinProfile', {
-              // required: 'LinkedIn profile is required',
               validate: (value) => {
                 const pattern =
                   /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/

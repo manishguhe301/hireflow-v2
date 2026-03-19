@@ -80,7 +80,7 @@ export async function GET() {
     const recentRejections = await prisma.company.count({
       where: {
         status: CompanyStatus.REJECTED,
-        updatedAt: { gte: thirtyDaysAgo },
+        rejectedAt: { gte: thirtyDaysAgo },
       },
     });
 

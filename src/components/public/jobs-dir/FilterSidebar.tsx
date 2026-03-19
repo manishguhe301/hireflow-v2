@@ -88,39 +88,40 @@ export default function FilterSidebar({ filters, onFilterChange, onClearAll }: F
             <h4 className="font-medium text-sm">Salary Range (₹/year)</h4>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-muted-foreground">Min Salary</label>
+                <label className="text-xs text-muted-foreground">Min Salary (In LPA)</label>
                 <input
                   type="number"
-                  value={filters.salaryMin}
+                  value={filters.salaryMin || ''}
                   onChange={(e) => {
                     const value = Number(e.target.value)
                     onFilterChange({
                       ...filters,
-                      salaryMin: Number.isNaN(value) ? 0 : value
+                      salaryMin: Number.isNaN(value) ? 0 : Math.min(value, filters.salaryMax)
                     })
                   }}
-                  placeholder="Min"
+                  placeholder='0 LPA'
                   aria-label="Min"
                   min={0}
-                  step={10000}
+                  step={5}
+                  max={150}
                   className="w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Max Salary</label>
+                <label className="text-xs text-muted-foreground">Max Salary (In LPA)</label>
                 <input
                   type="number"
-                  value={filters.salaryMax}
+                  value={filters.salaryMax === 150 ? '' : filters.salaryMax}
                   onChange={(e) => {
                     const value = Number(e.target.value)
                     onFilterChange({
                       ...filters,
-                      salaryMax: Number.isNaN(value) ? 0 : value
+                      salaryMax: Number.isNaN(value) ? 0 : Math.max(value, filters.salaryMin)
                     })
                   }}
-                  step={10000}
-                  placeholder="Max"
-                  max={10000000}
+                  step={5}
+                  placeholder="150 LPA"
+                  max={150}
                   min={0}
                   aria-label="Max"
                   className="w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40"

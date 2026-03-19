@@ -51,6 +51,20 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
+  if (
+    ['/how-it-works', '/privacy', '/about', '/terms'].includes(pathname) &&
+    token
+  ) {
+    const redirectUrl =
+      userRole === Role.PLATFORM_ADMIN
+        ? '/admin'
+        : userRole === Role.COMPANY_ADMIN
+          ? '/company'
+          : '/jobs';
+
+    return NextResponse.redirect(new URL(redirectUrl, req.url));
+  }
+
   if (pathname.startsWith('/explore') && token) {
     const redirectUrl =
       userRole === Role.PLATFORM_ADMIN
@@ -103,5 +117,9 @@ export const config = {
     '/signup',
     '/redirect',
     '/explore/:path*',
+    '/how-it-works',
+    '/privacy',
+    '/about',
+    '/terms',
   ],
 };

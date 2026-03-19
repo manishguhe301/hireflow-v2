@@ -1,10 +1,10 @@
 'use client'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobFormInputs } from './CreateJobForm'
 import { FormInput } from '@/src/components/ui/FormInput'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import FormDatePicker from '@/src/components/ui/FormDatePicker'
 import StepHeader from '@/src/components/ui/StepHeader'
+import { JobFormInputs } from '@/src/types'
 
 const Step4JobSalary = ({
   register,
@@ -31,18 +31,18 @@ const Step4JobSalary = ({
       <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6 max-sm:p-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormInput
-            label="Minimum Salary in Lakhs(Optional)"
+            label="Minimum CTC Offered in LPA(Optional)"
             register={
               register('salaryMin', {
                 valueAsNumber: true,
-                min: { value: 0, message: 'Minimum salary cannot be negative' },
+                min: { value: 0, message: 'Minimum CTC cannot be negative' },
                 validate: (value, formValues) => {
                   if (!value && !formValues.salaryMax) return true
 
                   if (value && !formValues.salaryMax) return true
 
                   if (value && formValues.salaryMax && value > formValues.salaryMax) {
-                    return 'Minimum salary cannot exceed maximum salary'
+                    return 'Minimum CTC cannot exceed maximum salary'
                   }
 
                   return true
@@ -56,7 +56,7 @@ const Step4JobSalary = ({
             minLength={0}
           />
           <FormInput
-            label="Maximum Salary in Lakhs (Optional)"
+            label="Maximum CTC Offered in LPA (Optional)"
             register={register(
               'salaryMax', {
               valueAsNumber: true,

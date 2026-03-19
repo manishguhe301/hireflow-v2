@@ -79,7 +79,10 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
-    if (!notificationIds || !Array.isArray(notificationIds)) {
+    if (
+      !notificationIds ||
+      !Array.isArray(notificationIds || notificationIds.length === 0)
+    ) {
       return NextResponse.json(
         { error: 'notificationIds array required' },
         { status: 400 },

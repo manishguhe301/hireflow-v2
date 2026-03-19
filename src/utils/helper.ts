@@ -1,5 +1,5 @@
-import { ExperienceLevel } from '@prisma/client';
-import { JobSeekerFormInputs } from '../components/job-seeker/profile/form/ProfileWizard';
+import { ExperienceLevel, JobStatus } from '@prisma/client';
+import { JobFormInputs, JobSeekerFormInputs } from '../types';
 
 export function formatDate(date: Date | string): string {
   const d = new Date(date);
@@ -8,6 +8,35 @@ export function formatDate(date: Date | string): string {
     month: 'long',
     day: 'numeric',
   });
+}
+
+export function formatDateRange(
+  startDate: Date | string,
+  endDate?: Date | string | null,
+  isCurrent?: boolean,
+) {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : null;
+
+  const format = (date: Date) =>
+    date.toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
+
+  const startFormatted = format(start);
+
+  if (isCurrent) {
+    return `${startFormatted} — Present`;
+  }
+
+  if (!end) {
+    return `${startFormatted}`;
+  }
+
+  const endFormatted = format(end);
+
+  return `${startFormatted} — ${endFormatted}`;
 }
 
 export function formatRelativeTime(date: Date | string): string {
@@ -158,6 +187,10 @@ export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
     formData.append('avatar', data.avatar[0]);
   }
 
+  if (data.deleteAvatar) {
+    formData.append('deleteAvatar', 'true');
+  }
+
   formData.append(
     'preferredWorkMode',
     JSON.stringify(data.preferredWorkMode || []),
@@ -195,8 +228,8 @@ export const buildProfileFormData = (data: JobSeekerFormInputs): FormData => {
   if (data.twitterUrl) formData.append('twitterUrl', data.twitterUrl);
   if (data.expectedSalaryMin)
     formData.append('expectedSalaryMin', String(data.expectedSalaryMin));
-  if (data.expectedSalaryMax)
-    formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
+  // if (data.expectedSalaryMax)
+  //   formData.append('expectedSalaryMax', String(data.expectedSalaryMax));
   if (data.noticePeriod) formData.append('noticePeriod', data.noticePeriod);
 
   return formData;
@@ -210,3 +243,80 @@ export function isNewJob(date: Date | string): boolean {
 
   return now - created < oneDay;
 }
+
+export const JOB_STATUS_UI: Record<
+  JobStatus,
+  {
+    className: string;
+    title: string;
+    message: (step: number) => string;
+  }
+> = {
+  DRAFT: {
+    className: 'bg-warning/10 border-warning/30 text-warning',
+    title: 'Draft Job',
+    message: (step) =>
+      step >= 4
+        ? 'All required details look complete. You can publish this job now.'
+        : 'This job is saved as a draft. Complete all steps to publish it.',
+  },
+  ACTIVE: {
+    className: 'bg-success/10 border-success/30 text-success',
+    title: 'Active Job',
+    message: () =>
+      'This job is live and visible to candidates. Any changes will update it immediately.',
+  },
+  CLOSED: {
+    className: 'bg-destructive/10 border-destructive/30 text-destructive',
+    title: 'Closed Job',
+    message: () =>
+      'This job is closed and no longer accepting applications. You can reopen it anytime.',
+  },
+};
+
+export const hasAnyDraftData = (data: JobFormInputs) => {
+  return (
+    !!data.title ||
+    !isRichTextEmpty(data.description) ||
+    !!data.category ||
+    !isRichTextEmpty(data.requirements) ||
+    (data.responsibilities && !isRichTextEmpty(data.responsibilities)) ||
+    data.skills.length > 0 ||
+    !!data.country ||
+    !!data.city ||
+    typeof data.salaryMin === 'number' ||
+    typeof data.salaryMax === 'number'
+  );
+};
+
+export const JOB_STATUS_TABS_STYLES = {
+  ALL: 'bg-primary! text-primary-foreground! border-primary/40!',
+  DRAFT: 'bg-amber-400! text-amber-950! border-amber-950/40!',
+  ACTIVE: 'bg-success/10! text-success! border-success/40!',
+  CLOSED: 'bg-destructive/10! text-destructive! border-destructive/40!',
+};
+
+export const USERS_TYPE_TABS_STYLES = {
+  ALL: 'bg-primary! text-primary-foreground! border-primary/40!',
+  PLATFORM_ADMIN: 'bg-info/10! text-info! border-info/40!',
+  COMPANY_ADMIN: 'bg-info/50! text-secondary-foreground! border-secondary/40!',
+  JOB_SEEKER: 'bg-accent! text-foreground! border-border/40!',
+};
+
+export const ADMIN_COMPANIES_TABS_STYLES = {
+  ALL: 'bg-primary! text-primary-foreground! border-primary/40!',
+  PENDING: 'bg-amber-400! text-amber-950! border-amber-950/40!',
+  APPROVED: 'bg-success/10! text-success! border-success/40! ',
+  REJECTED: 'bg-destructive/10! text-destructive! border-destructive/40!',
+};
+
+export const APPLICATION_TABS_STATUS_COLORS = {
+  applied: 'bg-blue-500/10 text-blue-600',
+  reviewing: 'bg-yellow-500/10 text-yellow-600',
+  shortlisted: 'bg-purple-500/10 text-purple-600',
+  interviewScheduled: 'bg-indigo-500/10 text-indigo-600',
+  offered: 'bg-green-500/10 text-green-600',
+  hired: 'bg-emerald-500/10 text-emerald-600',
+  rejected: 'bg-red-500/10 text-red-600',
+  total: 'bg-gray-500/10 text-gray-600',
+};

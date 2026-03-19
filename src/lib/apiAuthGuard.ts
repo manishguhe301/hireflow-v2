@@ -3,6 +3,7 @@ import { Role } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import { AppSession } from '@/src/types/session';
+import prisma from './prisma';
 
 type GuardResult =
   | { ok: true; session: AppSession }
@@ -20,7 +21,26 @@ export async function apiAuthGuard(
     };
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(session.user.role)) {
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, role: true },
+  });
+
+  if (!user) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    };
+  }
+
+  if (user.role !== session.user.role) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }),
+    };
+  }
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     return {
       ok: false,
       response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }),

@@ -8,6 +8,11 @@ import {
   WorkMode,
 } from '@prisma/client';
 import { Briefcase, ShieldCheck, UserCircle, Workflow } from 'lucide-react';
+import {
+  JobFormInputs,
+  JobSeekerFormInputs,
+  ProfileFormInputs,
+} from '../types';
 
 export const STATUS_STYLE: Record<CompanyStatus, string> = {
   PENDING: 'bg-yellow-100 text-yellow-700',
@@ -88,6 +93,7 @@ export const APPLICATIONS_TABS: {
   { label: 'Offered', value: ApplicationStatus.OFFERED },
   { label: 'Rejected', value: ApplicationStatus.REJECTED },
   { label: 'Hired', value: ApplicationStatus.HIRED },
+  { label: 'On Hold', value: ApplicationStatus.ON_HOLD },
 ];
 
 export const APPLICATION_TABS_WITH_SORT: {
@@ -131,6 +137,7 @@ export const STATUS_STYLES: Record<ApplicationStatus, string> = {
   OFFERED: 'bg-green-500/10 text-green-600',
   HIRED: 'bg-emerald-500/10 text-emerald-600',
   REJECTED: 'bg-red-500/10 text-red-600',
+  ON_HOLD: 'bg-gray-500/10 text-gray-600',
 };
 
 export const jobCategories = [
@@ -188,6 +195,8 @@ export const companySizes = [
   { label: '11–50', value: '11-50' },
   { label: '51–200', value: '51-200' },
   { label: '201–500', value: '201-500' },
+  { label: '501–1000', value: '501-1000' },
+  { label: '1001+', value: '1001+' },
 ];
 
 export const companyIndustries = [
@@ -318,46 +327,104 @@ export const yearsOfExperiences: { label: string; value: ExperienceLevel }[] = [
 ];
 
 export const degrees: SelectOption[] = [
-  { label: 'High School', value: 'HIGH_SCHOOL' },
+  { label: 'Secondary School (10th)', value: 'SECONDARY' },
+  { label: 'Higher Secondary School (12th)', value: 'HIGHER_SECONDARY' },
+
   { label: 'Diploma', value: 'DIPLOMA' },
+  { label: 'Advanced Diploma', value: 'ADVANCED_DIPLOMA' },
+
   { label: 'Associate Degree', value: 'ASSOCIATE' },
+
   { label: "Bachelor's Degree", value: 'BACHELOR' },
+  { label: 'Bachelor of Technology (B.Tech)', value: 'BTECH' },
+  { label: 'Bachelor of Engineering (B.E.)', value: 'BE' },
+  { label: 'Bachelor of Science (B.Sc)', value: 'BSC' },
+  { label: 'Bachelor of Computer Applications (BCA)', value: 'BCA' },
+  { label: 'Bachelor of Commerce (B.Com)', value: 'BCOM' },
+  { label: 'Bachelor of Business Administration (BBA)', value: 'BBA' },
+  { label: 'Bachelor of Arts (BA)', value: 'BA' },
+  { label: 'Bachelor of Architecture (B.Arch)', value: 'BARCH' },
+  { label: 'Bachelor of Medicine (MBBS)', value: 'MBBS' },
+  { label: 'Bachelor of Pharmacy (B.Pharm)', value: 'BPHARM' },
+
   { label: "Master's Degree", value: 'MASTER' },
-  { label: 'MBA', value: 'MBA' },
-  { label: 'MCA', value: 'MCA' },
-  { label: 'B.Tech / BE', value: 'BTECH_BE' },
-  { label: 'M.Tech / ME', value: 'MTECH_ME' },
+  { label: 'Master of Technology (M.Tech)', value: 'MTECH' },
+  { label: 'Master of Engineering (M.E.)', value: 'ME' },
+  { label: 'Master of Science (M.Sc)', value: 'MSC' },
+  { label: 'Master of Computer Applications (MCA)', value: 'MCA' },
+  { label: 'Master of Commerce (M.Com)', value: 'MCOM' },
+  { label: 'Master of Arts (MA)', value: 'MA' },
+
+  { label: 'Master of Business Administration (MBA)', value: 'MBA' },
+  { label: 'Doctor of Medicine (MD)', value: 'MD' },
+  { label: 'Doctor of Pharmacy (PharmD)', value: 'PHARMD' },
+  { label: 'Juris Doctor (JD)', value: 'JD' },
+
   { label: 'PhD / Doctorate', value: 'PHD' },
+
   { label: 'Professional Certification', value: 'CERTIFICATION' },
+
   { label: 'Other', value: 'OTHER' },
 ];
 
 export const fieldOfStudies: SelectOption[] = [
-  { label: 'Computer Science', value: 'COMPUTER_SCIENCE' },
-  { label: 'Information Technology', value: 'INFORMATION_TECHNOLOGY' },
-  { label: 'Software Engineering', value: 'SOFTWARE_ENGINEERING' },
-  { label: 'Electronics & Communication', value: 'ECE' },
-  { label: 'Electrical Engineering', value: 'ELECTRICAL' },
-  { label: 'Mechanical Engineering', value: 'MECHANICAL' },
-  { label: 'Civil Engineering', value: 'CIVIL' },
-  { label: 'Data Science', value: 'DATA_SCIENCE' },
-  { label: 'Artificial Intelligence', value: 'AI' },
-  { label: 'Cybersecurity', value: 'CYBER_SECURITY' },
-  { label: 'Business Administration', value: 'BUSINESS_ADMIN' },
-  { label: 'Finance', value: 'FINANCE' },
-  { label: 'Marketing', value: 'MARKETING' },
-  { label: 'Human Resources', value: 'HR' },
-  { label: 'Economics', value: 'ECONOMICS' },
-  { label: 'Mathematics', value: 'MATHEMATICS' },
-  { label: 'Physics', value: 'PHYSICS' },
-  { label: 'Chemistry', value: 'CHEMISTRY' },
-  { label: 'Biotechnology', value: 'BIOTECHNOLOGY' },
-  { label: 'Design', value: 'DESIGN' },
-  { label: 'Architecture', value: 'ARCHITECTURE' },
-  { label: 'Law', value: 'LAW' },
-  { label: 'Medicine', value: 'MEDICINE' },
-  { label: 'Psychology', value: 'PSYCHOLOGY' },
-  { label: 'Other', value: 'OTHER' },
+  { label: 'Secondary School (10th)', value: 'SECONDARY' },
+  { label: 'Higher Secondary School (12th)', value: 'HIGHER_SECONDARY' },
+  { value: 'COMPUTER_SCIENCE', label: 'Computer Science' },
+  { value: 'SOFTWARE_ENGINEERING', label: 'Software Engineering' },
+  { value: 'INFORMATION_TECHNOLOGY', label: 'Information Technology' },
+  { value: 'DATA_SCIENCE', label: 'Data Science' },
+  { value: 'CYBER_SECURITY', label: 'Cyber Security' },
+  { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Artificial Intelligence' },
+  { value: 'MACHINE_LEARNING', label: 'Machine Learning' },
+
+  { value: 'ELECTRICAL_ENGINEERING', label: 'Electrical Engineering' },
+  { value: 'ELECTRONICS_ENGINEERING', label: 'Electronics Engineering' },
+  { value: 'MECHANICAL_ENGINEERING', label: 'Mechanical Engineering' },
+  { value: 'CIVIL_ENGINEERING', label: 'Civil Engineering' },
+  { value: 'CHEMICAL_ENGINEERING', label: 'Chemical Engineering' },
+  { value: 'AEROSPACE_ENGINEERING', label: 'Aerospace Engineering' },
+
+  { value: 'MATHEMATICS', label: 'Mathematics' },
+  { value: 'PHYSICS', label: 'Physics' },
+  { value: 'CHEMISTRY', label: 'Chemistry' },
+  { value: 'STATISTICS', label: 'Statistics' },
+
+  { value: 'BUSINESS_ADMINISTRATION', label: 'Business Administration' },
+  { value: 'FINANCE', label: 'Finance' },
+  { value: 'ACCOUNTING', label: 'Accounting' },
+  { value: 'ECONOMICS', label: 'Economics' },
+  { value: 'MARKETING', label: 'Marketing' },
+  { value: 'HUMAN_RESOURCES', label: 'Human Resources' },
+
+  { value: 'LAW', label: 'Law' },
+  { value: 'POLITICAL_SCIENCE', label: 'Political Science' },
+  { value: 'INTERNATIONAL_RELATIONS', label: 'International Relations' },
+
+  { value: 'PSYCHOLOGY', label: 'Psychology' },
+  { value: 'SOCIOLOGY', label: 'Sociology' },
+  { value: 'PHILOSOPHY', label: 'Philosophy' },
+
+  { value: 'MEDICINE', label: 'Medicine' },
+  { value: 'NURSING', label: 'Nursing' },
+  { value: 'PHARMACY', label: 'Pharmacy' },
+  { value: 'PUBLIC_HEALTH', label: 'Public Health' },
+
+  { value: 'ARCHITECTURE', label: 'Architecture' },
+  { value: 'URBAN_PLANNING', label: 'Urban Planning' },
+
+  { value: 'DESIGN', label: 'Design' },
+  { value: 'GRAPHIC_DESIGN', label: 'Graphic Design' },
+  { value: 'UI_UX_DESIGN', label: 'UI/UX Design' },
+
+  { value: 'EDUCATION', label: 'Education' },
+  { value: 'LINGUISTICS', label: 'Linguistics' },
+  { value: 'ENGLISH_LITERATURE', label: 'English Literature' },
+
+  { value: 'ENVIRONMENTAL_SCIENCE', label: 'Environmental Science' },
+  { value: 'AGRICULTURE', label: 'Agriculture' },
+
+  { value: 'OTHER', label: 'Other' },
 ];
 
 export const noticePeriods: SelectOption[] = [
@@ -366,4 +433,116 @@ export const noticePeriods: SelectOption[] = [
   { label: '1 month', value: '1_MONTH' },
   { label: '2 months', value: '2_MONTHS' },
   { label: '3 months', value: '3_MONTHS' },
+];
+
+export const profileSetupSteps = [
+  { number: 1, label: 'Basic Info' },
+  { number: 2, label: 'Contact' },
+  { number: 3, label: 'Documents' },
+  { number: 4, label: 'Review' },
+];
+
+export const PROFILE_SETUP_STEP_FIELDS: Record<
+  number,
+  (keyof ProfileFormInputs)[]
+> = {
+  0: [
+    'name',
+    'description',
+    'industry',
+    'companySize',
+    'foundedYear',
+    'website',
+  ],
+  1: ['contactEmail', 'country'],
+  2: ['logo', 'businessDocument'],
+};
+
+export const loginContent = [
+  {
+    srNo: 1,
+    title: 'Secure access',
+    desc: 'Your account is protected with role-based access and verified authentication.',
+  },
+  {
+    srNo: 2,
+    title: 'Continue where you left off',
+    desc: 'Resume applications, job postings, and profile updates seamlessly.',
+  },
+  {
+    srNo: 3,
+    title: 'Trusted hiring platform',
+    desc: 'Join a verified ecosystem of approved companies and genuine candidates.',
+  },
+];
+
+export const signUpContent = [
+  {
+    srNo: 1,
+    title: 'Verified companies only',
+    desc: 'Every company is manually approved by platform admins.',
+  },
+  {
+    srNo: 2,
+    title: 'Real-time tracking',
+    desc: 'Track your applications from "Applied" to "Hired" with complete transparency.',
+  },
+  {
+    srNo: 3,
+    title: 'Complete profiles',
+    desc: 'Build detailed profiles with resume, skills, experience, and certifications.',
+  },
+];
+
+export const STEP_FIELDS: Record<number, (keyof JobFormInputs)[]> = {
+  0: ['title', 'description', 'category'],
+  1: ['requirements', 'skills', 'experienceLevel', 'employmentType'],
+  2: ['workMode', 'country'],
+  3: ['hideSalary', 'numberOfOpenings'],
+};
+
+export const jobFormSteps = [
+  { number: 1, label: 'Basic Details' },
+  { number: 2, label: 'Requirements' },
+  { number: 3, label: 'Location & Work Mode' },
+  { number: 4, label: 'Salary & Openings' },
+  { number: 5, label: 'Review & Publish' },
+];
+
+export const PROFILE_WIZARD_STEP_FIELDS: Record<
+  number,
+  (keyof JobSeekerFormInputs)[]
+> = {
+  0: ['phone', 'country', 'countryPhoneCode', 'contactEmail', 'name'],
+  1: ['preferredWorkMode', 'willingToRelocate'],
+  2: ['workExperience'],
+  3: ['education'],
+  4: ['skills'],
+  5: ['resume'],
+  6: [],
+  7: ['jobCategories', 'preferredLocations'],
+};
+
+export const profileWizardSteps = [
+  { number: 1, label: 'Basic Info' },
+  { number: 2, label: 'Professional Info' },
+  { number: 3, label: 'Experience' },
+  { number: 4, label: 'Education' },
+  { number: 5, label: 'Skills' },
+  {
+    number: 6,
+    label: 'Resume',
+  },
+  {
+    number: 7,
+    label: 'Certifications',
+  },
+  {
+    number: 8,
+    label: 'Additional Info',
+  },
+  {
+    number: 9,
+    label: 'Review & Publish',
+  },
 ];

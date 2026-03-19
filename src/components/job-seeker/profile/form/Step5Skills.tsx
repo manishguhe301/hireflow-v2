@@ -1,9 +1,9 @@
 import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import MultiSelect from '@/src/components/ui/MultiSelect'
 import { jobSkills } from '@/src/utils/constants'
+import { JobSeekerFormInputs } from '@/src/types'
 
 const Step5Skills = ({
   errors,

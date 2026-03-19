@@ -15,6 +15,7 @@ export async function GET(
 
     const companyExists = await prisma.company.findUnique({
       where: { userId: guard.session.user.id },
+      select: { id: true },
     });
 
     if (!companyExists) {
@@ -76,6 +77,10 @@ export async function GET(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
+    if (job.companyId !== companyExists.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     return NextResponse.json({ job });
   } catch (error) {
     console.error('Error fetching company:', error);
@@ -98,6 +103,7 @@ export async function DELETE(
 
     const company = await prisma.company.findUnique({
       where: { userId: guard.session.user.id },
+      select: { id: true },
     });
 
     if (!company) {
@@ -142,7 +148,10 @@ export async function DELETE(
       });
     } else {
       await prisma.job.delete({
-        where: { slug },
+        where: {
+          id: existingJob.id,
+          slug,
+        },
       });
 
       return NextResponse.json({

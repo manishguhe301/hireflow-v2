@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const isAlreadyEmailRegistered = await prisma.user.findUnique({
       where: {
-        email,
+        email: email.toLowerCase(),
       },
     });
 
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const admin = await prisma.user.create({
       data: {
         name,
-        email,
+        email: email.toLowerCase(),
         password: hashedPassword,
         role,
       },

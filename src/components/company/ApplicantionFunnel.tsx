@@ -1,5 +1,5 @@
+import { AnalyticsData } from "@/src/types"
 import clsx from "clsx"
-import { AnalyticsData } from "./CompanyDashboardPage"
 
 const ApplicantionFunnel = ({ analytics }: { analytics: AnalyticsData }) => {
   return (

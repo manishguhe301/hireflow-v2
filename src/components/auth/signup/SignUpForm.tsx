@@ -60,7 +60,7 @@ const SignUpForm = () => {
 
     const user = {
       name: data.name.trim(),
-      email: data.email.trim(),
+      email: data.email.trim().toLowerCase(),
       password: data.password.trim(),
       role: data.role
     }
@@ -137,6 +137,7 @@ const SignUpForm = () => {
             placeholder="john@email.com"
             register={register('email', {
               required: 'Email is required',
+              setValueAs: (value) => value.toLowerCase().trim(),
               validate: (value) =>
                 isValidEmail(value) || 'Invalid email format',
             })}

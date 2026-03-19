@@ -19,7 +19,9 @@ export async function DELETE(
       select: {
         companyId: true,
         jobSeekerId: true,
-        company: { select: { userId: true } },
+        company: {
+          select: { userId: true },
+        },
       },
     });
 
@@ -31,6 +33,7 @@ export async function DELETE(
     }
 
     const isCompany = guard.session.user.role === Role.COMPANY_ADMIN;
+
     const hasAccess = isCompany
       ? conversation.company.userId === guard.session.user.id
       : conversation.jobSeekerId === guard.session.user.id;
@@ -45,17 +48,19 @@ export async function DELETE(
       ? conversation.jobSeekerId
       : conversation.company.userId;
 
-    await pusherServer.trigger(
-      `user-messages-${recipientId}`,
-      'conversation-deleted',
-      { conversationId: id },
-    );
+    await Promise.all([
+      pusherServer.trigger(
+        `user-messages-${recipientId}`,
+        'conversation-deleted',
+        { conversationId: id },
+      ),
+      pusherServer.trigger(
+        `user-messages-${guard.session.user.id}`,
+        'conversation-deleted',
+        { conversationId: id },
+      ),
+    ]);
 
-    await pusherServer.trigger(
-      `user-messages-${guard.session.user.id}`,
-      'conversation-deleted',
-      { conversationId: id },
-    );
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete conversation error:', error);

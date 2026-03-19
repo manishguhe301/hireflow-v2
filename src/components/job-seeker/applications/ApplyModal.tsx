@@ -14,37 +14,14 @@ import { toast } from 'sonner'
 import { Spinner } from '../../elements/Loader'
 import clsx from 'clsx'
 import { useQueryClient } from '@tanstack/react-query'
-
-type ApplyFormInputs = {
-  coverLetter: string
-  customResume: FileList
-}
-
-type ApplyModalProps = {
-  open: boolean
-  onClose: () => void
-  job: {
-    id: string
-    title: string
-    slug: string
-    workMode: string
-    employmentType: string
-    company: {
-      name: string
-      logo: string | null
-    }
-    country: string
-    city: string | null
-  }
-  onSuccess: () => void
-}
+import { signOut } from 'next-auth/react'
+import { ApplyFormInputs, ApplyModalProps } from '@/src/types'
 
 export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModalProps) {
   const { jobSeekerProfile } = useProfile()
   const profileResumeUrl = jobSeekerProfile?.resumeUrl
   const [isSubmitting, setIsSubmitting] = useState(false)
   const queryClient = useQueryClient()
-
 
   const {
     register,
@@ -91,6 +68,11 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         method: 'POST',
         body: formData,
       })
+
+      if (res.status === 401 || res.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const result = await res.json()
 
@@ -139,11 +121,11 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
         <div className="rounded-xl border border-border/40 bg-muted/30 p-4 space-y-3">
           <div className="flex items-center gap-3">
             <div className=" relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted overflow-hidden">
-              {job.company.logo ? (
+              {job.company?.logo ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={job.company.logo}
+                    src={job.company?.logo}
                     alt={job.company.name}
                     className={clsx(
                       "h-full w-full object-cover transition-opacity duration-300",
@@ -224,7 +206,7 @@ export default function ApplyModal({ open, onClose, job, onSuccess }: ApplyModal
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40">
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/40 max-sm:flex-col">
           <Button
             type="button"
             variant="outline"

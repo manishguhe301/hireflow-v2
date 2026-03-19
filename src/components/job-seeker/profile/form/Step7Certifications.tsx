@@ -2,32 +2,22 @@
 
 import React, { useState } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { CertificationInput, JobSeekerFormInputs } from './ProfileWizard'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { Button } from '@/src/components/ui/Button'
-import Modal from '@/src/components/ui/Modal'
-import { Award, Edit, Loader2, Plus, Trash2 } from 'lucide-react'
+import { Award, Plus, } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { FormInput } from '@/src/components/ui/FormInput'
-import FormDatePicker from '@/src/components/ui/FormDatePicker'
-import { formatDate } from '@/src/utils/helper'
 import { AppSdk } from '@/src/utils/AppSdk'
-
-type CertificationForm = {
-  name: string
-  organization: string
-  issueDate: Date
-  expiryDate: Date | null
-  credentialUrl: string | null
-  credentialId: string | null
-}
+import { CertificationForm, CertificationInput, JobSeekerFormInputs } from '@/src/types'
+import CertificateModal from './CertificateModal'
+import CertificateCard from './CertificateCard'
 
 const Step7Certifications = ({
   watch,
   setValue,
   disabled,
-  isEditMode
+  isEditMode,
+  refetchProfile
 }: {
   register: UseFormRegister<JobSeekerFormInputs>
   errors: FieldErrors<JobSeekerFormInputs>
@@ -35,12 +25,13 @@ const Step7Certifications = ({
   setValue: UseFormSetValue<JobSeekerFormInputs>
   disabled?: boolean
   isEditMode?: boolean
+  refetchProfile?: () => void
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const certifications = watch('certifications') || []
   const [isSaving, setIsSaving] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const {
     register: certRegister,
@@ -53,7 +44,7 @@ const Step7Certifications = ({
     defaultValues: {
       name: '',
       organization: '',
-      issueDate: new Date(),
+      issueDate: null,
       expiryDate: null,
       credentialUrl: null,
       credentialId: null,
@@ -74,7 +65,7 @@ const Step7Certifications = ({
       resetCertForm({
         name: '',
         organization: '',
-        issueDate: new Date(),
+        issueDate: null,
         expiryDate: null,
         credentialUrl: null,
         credentialId: null,
@@ -91,13 +82,21 @@ const Step7Certifications = ({
   }
 
   const onSubmit = async (data: CertificationForm) => {
-    if (data.expiryDate && data.expiryDate < data.issueDate) {
-      toast.error('Expiry date cannot be before issue date')
+    if (!data.issueDate) {
+      toast.error('Issue date is required')
+      return
+    }
+
+
+    if (data.expiryDate && data.expiryDate <= data.issueDate) {
+      toast.error('Expiry date must be after issue date')
       return
     }
 
     const payload: CertificationInput = {
-      ...data,
+      name: data.name,
+      organization: data.organization,
+      issueDate: data.issueDate as Date,
       expiryDate: data.expiryDate || null,
       credentialUrl: data.credentialUrl || null,
       credentialId: data.credentialId || null,
@@ -127,6 +126,7 @@ const Step7Certifications = ({
           setValue('certifications', [...certifications, saved], { shouldValidate: true, shouldDirty: true })
         }
 
+        await refetchProfile?.()
         toast.success(editingIndex !== null ? 'Certification updated' : 'Certification added')
         handleCloseModal()
       } catch {
@@ -150,16 +150,17 @@ const Step7Certifications = ({
   const handleDelete = async (index: number) => {
     const item = certifications[index]
     if (isEditMode && item.id) {
-      setIsDeleting(true)
+      setDeletingId(item.id)
       try {
         const res = await AppSdk.deleteData(`/api/profile/certification/${item.id}`, null)
         if (res.error) { toast.error(res.error); return }
+        await refetchProfile?.()
         toast.success('Certification deleted')
       } catch (error) {
         console.log(error);
         toast.error('Something went wrong')
       } finally {
-        setIsDeleting(false)
+        setDeletingId(null)
       }
     }
     const updated = certifications.filter((_, i) => i !== index)
@@ -196,151 +197,32 @@ const Step7Certifications = ({
       ) : (
         <div className="space-y-4">
           {certifications.map((cert, index) => (
-            <div
+            <CertificateCard
               key={cert.id || index}
-              className="rounded-2xl border border-border/40 bg-card p-6 transition hover:border-border/60"
-            >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold break-words">
-                    {cert.name}
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground break-words">
-                    {cert.organization}
-                  </p>
-
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    <span className="rounded-full border border-border/40 bg-muted/30 px-2 py-1">
-                      Issued: {formatDate(cert.issueDate)}
-                    </span>
-
-                    {cert.expiryDate && (
-                      <span className="rounded-full border border-border/40 bg-muted/30 px-2 py-1">
-                        Expires: {formatDate(cert.expiryDate)}
-                      </span>
-                    )}
-
-                    {cert.credentialId && (
-                      <span className="rounded-full border border-border/40 bg-muted/30 px-2 py-1">
-                        ID: {cert.credentialId}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex gap-2 self-start sm:self-auto">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleOpenModal(index)}
-                    disabled={disabled || isSaving}
-                    className="p-2!"
-                    aria-label="Edit certification"
-                  >
-                    <Edit className="h-4 w-4 text-primary" />
-                  </Button>
-                  <Button
-                    type="button"
-                    disabled={disabled || isSaving}
-                    variant="ghost"
-                    onClick={() => handleDelete(index)}
-                    aria-label="Delete certification"
-                    className="p-2!"
-                  >
-                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-destructive" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
+              cert={cert}
+              disabled={disabled || isSaving}
+              handleOpenModal={handleOpenModal}
+              deletingId={deletingId}
+              handleDelete={handleDelete}
+              index={index}
+            />
           ))}
         </div>
       )}
 
-      <Modal open={isModalOpen} onClose={handleCloseModal} className="max-w-2xl max-sm:h-[70vh] overflow-y-scroll">
-        <h2 className="text-xl font-semibold mb-6">
-          {editingIndex !== null ? 'Edit Certification' : 'Add Certification'}
-        </h2>
-
-        <form onSubmit={handleCertSubmit(onSubmit)} className="space-y-6">
-          <FormInput
-            disabled={disabled || isSaving}
-            label="Certification Name"
-            register={certRegister('name', {
-              required: 'Certification name is required',
-            })}
-            error={certErrors.name}
-          />
-
-          <FormInput
-            disabled={disabled || isSaving}
-            label="Issuing Organization"
-            register={certRegister('organization', {
-              required: 'Organization is required',
-            })}
-            error={certErrors.organization}
-          />
-
-          <FormDatePicker
-            disabled={disabled || isSaving}
-            label="Issue Date"
-            value={certWatch('issueDate')}
-            maxDate={new Date()}
-            onChange={(date) =>
-              setCertValue('issueDate', date!, { shouldValidate: true })
-            }
-            error={certErrors.issueDate}
-          />
-
-          <FormDatePicker
-            disabled={disabled || isSaving}
-            label="Expiry Date (Optional)"
-            value={certWatch('expiryDate')}
-            minDate={certWatch('issueDate')}
-            onChange={(date) =>
-              setCertValue('expiryDate', date || null, {
-                shouldValidate: true,
-              })
-            }
-            error={certErrors.expiryDate}
-          />
-
-          <FormInput
-            label="Credential ID (Optional)"
-            register={certRegister('credentialId')}
-            disabled={disabled || isSaving}
-            error={certErrors.credentialId}
-          />
-
-          <FormInput
-            label="Credential URL (Optional)"
-            register={certRegister('credentialUrl')}
-            disabled={disabled || isSaving}
-            error={certErrors.credentialUrl}
-          />
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCloseModal}
-              disabled={disabled || isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={disabled || isSaving}
-            >
-              {
-                isSaving ?
-                  'Saving...' : editingIndex !== null
-                    ? 'Update Certification'
-                    : 'Add Certification'
-              }
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <CertificateModal
+        certErrors={certErrors}
+        certRegister={certRegister}
+        certWatch={certWatch}
+        disabled={disabled || isSaving}
+        isSaving={isSaving}
+        editingIndex={editingIndex}
+        handleCertSubmit={handleCertSubmit}
+        handleCloseModal={handleCloseModal}
+        isModalOpen={isModalOpen}
+        onSubmit={onSubmit}
+        setCertValue={setCertValue}
+      />
     </div>
   )
 }

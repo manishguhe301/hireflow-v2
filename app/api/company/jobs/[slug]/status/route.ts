@@ -15,6 +15,7 @@ export async function PATCH(
 
     const companyExists = await prisma.company.findUnique({
       where: { userId: guard.session.user.id },
+      select: { id: true, status: true },
     });
 
     if (!companyExists) {
@@ -25,6 +26,14 @@ export async function PATCH(
         { status: 404 },
       );
     }
+
+    if (companyExists.status !== 'APPROVED') {
+      return NextResponse.json(
+        { error: 'Your company is not approved to publish jobs yet.' },
+        { status: 403 },
+      );
+    }
+
     const { slug } = await params;
 
     if (!slug) {

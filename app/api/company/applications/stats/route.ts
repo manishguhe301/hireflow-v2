@@ -45,6 +45,8 @@ export async function GET(req: NextRequest) {
         0,
       rejected: groupedStats.find((s) => s.status === 'REJECTED')?._count || 0,
       hired: groupedStats.find((s) => s.status === 'HIRED')?._count || 0,
+      onHold: groupedStats.find((s) => s.status === 'ON_HOLD')?._count || 0,
+      offered: groupedStats.find((s) => s.status === 'OFFERED')?._count || 0,
     };
 
     return NextResponse.json({

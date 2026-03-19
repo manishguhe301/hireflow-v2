@@ -1,55 +1,28 @@
 'use client'
-import { WorkMode } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { Bookmark } from 'lucide-react';
 import Pagination from '../../ui/Pagination';
 import JobCard from '../../public/jobs-dir/JobCard';
 import { AppSdk } from '@/src/utils/AppSdk';
-import { toast } from 'sonner';
 import { formatRelativeTime } from '@/src/utils/helper';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import JobCardSkeleton from '../../skeletons/JobCardSkeleton';
-
-export interface SavedJob {
-  company: {
-    name: string;
-    id: string;
-    logo: string;
-    website: string;
-  };
-  id: string;
-  country: string;
-  city: string;
-  createdAt: string;
-  updatedAt: string;
-  slug: string;
-  title: string;
-  experienceLevel: string;
-  employmentType: string;
-  workMode: WorkMode;
-  salaryMin: number;
-  salaryMax: number;
-  numberOfOpenings: string;
-  applicationDeadline: string;
-  category: string;
-  // savedId: string;
-  savedAt: string;
-  isSaved: boolean;
-}
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import { PaginationType, SavedJob } from '@/src/types';
+import { useSaveJob } from '@/src/store/hooks/useSaveJob';
 
 const SavedJobs = () => {
   const searchParams = useSearchParams()
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
   const router = useRouter()
-  const queryClient = useQueryClient()
+  const { toggleSave, isPending: savePending } = useSaveJob({
+    invalidateKeys: [
+      ['saved-jobs'],
+      ['jobs'],
+      ['job-details'],
+      ['dashboard-recommended']
+    ]
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: ['saved-jobs', page],
@@ -65,7 +38,7 @@ const SavedJobs = () => {
   })
 
   const jobs: SavedJob[] = data?.savedJobs ?? []
-  const pagination: Pagination = data?.pagination ?? null
+  const pagination: PaginationType = data?.pagination ?? null
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -76,36 +49,6 @@ const SavedJobs = () => {
       scroll: false,
     })
   }, [page, router])
-
-
-  const saveMutation = useMutation({
-    mutationFn: async ({ jobId, currentlySaved }: { jobId: string; currentlySaved: boolean }) => {
-      if (currentlySaved) {
-        const res = await AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-        if (res.error) throw new Error(res.error)
-        return { removed: true }
-      } else {
-        const res = await AppSdk.postData('/api/jobs/saved', { jobId })
-        if (res.error) throw new Error(res.error)
-        return { removed: false }
-      }
-    },
-    onSuccess: ({ removed }) => {
-      toast.success(removed ? 'Job removed from saved' : 'Job saved successfully')
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['job-details'] })
-    },
-    onError: () => {
-      toast.error('Something went wrong')
-    },
-  })
-
-
-  const handleSaveToggle = async (jobId: string, currentlySaved: boolean) => {
-    saveMutation.mutate({ jobId, currentlySaved })
-  }
-
 
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
@@ -145,8 +88,9 @@ const SavedJobs = () => {
                 <JobCard
                   job={job}
                   isSaved={job.isSaved}
-                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                  disabled={saveMutation.isPending}
+                  isApplied={job.isApplied}
+                  onSaveToggle={() => toggleSave(job.id, job.isSaved)}
+                  disabled={savePending}
                 />
               </div>
             ))}

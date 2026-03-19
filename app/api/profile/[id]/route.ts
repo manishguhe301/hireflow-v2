@@ -34,6 +34,13 @@ export async function GET(
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
+    const isOwner = guard.session.user.id === id;
+    const isAdmin = guard.session.user.role === Role.PLATFORM_ADMIN;
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     return NextResponse.json({
       profile: profile,
     });

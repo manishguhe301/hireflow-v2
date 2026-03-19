@@ -4,10 +4,28 @@ import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import CompanyPublicView from '@/src/components/public/companies-dir/CompanyPublicView'
 import prisma from '@/src/lib/prisma'
-// import { getSignedUrl } from '@/src/lib/fileUpload'
+import { apiAuthGuard } from '@/src/lib/apiAuthGuard'
+import { Role } from '@prisma/client'
 
 async function getCompany(id: string) {
   try {
+    const guard = await apiAuthGuard([Role.JOB_SEEKER])
+
+    let appliedJobIds: string[] = []
+
+    if (guard.ok) {
+      const applications = await prisma.application.findMany({
+        where: {
+          userId: guard.session.user.id
+        },
+        select: {
+          jobId: true
+        }
+      })
+
+      appliedJobIds = applications.map(a => a.jobId)
+    }
+
     const company = await prisma.company.findUnique({
       where: {
         id,
@@ -16,7 +34,12 @@ async function getCompany(id: string) {
       include: {
         jobs: {
           where: {
-            status: 'ACTIVE'
+            status: 'ACTIVE',
+            ...(guard.ok && {
+              id: {
+                notIn: appliedJobIds
+              }
+            })
           },
           orderBy: {
             createdAt: 'desc'
@@ -28,14 +51,6 @@ async function getCompany(id: string) {
     if (!company) {
       return null
     }
-
-    // const signedCompanyLogo = await getSignedUrl(
-    //   company?.logo as string,
-    //   604800,
-    // );
-
-
-    // return { company: { ...company, logo: signedCompanyLogo }, jobs: company.jobs }
     return { company, jobs: company.jobs }
   } catch (error) {
     console.error('Error fetching company:', error)

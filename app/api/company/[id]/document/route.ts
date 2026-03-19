@@ -15,12 +15,23 @@ export async function GET(
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type');
 
+  const isAdmin = guard.session.user.role === Role.PLATFORM_ADMIN;
+
   const company = await prisma.company.findUnique({
     where: { id },
+    select: {
+      userId: true,
+      businessDocPath: true,
+      taxDocPath: true,
+    },
   });
 
   if (!company) {
     return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+  }
+
+  if (!isAdmin && company.userId !== guard.session.user.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
   let filePath: string | null = null;

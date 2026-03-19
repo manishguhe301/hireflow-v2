@@ -10,15 +10,8 @@ import { Button } from '../ui/Button'
 import { Spinner } from '../elements/Loader'
 import { Company } from '@prisma/client'
 import { companyIndustries } from '@/src/utils/constants'
-
-type CompaniesTableProps = {
-  filteredCompanies: Company[],
-  handleApprove: (id: string) => Promise<void>,
-  loadingAction: string | null,
-  rejectCompanyId: string | null,
-  setDeleteCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
-  setRejectCompanyId: React.Dispatch<React.SetStateAction<string | null>>,
-}
+import { DataTable, DataTableBody, DataTableCell, DataTableHeadCell, DataTableHeader, DataTableRow } from '../shared/TableComponents'
+import { AdminCompaniesTableProps } from '@/src/types'
 
 const CompaniesTable = ({
   filteredCompanies,
@@ -27,19 +20,20 @@ const CompaniesTable = ({
   rejectCompanyId,
   setDeleteCompanyId,
   setRejectCompanyId,
-}: CompaniesTableProps) => {
+  disabled
+}: AdminCompaniesTableProps) => {
   return (
-    <table className="w-full text-sm">
-      <thead className="bg-muted/40 border-b border-border/60">
-        <tr>
-          <th scope="col" className="px-6 py-4 text-left">Company</th>
-          <th scope="col" className="px-6 py-4 text-left">Industry</th>
-          <th scope="col" className="px-6 py-4 text-left">Location</th>
-          <th scope="col" className="px-6 py-4 text-left">Status</th>
-          <th scope="col" className="px-6 py-5 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+    <DataTable className={clsx("w-full text-sm", disabled && 'opacity-60 cursor-not-allowed')}>
+      <DataTableHeader >
+        <DataTableRow>
+          <DataTableHeadCell>Company</DataTableHeadCell>
+          <DataTableHeadCell>Industry</DataTableHeadCell>
+          <DataTableHeadCell>Location</DataTableHeadCell>
+          <DataTableHeadCell>Status</DataTableHeadCell>
+          <DataTableHeadCell className="text-right">Actions</DataTableHeadCell>
+        </DataTableRow>
+      </DataTableHeader>
+      <DataTableBody>
         {filteredCompanies.map((company: Company) => {
           const companyIndustry =
             companyIndustries.find((ind) => ind.value === company.industry)?.label
@@ -49,19 +43,19 @@ const CompaniesTable = ({
             : company.country
 
           return (
-            <tr
+            <DataTableRow
               key={company.id}
               className='w-full hover:bg-muted/30 transition'
             >
-              <td className="px-6 py-5">
+              <DataTableCell>
                 <div className="font-medium capitalize">{company.name}</div>
                 <div className="text-xs text-muted-foreground">
                   {company.contactEmail}
                 </div>
-              </td>
-              <td className="px-6 py-5 capitalize">{companyIndustry}</td>
-              <td className="px-6 py-5">{location} </td>
-              <td className="px-6 py-5">
+              </DataTableCell>
+              <DataTableCell className="capitalize">{companyIndustry}</DataTableCell>
+              <DataTableCell>{location} </DataTableCell>
+              <DataTableCell>
                 <span
                   className={clsx(
                     'inline-flex items-center gap-1 px-3 py-1.25 rounded-full text-xs font-medium',
@@ -78,13 +72,12 @@ const CompaniesTable = ({
                   {company.status === 'REJECTED' && <XCircle className="h-3 w-3" />}
                   {company.status}
                 </span>
-              </td>
-              <td className="px-6 py-5 text-right">
+              </DataTableCell>
+              <DataTableCell className="text-right">
                 <div className="inline-flex items-center gap-3">
                   <Link
                     href={`/admin/companies/${company.id}`}
                     className="text-muted-foreground hover:underline text-xs"
-                    target='_blank'
                   >
                     View Details
                   </Link>
@@ -95,7 +88,7 @@ const CompaniesTable = ({
                         onClick={() => handleApprove(company.id)}
                         disabled={
                           loadingAction === `approve-${company.id}` ||
-                          !!rejectCompanyId
+                          !!rejectCompanyId || disabled
                         }
                         className="text-success hover:underline text-xs border-none w-fit p-0! bg-transparent!"
                       >
@@ -110,7 +103,7 @@ const CompaniesTable = ({
                           setRejectCompanyId(company.id)
                         }}
                         disabled={
-                          !!loadingAction && loadingAction !== `reject-${company.id}`
+                          !!loadingAction && loadingAction !== `reject-${company.id}` || disabled
                         }
                         className="text-destructive! hover:underline text-xs border-none w-fit p-0! bg-transparent"
                       >
@@ -124,7 +117,7 @@ const CompaniesTable = ({
 
                   <Button
                     className="p-0! border-none text-destructive! bg-transparent hover:text-destructive/80"
-                    disabled={loadingAction === `delete-${company.id}`}
+                    disabled={loadingAction === `delete-${company.id}` || disabled}
                     onClick={() => {
                       setRejectCompanyId(null)
                       setDeleteCompanyId(company.id)
@@ -138,13 +131,13 @@ const CompaniesTable = ({
                   </Button>
 
                 </div>
-              </td>
-            </tr>
+              </DataTableCell>
+            </DataTableRow>
           )
         }
         )}
-      </tbody>
-    </table>
+      </DataTableBody>
+    </DataTable>
   )
 }
 

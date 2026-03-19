@@ -93,6 +93,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    try {
+      new URL(data.website);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid website URL' },
+        { status: 400 },
+      );
+    }
+
+    try {
+      new URL(data.linkedinProfile);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid LinkedIn profile URL' },
+        { status: 400 },
+      );
+    }
+
     const logoResult = await uploadFileToB2(logo, 'company-logos');
     const businessDocResult = await uploadFileToB2(
       businessDocument,
@@ -102,6 +120,15 @@ export async function POST(req: NextRequest) {
       ? await uploadFileToB2(taxDocument, 'company-documents')
       : null;
 
+    const year = parseInt(data.foundedYear);
+
+    if (isNaN(year) || year < 1800 || year > new Date().getFullYear()) {
+      return NextResponse.json(
+        { error: 'Invalid founded year' },
+        { status: 400 },
+      );
+    }
+
     const company = await prisma.company.create({
       data: {
         userId: guard.session.user.id,
@@ -109,7 +136,7 @@ export async function POST(req: NextRequest) {
         description: data.description,
         industry: data.industry,
         companySize: data.companySize,
-        foundedYear: parseInt(data.foundedYear),
+        foundedYear: year,
         website: data.website,
         linkedinProfile: data.linkedinProfile || null,
         contactEmail: data.contactEmail,
@@ -200,6 +227,7 @@ export async function PATCH(req: NextRequest) {
       country: formData.get('country') as string,
       city: formData.get('city') as string,
       countryPhoneCode: formData.get('countryPhoneCode') as string,
+      deleteLogo: formData.get('deleteLogo') as string,
     };
 
     if (
@@ -210,6 +238,24 @@ export async function PATCH(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 },
+      );
+    }
+
+    try {
+      new URL(data.website);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid website URL' },
+        { status: 400 },
+      );
+    }
+
+    try {
+      new URL(data.linkedinProfile);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid LinkedIn profile URL' },
         { status: 400 },
       );
     }
@@ -225,7 +271,13 @@ export async function PATCH(req: NextRequest) {
     let taxDocUrl = existingCompany.taxDocument;
     let taxDocPath = existingCompany.taxDocPath;
 
-    if (logo) {
+    if (data.deleteLogo === 'true') {
+      if (existingCompany.logoPath) {
+        await deleteFileFromB2(existingCompany.logoPath);
+      }
+      logoUrl = null;
+      logoPath = null;
+    } else if (logo) {
       if (existingCompany.logoPath) {
         await deleteFileFromB2(existingCompany.logoPath);
       }
@@ -261,6 +313,15 @@ export async function PATCH(req: NextRequest) {
       newStatus = 'PENDING';
     }
 
+    const year = parseInt(data.foundedYear);
+
+    if (isNaN(year) || year < 1800 || year > new Date().getFullYear()) {
+      return NextResponse.json(
+        { error: 'Invalid founded year' },
+        { status: 400 },
+      );
+    }
+
     const updatedCompany = await prisma.company.update({
       where: { id: existingCompany.id },
       data: {
@@ -268,7 +329,7 @@ export async function PATCH(req: NextRequest) {
         description: data.description,
         industry: data.industry,
         companySize: data.companySize,
-        foundedYear: parseInt(data.foundedYear),
+        foundedYear: year,
         website: data.website,
         linkedinProfile: data.linkedinProfile || null,
         contactEmail: data.contactEmail,

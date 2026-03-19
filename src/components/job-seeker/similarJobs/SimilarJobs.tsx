@@ -1,16 +1,14 @@
 'use client'
 import { useSession } from 'next-auth/react'
-import { SimilarJob } from '../JobDetailsForApplicant'
 import { useRouter } from 'next/navigation'
 import { Briefcase, Clock, MapPin } from 'lucide-react'
 import { formatRelativeTime, getLabel } from '@/src/utils/helper'
 import { employmentTypes, experienceLevels, workModes } from '@/src/utils/constants'
+import { SimilarJob } from '@/src/types'
 
 const SimilarJobs = ({ similarJobs }: { similarJobs: SimilarJob[] }) => {
   const router = useRouter()
   const { data: session } = useSession()
-
-
   return (
     <div className="space-y-6 border-t border-border/40 pt-10">
       <h3 className="text-xl font-semibold">Similar Jobs</h3>
