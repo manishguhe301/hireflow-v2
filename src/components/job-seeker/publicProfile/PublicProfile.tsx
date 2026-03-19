@@ -213,7 +213,7 @@ const PublicProfile = () => {
       {(isOwner || isAdmin) && profile.resumeUrl && (
         <ProfileSection title='Resume'>
           <DocumentCard
-            label="My Resume"
+            label="Resume"
             hasDocument={!!profile.resumePath}
             apiUrl={`/api/profile/resume?id=${application?.userId || profile.userId}`}
             desc='You have to click on the &quot;Reveal&quot; button to access the document'
