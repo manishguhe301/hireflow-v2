@@ -8,8 +8,9 @@ import Pagination from '../../ui/Pagination'
 import { useQuery } from '@tanstack/react-query'
 import TableSkeleton from '../../skeletons/TableSkeleton'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
-import { RefreshCcw } from 'lucide-react'
+import { Briefcase, RefreshCcw } from 'lucide-react'
 import { ApplicationWithPagination } from '@/src/types'
+import Link from 'next/link'
 
 const ApplicationsPage = () => {
   const [activeTab, setActiveTab] =
@@ -86,20 +87,40 @@ const ApplicationsPage = () => {
         isLoading ? (
           <TableSkeleton columns={5} rows={6} />
         ) : (
-          <ApplicationsTable
-            data={data as ApplicationWithPagination}
-            refetch={refetch}
-            disabled={isLoading || isFetching}
+          data &&
+            data.applications.length === 0 ? (
+            <div className='py-4 w-full border border-border rounded-xl'>
+              <div className="flex flex-col items-center gap-3">
+                <Briefcase className="h-10 w-10 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  No applications found
+                </p>
+
+                <Link href="/jobs">
+                  <Button size="sm" className="mt-4">
+                    Browse Jobs
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )
+            :
+            < ApplicationsTable
+              data={data as ApplicationWithPagination}
+              refetch={refetch}
+              disabled={isLoading || isFetching}
+            />
+        )
+      }
+      {
+        data && data.pagination.totalPages > 1 && (
+          <Pagination
+            page={data.pagination.page}
+            totalPages={data.pagination.totalPages}
+            onPageChange={(p) => setPage(p)}
           />
         )
       }
-      {data && data.pagination.totalPages > 1 && (
-        <Pagination
-          page={data.pagination.page}
-          totalPages={data.pagination.totalPages}
-          onPageChange={(p) => setPage(p)}
-        />
-      )}
     </div >
   )
 }

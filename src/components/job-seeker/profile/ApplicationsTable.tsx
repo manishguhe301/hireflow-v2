@@ -44,24 +44,7 @@ const ApplicationsTable = ({ data, refetch, disabled }:
           </DataTableRow>
         </DataTableHeader>
         <DataTableBody>
-          {data.applications.length === 0 && (
-            <DataTableRow>
-              <DataTableCell colSpan={5} className="text-center py-16">
-                <div className="flex flex-col items-center gap-3">
-                  <Briefcase className="h-10 w-10 text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    You haven&apos;t applied to any jobs yet
-                  </p>
-
-                  <Link href="/jobs">
-                    <Button size="sm" className="mt-4">
-                      Browse Jobs
-                    </Button>
-                  </Link>
-                </div>
-              </DataTableCell>
-            </DataTableRow>
-          )}
+        
 
           {data.applications.map((app) => (
             <DataTableRow
