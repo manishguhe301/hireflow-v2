@@ -64,9 +64,9 @@ function IncompleteProfileUI({ completion }: { completion: number }) {
 }
 
 const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
-  const { jobSeekerProfile, error, isLoading } = useProfile()
+  const { jobSeekerProfile, error, isLoading, isFetched } = useProfile()
 
-  if (isLoading) {
+  if (isLoading || !isFetched) {
     return (
       <PageLoader title="Setting things up for you" subtitle='Just a moment' />
     )
@@ -94,7 +94,7 @@ const DashboardProfileGuard = ({ children }: { children: React.ReactNode }) => {
     return <NoProfileUI />
   }
 
-  const completion = jobSeekerProfile.profileCompleted
+  const completion = jobSeekerProfile.profileCompleted || 0
 
   const isCoreIncomplete =
     completion < 70 ||

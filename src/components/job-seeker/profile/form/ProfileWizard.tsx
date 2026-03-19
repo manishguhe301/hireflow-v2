@@ -4,8 +4,7 @@ import { StateWrapper } from '@/src/components/company/CompanyProfileGuard'
 import { Spinner } from '@/src/components/elements/Loader'
 import FormHeader from '@/src/components/ui/FormHeader'
 import { useProfile } from '@/src/store/hooks/useProfile'
-import { CurrentEmployment, ExperienceLevel, WorkMode } from '@prisma/client'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -27,113 +26,10 @@ import { setProfile } from '@/src/store/slices/job-seeker/userProfileSlice'
 import PageLoader from '@/src/components/ui/PageLoader'
 import StepSidebar from '@/src/components/layout/StepSidebar'
 import MobileTabs from '@/src/components/layout/MobileTabs'
-
-export type WorkExperienceInput = {
-  id?: string
-  company: string
-  title: string
-  location?: string | null
-  workMode: WorkMode
-  startDate: Date
-  endDate?: Date | null
-  description?: string | null
-  isCurrent: boolean
-}
-
-export type EducationInput = {
-  id?: string
-  institution: string
-  degree: string
-  fieldOfStudy: string | null
-  startYear: number
-  endYear: number | null
-  grade: string | null
-  isCurrent: boolean
-}
-
-export type CertificationInput = {
-  id?: string
-  name: string
-  organization: string
-  issueDate: Date
-  expiryDate: Date | null
-  credentialUrl: string | null
-  credentialId: string | null
-}
-
-
-export type JobSeekerFormInputs = {
-  userId: string
-  avatar: FileList
-  phone: string
-  country: string
-  countryPhoneCode: string
-  city: string
-  contactEmail: string
-  name: string
-
-  preferredWorkMode: WorkMode[]
-  willingToRelocate: boolean
-  professionalTitle: string
-  bio: string
-  yearsOfExperience?: ExperienceLevel | null
-  currentEmployment?: CurrentEmployment | null
-
-  resume: FileList
-
-  skills: string[]
-  workExperience: WorkExperienceInput[]
-  education: EducationInput[]
-  certifications: CertificationInput[]
-
-  portfolioWebsite: string
-  githubUrl: string
-  linkedinUrl: string
-  twitterUrl: string
-  otherLinks: string[]
-  jobCategories: string[]
-  preferredLocations: string[]
-  expectedSalaryMin: number
-  expectedSalaryMax: number
-  noticePeriod: string
-}
-
-
-const STEP_FIELDS: Record<number, (keyof JobSeekerFormInputs)[]> = {
-  0: ['phone', 'country', 'countryPhoneCode', 'contactEmail', 'name'],
-  1: ['preferredWorkMode', 'willingToRelocate'],
-  2: ['workExperience'],
-  3: ['education'],
-  4: ['skills'],
-  5: ['resume'],
-  6: [],
-  7: ['jobCategories', 'preferredLocations'],
-}
-
-
-const steps = [
-  { number: 1, label: 'Basic Info' },
-  { number: 2, label: 'Professional Info' },
-  { number: 3, label: 'Experience' },
-  { number: 4, label: 'Education' },
-  { number: 5, label: 'Skills' },
-  {
-    number: 6,
-    label: 'Resume',
-  },
-  {
-    number: 7,
-    label: 'Certifications',
-  },
-  {
-    number: 8,
-    label: 'Additional Info',
-  },
-  {
-    number: 9,
-    label: 'Review & Publish',
-  }
-]
+import { AppSdk } from '@/src/utils/AppSdk'
+import BackButton from '@/src/components/shared/BackButton'
+import { JobSeekerFormInputs } from '@/src/types'
+import { PROFILE_WIZARD_STEP_FIELDS, profileWizardSteps } from '@/src/utils/constants'
 
 const ProfileWizard = () => {
   const { jobSeekerProfile, isLoading, error } = useProfile()
@@ -193,8 +89,10 @@ const ProfileWizard = () => {
       jobCategories: [],
       preferredLocations: [],
       expectedSalaryMin: undefined, //optional
-      expectedSalaryMax: undefined, //optional
+      // expectedSalaryMax: undefined, //optional
       noticePeriod: '', //optional
+
+      deleteAvatar: false
     }
   })
   const router = useRouter()
@@ -234,7 +132,7 @@ const ProfileWizard = () => {
       setValue('jobCategories', jobSeekerProfile.jobCategories)
       setValue('preferredLocations', jobSeekerProfile.preferredLocations)
       setValue('expectedSalaryMin', jobSeekerProfile.expectedSalaryMin as number)
-      setValue('expectedSalaryMax', jobSeekerProfile.expectedSalaryMax as number)
+      // setValue('expectedSalaryMax', jobSeekerProfile.expectedSalaryMax as number)
       setValue('noticePeriod', jobSeekerProfile.noticePeriod as string)
     }
   }, [jobSeekerProfile, setValue])
@@ -288,8 +186,25 @@ const ProfileWizard = () => {
     )
   }
 
+  const refetchProfile = async () => {
+    try {
+      const res = await AppSdk.getData('/api/profile/me', null)
+      if (res.error) {
+        toast.error(res.error || 'Error in re-fetching profile, please refresh the page')
+        return
+      }
+
+      if (!res.error && res.profile) {
+        dispatch(setProfile({ profile: res.profile }))
+      }
+    } catch (error) {
+      toast.error('Error in re-fetching profile, please refresh the page')
+      console.error(error)
+    }
+  }
+
   const handleNext = async () => {
-    const fields = STEP_FIELDS[currentStep]
+    const fields = PROFILE_WIZARD_STEP_FIELDS[currentStep]
 
     if (!fields || fields.length === 0) {
       setCurrentStep((prev) => prev + 1)
@@ -328,6 +243,11 @@ const ProfileWizard = () => {
         method: isEditMode ? 'PATCH' : 'POST',
         body: formData,
       });
+
+      if (response.status === 401 || response.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const result = await response.json();
 
@@ -387,6 +307,11 @@ const ProfileWizard = () => {
         body: formData,
       });
 
+      if (response.status === 401 || response.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
+
       const result = await response.json();
 
       if (!response.ok) {
@@ -410,43 +335,179 @@ const ProfileWizard = () => {
     }
   };
 
+  const stepComponents = [
+    <Step1BasicFormInfo
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      selectedCountry={selectedCountry}
+      disabled={isSubmitting}
+      key={1}
+    />,
+    <Step2Professional
+      register={register}
+      errors={errors}
+      watch={watch}
+      disabled={isSubmitting}
+      setValue={setValue}
+      key={2}
+    />,
+    <Step3Experience
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      isEditMode={isEditMode}
+      refetchProfile={refetchProfile}
+      key={3}
+    />,
+    <Step4Education
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      isEditMode={isEditMode}
+      refetchProfile={refetchProfile}
+      key={4}
+    />,
+    <Step5Skills
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      key={5}
+    />,
+    <Step6Resume
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      key={6}
+    />,
+    <Step7Certifications
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isSubmitting}
+      isEditMode={isEditMode}
+      refetchProfile={refetchProfile}
+      key={7}
+    />,
+    <Step8AdditionalInfo
+      register={register}
+      errors={errors}
+      watch={watch}
+      disabled={isSubmitting}
+      setValue={setValue}
+      key={8}
+    />,
+    <Step9Review
+      watch={watch}
+      setCurrentStep={setCurrentStep}
+      disabled={isSubmitting}
+      key={9}
+    />,
+  ]
+
+  const renderEditBanner = () => {
+    if (!jobSeekerProfile) return null;
+
+    return (
+      <div className="my-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <p className="text-sm text-primary font-medium">
+          Editing a profile
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Please review all steps before saving changes to ensure your profile
+          remains accurate and up to date.
+        </p>
+      </div>
+    );
+  };
+
+  const isLastStep = currentStep === stepComponents.length - 1;
+  const isFirstStep = currentStep === 0;
+
+  const renderFooterActions = () => {
+    return (
+      <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+        {!isLastStep && < Button
+          type="button"
+          disabled={isSubmitting}
+          onClick={handleDraftSave}
+          variant="outline"
+          className="max-md:w-full"
+        >
+          {isSubmitting ? "Saving..." : jobSeekerProfile ? "Save Changes" : "Save as Draft"}
+        </Button>
+        }
+
+        {!isLastStep && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={handleNext}
+            className="max-md:w-full"
+          >
+            Next
+          </Button>
+        )}
+
+        {isLastStep && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={handleSubmit(handleFormSubmit)}
+            variant="primary"
+            className="max-md:w-full flex items-center justify-center"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Spinner className="h-4 w-4" />
+                {isEditMode ? "Updating..." : "Publishing..."}
+              </span>
+            ) : isEditMode ? (
+              "Update Profile"
+            ) : (
+              "Publish Profile"
+            )}
+          </Button>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      {jobSeekerProfile && (
-        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-          <p className="text-sm text-primary font-medium">
-            Editing a profile
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Please review all steps before saving changes to ensure your profile
-            remains accurate and up to date.
-          </p>
-        </div>
-      )}
-
+      <BackButton disabled={isSubmitting} />
+      {renderEditBanner()}
       {isEditMode && (
         <MobileTabs
-          steps={steps}
+          steps={profileWizardSteps}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
           isEditMode={isEditMode}
+          disabled={isSubmitting}
         />
       )}
-
       <div className="flex gap-6 items-start w-full">
-
         {isEditMode && (
           <div className="hidden lg:block sticky top-24">
             <StepSidebar
-              steps={steps}
+              steps={profileWizardSteps}
               currentStep={currentStep}
               onStepClick={setCurrentStep}
               isEditMode={isEditMode}
+              disabled={isSubmitting}
             />
           </div>
         )}
-
-
         <div className="rounded-2xl border border-border/40 bg-card shadow-sm max-sm:rounded-none max-sm:border-0 max-sm:shadow-none w-full">
           <div className="border-b border-border/40 px-6 py-4 max-sm:p-0">
             <FormHeader
@@ -454,103 +515,19 @@ const ProfileWizard = () => {
               handleNext={handleNext}
               handlePrev={handlePrev}
               disabled={isSubmitting}
-              steps={steps}
+              steps={profileWizardSteps}
             />
           </div>
           <div className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 &&
-              <Step1BasicFormInfo
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                selectedCountry={selectedCountry}
-                disabled={isSubmitting}
-              />
-            }
-            {currentStep === 1 &&
-              <Step2Professional
-                register={register}
-                errors={errors}
-                watch={watch}
-                disabled={isSubmitting}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 2 &&
-              <Step3Experience
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-                isEditMode={isEditMode}
-              />
-            }
-            {currentStep === 3 &&
-              <Step4Education
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-                isEditMode={isEditMode}
-              />
-            }
-            {currentStep === 4 &&
-              <Step5Skills
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-              />
-            }
-            {currentStep === 5 &&
-              <Step6Resume
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-              />
-            }
-            {currentStep === 6 &&
-              <Step7Certifications
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isSubmitting}
-                isEditMode={isEditMode}
-              />
-            }
-            {currentStep === 7 &&
-              <Step8AdditionalInfo
-                register={register}
-                errors={errors}
-                watch={watch}
-                disabled={isSubmitting}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 8 &&
-              <Step9Review
-                watch={watch}
-                setCurrentStep={setCurrentStep}
-                disabled={isSubmitting}
-              />
-            }
+            {stepComponents[currentStep]}
           </div>
-
-
           <div
             className={clsx(
               "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
               currentStep === 0 && "justify-end"
             )}
           >
-            {currentStep > 0 && (
+            {!isFirstStep && (
               <Button
                 type="button"
                 onClick={handlePrev}
@@ -561,51 +538,7 @@ const ProfileWizard = () => {
                 Previous
               </Button>
             )}
-
-            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
-              {currentStep !== 8 && < Button
-                type="button"
-                disabled={isSubmitting}
-                onClick={handleDraftSave}
-                variant="outline"
-                className="max-md:w-full"
-              >
-                {isSubmitting ? "Saving..." : jobSeekerProfile ? "Save Changes" : "Save as Draft"}
-              </Button>
-              }
-
-              {currentStep < 8 && (
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={handleNext}
-                  className="max-md:w-full"
-                >
-                  Next
-                </Button>
-              )}
-
-              {currentStep === 8 && (
-                <Button
-                  type="button"
-                  disabled={isSubmitting}
-                  onClick={handleSubmit(handleFormSubmit)}
-                  variant="primary"
-                  className="max-md:w-full flex items-center justify-center"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <Spinner className="h-4 w-4" />
-                      {isEditMode ? "Updating..." : "Publishing..."}
-                    </span>
-                  ) : isEditMode ? (
-                    "Update Profile"
-                  ) : (
-                    "Publish Profile"
-                  )}
-                </Button>
-              )}
-            </div>
+            {renderFooterActions()}
           </div>
         </div>
       </div>

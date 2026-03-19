@@ -100,6 +100,7 @@ export async function GET(req: NextRequest) {
         numberOfOpenings: true,
         createdAt: true,
         updatedAt: true,
+        hideSalary: true,
         company: {
           select: {
             id: true,

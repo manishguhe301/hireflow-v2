@@ -21,7 +21,7 @@ model User {
   name          String
   role          Role      @default(JOB_SEEKER)
   emailVerified Boolean   @default(false)
-  isActive Boolean        @default(true)
+  isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -88,7 +88,7 @@ model Profile {
   jobCategories        String[]
   preferredLocations   String[]
   expectedSalaryMin    Int?
-  expectedSalaryMax    Int?
+  // expectedSalaryMax    Int?
   noticePeriod         String?
   
   profileCompleted     Int       @default(0)
@@ -120,6 +120,7 @@ model WorkExperience {
   endDate       DateTime?
   description   String?
   isCurrent     Boolean  @default(false)
+  isPartTime    Boolean  @default(false) 
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -204,6 +205,8 @@ model Company {
 
   // Approval
   approvedAt DateTime?
+  rejectedAt DateTime?
+  rejectedBy String?
   approvedBy String? 
 
   createdAt         DateTime       @default(now())
@@ -320,9 +323,10 @@ enum ApplicationStatus {
   REVIEWING
   SHORTLISTED
   INTERVIEW_SCHEDULED
-  REJECTED
   OFFERED
   HIRED
+  REJECTED
+  ON_HOLD
 }
 
 // ==================== SAVED JOB MODEL ====================
@@ -366,6 +370,7 @@ enum NotificationType {
   JOB_CLOSING_SOON
   NEW_MESSAGE_RECEIVED           
 }
+
 model Conversation {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   companyId       String    @db.ObjectId

@@ -1,79 +1,20 @@
 'use client'
 
 import React from 'react'
-import clsx from 'clsx'
-import { Pencil } from 'lucide-react'
 import { UseFormWatch } from 'react-hook-form'
-import { JobFormInputs } from './CreateJobForm'
 import { formatDate, formatSalary, getLabel, isRichTextEmpty } from '@/src/utils/helper'
 import RichTextRenderer from '@/src/components/ui/RichTextRenderer'
 import StepHeader from '@/src/components/ui/StepHeader'
 import { employmentTypes, experienceLevels, jobCategories, jobSkills, workModes } from '@/src/utils/constants'
+import Section from '@/src/components/shared/Section'
+import Item from '@/src/components/shared/Item'
+import { JobFormInputs } from '@/src/types'
 
 type Props = {
   watch: UseFormWatch<JobFormInputs>
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>
   disabled: boolean
 }
-
-const Section = ({
-  title,
-  onEdit,
-  children,
-  disabled
-}: {
-  title: string
-  onEdit: () => void
-  children: React.ReactNode
-  disabled?: boolean
-}) => {
-  return (
-    <div className="rounded-2xl border border-border/40 bg-card p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold">{title}</h3>
-        <button
-          type="button"
-          onClick={onEdit}
-          disabled={disabled}
-          className="flex items-center gap-1 text-sm text-primary hover:underline"
-        >
-          <Pencil className="h-4 w-4" />
-          Edit
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        {children}
-      </div>
-    </div>
-  )
-}
-
-const Item = ({
-  label,
-  value,
-  required = true,
-}: {
-  label: string
-  value?: string
-  required?: boolean
-}) => (
-  <div>
-    <p className="text-xs text-muted-foreground">
-      {label}
-      {required && !value && <span className="text-red-500 ml-1">*</span>}
-    </p>
-    <p
-      className={clsx(
-        'font-medium whitespace-pre-wrap break-words',
-        !value && required && 'text-red-500',
-        !value && !required && 'text-muted-foreground'
-      )}
-    >
-      {value || (required ? 'Required' : '—')}
-    </p>
-  </div>
-)
 
 const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
   const data = watch()
@@ -85,9 +26,19 @@ const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
         description='Review all job details carefully. You can edit any section before publishing.'
       />
 
-      <Section title="Basic Details" onEdit={() => setCurrentStep(0)} disabled={disabled}>
-        <Item label="Job Title" value={data.title} />
-        <Item label="Category" value={getLabel(jobCategories, data.category)} />
+      <Section
+        title="Basic Details"
+        onEdit={() => setCurrentStep(0)}
+        disabled={disabled}
+      >
+        <Item
+          label="Job Title"
+          value={data.title}
+        />
+        <Item
+          label="Category"
+          value={getLabel(jobCategories, data.category)}
+        />
         <div className="sm:col-span-2">
           <p className="text-xs text-muted-foreground mb-1">Description</p>
           <RichTextRenderer content={data.description} />
@@ -102,7 +53,11 @@ const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
         )}
       </Section>
 
-      <Section title="Requirements & Skills" onEdit={() => setCurrentStep(1)} disabled={disabled}>
+      <Section
+        title="Requirements & Skills"
+        onEdit={() => setCurrentStep(1)}
+        disabled={disabled}
+      >
         <div className="sm:col-span-2">
           <p className="text-xs text-muted-foreground mb-1">Requirements</p>
           <RichTextRenderer content={data.requirements} />
@@ -125,18 +80,32 @@ const Step5JobReview = ({ watch, setCurrentStep, disabled }: Props) => {
         </div>
       </Section>
 
-      <Section title="Location & Work Mode" onEdit={() => setCurrentStep(2)} disabled={disabled}>
+      <Section
+        title="Location & Work Mode"
+        onEdit={() => setCurrentStep(2)}
+        disabled={disabled}
+      >
         <Item
           label="Work Mode"
           value={getLabel(workModes, data.workMode)}
         />
-        <Item label="Country" value={data.country} />
+        <Item
+          label="Country"
+          value={data.country}
+        />
         {data.workMode !== 'REMOTE' && (
-          <Item label="City" value={data.city} />
+          <Item
+            label="City"
+            value={data.city} required={false}
+          />
         )}
       </Section>
 
-      <Section title="Salary & Openings" onEdit={() => setCurrentStep(3)} disabled={disabled}>
+      <Section
+        title="Salary & Openings"
+        onEdit={() => setCurrentStep(3)}
+        disabled={disabled}
+      >
         <Item
           label="Salary Visibility"
           value={

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   Building2,
+  RefreshCw,
   Search,
 } from 'lucide-react'
 import clsx from 'clsx'
@@ -14,16 +15,13 @@ import RejectCompanyModal from './RejectCompanyModal'
 import CompaniesTable from './CompaniesTable'
 import Pagination from '../ui/Pagination'
 import useDebounce from '@/src/store/hooks/useDebounce'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, } from '@tanstack/react-query'
 import AdminCompaniesTableSkeleton from '../skeletons/AdminCompaniesTableSkeleton'
 import { TABS } from '@/src/utils/constants'
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import { Button } from '../ui/Button'
+import { PaginationType } from '@/src/types'
+import { ADMIN_COMPANIES_TABS_STYLES } from '@/src/utils/helper'
+import { useAdminCompanyActions } from '@/src/store/hooks/useAdminCompanyActions'
 
 const AdminCompanies = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | CompanyStatus>('ALL')
@@ -34,7 +32,15 @@ const AdminCompanies = () => {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const debouncedSearch = useDebounce(search, 500)
-  const queryClient = useQueryClient()
+  const { approve, reject, remove } = useAdminCompanyActions({
+    onSettled: () => {
+      setRejectCompanyId(null)
+      setRejectReason('')
+      setLoadingAction(null)
+      setDeleteCompanyId(null)
+    },
+  })
+
 
   const queryParams = useMemo(() => {
     const params = new URLSearchParams()
@@ -48,7 +54,7 @@ const AdminCompanies = () => {
     return params.toString()
   }, [activeTab, debouncedSearch, page])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['admin-companies', activeTab, debouncedSearch, page],
     queryFn: async () => {
       const res = await AppSdk.getData(
@@ -65,59 +71,12 @@ const AdminCompanies = () => {
   })
 
   const companies: Company[] = data?.companies ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
-
-  const approveMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'APPROVED',
-      })
-    },
-    onSuccess: () => {
-      toast.success('Company approved successfully')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
-    },
-    onError: () => {
-      toast.error('Failed to approve company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    },
-  })
+  const pagination: PaginationType | null = data?.pagination ?? null
 
   const handleApprove = async (id: string) => {
     setLoadingAction(`approve-${id}`)
-    approveMutation.mutate(id)
+    approve(id)
   }
-
-  const rejectMutation = useMutation({
-    mutationFn: async ({
-      id,
-      reason,
-    }: {
-      id: string
-      reason: string
-    }) => {
-      return AppSdk.patchData(`/api/admin/companies/${id}`, {
-        status: 'REJECTED',
-        rejectionReason: reason,
-      })
-    },
-    onSuccess: () => {
-      toast.success('Company rejected')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
-    },
-    onError: () => {
-      toast.error('Failed to reject company')
-    },
-    onSettled: () => {
-      setRejectCompanyId(null)
-      setRejectReason('')
-      setLoadingAction(null)
-    },
-  })
 
   const handleReject = async (id: string, reason: string) => {
     if (!reason.trim()) {
@@ -127,35 +86,16 @@ const AdminCompanies = () => {
 
     setLoadingAction(`reject-${id}`)
 
-    rejectMutation.mutate({ id, reason })
+    reject(id, reason)
   }
-
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return AppSdk.deleteData(`/api/admin/companies/${id}`, null)
-    },
-    onSuccess: () => {
-      toast.success('Company deleted')
-      queryClient.invalidateQueries({ queryKey: ['admin-companies'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] })
-    },
-    onError: () => {
-      toast.error('Failed to delete company')
-    },
-    onSettled: () => {
-      setLoadingAction(null)
-    }
-  })
 
   const handleDelete = async () => {
     if (!deleteCompanyId) return
 
     setLoadingAction(`delete-${deleteCompanyId}`)
 
-    deleteMutation.mutate(deleteCompanyId)
+    remove(deleteCompanyId)
 
-    setDeleteCompanyId(null)
   }
 
   useEffect(() => {
@@ -179,28 +119,34 @@ const AdminCompanies = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex gap-2 items-center flex-wrap">
           {TABS.map((tab) => (
-            <button
+            <Button
               key={tab.value}
               onClick={() => {
                 setActiveTab(tab.value)
                 setPage(1)
               }}
+              size='sm'
+              variant={tab.value === activeTab ? 'primary' : 'ghost'}
+              disabled={isLoading || isFetching}
               className={clsx(
-                'px-4 py-2 rounded-xl text-sm font-medium border transition cursor-pointer',
-                activeTab === tab.value
-                  ? tab.value === 'ALL'
-                    ? 'bg-primary text-primary-foreground border-primary/40 shadow-md'
-                    : tab.value === 'PENDING'
-                      ? 'bg-amber-400 text-amber-950 border-amber-950/40 shadow-md'
-                      : tab.value === 'APPROVED'
-                        ? 'bg-success/10 text-success border-success/40 shadow-md'
-                        : 'bg-destructive/10 text-destructive border-destructive/40 shadow-md'
-                  : 'bg-card border-border/40 hover:bg-muted/40'
+                'shadow-md',
+                activeTab === tab.value ?
+                  ADMIN_COMPANIES_TABS_STYLES[tab.value]
+                  : 'bg-card! border-border/40! hover:bg-muted/40!'
               )}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
+          <Button
+            variant="outline"
+            onClick={() => refetch()}
+            size="sm"
+            className="flex flex-row items-center gap-2 shadow-md"
+            disabled={isLoading || isFetching}
+          >
+            <RefreshCw size={16} /> Refresh
+          </Button>
         </div>
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -210,6 +156,7 @@ const AdminCompanies = () => {
               setSearch(e.target.value)
               setPage(1)
             }}
+            disabled={isLoading || isFetching}
             aria-label="Search companies"
             placeholder="Search companies..."
             className="w-full rounded-xl border border-border/60 bg-background pl-9 pr-4 py-2 text-sm outline-none focus:border-primary/40"
@@ -231,6 +178,7 @@ const AdminCompanies = () => {
                   filteredCompanies={companies}
                   handleApprove={handleApprove}
                   loadingAction={loadingAction}
+                  disabled={isLoading || isFetching}
                   rejectCompanyId={rejectCompanyId}
                   setDeleteCompanyId={setDeleteCompanyId}
                   setRejectCompanyId={setRejectCompanyId}
@@ -238,7 +186,7 @@ const AdminCompanies = () => {
               </div>
             )}
 
-            {!isLoading && pagination && pagination.totalPages > 1 && (
+            {!isLoading && !isFetching && pagination && pagination.totalPages > 1 && (
               <div className="mt-8">
                 <Pagination
                   page={page}
@@ -270,5 +218,3 @@ const AdminCompanies = () => {
 }
 
 export default AdminCompanies
-
-

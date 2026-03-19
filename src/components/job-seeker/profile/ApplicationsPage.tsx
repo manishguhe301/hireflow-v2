@@ -1,5 +1,5 @@
 'use client'
-import { ApplicationStatus, EmploymentType, ExperienceLevel, JobStatus, WorkMode } from '@prisma/client'
+import { ApplicationStatus } from '@prisma/client'
 import { useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '../../ui/Button'
@@ -8,50 +8,16 @@ import Pagination from '../../ui/Pagination'
 import { useQuery } from '@tanstack/react-query'
 import TableSkeleton from '../../skeletons/TableSkeleton'
 import { APPLICATIONS_TABS } from '@/src/utils/constants'
-
-interface Application {
-  job: {
-    company: {
-      id: string
-      name: string
-      logo: string | null
-    }
-    id: string
-    status: JobStatus
-    title: string
-    experienceLevel: ExperienceLevel
-    employmentType: EmploymentType
-    workMode: WorkMode
-    salaryMin?: number | null
-    salaryMax?: number | null
-    category: string
-    slug: string
-  }
-  id: string
-  resumeUrl: string
-  coverLetter: string | null
-  status: ApplicationStatus
-  statusHistory: JSON | null
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface ApplicationWithPagination {
-  applications: Application[]
-  pagination: {
-    total: number
-    page: number
-    limit: number
-    totalPages: number
-  }
-}
+import { Briefcase, RefreshCcw } from 'lucide-react'
+import { ApplicationWithPagination } from '@/src/types'
+import Link from 'next/link'
 
 const ApplicationsPage = () => {
   const [activeTab, setActiveTab] =
     useState<ApplicationStatus | 'ALL'>('ALL')
   const [page, setPage] = useState(1)
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['applications', activeTab, page],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -101,30 +67,60 @@ const ApplicationsPage = () => {
                   setActiveTab(tab.value)
                   setPage(1)
                 }}
-                disabled={isLoading}
+                disabled={isLoading || isFetching}
               >
                 {tab.label}
               </Button>
             )
           })}
+        <Button
+          className='flex items-center justify-center gap-2 maxsm'
+          size='sm'
+          disabled={isLoading || isFetching}
+          onClick={() =>
+            refetch()
+          }>
+          <RefreshCcw className="h-4 w-4" /> Refresh
+        </Button>
       </div>
       {
         isLoading ? (
           <TableSkeleton columns={5} rows={6} />
         ) : (
-          <ApplicationsTable
-            data={data as ApplicationWithPagination}
-            refetch={refetch}
+          data &&
+            data.applications.length === 0 ? (
+            <div className='py-4 w-full border border-border rounded-xl'>
+              <div className="flex flex-col items-center gap-3">
+                <Briefcase className="h-10 w-10 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  No applications found
+                </p>
+
+                <Link href="/jobs">
+                  <Button size="sm" className="mt-4">
+                    Browse Jobs
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )
+            :
+            < ApplicationsTable
+              data={data as ApplicationWithPagination}
+              refetch={refetch}
+              disabled={isLoading || isFetching}
+            />
+        )
+      }
+      {
+        data && data.pagination.totalPages > 1 && (
+          <Pagination
+            page={data.pagination.page}
+            totalPages={data.pagination.totalPages}
+            onPageChange={(p) => setPage(p)}
           />
         )
       }
-      {data && data.pagination.totalPages > 1 && (
-        <Pagination
-          page={data.pagination.page}
-          totalPages={data.pagination.totalPages}
-          onPageChange={(p) => setPage(p)}
-        />
-      )}
     </div >
   )
 }

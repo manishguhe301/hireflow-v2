@@ -15,6 +15,30 @@ export async function PATCH(
 
     const isCompany = guard.session.user.role === Role.COMPANY_ADMIN;
 
+    const conversation = await prisma.conversation.findUnique({
+      where: { id },
+      select: {
+        companyId: true,
+        jobSeekerId: true,
+        company: { select: { userId: true } },
+      },
+    });
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: 'Conversation not found' },
+        { status: 404 },
+      );
+    }
+
+    const hasAccess = isCompany
+      ? conversation.company.userId === guard.session.user.id
+      : conversation.jobSeekerId === guard.session.user.id;
+
+    if (!hasAccess) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     await prisma.message.updateMany({
       where: {
         conversationId: id,

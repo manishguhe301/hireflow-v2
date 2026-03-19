@@ -8,7 +8,21 @@ import { Fragment } from 'react'
 interface BreadcrumbItem {
   label: string
   href: string
+  linkable: boolean
 }
+
+const labelOverrides: Record<string, string> = {
+  'create-admin': 'Create Admin',
+  'saved-jobs': 'Saved Jobs',
+  'profile-setup': 'Profile Setup',
+  'company-details': 'Company Details',
+  'user-profile': 'User Profile',
+  'how-it-works': 'How It Works',
+  'create': 'Create',
+  'edit': 'Edit',
+}
+
+const nonLinkable = new Set(['user-profile', 'company-details', 'edit'])
 
 export function Breadcrumb() {
   const pathname = usePathname()
@@ -16,38 +30,49 @@ export function Breadcrumb() {
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const segments = pathname.split('/').filter(Boolean)
     const breadcrumbs: BreadcrumbItem[] = []
-    const hiddenSegments = ['dashboard', 'company', 'admin']
 
-    let currentPath = ''
-    segments.forEach((segment) => {
-      if (hiddenSegments.includes(segment)) {
-        return
+    const hiddenPrefixes = new Set(['dashboard', 'company', 'admin'])
+
+    let basePrefix = ''
+    const cleanSegments: string[] = []
+
+    for (const seg of segments) {
+      if (!basePrefix && hiddenPrefixes.has(seg)) {
+        basePrefix = `/${seg}`
+      } else {
+        cleanSegments.push(seg)
       }
+    }
+
+    let currentPath = basePrefix
+
+    for (const segment of cleanSegments) {
       currentPath += `/${segment}`
 
-      if (segment.startsWith('(') && segment.endsWith(')')) {
-        return
+      let label: string
+      if (labelOverrides[segment]) {
+        label = labelOverrides[segment]
+      } else {
+        const cleaned = segment.replace(/-[a-z0-9]{5,6}$/i, '')
+        label = cleaned
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ')
       }
-
-      const cleanedSegment = segment.replace(/-[a-z0-9]{5,}$/i, '')
-
-      const label = cleanedSegment
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
 
       breadcrumbs.push({
         label,
-        href: currentPath
+        href: currentPath,
+        linkable: !nonLinkable.has(segment),
       })
-    })
+    }
 
     return breadcrumbs
   }
 
   const breadcrumbs = generateBreadcrumbs()
 
-  if (pathname === '/' || pathname === '/dashboard' || pathname === '/admin' || pathname === '/company') return null
+  if (breadcrumbs.length === 0) return null
 
   return (
     <nav className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -65,9 +90,11 @@ export function Breadcrumb() {
         return (
           <Fragment key={item.href}>
             <ChevronRight className="h-4 w-4" />
-
-            {isLast ? (
-              <span className="font-medium text-foreground truncate max-w-[200px]">
+            {isLast || !item.linkable ? (
+              <span
+                className={`truncate max-w-[200px] ${isLast ? 'font-medium text-foreground' : ''
+                  }`}
+              >
                 {item.label}
               </span>
             ) : (

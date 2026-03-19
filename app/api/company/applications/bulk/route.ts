@@ -44,6 +44,13 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    if (
+      action === 'update_status' &&
+      !Object.values(ApplicationStatus).includes(status!)
+    ) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    }
+
     const company = await prisma.company.findUnique({
       where: { userId: guard.session.user.id },
       select: { id: true },
@@ -142,7 +149,7 @@ export async function PATCH(req: NextRequest) {
             where: { id: app.id },
             data: {
               status: 'REJECTED',
-              internalNotes: status === 'REJECTED' ? rejectReason : null,
+              internalNotes: rejectReason || null,
               statusHistory: existingHistory,
             },
           });

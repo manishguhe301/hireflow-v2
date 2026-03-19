@@ -31,13 +31,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!Object.values(Role).includes(role)) {
-      return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+    if (![Role.JOB_SEEKER, Role.COMPANY_ADMIN].includes(role)) {
+      return NextResponse.json(
+        { error: 'Invalid role for signup' },
+        { status: 400 },
+      );
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
 
     const isAlreadyEmailRegistered = await prisma.user.findUnique({
       where: {
-        email,
+        email: normalizedEmail,
       },
     });
 
@@ -57,9 +62,10 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role,
+        emailVerified: true,
       },
     });
 
@@ -90,7 +96,7 @@ export async function POST(req: NextRequest) {
     const { name: userName, email: userEmail, role: userRole } = user;
 
     await sendEmail({
-      to: 'manishguhe301@gmail.com',
+      to: process.env.ADMIN_EMAIL!,
       subject: `🚀 New User Signup - ${user.name}`,
       react: React.createElement(NewUserEmail, {
         name: userName,

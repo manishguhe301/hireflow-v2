@@ -20,7 +20,7 @@ const Navbar = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="flex items-center justify-between px-4 md:px-6 py-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-sm:gap-4">
           <Button
             onClick={onMenuClick}
             variant="ghost"

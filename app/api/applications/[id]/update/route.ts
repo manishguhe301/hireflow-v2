@@ -100,6 +100,10 @@ export async function PATCH(
       (a, b) => STATUS_FLOW.indexOf(a.status) - STATUS_FLOW.indexOf(b.status),
     );
 
+    if (!Object.values(ApplicationStatus).includes(status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    }
+
     const updatedApplication = await prisma.application.update({
       where: { id },
       data: {

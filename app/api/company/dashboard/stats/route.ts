@@ -93,19 +93,20 @@ export async function GET(req: NextRequest) {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const applicationsOverTime = await prisma.application.groupBy({
-      by: ['createdAt'],
+    const applicationsOverTime = await prisma.application.findMany({
       where: {
         job: { companyId: company.id },
         createdAt: { gte: thirtyDaysAgo },
       },
-      _count: true,
+      select: {
+        createdAt: true,
+      },
     });
-
     const applicationsByDate: { [key: string]: number } = {};
+
     applicationsOverTime.forEach((app) => {
       const date = new Date(app.createdAt).toISOString().split('T')[0];
-      applicationsByDate[date] = (applicationsByDate[date] || 0) + app._count;
+      applicationsByDate[date] = (applicationsByDate[date] || 0) + 1;
     });
 
     const timeSeriesData = Object.entries(applicationsByDate)
@@ -121,7 +122,7 @@ export async function GET(req: NextRequest) {
         statusBreakdown,
       },
       timeSeriesData,
-      recentApplications
+      recentApplications,
     });
   } catch (error) {
     console.error('Error fetching company dashboard stats:', error);

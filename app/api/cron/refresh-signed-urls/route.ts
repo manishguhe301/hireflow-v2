@@ -9,11 +9,11 @@ const EXPIRY = 60 * 60 * 24 * 7;
 
 export async function GET(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('user-agent');
-    const isLocalTest = process.env.NODE_ENV === 'development';
-    const isVercelCron = authHeader?.includes('vercel-cron');
+    const authHeader = req.headers.get('authorization');
 
-    if (!isVercelCron && !isLocalTest) {
+    const isLocalTest = process.env.NODE_ENV === 'development';
+
+    if (!isLocalTest && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
     console.error('Signed URL cron failed', error);
 
     await sendEmail({
-      to: 'manishguhe301@gmail.com',
+      to: process.env.ADMIN_EMAIL!,
       subject: '🚨 Signed URL Cron Failed',
       react: React.createElement(SignedUrlFailureEmail, {
         error: String(error),

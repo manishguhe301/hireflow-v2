@@ -24,6 +24,18 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const hasAutoSelectedFromUrl = useRef(false);
+  const hasShownInitToast = useRef(false)
+
+  useEffect(() => {
+    if (conversationFromUrl && !hasShownInitToast.current) {
+      const toastId = toast.loading('Please wait while we initialize the chat...')
+      hasShownInitToast.current = true
+
+      setTimeout(() => {
+        toast.dismiss(toastId)
+      }, 2000)
+    }
+  }, [conversationFromUrl])
 
   const {
     data,
@@ -31,6 +43,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
+    isFetching,
     refetch,
   } = useInfiniteQuery({
     queryKey: ['conversations', debouncedSearch],
@@ -159,7 +172,13 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
           <ChatSidebar
             conversations={conversations}
             selectedConversation={selectedConversation}
-            onSelectConversation={setSelectedConversation}
+            onSelectConversation={(id) => {
+              setSelectedConversation(id)
+
+              if (conversationFromUrl) {
+                window.history.replaceState({}, '', '/company/chat')
+              }
+            }}
             userType={userType}
             onConversationUpdate={() => refetch()}
             searchQuery={searchQuery}
@@ -168,6 +187,7 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
             onDeleteConversation={handleDeleteConversation}
             observerTarget={observerTarget}
             isLoadingMore={isFetchingNextPage}
+            isFetching={isFetching}
           />
         </div>
         <div className={clsx(
@@ -178,13 +198,26 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
             conversationId={selectedConversation}
             userType={userType}
             onMessageSent={() => refetch()}
-            onBack={() => setSelectedConversation(null)}
+            onBack={() => {
+              setSelectedConversation(null)
+
+              if (conversationFromUrl) {
+                window.history.replaceState({}, '', '/company/chat')
+              }
+            }}
             chatPartnerName={
               selectedConversationData
                 ? (userType === 'company'
                   ? (selectedConversationData.jobSeeker as ConversationUser)?.profile?.name || selectedConversationData.jobSeeker?.name
                   : (selectedConversationData.company as ConversationCompany)?.name)
                 : ''
+            }
+            chatPartnerAvatar={
+              selectedConversationData
+                ? (userType === 'company'
+                  ? (selectedConversationData.jobSeeker as ConversationUser)?.profile?.avatar
+                  : (selectedConversationData.company as ConversationCompany)?.logo)
+                : null
             }
             jobTitle={selectedConversationData?.job?.title}
           />

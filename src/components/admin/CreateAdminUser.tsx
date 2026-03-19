@@ -2,12 +2,10 @@
 
 import { isPasswordValid, isValidEmail, showError } from '@/src/utils/helper'
 import { Role } from '@prisma/client'
-import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 import { AppSdk } from '@/src/utils/AppSdk'
-import { useRouter } from 'next/navigation'
 import { FormInput } from '../ui/FormInput'
 import { Button } from '../ui/Button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -36,7 +34,6 @@ const CreateAdminUser = () => {
   })
 
   const password = watch('password')
-  const router = useRouter()
 
   const [error, setError] = useState('')
 
@@ -78,7 +75,7 @@ const CreateAdminUser = () => {
 
     const payload = {
       name: data.name.trim(),
-      email: data.email.trim(),
+      email: data.email.trim().toLowerCase(),
       password: data.password.trim(),
       role: Role.PLATFORM_ADMIN,
     }
@@ -91,15 +88,6 @@ const CreateAdminUser = () => {
   return (
     <div className="p-4 md:p-8 md:px-8 w-full max-w-xl mx-auto animate-in fade-in duration-500">
       <div className="mb-8">
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 mb-6 p-0!"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Users
-        </Button>
-
         <h1 className="text-3xl font-bold tracking-tight">
           Create Platform Admin
         </h1>

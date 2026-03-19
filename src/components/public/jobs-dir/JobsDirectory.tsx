@@ -1,63 +1,19 @@
 'use client'
-import { Briefcase, Search } from 'lucide-react'
+import { Briefcase } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { FormSelect } from '../../ui/FormSelect'
-import { jobCategories } from '@/src/utils/constants'
 import Pagination from '../../ui/Pagination'
 import JobCard from './JobCard'
 import FilterSidebar from './FilterSidebar'
-import { Button } from '../../ui/Button'
 import clsx from 'clsx'
 import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
-import { AppSdk } from '@/src/utils/AppSdk'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import JobsDirectorySkeleton from '../../skeletons/JobsDirectorySkeleton'
-
-export type DirJobType = {
-  id: string,
-  title: string,
-  category: string,
-  company: {
-    name: string,
-    logo: string,
-    website: string,
-    id: string,
-  },
-  country: string,
-  city: string,
-  workMode: string,
-  employmentType: string,
-  applicationDeadline: string,
-  experienceLevel: string,
-  numberOfOpenings: string,
-  slug: string,
-  salaryMax: number,
-  salaryMin: number,
-  createdAt: string,
-  updatedAt: string,
-  isSaved: boolean,
-}
-
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
-
-type Filters = {
-  workModes: string[]
-  employmentTypes: string[]
-  experienceLevels: string[]
-  salaryMin: number
-  salaryMax: number
-  datePosted: string
-  sortBy: string
-}
+import JobCardSkeleton from '../../skeletons/JobCardSkeleton'
+import { DirJobType, Filters, PaginationType } from '@/src/types'
+import SearchSection from './SearchSection'
+import { useSaveJob } from '@/src/store/hooks/useSaveJob'
 
 const JobsDirectory = () => {
   const router = useRouter()
@@ -76,7 +32,7 @@ const JobsDirectory = () => {
     employmentTypes: [],
     experienceLevels: [],
     salaryMin: 0,
-    salaryMax: 10000000,
+    salaryMax: 150,
     datePosted: '',
     sortBy: 'recent',
   })
@@ -105,7 +61,7 @@ const JobsDirectory = () => {
     if (debouncedFilters.salaryMin > 0)
       params.set('salaryMin', debouncedFilters.salaryMin.toString())
 
-    if (debouncedFilters.salaryMax < 10000000)
+    if (debouncedFilters.salaryMax < 150)
       params.set('salaryMax', debouncedFilters.salaryMax.toString())
 
     if (debouncedFilters.datePosted)
@@ -120,8 +76,8 @@ const JobsDirectory = () => {
     return params.toString()
   }, [debouncedSearch, debouncedCategory, debouncedLocation, debouncedFilters, page])
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['jobs', queryParams],
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ['jobs', queryParams, session?.user?.id ?? 'public'],
     queryFn: async ({ signal }) => {
       const res = await fetch(`/api/jobs?${queryParams}`, { signal })
       if (!res.ok) throw new Error('Failed to fetch jobs')
@@ -133,7 +89,8 @@ const JobsDirectory = () => {
   })
 
   const jobs: DirJobType[] = data?.jobs ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
+  const pagination: PaginationType | null = data?.pagination ?? null
+  const isFiltersSelected = search || category || location || filters.workModes.length || filters.employmentTypes.length || filters.experienceLevels.length || filters.salaryMin > 0 || filters.salaryMax < 150 || filters.datePosted || filters.sortBy
 
   useEffect(() => {
     if (!pagination || page >= pagination.totalPages) return
@@ -178,32 +135,45 @@ const JobsDirectory = () => {
     if (page !== 1) setPage(1)
   }, [filters])
 
-  const saveJobMutation = useMutation({
-    mutationFn: async ({ jobId, currentlySaved }: { jobId: string, currentlySaved: boolean }) => {
-      if (currentlySaved) {
-        return AppSdk.deleteData(`/api/jobs/saved?jobId=${jobId}`, null)
-      } else {
-        return AppSdk.postData(`/api/jobs/saved`, { jobId })
-      }
-    },
-    onSuccess: (_data, variables) => {
-      if (variables.currentlySaved) {
-        toast.success('Job removed from saved')
-      } else {
-        toast.success('Job saved successfully')
-      }
+  const { toggleSave, isPending: savePending } = useSaveJob({
+    invalidateKeys: [
+      // ['jobs'],
+      ['saved-jobs']
+    ],
+    onMutate: async ({ jobId, currentlySaved }) => {
+      await queryClient.cancelQueries({ queryKey: ['jobs'] })
 
-      queryClient.invalidateQueries({ queryKey: ['jobs'] })
-      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] })
+      const previousData = queryClient.getQueryData(['jobs', queryParams, session?.user?.id ?? 'public'])
+
+      queryClient.setQueryData(
+        ['jobs', queryParams, session?.user?.id ?? 'public'],
+        //eslint-disable-next-line
+        (old: any) => {
+          if (!old) return old
+
+          return {
+            ...old,
+            jobs: old.jobs.map((job: DirJobType) =>
+              job.id === jobId
+                ? { ...job, isSaved: !currentlySaved }
+                : job
+            )
+          }
+        }
+      )
+
+      return { previousData }
     },
-    onError: () => {
-      toast.error('Failed to save job, please try again')
-    }
+    onError: (_err, _vars, context) => {
+      const ctx = context as { previousData?: unknown }
+      if (ctx?.previousData) {
+        queryClient.setQueryData(
+          ['jobs', queryParams, session?.user?.id ?? 'public'],
+          ctx.previousData
+        )
+      }
+    },
   })
-
-  const handleSaveToggle = (jobId: string, currentlySaved: boolean) => {
-    saveJobMutation.mutate({ jobId, currentlySaved })
-  }
 
   const handleClearAllFilters = () => {
     setFilters({
@@ -211,7 +181,7 @@ const JobsDirectory = () => {
       employmentTypes: [],
       experienceLevels: [],
       salaryMin: 0,
-      salaryMax: 10000000,
+      salaryMax: 150,
       datePosted: '',
       sortBy: 'recent',
     })
@@ -254,7 +224,7 @@ const JobsDirectory = () => {
 
   return (
     <div className={clsx(isLoggedIn
-      ? 'space-y-6 ' : "mx-auto max-w-5xl px-4 py-10 space-y-10")}>
+      ? 'space-y-6 ' : "mx-auto max-w-7xl px-4 py-10 space-y-10")}>
       {!isLoggedIn ?
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold tracking-tight">Explore Jobs</h1>
@@ -269,61 +239,17 @@ const JobsDirectory = () => {
         </div>
       }
 
-      <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <div className="relative md:col-span-2">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              aria-label="Search jobs by title, skills, company…"
-              placeholder="Search jobs by title, skills, company…"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-              className="w-full rounded-xl border border-border/60 bg-background pl-10 pr-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
-            />
-          </div>
+      <SearchSection
+        location={location}
+        search={search}
+        setCategory={setCategory}
+        setIsMobileFilterOpen={setIsMobileFilterOpen}
+        setLocation={setLocation}
+        setPage={setPage}
+        setSearch={setSearch}
+      />
 
-          <FormSelect
-            label=""
-            placeholder="Job Categories"
-            options={[
-              { label: 'All Categories', value: '' },
-              ...jobCategories,
-            ]}
-            onChange={(value) => {
-              setCategory(value)
-              setPage(1)
-            }}
-          />
-
-          <input
-            aria-label="Location"
-            type="text"
-            placeholder="Location"
-            value={location}
-            onChange={(e) => {
-              setLocation(e.target.value)
-              setPage(1)
-            }}
-            className="w-full rounded-xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-primary/40 focus:ring-1 focus:ring-primary/30"
-          />
-        </div>
-        <div className="lg:hidden flex justify-end py-4">
-          <Button
-            onClick={() => setIsMobileFilterOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-border/40 bg-card px-4 py-2 text-sm"
-            variant="outline"
-          >
-            Filters
-          </Button>
-        </div>
-
-      </div>
-
-      {pagination && (
+      {pagination && jobs?.length > 0 && (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{start} - {end}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> jobs
@@ -372,16 +298,22 @@ const JobsDirectory = () => {
         )}
 
         <main className="flex-1 min-w-0">
-
-          {!isLoading && jobs.length > 0 && (
+          {isFetching && !isLoading && (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {[...Array(6)].map((_, i) => (
+                <JobCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
+          {!isLoading && !isFetching && jobs.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {jobs.map((job) => (
                 <JobCard
                   key={job.id}
                   job={job}
                   isSaved={job.isSaved}
-                  onSaveToggle={() => handleSaveToggle(job.id, job.isSaved)}
-                  disabled={saveJobMutation.isPending}
+                  onSaveToggle={() => toggleSave(job.id, job.isSaved)}
+                  disabled={savePending}
                 />
               ))}
             </div>
@@ -394,14 +326,14 @@ const JobsDirectory = () => {
               </div>
               <h3 className="text-xl font-semibold mb-1">No jobs found</h3>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                Try adjusting your search or filters to find what you&apos;re looking for.
+                {isFiltersSelected ? <>Try adjusting your search or filters to find what you&apos;re looking for.</> : 'No jobs posted on our platform yet.'}
               </p>
-              <button
+              {isFiltersSelected && <button
                 onClick={handleClearAllFilters}
                 className="text-sm font-medium text-primary hover:underline"
               >
                 Clear all filters
-              </button>
+              </button>}
             </div>
           )}
 

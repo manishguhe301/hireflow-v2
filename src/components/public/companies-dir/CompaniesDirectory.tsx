@@ -10,23 +10,8 @@ import { companyIndustries } from '@/src/utils/constants'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useDebounce from '@/src/store/hooks/useDebounce'
 import CompaniesDirectorySkeleton from '../../skeletons/CompaniesDirectorySkeleton'
-
-export type Company = {
-  id: string
-  name: string
-  logo: string | null
-  industry: string
-  country: string
-  companySize: string
-  jobCount: number
-}
-
-type Pagination = {
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
+import CompanyCardSkeleton from '../../skeletons/CompanyCardSkeleton'
+import { DirCompanyType, PaginationType } from '@/src/types'
 
 export default function CompaniesDirectory() {
   const router = useRouter()
@@ -69,7 +54,7 @@ export default function CompaniesDirectory() {
     return params.toString()
   }, [debouncedSearch, debouncedIndustry, debouncedLocation, page])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ['companies', queryParams],
     queryFn: async () => {
       const res = await fetch(`/api/companies?${queryParams}`)
@@ -81,8 +66,8 @@ export default function CompaniesDirectory() {
     refetchOnWindowFocus: false
   })
 
-  const companies: Company[] = data?.companies ?? []
-  const pagination: Pagination | null = data?.pagination ?? null
+  const companies: DirCompanyType[] = data?.companies ?? []
+  const pagination: PaginationType | null = data?.pagination ?? null
 
 
   useEffect(() => {
@@ -156,14 +141,22 @@ export default function CompaniesDirectory() {
         </div>
       </div>
 
-      {!isLoading && pagination && (
+      {!isLoading && pagination && companies.length > 0 && (
         <p className="text-sm text-muted-foreground">
           Showing <span className="font-medium text-foreground">{companies.length}</span> of{' '}
           <span className="font-medium text-foreground">{pagination.total}</span> companies
         </p>
       )}
 
-      {!isLoading && companies.length > 0 && (
+      {isFetching && !isLoading && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[...Array(8)].map((_, i) => (
+            <CompanyCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && !isFetching && companies.length > 0 && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {companies.map((company) => (
             <CompanyCard key={company.id} company={company} />
@@ -178,9 +171,9 @@ export default function CompaniesDirectory() {
           </div>
           <h3 className="text-xl font-semibold mb-1">No companies found</h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-            Try adjusting your search or filters to find what you’re looking for.
+            {search || industry || location ? 'Try adjusting your search or filters to find what you’re looking for.' : 'No companies have joined HireFlow yet.'}
           </p>
-          <button
+          {(search || industry || location) && <button
             onClick={() => {
               setSearch('')
               setIndustry('')
@@ -190,7 +183,7 @@ export default function CompaniesDirectory() {
             className="text-sm font-medium text-primary hover:underline"
           >
             Clear all filters
-          </button>
+          </button>}
         </div>
       )}
 

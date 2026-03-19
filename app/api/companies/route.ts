@@ -8,9 +8,18 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || '';
     const industry = searchParams.get('industry') || '';
     const country = searchParams.get('country') || '';
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '12');
+    let page = parseInt(searchParams.get('page') || '1');
+    const limit = Math.min(50, parseInt(searchParams.get('limit') || '12'));
     const skip = (page - 1) * limit;
+
+    if (search.length > 100) {
+      return NextResponse.json(
+        { error: 'Search query too long' },
+        { status: 400 },
+      );
+    }
+
+    if (page > 1000) page = 1;
 
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {

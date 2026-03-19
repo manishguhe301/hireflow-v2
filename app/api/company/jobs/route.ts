@@ -268,6 +268,13 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    if (company.status !== 'APPROVED') {
+      return NextResponse.json(
+        { error: 'Your company is not approved to modify jobs.' },
+        { status: 403 },
+      );
+    }
+
     const formData = await req.formData();
     const jobId = formData.get('jobId') as string;
 

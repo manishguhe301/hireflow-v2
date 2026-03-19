@@ -1,3 +1,4 @@
+import { Github } from 'lucide-react'
 import Link from 'next/link'
 
 export default function PublicFooter() {
@@ -26,15 +27,31 @@ export default function PublicFooter() {
         <div>
           <h5 className="text-sm font-semibold mb-3">Company</h5>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link href="#" className="hover:text-primary transition">About</Link></li>
-            <li><Link href="#" className="hover:text-primary transition">Privacy</Link></li>
-            <li><Link href="#" className="hover:text-primary transition">Terms</Link></li>
+            <li><Link href="/about" className="hover:text-primary transition">About</Link></li>
+            <li><Link href="/privacy" className="hover:text-primary transition">Privacy</Link></li>
+            <li><Link href="/terms" className="hover:text-primary transition">Terms</Link></li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
+      <div className="border-t border-border/60 py-6">
+        <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-xs text-muted-foreground">
+
+          <span>
+            © {new Date().getFullYear()} HireFlow<span className="text-primary">.</span>
+          </span>
+
+          <a
+            href="https://github.com/manishguhe301/hireflow-v2"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:text-primary transition"
+          >
+            <Github className="w-4 h-4" />
+            View on GitHub
+          </a>
+
+        </div>
       </div>
     </footer>
   )

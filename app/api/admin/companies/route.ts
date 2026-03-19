@@ -1,6 +1,6 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
 import prisma from '@/src/lib/prisma';
-import { Role } from '@prisma/client';
+import { CompanyStatus, Role } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -20,7 +20,10 @@ export async function GET(request: NextRequest) {
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {};
 
-    if (status) {
+    if (
+      status &&
+      Object.values(CompanyStatus).includes(status as CompanyStatus)
+    ) {
       where.status = status;
     }
 

@@ -1,15 +1,7 @@
+import { RejectCompanyModalProps } from "@/src/types"
 import { Spinner } from "../elements/Loader"
 import { Button } from "../ui/Button"
 import Modal from "../ui/Modal"
-
-type RejectCompanyModalProps = {
-  rejectCompanyId: string | null
-  setRejectCompanyId: React.Dispatch<React.SetStateAction<string | null>>
-  rejectReason: string
-  setRejectReason: React.Dispatch<React.SetStateAction<string>>
-  onReject: (id: string, reason: string) => Promise<void>
-  loadingAction: string | null
-}
 
 const RejectCompanyModal = ({
   rejectCompanyId,

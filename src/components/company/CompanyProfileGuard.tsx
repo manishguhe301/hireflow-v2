@@ -87,7 +87,7 @@ export function RejectedCompanyUI({ company }: { company: Company | null }) {
           <p className="text-sm font-medium text-destructive">
             Reason provided by admin
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground max-w-full wrap-break-word">
             {company.rejectionReason}
           </p>
         </div>
@@ -103,9 +103,9 @@ export function RejectedCompanyUI({ company }: { company: Company | null }) {
 }
 
 export default function CompanyProfileGuard({ children }: { children: React.ReactNode }) {
-  const { company, error, isLoading } = useCompany()
+  const { company, error, isLoading, isFetched } = useCompany()
 
-  if (isLoading) {
+  if (isLoading || !isFetched) {
     return (
       <PageLoader title="Preparing your workspace" subtitle='Checking your company profile' />
     )

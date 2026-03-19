@@ -32,6 +32,7 @@ const WithdrawModal = ({
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard-activity'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard-recommended'] })
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
       onSuccess()
       onClose()
     },

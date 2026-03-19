@@ -7,7 +7,7 @@ import Step3Documents from './Step3Documents'
 import Step4Review from './Step4Review'
 import { Button } from '../../ui/Button'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { toast } from 'sonner'
@@ -17,53 +17,11 @@ import { CompanyStatus } from '@prisma/client'
 import clsx from 'clsx'
 import MobileTabs from '../../layout/MobileTabs'
 import StepSidebar from '../../layout/StepSidebar'
+import { Spinner } from '../../elements/Loader'
+import { PROFILE_SETUP_STEP_FIELDS, profileSetupSteps } from '@/src/utils/constants'
+import { ProfileFormInputs } from '@/src/types'
+import BackButton from '../../shared/BackButton'
 
-export type ProfileFormInputs = {
-  name: string,
-  description: string,
-  industry: string,
-  companySize: string,
-  foundedYear: string,
-  website: string,
-  linkedinProfile: string,
-
-  contactEmail: string,
-  contactPhone: string,
-  country: string,
-  city: string,
-  countryPhoneCode: string,
-  address: string,
-
-  logo: FileList,
-  businessDocument: FileList,
-  taxDocument: FileList
-}
-
-const STEP_FIELDS: Record<number, (keyof ProfileFormInputs)[]> = {
-  0: [
-    'name',
-    'description',
-    'industry',
-    'companySize',
-    'foundedYear',
-    'website',
-  ],
-  1: [
-    'contactEmail',
-    'country',
-  ],
-  2: [
-    'logo',
-    'businessDocument',
-  ],
-}
-
-const steps = [
-  { number: 1, label: 'Basic Info' },
-  { number: 2, label: 'Contact' },
-  { number: 3, label: 'Documents' },
-  { number: 4, label: 'Review' },
-]
 
 const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(0)
@@ -99,12 +57,14 @@ const ProfileSetup = () => {
       // logo: null,
       // businessDocument: null,
       // taxDocument: null, //optional
+
+      deleteLogo: false
     }
   })
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const dispatch = useDispatch()
-  const { company } = useCompany();
+  const { company, isLoading } = useCompany();
   const isEditMode = company ? true : false
   const hasCheckedRedirect = useRef(false)
   const selectedCountry = watch('country')
@@ -140,7 +100,7 @@ const ProfileSetup = () => {
 
 
   const handleNext = async () => {
-    const fields = STEP_FIELDS[currentStep]
+    const fields = PROFILE_SETUP_STEP_FIELDS[currentStep]
 
     if (!fields) {
       setCurrentStep((prev) => prev + 1)
@@ -178,6 +138,11 @@ const ProfileSetup = () => {
       if (data.logo?.[0]) {
         formData.append('logo', data.logo[0])
       }
+
+      if (data.deleteLogo) {
+        formData.append('deleteLogo', 'true')
+      }
+
       if (data.businessDocument?.[0]) {
         formData.append('businessDocument', data.businessDocument[0])
       }
@@ -195,6 +160,11 @@ const ProfileSetup = () => {
         method,
         body: formData,
       })
+
+      if (response.status === 401 || response.status === 403) {
+        signOut({ callbackUrl: '/login' })
+        return
+      }
 
       const result = await response.json()
 
@@ -226,40 +196,134 @@ const ProfileSetup = () => {
     }
   }
 
+  if (isLoading) return <div className='flex items-center justify-center h-full'>
+    <Spinner className='h-8 w-8' />
+  </div>
+
+  const stepComponents = [
+    <Step1BasicInfo
+      key={1}
+      register={register}
+      errors={errors}
+      isLoading={isSubmitting}
+    />,
+    <Step2Contact
+      key={2}
+      register={register}
+      errors={errors}
+      selectedCountry={selectedCountry}
+      watch={watch}
+      setValue={setValue}
+      isLoading={isSubmitting}
+    />,
+    <Step3Documents
+      key={3}
+      register={register}
+      errors={errors}
+      isLoading={isSubmitting}
+      watch={watch}
+      setValue={setValue}
+    />,
+    <Step4Review
+      key={4}
+      setCurrentStep={setCurrentStep}
+      watch={watch}
+      isLoading={isSubmitting}
+    />
+  ]
+
+  const rejectionBanner = () => {
+    if (company?.status !== CompanyStatus.REJECTED) return null
+
+    return (
+      <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
+        <h3 className="text-sm font-semibold text-destructive mb-1">
+          Profile Rejected
+        </h3>
+        <p className="text-sm text-destructive/90">
+          {company.rejectionReason}
+        </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Please update your information and resubmit for approval.
+        </p>
+      </div>
+    )
+  }
+
+  const editingBanner = () => {
+    if (company?.status !== CompanyStatus.APPROVED) return null
+    return (
+      <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+        <p className="text-sm text-primary font-medium">
+          Editing an approved profile
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Please review all steps before saving changes to ensure your profile
+          remains accurate and up to date.
+        </p>
+      </div>
+    )
+  }
+
+  const isFirstStep = currentStep === 0
+  const isLastStep = currentStep === profileSetupSteps.length - 1
+
+  const renderActions = () => {
+    return <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
+      {currentStep !== 3 && isEditMode && company?.status === CompanyStatus.APPROVED && < Button
+        type="button"
+        disabled={isSubmitting}
+        onClick={handleSubmit(handleFormSubmit)}
+        variant="outline"
+        className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
+      >
+        {isSubmitting ? "Saving..." : "Save Changes"}
+      </Button>
+      }
+
+      {!isLastStep ? (
+        <Button
+          disabled={isSubmitting}
+          onClick={handleNext}
+          className="max-md:w-1/2 max-sm:w-full"
+        >
+          Next
+        </Button>
+      ) : (
+        <Button
+          disabled={isSubmitting}
+          onClick={handleSubmit(handleFormSubmit)}
+          variant="primary"
+          className="max-md:w-1/2 max-sm:w-full"
+        >
+          {isSubmitting
+            ? 'Submitting...'
+            : company?.status === CompanyStatus.REJECTED
+              ? 'Resubmit for Approval'
+              : company?.status === CompanyStatus.APPROVED
+                ? 'Save Changes'
+                : 'Submit for Approval'
+          }
+        </Button>
+      )}
+    </div>
+  }
+
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      {company?.status === CompanyStatus.REJECTED && company.rejectionReason && (
-        <div className="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4">
-          <h3 className="text-sm font-semibold text-destructive mb-1">
-            Profile Rejected
-          </h3>
-          <p className="text-sm text-destructive/90">
-            {company.rejectionReason}
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Please update your information and resubmit for approval.
-          </p>
-        </div>
-      )}
+      <BackButton disabled={isSubmitting} />
+      {rejectionBanner()}
 
-      {company?.status === CompanyStatus.APPROVED && (
-        <div className="mb-6 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-          <p className="text-sm text-primary font-medium">
-            Editing an approved profile
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Please review all steps before saving changes to ensure your profile
-            remains accurate and up to date.
-          </p>
-        </div>
-      )}
+      {editingBanner()}
 
       {isEditMode && (
         <MobileTabs
-          steps={steps}
+          steps={profileSetupSteps}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
           isEditMode={isEditMode}
+          disabled={isSubmitting}
         />
       )}
 
@@ -267,10 +331,11 @@ const ProfileSetup = () => {
         {isEditMode && (
           <div className="hidden lg:block sticky top-24">
             <StepSidebar
-              steps={steps}
+              steps={profileSetupSteps}
               currentStep={currentStep}
               onStepClick={setCurrentStep}
               isEditMode={isEditMode}
+              disabled={isSubmitting}
             />
           </div>
         )}
@@ -282,30 +347,18 @@ const ProfileSetup = () => {
               handleNext={handleNext}
               handlePrev={handlePrev}
               disabled={isSubmitting}
-              steps={steps}
+              steps={profileSetupSteps}
             />
           </div>
 
           <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 && <Step1BasicInfo register={register} errors={errors} isLoading={isSubmitting} />}
-            {currentStep === 1 && <Step2Contact register={register} errors={errors}
-              selectedCountry={selectedCountry} watch={watch} setValue={setValue} isLoading={isSubmitting} />}
-            {currentStep === 2 && <Step3Documents register={register} errors={errors}
-              isLoading={isSubmitting}
-            />}
-            {currentStep === 3 &&
-              <Step4Review
-                setCurrentStep={setCurrentStep}
-                watch={watch}
-                isLoading={isSubmitting}
-              />
-            }
+            {stepComponents[currentStep]}
           </form>
 
           <div className={clsx("flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:justify-center max-md:w-full max-sm:p-0 max-md:flex-col max-md:gap-4",
             currentStep === 0 && 'justify-end'
           )}>
-            {currentStep > 0 && (
+            {!isFirstStep && (
               <Button
                 onClick={handlePrev}
                 variant="outline"
@@ -315,45 +368,8 @@ const ProfileSetup = () => {
                 Previous
               </Button>
             )}
-            <div className="flex items-center gap-3 max-md:flex-col max-md:w-full">
 
-              {currentStep !== 3 && isEditMode && company?.status === CompanyStatus.APPROVED && < Button
-                type="button"
-                disabled={isSubmitting}
-                onClick={handleSubmit(handleFormSubmit)}
-                variant="outline"
-                className="max-md:w-1/2 text-primary border border-primary max-sm:w-full"
-              >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </Button>
-              }
-
-              {currentStep < 3 ? (
-                <Button
-                  disabled={isSubmitting}
-                  onClick={handleNext}
-                  className="max-md:w-1/2 max-sm:w-full"
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  disabled={isSubmitting}
-                  onClick={handleSubmit(handleFormSubmit)}
-                  variant="primary"
-                  className="max-md:w-1/2 max-sm:w-full"
-                >
-                  {isSubmitting
-                    ? 'Submitting...'
-                    : company?.status === CompanyStatus.REJECTED
-                      ? 'Resubmit for Approval'
-                      : company?.status === CompanyStatus.APPROVED
-                        ? 'Save Changes'
-                        : 'Submit for Approval'
-                  }
-                </Button>
-              )}
-            </div>
+            {renderActions()}
           </div>
         </div>
       </div>

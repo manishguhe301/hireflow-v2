@@ -2,7 +2,6 @@
 
 import React, { useEffect } from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { ProfileFormInputs } from './ProfileSetup'
 import { FormInput } from '../../ui/FormInput'
 import { FormSelect } from '../../ui/FormSelect'
 import { FormTextarea } from '../../ui/FormTextarea'
@@ -11,6 +10,7 @@ import { Spinner } from '../../elements/Loader'
 import CountryCodeSelect from '../../ui/CountryCodeSelect'
 import { useCountries } from '@/src/store/hooks/useCountries'
 import StepHeader from '../../ui/StepHeader'
+import { ProfileFormInputs } from '@/src/types'
 
 const Step2Contact = ({
   register,

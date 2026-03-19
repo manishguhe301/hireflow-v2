@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
-import { JobFormInputs } from './CreateJobForm'
 import { FormSelect } from '@/src/components/ui/FormSelect'
 import { employmentTypes, experienceLevels, jobSkills } from '@/src/utils/constants'
 import RichTextEditor from '@/src/components/ui/RichTextEditor'
 import MultiSelect from '@/src/components/ui/MultiSelect'
 import StepHeader from '@/src/components/ui/StepHeader'
+import { JobFormInputs } from '@/src/types'
 
 const Step2JobRequirements = ({
   register,

@@ -1,4 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { signOut } from 'next-auth/react';
+
+const handleAuthError = (status: number) => {
+  if (status === 401 || status === 403) {
+    signOut({ callbackUrl: '/login' });
+  }
+};
+
 export const AppSdk = {
   getData: (url: string, body: any) => {
     return new Promise<any>(async (resolve, reject) => {
@@ -10,6 +19,12 @@ export const AppSdk = {
           options.body = JSON.stringify(body);
         //console.log(url, options);
         const res = await fetch(url, options);
+
+        if (res.status === 401 || res.status === 403) {
+          handleAuthError(res.status);
+          return resolve({ error: 'Session expired. Redirecting to login...' });
+        }
+
         if (res.ok) {
           const result = await res.json();
           return resolve(result as any);
@@ -32,6 +47,12 @@ export const AppSdk = {
           },
           body: JSON.stringify(data),
         });
+
+        if (res.status === 401 || res.status === 403) {
+          handleAuthError(res.status);
+          return resolve({ error: 'Session expired. Redirecting to login...' });
+        }
+
         if (res.ok) {
           const result = await res.json();
           return resolve(result);
@@ -54,6 +75,12 @@ export const AppSdk = {
           },
           body: JSON.stringify(data),
         });
+
+        if (res.status === 401 || res.status === 403) {
+          handleAuthError(res.status);
+          return resolve({ error: 'Session expired. Redirecting to login...' });
+        }
+
         // console.log(await res.json());
         if (res.ok) {
           const result = await res.json();
@@ -77,6 +104,12 @@ export const AppSdk = {
           },
           body: JSON.stringify(data),
         });
+
+        if (res.status === 401 || res.status === 403) {
+          handleAuthError(res.status);
+          return resolve({ error: 'Session expired. Redirecting to login...' });
+        }
+
         if (res.ok) {
           const result = await res.json();
           return resolve(result);
@@ -99,6 +132,12 @@ export const AppSdk = {
           },
           body: JSON.stringify(data),
         });
+
+        if (res.status === 401 || res.status === 403) {
+          handleAuthError(res.status);
+          return resolve({ error: 'Session expired. Redirecting to login...' });
+        }
+
         // console.log(await res.json());
         if (res.ok) {
           const result = await res.json();

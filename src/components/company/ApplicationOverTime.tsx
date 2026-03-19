@@ -1,4 +1,4 @@
-import { TimeSeriesData } from "./CompanyDashboardPage"
+import { TimeSeriesData } from '@/src/types'
 import {
   LineChart,
   Line,

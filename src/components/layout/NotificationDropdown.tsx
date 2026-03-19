@@ -3,6 +3,8 @@ import { formatRelativeTime } from '@/src/utils/helper'
 import { Check, CheckCheck, SquareArrowOutUpRight, Trash2, X } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useRef } from 'react'
+import { Spinner } from '../elements/Loader'
+import { Button } from '../ui/Button'
 
 interface Notification {
   id: string
@@ -22,6 +24,8 @@ interface Props {
   onMarkAllAsRead: () => void
   onRefresh: () => void
   deleteNotification: (id: string, isALL?: boolean) => void
+  deleteNotificationId: string
+  disabled: boolean
 }
 
 const NotificationDropdown = ({
@@ -30,7 +34,9 @@ const NotificationDropdown = ({
   onClose,
   onMarkAsRead,
   onMarkAllAsRead,
-  deleteNotification
+  deleteNotification,
+  deleteNotificationId,
+  disabled,
 }: Props) => {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -56,6 +62,7 @@ const NotificationDropdown = ({
             <button
               onClick={onMarkAllAsRead}
               className="text-xs text-primary hover:underline flex items-center gap-1 cursor-pointer"
+              disabled={disabled}
             >
               <CheckCheck className="h-3 w-3" />
               Mark all read
@@ -65,15 +72,16 @@ const NotificationDropdown = ({
             onClick={() => {
               deleteNotification('', true)
             }}
+            disabled={disabled}
             className="text-xs text-destructive hover:underline flex items-center gap-1 cursor-pointer"
           >
             <Trash2 className="h-3 w-3" />
             Delete all
           </button>
           }
-          <button onClick={onClose} 
-          aria-label="Close"
-          className="text-muted-foreground hover:text-foreground cursor-pointer">
+          <button onClick={onClose}
+            aria-label="Close"
+            className="text-muted-foreground hover:text-foreground cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -136,19 +144,31 @@ const NotificationDropdown = ({
                     </div>
                   )}
                 </div>
-                {!notification.isRead && (
-                  <button
-                    onClick={() => onMarkAsRead([notification.id])}
-                    className="text-primary hover:text-primary/80"
-                    title="Mark as read"
-                    aria-label="Mark as read"
+                <div className='flex items-center gap-3'>
+                  {!notification.isRead && (
+                    <button
+                      onClick={() => onMarkAsRead([notification.id])}
+                      className="text-primary hover:text-primary/80 cursor-pointer"
+                      title="Mark as read"
+                      aria-label="Mark as read"
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                  )}
+                  <Button variant='outline' size='sm'
+                    className='px-1!'
+                    onClick={() => {
+                      deleteNotification(notification.id)
+                    }}
+                    disabled={!disabled}
                   >
-                    <Check className="h-4 w-4" />
-                  </button>
-                )}
-                <Trash2 className='h-4 w-4 text-destructive cursor-pointer' onClick={() => {
-                  deleteNotification(notification.id)
-                }} />
+                    {deleteNotificationId === notification.id ?
+                      <Spinner className='h-4 w-4' /> :
+                      <Trash2
+                        className='h-4 w-4 text-destructive cursor-pointer'
+                      />}
+                  </Button>
+                </div>
               </div>
             </div>
           ))

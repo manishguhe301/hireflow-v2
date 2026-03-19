@@ -1,5 +1,5 @@
 'use client'
-import { EmploymentType, ExperienceLevel, Job, JobStatus, WorkMode } from '@prisma/client';
+import { JobStatus } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
@@ -11,7 +11,7 @@ import Step3JobLocation from './Step3JobLocation';
 import Step4JobSalary from './Step4JobSalary';
 import Step5JobReview from './Step5JobReview';
 import { Button } from '@/src/components/ui/Button';
-import { isRichTextEmpty } from '@/src/utils/helper';
+import { hasAnyDraftData, isRichTextEmpty, JOB_STATUS_UI } from '@/src/utils/helper';
 import { Spinner } from '@/src/components/elements/Loader';
 import { AppSdk } from '@/src/utils/AppSdk';
 import clsx from 'clsx';
@@ -19,85 +19,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PageLoader from '@/src/components/ui/PageLoader';
 import MobileTabs from '@/src/components/layout/MobileTabs';
 import StepSidebar from '@/src/components/layout/StepSidebar';
-
-export type JobFormInputs = {
-  jobId?: string;
-  title: string;
-  description: string;
-  requirements: string;
-  responsibilities?: string;
-  skills: string[];
-  experienceLevel: ExperienceLevel;
-  employmentType: EmploymentType;
-  workMode: WorkMode;
-  country: string;
-  city?: string;
-  salaryMin?: number;
-  salaryMax?: number;
-  // currency?: string;
-  hideSalary: boolean;
-  numberOfOpenings: number;
-  applicationDeadline?: Date;
-  category: string;
-}
-
-const STEP_FIELDS: Record<number, (keyof JobFormInputs)[]> = {
-  0: [
-    'title',
-    'description',
-    'category',
-  ],
-  1: [
-    'requirements',
-    'skills',
-    'experienceLevel',
-    'employmentType',
-  ],
-  2: [
-    'workMode',
-    'country',
-  ],
-  3: [
-    'hideSalary',
-    'numberOfOpenings',
-  ]
-}
-
-const jobFormSteps = [
-  { number: 1, label: 'Basic Details' },
-  { number: 2, label: 'Requirements' },
-  { number: 3, label: 'Location & Work Mode' },
-  { number: 4, label: 'Salary & Openings' },
-  { number: 5, label: 'Review & Publish' },
-]
-
-const JOB_STATUS_UI: Record<JobStatus, {
-  className: string
-  title: string
-  message: (step: number) => string
-}> = {
-  DRAFT: {
-    className: 'bg-warning/10 border-warning/30 text-warning',
-    title: 'Draft Job',
-    message: (step) =>
-      step >= 4
-        ? 'All required details look complete. You can publish this job now.'
-        : 'This job is saved as a draft. Complete all steps to publish it.',
-  },
-  ACTIVE: {
-    className: 'bg-success/10 border-success/30 text-success',
-    title: 'Active Job',
-    message: () =>
-      'This job is live and visible to candidates. Any changes will update it immediately.',
-  },
-  CLOSED: {
-    className: 'bg-destructive/10 border-destructive/30 text-destructive',
-    title: 'Closed Job',
-    message: () =>
-      'This job is closed and no longer accepting applications. You can reopen it anytime.',
-  },
-}
-
+import { signOut } from 'next-auth/react';
+import BackButton from '@/src/components/shared/BackButton';
+import { JobFormInputs } from '@/src/types';
+import { jobFormSteps, STEP_FIELDS } from '@/src/utils/constants';
 
 const CreateJobForm = () => {
   const [currentStep, setCurrentStep] = useState(0)
@@ -240,25 +165,9 @@ const CreateJobForm = () => {
     }
 
     setCurrentStep((prev) => prev + 1)
-    console.log(getValues());
   }
 
   const handlePrev = () => setCurrentStep((prev) => prev - 1)
-
-  const hasAnyDraftData = (data: JobFormInputs) => {
-    return (
-      !!data.title ||
-      !isRichTextEmpty(data.description) ||
-      !!data.category ||
-      !isRichTextEmpty(data.requirements) ||
-      (data.responsibilities && !isRichTextEmpty(data.responsibilities)) ||
-      data.skills.length > 0 ||
-      !!data.country ||
-      !!data.city ||
-      typeof data.salaryMin === 'number' ||
-      typeof data.salaryMax === 'number'
-    )
-  }
 
   const handleFormSubmit =
     (isDraft: boolean): SubmitHandler<JobFormInputs> =>
@@ -274,7 +183,6 @@ const CreateJobForm = () => {
           setIsSubmitting(true)
         }
 
-        console.log(data);
         try {
           const formData = new FormData()
 
@@ -328,6 +236,11 @@ const CreateJobForm = () => {
             body: formData,
           })
 
+          if (response.status === 401 || response.status === 403) {
+            signOut({ callbackUrl: '/login' })
+            return
+          }
+
           const result = await response.json()
 
           if (!response.ok) {
@@ -379,23 +292,164 @@ const CreateJobForm = () => {
 
   const isAnyActionInProgress = isSubmitting || isSavingDraft
 
+  const stepComponents = [
+    <Step1BasicJobDetails
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      disabled={isAnyActionInProgress}
+      key={1}
+    />,
+    <Step2JobRequirements
+      register={register}
+      errors={errors}
+      watch={watch}
+      setValue={setValue}
+      isEditMode={isEditMode}
+      disabled={isAnyActionInProgress}
+      key={2}
+    />,
+    <Step3JobLocation
+      register={register}
+      errors={errors}
+      watch={watch}
+      isEditMode={isEditMode}
+      disabled={isAnyActionInProgress}
+      key={3}
+    />,
+    <Step4JobSalary
+      register={register}
+      errors={errors}
+      watch={watch}
+      disabled={isAnyActionInProgress}
+      isEditMode={isEditMode}
+      setValue={setValue}
+      key={4}
+    />,
+    <Step5JobReview
+      setCurrentStep={setCurrentStep}
+      watch={watch}
+      disabled={isAnyActionInProgress}
+      key={5}
+    />
+  ]
+
+  const isLastStep = currentStep === stepComponents.length - 1;
+  const isFirstStep = currentStep === 0;
+  const canShowDraft =
+    (!isEditMode || jobStatus === 'DRAFT') && !isLastStep;
+
+  const renderStatusBanner = () => {
+    if (!jobStatus) return null;
+    return (
+      <div
+        className={clsx(
+          'mb-6 rounded-2xl border p-4',
+          JOB_STATUS_UI[jobStatus].className
+        )}
+      >
+        <p className="text-sm font-semibold">
+          {JOB_STATUS_UI[jobStatus].title}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {JOB_STATUS_UI[jobStatus].message(currentStep)}
+        </p>
+      </div>
+    )
+  }
+
+  const renderDraftButton = () => {
+    if (!canShowDraft) return null
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={handleDraftSave}
+        disabled={isAnyActionInProgress}
+        className="max-md:w-full"
+      >
+        {isSavingDraft ?
+          <span className="flex items-center gap-2">
+            <Spinner className="h-4 w-4" />
+            Saving...
+          </span>
+          : 'Save as Draft'}
+      </Button>
+    )
+  }
+
+  const renderPrimaryActions = () => {
+    const submitBtn = (
+      <Button
+        disabled={isAnyActionInProgress}
+        onClick={handleSubmit(handleFormSubmit(false))}
+        variant="primary"
+        className="max-md:w-1/2 max-sm:w-full"
+      >
+        {isSubmitting ? (
+          <span className="flex items-center gap-2">
+            <Spinner className="h-4 w-4" />
+            {isEditMode ? 'Saving...' : 'Publishing...'}
+          </span>
+        ) : isEditMode ? (
+          jobStatus === 'CLOSED'
+            ? 'Reopen Job'
+            : jobStatus === 'ACTIVE' ? 'Save Changes' :
+              'Publish Job'
+        ) : (
+          'Publish Job'
+        )}
+      </Button>
+    );
+
+    if (!isLastStep) {
+      return (
+        <>
+          <Button
+            disabled={isAnyActionInProgress}
+            onClick={handleNext}
+            className="max-md:w-1/2 max-sm:w-full"
+          >
+            Next
+          </Button>
+
+          {isEditMode && jobStatus !== 'DRAFT' && submitBtn}
+        </>
+      );
+    }
+
+    if (isEditMode && jobStatus === 'DRAFT') {
+      return (
+        <>
+          <Button
+            disabled={isAnyActionInProgress}
+            onClick={handleDraftSave}
+            variant="outline"
+            className="max-md:w-1/2"
+          >
+            {isSavingDraft ? (
+              <span className="flex items-center gap-2">
+                <Spinner className="h-4 w-4" />
+                Saving...
+              </span>
+            ) : (
+              'Update Draft'
+            )}
+          </Button>
+
+          {submitBtn}
+        </>
+      );
+    }
+
+    return submitBtn;
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      {jobStatus && (
-        <div
-          className={clsx(
-            'mb-6 rounded-2xl border p-4',
-            JOB_STATUS_UI[jobStatus].className
-          )}
-        >
-          <p className="text-sm font-semibold">
-            {JOB_STATUS_UI[jobStatus].title}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {JOB_STATUS_UI[jobStatus].message(currentStep)}
-          </p>
-        </div>
-      )}
+      <BackButton disabled={isAnyActionInProgress} />
+      {renderStatusBanner()}
 
       {isEditMode && (
         <MobileTabs
@@ -429,75 +483,16 @@ const CreateJobForm = () => {
             />
           </div>
           <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
-            {currentStep === 0 &&
-              <Step1BasicJobDetails
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                disabled={isAnyActionInProgress}
-              />
-            }
-            {currentStep === 1 &&
-              <Step2JobRequirements
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-                isEditMode={isEditMode}
-                disabled={isAnyActionInProgress}
-              />
-            }
-            {currentStep === 2 &&
-              <Step3JobLocation
-                register={register}
-                errors={errors}
-                watch={watch}
-                isEditMode={isEditMode}
-                disabled={isAnyActionInProgress}
-              />
-            }
-            {
-              currentStep === 3 &&
-              <Step4JobSalary
-                register={register}
-                errors={errors}
-                watch={watch}
-                disabled={isAnyActionInProgress}
-                isEditMode={isEditMode}
-                setValue={setValue}
-              />
-            }
-            {currentStep === 4 &&
-              <Step5JobReview
-                setCurrentStep={setCurrentStep}
-                watch={watch}
-                disabled={isAnyActionInProgress}
-              />
-            }
+            {stepComponents[currentStep]}
           </form>
 
           <div className={clsx(
             "flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4 max-md:flex-col max-md:gap-2 max-sm:p-0",
             (!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? '' : 'justify-end!'
           )}>
-            {(!isEditMode || jobStatus === 'DRAFT') && currentStep !== 4 ? <Button
-              type="button"
-              variant="ghost"
-              onClick={handleDraftSave}
-              disabled={isAnyActionInProgress}
-              className="max-md:w-full"
-            >
-              {isSavingDraft ?
-                <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" />
-                  Saving...
-                </span>
-                : 'Save as Draft'}
-            </Button> : null
-            }
+            {renderDraftButton()}
             <div className={clsx("flex gap-3 items-center max-md:flex-col max-md:w-full",)}>
-              {currentStep > 0 && (
+              {!isFirstStep && (
                 <Button
                   onClick={handlePrev}
                   variant="outline"
@@ -507,97 +502,7 @@ const CreateJobForm = () => {
                   Previous
                 </Button>
               )}
-              {currentStep < 4 ? (
-                <>
-                  <Button
-                    disabled={isAnyActionInProgress}
-                    onClick={handleNext}
-                    className="max-md:w-1/2 max-sm:w-full"
-                  >
-                    Next
-                  </Button>
-
-                  {isEditMode && jobStatus === 'ACTIVE' && (
-                    <Button
-                      disabled={isAnyActionInProgress}
-                      onClick={handleSubmit(handleFormSubmit(false))}
-                      variant="primary"
-                      className="max-md:w-1/2 max-sm:w-full"
-                    >
-                      Save Changes
-                    </Button>
-                  )}
-
-                  {isEditMode && jobStatus === 'CLOSED' && (
-                    <Button
-                      disabled={isAnyActionInProgress}
-                      onClick={handleSubmit(handleFormSubmit(false))}
-                      variant="primary"
-                      className="max-md:w-1/2"
-                    >
-                      Reopen Job
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  {isEditMode && jobStatus === 'DRAFT' ? (
-                    <>
-                      <Button
-                        disabled={isAnyActionInProgress}
-                        onClick={handleSubmit(handleFormSubmit(true))}
-                        variant="outline"
-                        className="max-md:w-1/2"
-                      >
-                        {isSavingDraft ? (
-                          <span className="flex items-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Saving...
-                          </span>
-                        ) : (
-                          'Update Draft'
-                        )}
-                      </Button>
-
-                      <Button
-                        disabled={isAnyActionInProgress}
-                        onClick={handleSubmit(handleFormSubmit(false))}
-                        variant="primary"
-                        className="max-md:w-1/2"
-                      >
-                        {isSubmitting ? (
-                          <span className="flex items-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Publishing...
-                          </span>
-                        ) : (
-                          'Publish Job'
-                        )}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      disabled={isAnyActionInProgress}
-                      onClick={handleSubmit(handleFormSubmit(false))}
-                      variant="primary"
-                      className="max-md:w-1/2 max-sm:w-full"
-                    >
-                      {isSubmitting ? (
-                        <span className="flex items-center gap-2">
-                          <Spinner className="h-4 w-4" />
-                          {isEditMode ? 'Saving...' : 'Publishing...'}
-                        </span>
-                      ) : (
-                        isEditMode
-                          ? jobStatus === 'CLOSED'
-                            ? 'Reopen Job'
-                            : 'Save Changes'
-                          : 'Publish Job'
-                      )}
-                    </Button>
-                  )}
-                </>
-              )}
+              {renderPrimaryActions()}
             </div>
           </div>
         </div>

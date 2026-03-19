@@ -1,4 +1,4 @@
-import { AnalyticsData } from "./CompanyDashboardPage"
+import { AnalyticsData } from '@/src/types'
 import {
   BarChart,
   Bar,
