@@ -15,9 +15,11 @@ import { DirCompanyType, DirJobType } from '@/src/types';
 import LatestJobs from './landing-components/LatestJobs';
 import CompaniesSection from './landing-components/CompaniesSection';
 import HowItWorksSection from './landing-components/HowItWorksSection';
+import { useRedirectIfLoggedIn } from '@/src/store/hooks/useRedirectIfLoggedIn';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
+  useRedirectIfLoggedIn()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['homepage-data'],

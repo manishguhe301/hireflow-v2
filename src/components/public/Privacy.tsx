@@ -1,8 +1,10 @@
 'use client'
 
+import { useRedirectIfLoggedIn } from "@/src/store/hooks/useRedirectIfLoggedIn"
 import PageTop from "./PageTop"
 
 export default function Privacy() {
+  useRedirectIfLoggedIn()
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       <PageTop

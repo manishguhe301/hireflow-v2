@@ -12,6 +12,7 @@ import { isPasswordValid, isValidEmail, showError } from '@/src/utils/helper'
 import { Role } from '@prisma/client'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { useRedirectIfLoggedIn } from '@/src/store/hooks/useRedirectIfLoggedIn'
 
 type Inputs = {
   name: string
@@ -23,7 +24,7 @@ type Inputs = {
 
 
 const SignUpForm = () => {
-
+  useRedirectIfLoggedIn()
   const {
     register,
     formState: { errors },

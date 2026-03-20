@@ -7,14 +7,40 @@ import { useSession } from 'next-auth/react'
 import clsx from 'clsx'
 import CompanyDetailsTopSection from '../../shared/CompanyDetailsTopSection'
 import CompanyiInfo from '../../shared/CompanyiInfo'
+import { useQuery } from '@tanstack/react-query'
+import { AppSdk } from '@/src/utils/AppSdk'
+import CompanyDetailsSkeleton from '../../skeletons/CompanyDetailsSkeleton'
+import { notFound } from 'next/navigation'
 
-type CompanyPublicViewProps = {
-  company: Company,
-  jobs: Job[]
-}
-
-const CompanyPublicView = ({ company, jobs }: CompanyPublicViewProps) => {
+const CompanyPublicView = ({ id }: { id: string }) => {
   const { data: session } = useSession()
+
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['public-company', id],
+    queryFn: async () => {
+      const res = await AppSdk.getData(`/api/companies/${id}?full=true`, null)
+      if (res.error) throw new Error(res.error)
+      return res
+    },
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
+
+  if (isLoading) {
+    return (
+      <div className=''>
+        <CompanyDetailsSkeleton />
+      </div>
+    )
+  }
+  if (!data?.company) return notFound()
+
+  const { company, jobs }: {
+    company: Company,
+    jobs: Job[]
+  } = data
+
 
   return (
     <div className={clsx("mx-auto  space-y-10 px-4 py-6", session?.user.id ? 'max-w-6xl' : 'max-w-5xl')}>

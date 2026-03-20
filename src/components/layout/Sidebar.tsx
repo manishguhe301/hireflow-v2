@@ -62,6 +62,12 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
   const isDark = theme === 'dark'
 
 
+  const homeHref =
+    session?.user?.role === 'PLATFORM_ADMIN' ? '/admin'
+      : session?.user?.role === 'COMPANY_ADMIN' ? '/company'
+        : '/dashboard'
+
+
   if (status === 'loading') {
     return (
       <aside className="hidden md:flex w-64 flex-col border-r border-border/60 bg-background px-4 py-6">
@@ -129,10 +135,10 @@ const Sidebar = ({ mobile = false, closeSidebar }: SidebarProps) => {
       )}
     >
       <div className="mb-8 px-2 flex items-center justify-between">
-        <Link href="/" className="text-lg font-semibold max-lg:hidden max-md:block">
+        <Link href={homeHref} className="text-lg font-semibold max-lg:hidden max-md:block">
           HireFlow<span className="text-primary">.</span>
         </Link>
-        <Link href="/" className="text-lg font-semibold lg:hidden max-md:hidden">
+        <Link href={homeHref} className="text-lg font-semibold lg:hidden max-md:hidden">
           <img
             src='/logo-hireflow.png'
             alt='logo'

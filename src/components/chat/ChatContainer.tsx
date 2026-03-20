@@ -220,6 +220,8 @@ export default function ChatContainer({ userType }: { userType: 'company' | 'job
                 : null
             }
             jobTitle={selectedConversationData?.job?.title}
+
+            isWithdrawn={selectedConversationData?.isApplicationWithdrawn ?? false}
           />
         </div>
       </div>

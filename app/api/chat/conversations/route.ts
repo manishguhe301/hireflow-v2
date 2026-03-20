@@ -131,7 +131,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      conversations,
+      conversations,  
       pagination: {
         total,
         page,

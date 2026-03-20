@@ -7,12 +7,10 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const full = req.nextUrl.searchParams.get('full') === 'true';
 
     const company = await prisma.company.findUnique({
-      where: {
-        id,
-        status: 'APPROVED',
-      },
+      where: { id, status: 'APPROVED' },
       select: {
         id: true,
         name: true,
@@ -22,8 +20,14 @@ export async function GET(
         companySize: true,
         foundedYear: true,
         country: true,
+        city: true,
         website: true,
         linkedinProfile: true,
+        ...(full && {
+          contactEmail: true,
+          contactPhone: true,
+          address: true,
+        }),
       },
     });
 
@@ -34,15 +38,12 @@ export async function GET(
       );
     }
 
-    // TODO: This will be implemented when we build job posting feature
     const jobs = await prisma.job.findMany({
-      where: {
-        companyId: id,
-        status: 'ACTIVE',
-      },
+      where: { companyId: id, status: 'ACTIVE' },
       select: {
         id: true,
         title: true,
+        slug: true,
         country: true,
         city: true,
         workMode: true,
@@ -52,16 +53,17 @@ export async function GET(
         salaryMax: true,
         hideSalary: true,
         createdAt: true,
+        ...(full && {
+          description: true,
+          skills: true,
+          applicationDeadline: true,
+          numberOfOpenings: true,
+        }),
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({
-      company,
-      jobs,
-    });
+    return NextResponse.json({ company, jobs });
   } catch (error) {
     console.error('Error fetching company:', error);
     return NextResponse.json(
