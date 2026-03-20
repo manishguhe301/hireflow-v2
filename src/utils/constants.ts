@@ -239,6 +239,11 @@ export const jobSkills: SelectOption[] = [
   { label: 'Angular', value: 'angular' },
   { label: 'Tailwind CSS', value: 'tailwindcss' },
   { label: 'Bootstrap', value: 'bootstrap' },
+  { label: 'SASS/SCSS', value: 'sass' },
+  { label: 'Material UI', value: 'mui' },
+  { label: 'Chakra UI', value: 'chakra-ui' },
+  { label: 'ShadCN UI', value: 'shadcn' },
+  { label: 'Framer Motion', value: 'framer-motion' },
 
   { label: 'Node.js', value: 'nodejs' },
   { label: 'Express.js', value: 'expressjs' },
@@ -248,14 +253,21 @@ export const jobSkills: SelectOption[] = [
   { label: 'Python', value: 'python' },
   { label: 'Django', value: 'django' },
   { label: 'Flask', value: 'flask' },
+  { label: 'FastAPI', value: 'fastapi' },
   { label: 'PHP', value: 'php' },
   { label: 'Laravel', value: 'laravel' },
+  { label: 'Ruby on Rails', value: 'rails' },
+  { label: 'C#', value: 'csharp' },
+  { label: '.NET', value: 'dotnet' },
 
   { label: 'MongoDB', value: 'mongodb' },
   { label: 'PostgreSQL', value: 'postgresql' },
   { label: 'MySQL', value: 'mysql' },
   { label: 'SQLite', value: 'sqlite' },
   { label: 'Redis', value: 'redis' },
+  { label: 'Firebase', value: 'firebase' },
+  { label: 'Supabase', value: 'supabase' },
+  { label: 'Prisma', value: 'prisma' },
 
   { label: 'Docker', value: 'docker' },
   { label: 'Kubernetes', value: 'kubernetes' },
@@ -265,16 +277,22 @@ export const jobSkills: SelectOption[] = [
   { label: 'CI/CD', value: 'cicd' },
   { label: 'Linux', value: 'linux' },
   { label: 'Nginx', value: 'nginx' },
+  { label: 'Terraform', value: 'terraform' },
+  { label: 'Vercel', value: 'vercel' },
+  { label: 'Netlify', value: 'netlify' },
 
   { label: 'React Native', value: 'react-native' },
   { label: 'Flutter', value: 'flutter' },
   { label: 'Swift', value: 'swift' },
   { label: 'Kotlin', value: 'kotlin' },
+  { label: 'Expo', value: 'expo' },
 
   { label: 'Jest', value: 'jest' },
   { label: 'Cypress', value: 'cypress' },
   { label: 'Playwright', value: 'playwright' },
   { label: 'Unit Testing', value: 'unit-testing' },
+  { label: 'Integration Testing', value: 'integration-testing' },
+  { label: 'E2E Testing', value: 'e2e-testing' },
 
   { label: 'Git', value: 'git' },
   { label: 'GitHub', value: 'github' },
@@ -287,31 +305,25 @@ export const jobSkills: SelectOption[] = [
 
   { label: 'REST APIs', value: 'rest-api' },
   { label: 'GraphQL', value: 'graphql' },
+  { label: 'WebSockets', value: 'websockets' },
   { label: 'Microservices', value: 'microservices' },
+  { label: 'System Design', value: 'system-design' },
+
   { label: 'Agile / Scrum', value: 'agile' },
   { label: 'Problem Solving', value: 'problem-solving' },
   { label: 'Communication', value: 'communication' },
   { label: 'Leadership', value: 'leadership' },
   { label: 'Teamwork', value: 'teamwork' },
   { label: 'Time Management', value: 'time-management' },
+
   { label: 'Go (Golang)', value: 'golang' },
+  { label: 'Rust', value: 'rust' },
 ];
 
 export const workModes = [
   { label: 'Remote', value: WorkMode.REMOTE },
   { label: 'Hybrid', value: WorkMode.HYBRID },
   { label: 'Onsite', value: WorkMode.ON_SITE },
-];
-
-export const currencyOptions = [
-  { label: 'Indian Rupee (₹)', value: 'INR' },
-  { label: 'US Dollar ($)', value: 'USD' },
-  { label: 'Euro (€)', value: 'EUR' },
-  { label: 'British Pound (£)', value: 'GBP' },
-  { label: 'Australian Dollar (A$)', value: 'AUD' },
-  { label: 'Canadian Dollar (C$)', value: 'CAD' },
-  { label: 'Singapore Dollar (S$)', value: 'SGD' },
-  { label: 'UAE Dirham (د.إ)', value: 'AED' },
 ];
 
 export const currentEmploymentStatuses = [
