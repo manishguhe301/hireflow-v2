@@ -256,10 +256,10 @@ const CreateJobForm = () => {
               : 'Job created successfully'
 
           toast.success(successMessage)
-          reset()
           queryClient.invalidateQueries({ queryKey: ['company-dashboard'] })
           queryClient.invalidateQueries({ queryKey: ['company-jobs'] })
           setTimeout(() => router.push('/company/jobs'), 100)
+          reset()
         } catch (error) {
           console.error('Submit error:', error)
           toast.error('Something went wrong. Please try again.')

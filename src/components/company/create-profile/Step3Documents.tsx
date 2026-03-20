@@ -37,7 +37,7 @@ const Step3Documents = ({
           <p className="mt-1">
             If you navigate to another step and return here, your selected file may
             appear cleared due to browser security behavior. Please re-check your
-            resume before publishing your profile.
+            documents before publishing your profile.
           </p>
         </div>
       )}

@@ -147,6 +147,7 @@ export default function CompanyApplicationsPage() {
             <div className='flex flex-col gap-2'>
               <Button
                 className='flex items-center justify-center gap-2 self-end'
+                size='sm'
                 disabled={applicationsLoading || pageChangeLoading}
                 onClick={() =>
                   applicationRefetch()

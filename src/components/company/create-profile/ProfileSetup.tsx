@@ -183,11 +183,11 @@ const ProfileSetup = () => {
         toast.success('Profile submitted for approval!')
       }
 
-      reset()
 
       if (company?.status === CompanyStatus.APPROVED) { router.push('/company/profile') }
       else { router.push('/company') }
 
+      reset()
     } catch (error) {
       console.error('Submit error:', error)
       toast.error('Something went wrong. Please try again.')

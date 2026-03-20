@@ -291,6 +291,10 @@ export const jobSkills: SelectOption[] = [
   { label: 'Agile / Scrum', value: 'agile' },
   { label: 'Problem Solving', value: 'problem-solving' },
   { label: 'Communication', value: 'communication' },
+  { label: 'Leadership', value: 'leadership' },
+  { label: 'Teamwork', value: 'teamwork' },
+  { label: 'Time Management', value: 'time-management' },
+  { label: 'Go (Golang)', value: 'golang' },
 ];
 
 export const workModes = [
