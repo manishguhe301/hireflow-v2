@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       select: {
         companyId: true,
         jobSeekerId: true,
+        isApplicationWithdrawn: true,
         company: {
           select: {
             userId: true,
@@ -66,6 +67,13 @@ export async function POST(req: NextRequest) {
 
     if (!hasAccess) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    if (conversation.isApplicationWithdrawn) {
+      return NextResponse.json(
+        { error: 'Messaging is disabled for this conversation' },
+        { status: 403 },
+      );
     }
 
     const isFirstMessage = conversation._count.messages === 0;
