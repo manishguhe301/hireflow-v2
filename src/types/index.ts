@@ -205,6 +205,7 @@ export interface ChatWindowProps {
   chatPartnerAvatar?: string | null;
   jobTitle?: string;
   onBack?: () => void;
+  isWithdrawn: boolean;
 }
 
 export interface MessageInputProps {
@@ -215,6 +216,7 @@ export interface MessageInputProps {
   setNewMessage: Dispatch<SetStateAction<string>>;
   userType: 'company' | 'jobseeker';
   messagesEndRef: RefObject<HTMLDivElement | null>;
+  isWithdrawn: boolean;
 }
 
 export interface ChatItemProps {
@@ -656,4 +658,3 @@ export type DirCompanyType = {
   companySize: string;
   jobCount: number;
 };
-

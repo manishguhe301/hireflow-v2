@@ -384,6 +384,7 @@ model Conversation {
   jobSeeker       User      @relation("JobSeekerConversations", fields: [jobSeekerId], references: [id], onDelete: Cascade)
   job             Job?      @relation(fields: [jobId], references: [id], onDelete: SetNull)
   messages        Message[]
+  isApplicationWithdrawn  Boolean @default(false)
 
   @@unique([companyId, jobSeekerId, jobId])
   @@index([companyId])
