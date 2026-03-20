@@ -2,8 +2,10 @@
 import LoginForm from './LoginForm'
 import AuthAsideSection from '../AuthAsideSection'
 import { loginContent } from '@/src/utils/constants'
+import { useRedirectIfLoggedIn } from '@/src/store/hooks/useRedirectIfLoggedIn'
 
 const Login = () => {
+  useRedirectIfLoggedIn()
   return (
     <main className="min-h-screen bg-background text-foreground grid lg:grid-cols-5">
       <AuthAsideSection
