@@ -14,7 +14,8 @@ const MessageInput = ({
   setMessages,
   userType,
   setNewMessage,
-  messagesEndRef
+  messagesEndRef,
+  isWithdrawn
 }: MessageInputProps) => {
 
   const sendMutation = useMutation({
@@ -111,10 +112,11 @@ const MessageInput = ({
           )}
           rows={2}
           maxLength={500}
+          disabled={isWithdrawn}
         />
         <Button
           onClick={handleSendMessage}
-          disabled={!newMessage.trim() || sendMutation.isPending}
+          disabled={!newMessage.trim() || sendMutation.isPending || isWithdrawn}
           className="px-4 self-end"
           aria-label='Send Message'
         >

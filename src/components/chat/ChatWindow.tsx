@@ -18,7 +18,8 @@ export default function ChatWindow({
   chatPartnerName,
   jobTitle,
   onBack,
-  chatPartnerAvatar
+  chatPartnerAvatar,
+  isWithdrawn
 }: ChatWindowProps) {
   const [messages, setMessages] = useState<MessageWithSender[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -243,15 +244,24 @@ export default function ChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      <MessageInput
-        conversationId={conversationId}
-        messagesEndRef={messagesEndRef}
-        newMessage={newMessage}
-        onMessageSent={onMessageSent}
-        setMessages={setMessages}
-        setNewMessage={setNewMessage}
-        userType={userType}
-      />
+      {isWithdrawn ?
+        <div className="p-4 border-t border-border bg-card">
+          <div className="flex items-center justify-center rounded-xl border border-border/40 bg-muted/20 px-4 py-3">
+            <p className="text-sm text-muted-foreground text-center">
+              This conversation is closed — the application was withdrawn or rejected.
+            </p>
+          </div>
+        </div> :
+        <MessageInput
+          conversationId={conversationId}
+          messagesEndRef={messagesEndRef}
+          newMessage={newMessage}
+          onMessageSent={onMessageSent}
+          setMessages={setMessages}
+          setNewMessage={setNewMessage}
+          userType={userType}
+          isWithdrawn={isWithdrawn}
+        />}
     </div>
   );
 }
