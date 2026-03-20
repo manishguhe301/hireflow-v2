@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import CompanyPublicView from '@/src/components/public/companies-dir/CompanyPublicView'
 import prisma from '@/src/lib/prisma'
@@ -91,11 +90,6 @@ export default async function AuthCompanyDetailsForJobSeekers({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const data = await getCompany(id)
 
-  if (!data) {
-    notFound()
-  }
-  return <CompanyPublicView company={data.company} jobs={data.jobs} />
-
+  return <CompanyPublicView id={id} />
 }
