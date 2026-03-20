@@ -22,6 +22,7 @@ export async function DELETE(
         userId: true,
         status: true,
         statusHistory: true,
+        jobId: true,
       },
     });
 
@@ -48,6 +49,21 @@ export async function DELETE(
     await prisma.application.delete({
       where: { id },
     });
+
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        jobSeekerId: guard.session.user.id,
+        jobId: application.jobId,
+      },
+      select: { id: true },
+    });
+
+    if (conversation) {
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: { isApplicationWithdrawn: true },
+      });
+    }
 
     return NextResponse.json(
       {

@@ -113,6 +113,23 @@ export async function PATCH(
       },
     });
 
+    if (status === 'REJECTED') {
+      const conversation = await prisma.conversation.findFirst({
+        where: {
+          jobId: application.jobId,
+          jobSeekerId: application.userId,
+        },
+        select: { id: true },
+      });
+
+      if (conversation) {
+        await prisma.conversation.update({
+          where: { id: conversation.id },
+          data: { isApplicationWithdrawn: true },
+        });
+      }
+    }
+
     await notifyUser({
       title: 'Application Status Updated',
       message:
