@@ -17,6 +17,7 @@ import {
 import { Button } from '@/src/components/ui/Button'
 import WorkflowSection from './WorkFlowSection'
 import HeroPill from '../landing/landing-components/HeroPill'
+import { useRedirectIfLoggedIn } from '@/src/store/hooks/useRedirectIfLoggedIn'
 
 export type Step = {
   icon: React.ReactNode
@@ -89,6 +90,7 @@ const jobSeekerSteps: Step[] = [
 ]
 
 export default function HowItWorks() {
+  useRedirectIfLoggedIn()
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="relative overflow-hidden isolate border-b border-border/60">
