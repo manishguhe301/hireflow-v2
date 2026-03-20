@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronRight, Home } from 'lucide-react'
 import { Fragment } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface BreadcrumbItem {
   label: string
@@ -26,6 +27,13 @@ const nonLinkable = new Set(['user-profile', 'company-details', 'edit'])
 
 export function Breadcrumb() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+
+  const homeHref =
+    session?.user?.role === 'PLATFORM_ADMIN' ? '/admin'
+      : session?.user?.role === 'COMPANY_ADMIN' ? '/company'
+        : session?.user?.role === 'JOB_SEEKER' ? '/dashboard'
+          : '/'
 
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const segments = pathname.split('/').filter(Boolean)
@@ -77,7 +85,7 @@ export function Breadcrumb() {
   return (
     <nav className="flex items-center gap-2 text-sm text-muted-foreground">
       <Link
-        href="/"
+        href={homeHref}
         className="hover:text-foreground transition"
         aria-label="Home"
       >
