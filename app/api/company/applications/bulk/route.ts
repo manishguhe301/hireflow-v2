@@ -72,6 +72,7 @@ export async function PATCH(req: NextRequest) {
         internalNotes: true,
         userId: true,
         job: { select: { title: true } },
+        jobId: true,
       },
     });
 
@@ -153,6 +154,21 @@ export async function PATCH(req: NextRequest) {
               statusHistory: existingHistory,
             },
           });
+
+          const conversation = await prisma.conversation.findFirst({
+            where: {
+              jobSeekerId: app.userId,
+              jobId: app.jobId,
+            },
+            select: { id: true },
+          });
+
+          if (conversation) {
+            await prisma.conversation.update({
+              where: { id: conversation.id },
+              data: { isApplicationWithdrawn: true },
+            });
+          }
         }),
       );
     }
