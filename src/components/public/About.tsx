@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Workflow, Users, ArrowRight, Building2 } from 'lucide-react'
 import { Button } from '@/src/components/ui/Button'
 import PageTop from './PageTop'
+import { useRedirectIfLoggedIn } from '@/src/store/hooks/useRedirectIfLoggedIn'
 
 type MissionItem = { icon: React.ReactNode, title: string, desc: string }
 
@@ -26,6 +27,7 @@ const missionItems: MissionItem[] = [
 ]
 
 export default function About() {
+  useRedirectIfLoggedIn()
   return (
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       <PageTop

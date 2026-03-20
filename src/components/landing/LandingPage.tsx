@@ -15,22 +15,11 @@ import { DirCompanyType, DirJobType } from '@/src/types';
 import LatestJobs from './landing-components/LatestJobs';
 import CompaniesSection from './landing-components/CompaniesSection';
 import HowItWorksSection from './landing-components/HowItWorksSection';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useRedirectIfLoggedIn } from '@/src/store/hooks/useRedirectIfLoggedIn';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
-  const { data: session } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!session?.user) return
-    const role = session.user.role
-    const dest = role === 'PLATFORM_ADMIN' ? '/admin'
-      : role === 'COMPANY_ADMIN' ? '/company'
-        : '/jobs'
-    router.replace(dest)
-  }, [session])
+  useRedirectIfLoggedIn()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['homepage-data'],
