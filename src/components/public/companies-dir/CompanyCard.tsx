@@ -31,7 +31,7 @@ export default function CompanyCard({ company }: CompanyCardProps) {
                   src={company?.logo}
                   alt={`${company.name} logo`}
                   className={clsx(
-                    "h-full w-full object-cover transition-opacity duration-300",
+                    "h-full w-full object-contain transition-opacity duration-300",
                   )}
                 />
               </>
