@@ -6,7 +6,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
-    const guard = await apiAuthGuard([Role.JOB_SEEKER, Role.COMPANY_ADMIN]);
+    const guard = await apiAuthGuard([
+      Role.JOB_SEEKER,
+      Role.COMPANY_ADMIN,
+      Role.PLATFORM_ADMIN,
+    ]);
     if (!guard.ok) return guard.response;
 
     const { searchParams } = new URL(req.url);
