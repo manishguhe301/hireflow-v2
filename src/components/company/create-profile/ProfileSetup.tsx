@@ -351,7 +351,9 @@ const ProfileSetup = () => {
             />
           </div>
 
-          <form className="px-6 py-6 max-sm:px-0 max-sm:py-4">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="px-6 py-6 max-sm:px-0 max-sm:py-4">
             {stepComponents[currentStep]}
           </form>
 
