@@ -17,6 +17,11 @@ import { ADMIN_USERS_TABS } from "@/src/utils/constants"
 import { PaginationType } from "@/src/types"
 import { USERS_TYPE_TABS_STYLES } from "@/src/utils/helper"
 
+export type UserWithRelations = User & {
+  profile?: { userId: string } | null
+  company?: { id: string } | null
+}
+
 const AdminUsersList = () => {
   const [activeTab, setActiveTab] = useState<'ALL' | Role>('ALL')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
@@ -54,7 +59,7 @@ const AdminUsersList = () => {
     staleTime: 1000 * 60 * 5,
   })
 
-  const users: User[] = data?.users ?? []
+  const users: UserWithRelations[] = data?.users ?? []
   const pagination: PaginationType | null = data?.pagination ?? null
 
   const deleteMutation = useMutation({

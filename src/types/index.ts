@@ -6,10 +6,10 @@ import {
   ExperienceLevel,
   Job,
   JobStatus,
-  User,
   WorkMode,
 } from '@prisma/client';
 import { Dispatch, RefObject, SetStateAction } from 'react';
+import { UserWithRelations } from '../components/admin/AdminUsersList';
 
 export interface ConversationUser {
   id: string;
@@ -167,7 +167,7 @@ export type UserDeleteModalProps = {
 };
 
 export type UsersTableProps = {
-  filteredUsers: User[];
+  filteredUsers: UserWithRelations[];
   loadingAction: string | null;
   setDeleteUserId: React.Dispatch<React.SetStateAction<string | null>>;
   disabled?: boolean;
