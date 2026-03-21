@@ -221,7 +221,7 @@ const JobDetails = () => {
         <img
           src={job.company.logo}
           alt={job.company.name}
-          className="h-12 w-12 rounded-full object-cover"
+          className="h-12 w-12 rounded-full object-contain"
         />
       );
     }

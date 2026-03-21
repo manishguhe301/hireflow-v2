@@ -67,7 +67,7 @@ export default function JobCard({
                       src={job.company?.logo}
                       alt={`${job.company.name} logo`}
                       className={clsx(
-                        "h-full w-full object-cover transition-opacity duration-300",
+                        "h-full w-full object-contain transition-opacity duration-300",
                       )}
                       loading='lazy'
                     />

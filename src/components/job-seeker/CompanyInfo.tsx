@@ -24,7 +24,7 @@ const CompanyInfo = ({
             <img
               src={company?.logo}
               alt={company.name}
-              className={clsx("h-14 w-14 rounded-lg object-cover border border-border",
+              className={clsx("h-14 w-14 rounded-lg object-contain border border-border",
                 'transition-opacity duration-300',
               )}
             />

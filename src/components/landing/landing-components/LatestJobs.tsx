@@ -47,7 +47,7 @@ const LatestJobs = ({ jobs }: {
                               <img
                                 src={job.company?.logo}
                                 alt={job.company.name}
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                               />
                             </>
                           ) : (
