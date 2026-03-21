@@ -172,6 +172,10 @@ export const jobCategories = [
   { label: 'Legal & Compliance', value: 'LEGAL' },
 
   { label: 'Internship', value: 'INTERNSHIP' },
+  { label: 'DevOps', value: 'DEVOPS' },
+  { label: 'Design', value: 'DESIGN' },
+  { label: 'Data', value: 'DATA' },
+  { label: 'Engineering', value: 'ENGINEERING' },
   { label: 'Other', value: 'OTHER' },
 ];
 
