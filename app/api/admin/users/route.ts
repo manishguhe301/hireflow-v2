@@ -49,6 +49,16 @@ export async function GET(req: NextRequest) {
           emailVerified: true,
           createdAt: true,
           updatedAt: true,
+          profile: {
+            select: {
+              userId: true,
+            },
+          },
+          company: {
+            select: {
+              id: true,
+            },
+          },
         },
         orderBy: {
           createdAt: 'desc',
