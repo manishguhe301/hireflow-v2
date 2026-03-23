@@ -1,10 +1,8 @@
 import { apiAuthGuard } from '@/src/lib/apiAuthGuard';
-import { authOptions } from '@/src/lib/auth';
 import { deleteFileFromB2 } from '@/src/lib/fileUpload';
 import { notifyUser } from '@/src/lib/notificationService';
 import prisma from '@/src/lib/prisma';
 import { CompanyStatus, Role } from '@prisma/client';
-import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
