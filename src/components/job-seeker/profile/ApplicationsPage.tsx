@@ -1,6 +1,6 @@
 'use client'
 import { ApplicationStatus } from '@prisma/client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '../../ui/Button'
 import ApplicationsTable from './ApplicationsTable'
@@ -30,6 +30,11 @@ const ApplicationsPage = () => {
     },
     placeholderData: (prev) => prev,
   })
+
+  useEffect(() => {
+    window.scrollTo({ top: 80, behavior: 'smooth' })
+  }, [page])
+
 
   if (isError) {
     return (

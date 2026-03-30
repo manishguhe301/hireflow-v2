@@ -2,7 +2,7 @@
 import { AppSdk } from '@/src/utils/AppSdk';
 import { ApplicationStatus, CurrentEmployment, ExperienceLevel } from '@prisma/client';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner';
 import { Button } from '../../ui/Button';
 import Pagination from '../../ui/Pagination';
@@ -78,6 +78,7 @@ const JobApplicants = () => {
   const debouncedSearch = useDebounce(search, 500)
   const queryClient = useQueryClient()
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const tableRef = useRef<HTMLDivElement | null>(null)
 
   const {
     data,
@@ -241,6 +242,13 @@ const JobApplicants = () => {
     setSelectedApplicants([])
   }, [debouncedSearch, activeTab, sortBy, isRefreshing])
 
+  useEffect(() => {
+    tableRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  }, [page])
+
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4 p-6">
@@ -323,15 +331,18 @@ const JobApplicants = () => {
             <TableSkeleton columns={5} rows={5} />
           ) : (
             applications.length > 0 ?
-              <ApplicationsTableForJob
-                applications={applications}
-                selectAllApplicants={selectAllApplicants}
-                selectedApplicants={selectedApplicants}
-                applicationsLength={applications.length}
-                checkBoxHandler={checkBoxHandler}
-                isBulkProcessing={isBulkProcessing}
-                jobId={job?.id || ''}
-              /> : (
+              <div ref={tableRef}>
+                <ApplicationsTableForJob
+                  applications={applications}
+                  selectAllApplicants={selectAllApplicants}
+                  selectedApplicants={selectedApplicants}
+                  applicationsLength={applications.length}
+                  checkBoxHandler={checkBoxHandler}
+                  isBulkProcessing={isBulkProcessing}
+                  jobId={job?.id || ''}
+                />
+              </div>
+              : (
                 <NoApplications
                   activeTab={activeTab}
                   search={search}

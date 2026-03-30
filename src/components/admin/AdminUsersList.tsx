@@ -3,7 +3,7 @@ import { AppSdk } from "@/src/utils/AppSdk"
 import { Role, User } from "@prisma/client"
 import clsx from "clsx"
 import { RefreshCw, Search, UserPlus, Users, } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
 import UserDeleteModal from "./UserDeleteModal"
@@ -84,6 +84,11 @@ const AdminUsersList = () => {
     setLoadingAction(`delete-${deleteUserId}`)
     deleteMutation.mutate(deleteUserId)
   }
+
+  useEffect(() => {
+    window.scrollTo({ top: 80, behavior: 'smooth' })
+  }, [page])
+
 
   return (
     <div className="p-4 md:p-8 md:px-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto animate-in fade-in duration-500 max-sm:max-w-screen">

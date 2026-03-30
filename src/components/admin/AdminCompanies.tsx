@@ -105,6 +105,10 @@ const AdminCompanies = () => {
     setDeleteCompanyId(null)
   }, [activeTab])
 
+  useEffect(() => {
+    window.scrollTo({ top: 80, behavior: 'smooth' })
+  }, [page])
+
 
   return (
     <div className="p-4 md:p-8 md:px-8 space-y-8 w-full md:max-w-[1400px] md:mx-auto animate-in fade-in duration-500 max-sm:max-w-screen">

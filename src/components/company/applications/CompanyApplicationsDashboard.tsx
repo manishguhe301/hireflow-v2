@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AppSdk } from '@/src/utils/AppSdk'
 import { Button } from '@/src/components/ui/Button'
 import { RefreshCcw } from 'lucide-react'
@@ -15,6 +15,14 @@ import ApplicationDashboardStats from './ApplicationDashboardStats'
 export default function CompanyApplicationsPage() {
   const [page, setPage] = useState(1)
   const queryClient = useQueryClient()
+  const tableRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    tableRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  }, [page])
 
   const {
     data: applicationsData,
@@ -144,7 +152,7 @@ export default function CompanyApplicationsPage() {
           <TableSkeleton columns={5} rows={8} />
         ) :
           (
-            <div className='flex flex-col gap-2'>
+            <div className='flex flex-col gap-2' ref={tableRef}>
               <Button
                 className='flex items-center justify-center gap-2 self-end'
                 size='sm'

@@ -84,6 +84,10 @@ export default function CompaniesDirectory() {
     })
   }, [pagination, page, queryParams, queryClient])
 
+  useEffect(() => {
+    window.scrollTo({ top: 80, behavior: 'smooth' })
+  }, [page])
+
   if (isLoading) {
     return <CompaniesDirectorySkeleton />
   }

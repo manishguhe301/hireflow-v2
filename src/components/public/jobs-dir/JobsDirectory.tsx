@@ -214,6 +214,9 @@ const JobsDirectory = () => {
     }
   }, [isMobileFilterOpen])
 
+  useEffect(() => {
+    window.scrollTo({ top: 80, behavior: 'smooth' })
+  }, [page])
 
   if (isLoading) {
     return <JobsDirectorySkeleton />

@@ -50,6 +50,11 @@ const SavedJobs = () => {
     })
   }, [page, router])
 
+  useEffect(() => {
+    window.scrollTo({ top: 80, behavior: 'smooth' })
+  }, [page])
+
+
   return (
     <div className="p-4 md:p-8 space-y-10 max-w-[1400px] mx-auto">
       <div>
