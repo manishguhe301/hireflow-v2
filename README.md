@@ -76,7 +76,7 @@ Supports three roles:
 
 ### Company Admin — Job Management
 
-![Jobs](./public/screenshots/companyAdmin-jobs.png)
+![Jobs](./public/screenshots/companyAdmin-Jobs.png)
 
 ### Company Admin — Applications
 
