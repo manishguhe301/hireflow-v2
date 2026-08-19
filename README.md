@@ -1,4 +1,4 @@
-# HireFlow — Full-Stack Job Portal Platform
+# HireFlow — Full-Stack Job Portal
 
 A production-grade job portal built with Next.js, featuring **multi-role architecture**, **real-world hiring workflows**, and **scalable system design**.
 
